@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\QuanLib.Minecraft.BlockScreen\QuanLib.Minecraft.BlockScreen.csproj" />
+    <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
+  </ItemGroup>
+
 </Project>
