@@ -278,7 +278,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public int BottomToBorder
         {
-            get => (ParentControl?.Height - ParentBorderWidth ?? GetMCOS().Screen.Height) - (Location.Y + Height);
+            get => (ParentControl?.Height - ParentBorderWidth ?? GetMCOS().FormsPanelSize.Height) - (Location.Y + Height);
             set
             {
                 int offset = BottomToBorder - value;
@@ -539,7 +539,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             if (!FormIsInitialize())
                 return;
             MCOS os = GetMCOS();
-            UpdateAllHover(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
+            UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
         }
 
         private void Control_OnResize(Size oldSize, Size newSize)
@@ -547,44 +547,15 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             if (!FormIsInitialize())
                 return;
             MCOS os = GetMCOS();
-            UpdateAllHover(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
+            UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
         }
 
         private void Control_OnLayoutSubControl(Size oldSize, Size newSize)
         {
-            Size offset = newSize - oldSize;
             foreach (var control in SubControls)
             {
                 if (control.LayoutMode == LayoutMode.Auto)
-                {
-                    if (offset.Height != 0)
-                    {
-                        if (!control.Anchor.HasFlag(PlaneFacing.Top) && !control.Anchor.HasFlag(PlaneFacing.Bottom))
-                        {
-                            double proportion = (control.ClientLocation.Y + control.Height / 2.0) / oldSize.Height;
-                            control.ClientLocation = new(control.ClientLocation.X, (int)Math.Round(newSize.Height * proportion - control.Height / 2.0));
-                        }
-                        if (control.Anchor.HasFlag(PlaneFacing.Bottom))
-                            control.ClientLocation = new(control.ClientLocation.X, control.ClientLocation.Y + offset.Height);
-
-                        if (control.Stretch.HasFlag(PlaneFacing.Top) || control.Stretch.HasFlag(PlaneFacing.Bottom))
-                            control.BottomToBorder -= offset.Height;
-                    }
-
-                    if (offset.Width != 0)
-                    {
-                        if (!control.Anchor.HasFlag(PlaneFacing.Left) && !control.Anchor.HasFlag(PlaneFacing.Right))
-                        {
-                            double proportion = (control.ClientLocation.X + control.Width / 2.0) / oldSize.Width;
-                            control.ClientLocation = new((int)Math.Round(newSize.Width * proportion - control.Width / 2.0), control.ClientLocation.Y);
-                        }
-                        if (control.Anchor.HasFlag(PlaneFacing.Right))
-                            control.ClientLocation = new(control.ClientLocation.X + offset.Width, control.ClientLocation.Y);
-
-                        if (control.Stretch.HasFlag(PlaneFacing.Left) || control.Stretch.HasFlag(PlaneFacing.Right))
-                            control.RightToBorder -= offset.Width;
-                    }
-                }
+                    control.OnOnLayout(oldSize, newSize);
             }
         }
 
@@ -592,14 +563,14 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         #region 事件处理
 
-        internal void HandleCursorMove(Point position, CursorMode mode)
+        internal virtual void HandleCursorMove(Point position, CursorMode mode)
         {
             foreach (var control in SubControls.ToArray())
             {
                 control.HandleCursorMove(control.ParentPos2SubPos(position), mode);
             }
 
-            UpdateHover(position, mode);
+            UpdateHoverState(position, mode);
 
             if (IncludedOnControl(position) || InvokeExternalCursorMove)
             {
@@ -607,21 +578,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             }
         }
 
-        internal void HandleTextEditorUpdate(Point position, string text)
-        {
-            foreach (var control in SubControls.ToArray())
-            {
-                control.HandleTextEditorUpdate(control.ParentPos2SubPos(position), text);
-            }
-
-            if (Visible)
-            {
-                if (IncludedOnControl(position))
-                    TextEditorUpdate.Invoke(position, text);
-            }
-        }
-
-        internal bool HandleRightClick(Point position)
+        internal virtual bool HandleRightClick(Point position)
         {
             Control? control = SubControls.FirstHover;
             control?.HandleRightClick(control.ParentPos2SubPos(position));
@@ -647,7 +604,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             return false;
         }
 
-        internal bool HandleLeftClick(Point position)
+        internal virtual bool HandleLeftClick(Point position)
         {
             Control? control = SubControls.FirstHover;
             control?.HandleLeftClick(control.ParentPos2SubPos(position));
@@ -673,7 +630,21 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             return false;
         }
 
-        internal void HandleBeforeFrame()
+        internal virtual void HandleTextEditorUpdate(Point position, string text)
+        {
+            foreach (var control in SubControls.ToArray())
+            {
+                control.HandleTextEditorUpdate(control.ParentPos2SubPos(position), text);
+            }
+
+            if (Visible)
+            {
+                if (IncludedOnControl(position))
+                    TextEditorUpdate.Invoke(position, text);
+            }
+        }
+
+        internal virtual void HandleBeforeFrame()
         {
             foreach (var control in SubControls.ToArray())
             {
@@ -683,7 +654,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             BeforeFrame.Invoke();
         }
 
-        internal void HandleAfterFrame()
+        internal virtual void HandleAfterFrame()
         {
             foreach (var control in SubControls.ToArray())
             {
@@ -693,17 +664,17 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             AfterFrame.Invoke();
         }
 
-        private void UpdateAllHover(Point position, CursorMode mode)
+        protected void UpdateAllHoverState(Point position, CursorMode mode)
         {
             foreach (var control in SubControls.ToArray())
             {
-                control.UpdateAllHover(control.ParentPos2SubPos(position), mode);
+                control.UpdateAllHoverState(control.ParentPos2SubPos(position), mode);
             }
 
-            UpdateHover(position, mode);
+            UpdateHoverState(position, mode);
         }
 
-        private void UpdateHover(Point position, CursorMode mode)
+        protected void UpdateHoverState(Point position, CursorMode mode)
         {
             bool included = IncludedOnControl(position);
             if (IsHover)
@@ -1132,6 +1103,38 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             ControlSyncer = null;
             foreach (var control in SubControls)
                 control.ClearAllControlSyncer();
+        }
+
+        public virtual void OnOnLayout(Size oldSize, Size newSize)
+        {
+            Size offset = newSize - oldSize;
+            if (offset.Height != 0)
+            {
+                if (!Anchor.HasFlag(PlaneFacing.Top) && !Anchor.HasFlag(PlaneFacing.Bottom))
+                {
+                    double proportion = (ClientLocation.Y + Height / 2.0) / oldSize.Height;
+                    ClientLocation = new(ClientLocation.X, (int)Math.Round(newSize.Height * proportion - Height / 2.0));
+                }
+                if (Anchor.HasFlag(PlaneFacing.Bottom))
+                    ClientLocation = new(ClientLocation.X, ClientLocation.Y + offset.Height);
+
+                if (Stretch.HasFlag(PlaneFacing.Top) || Stretch.HasFlag(PlaneFacing.Bottom))
+                    BottomToBorder -= offset.Height;
+            }
+
+            if (offset.Width != 0)
+            {
+                if (!Anchor.HasFlag(PlaneFacing.Left) && !Anchor.HasFlag(PlaneFacing.Right))
+                {
+                    double proportion = (ClientLocation.X + Width / 2.0) / oldSize.Width;
+                    ClientLocation = new((int)Math.Round(newSize.Width * proportion - Width / 2.0), ClientLocation.Y);
+                }
+                if (Anchor.HasFlag(PlaneFacing.Right))
+                    ClientLocation = new(ClientLocation.X + offset.Width, ClientLocation.Y);
+
+                if (Stretch.HasFlag(PlaneFacing.Left) || Stretch.HasFlag(PlaneFacing.Right))
+                    RightToBorder -= offset.Width;
+            }
         }
 
         public virtual void AutoSetSize()

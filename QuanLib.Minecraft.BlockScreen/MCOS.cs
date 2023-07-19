@@ -73,7 +73,6 @@ namespace QuanLib.Minecraft.BlockScreen
             FrameMinTime = TimeSpan.FromMilliseconds(50);
             PreviousFrameTime = TimeSpan.Zero;
             NextFrameTime = PreviousFrameTime + FrameMinTime;
-            CursorEventTimeout = TimeSpan.FromMilliseconds(1);
             Timer = new();
             ScreenDefaultBackgroundBlcokID = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
             Operator = string.Empty;
@@ -81,7 +80,6 @@ namespace QuanLib.Minecraft.BlockScreen
 
             _apps = new();
             _process = new();
-            _forms = new();
             _callbacks = new();
             _stopwatch = new();
 
@@ -98,8 +96,6 @@ namespace QuanLib.Minecraft.BlockScreen
         private readonly Dictionary<string, ApplicationInfo> _apps;
 
         private readonly Dictionary<string, Process> _process;
-
-        private readonly List<Form> _forms;
 
         internal readonly Queue<Action> _callbacks;
 
@@ -127,13 +123,13 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public TimeSpan NextFrameTime { get; private set; }
 
-        public TimeSpan CursorEventTimeout { get; set; }
-
         public int FrameCount { get; private set; }
 
         public SystemTimer Timer { get; }
 
         public string ScreenDefaultBackgroundBlcokID { get; set; }
+
+        public Size FormsPanelSize => ServicesApp.RootForm.FormsPanel.ClientSize;
 
         public string Operator { get; set; }
 
@@ -167,61 +163,15 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             PlayerCursorReader.OnCursorMove += (Point position, CursorMode mode) =>
             {
-                foreach (var form in _forms)
-                {
-                    if (form.IsSelected)
-                    {
-                        CurrentPosition = position;
-                        form.HandleCursorMove(form.ParentPos2SubPos(position), mode);
-                        break;
-                    }
-                }
+                CurrentPosition = position;
+                ServicesApp.RootForm.HandleCursorMove(position, mode);
             };
 
-            PlayerCursorReader.OnRightClick += (Point position) =>
-            {
-                foreach (var form in _forms)
-                {
-                    Point sub = form.ParentPos2SubPos(position);
-                    if (form.ResizeBorder != PlaneFacing.None)
-                    {
-                        form.IsOnResize = !form.IsOnResize;
-                        break;
-                    }
-                    else if (form.IncludedOnControl(sub))
-                    {
-                        if (form.IsSelected)
-                            form.HandleRightClick(sub);
-                        else
-                            ServicesApp.RootForm.TrySwitchForm(form);
-                        break;
-                    }
-                }
-            };
+            PlayerCursorReader.OnRightClick += (Point position) => ServicesApp.RootForm.HandleRightClick(position);
 
-            PlayerCursorReader.OnLeftClick += (Point position) =>
-            {
-                foreach (var form in _forms)
-                {
-                    if (form.IsSelected)
-                    {
-                        form.HandleLeftClick(position);
-                        break;
-                    }
-                }
-            };
+            PlayerCursorReader.OnLeftClick += (Point position) => ServicesApp.RootForm.HandleLeftClick(position);
 
-            PlayerCursorReader.OnTextUpdate += (Point position, string text) =>
-            {
-                foreach (var form in _forms)
-                {
-                    if (form.IsSelected)
-                    {
-                        form.HandleTextEditorUpdate(form.ParentPos2SubPos(position), text);
-                        break;
-                    }
-                }
-            };
+            PlayerCursorReader.OnTextUpdate += (Point position, string text) => ServicesApp.RootForm.HandleTextEditorUpdate(position, text);
         }
 
         public void Start()
@@ -284,15 +234,16 @@ namespace QuanLib.Minecraft.BlockScreen
 
             foreach (var process in _process.ToArray())
             {
+                Control.ControlCollection forms = ServicesApp.RootForm.FormsPanel.SubControls;
                 if (process.Key != ServicesApp.AppID)
                 {
                     Form form = process.Value.Application.ForegroundForm;
                     switch (process.Value.ProcessState)
                     {
                         case ProcessState.Running:
-                            if (!ServicesApp.RootForm.SubControls.Contains(form))
+                            if (!forms.Contains(form))
                             {
-                                ServicesApp.RootForm.SubControls.Add(form);
+                                forms.Add(form);
                                 ServicesApp.RootForm.TrySwitchForm(form);
                             }
                             break;
@@ -300,25 +251,22 @@ namespace QuanLib.Minecraft.BlockScreen
                             if (ServicesApp.RootForm.SubControls.Contains(form))
                             {
                                 form.IsSelected = false;
-                                ServicesApp.RootForm.SubControls.Remove(form);
+                                forms.Remove(form);
                                 ServicesApp.RootForm.SelectedMaxDisplayPriority();
                             }
                             break;
                         case ProcessState.Stopped:
-                            if (ServicesApp.RootForm.SubControls.Contains(form))
+                            if (forms.Contains(form))
                             {
                                 _process.Remove(process.Key);
                                 form.IsSelected = false;
-                                ServicesApp.RootForm.SubControls.Remove(form);
+                                forms.Remove(form);
                                 ServicesApp.RootForm.SelectedMaxDisplayPriority();
                             }
                             break;
                     }
                 }
             }
-            _forms.Clear();
-            _forms.AddRange(ServicesApp.RootForm.GetFormList());
-            _forms.Reverse();
 
             stopwatch.Stop();
             Timer.ProcessScheduling.Add(stopwatch.Elapsed);

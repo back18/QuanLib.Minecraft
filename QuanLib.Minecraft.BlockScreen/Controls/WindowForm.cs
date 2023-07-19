@@ -31,7 +31,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 {
                     if (!ShowTitleBar)
                     {
-                        SubControls.Add(TitleBar);
+                        SubControls.TryAdd(TitleBar);
                         SubControls.Remove(ShowTitleBar_Button);
                         Client_Panel?.ControlSyncer?.Sync();
                     }
@@ -41,7 +41,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     if (ShowTitleBar)
                     {
                         SubControls.Remove(TitleBar);
-                        SubControls.Add(ShowTitleBar_Button);
+                        SubControls.TryAdd(ShowTitleBar_Button);
                         Client_Panel?.ControlSyncer?.Sync();
                     }
                 }

@@ -39,8 +39,8 @@ namespace QuanLib.Minecraft.BlockScreen
             base.Initialize();
 
             ClientLocation = new(3, 3);
-            Width = Application.MCOS.Screen.Width - 7;
-            Height = Application.MCOS.Screen.Height - 10;
+            Width = Application.MCOS.FormsPanelSize.Width - 7;
+            Height = Application.MCOS.FormsPanelSize.Height - 10;
 
             Client_Panel.SubControls.Add(TextBox1);
             Client_Panel.SubControls.Add(TextBox2);

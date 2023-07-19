@@ -34,14 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public Point MaximizeLocation => new(0, 0);
 
-        public Size MaximizeSize
-        {
-            get
-            {
-                Screen screen = GetMCOS().Screen;
-                return new(screen.Width, screen.Height);
-            }
-        }
+        public Size MaximizeSize => GetMCOS().FormsPanelSize;
 
         public Point RestoreLocation { get; private set; }
 
@@ -67,8 +60,8 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
             MCOS os = GetMCOS();
             Text = Application.AppName;
-            Width = os.Screen.Width;
-            Height = os.Screen.Height;
+            Width = os.FormsPanelSize.Width;
+            Height = os.FormsPanelSize.Height;
             InvokeExternalCursorMove = true;
             CursorMove += Form_CursorMove;
             OnMove += Form_OnMove;
@@ -156,10 +149,10 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public void MaximizeForm()
         {
-            Screen screen = GetMCOS().Screen;
+            Size maximize = MaximizeSize;
+            Width = maximize.Width;
+            Height = maximize.Height;
             Location = new(0, 0);
-            Width = screen.Width;
-            Height = screen.Height;
         }
 
         public void RestoreForm()

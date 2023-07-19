@@ -30,7 +30,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
             BorderWidth = 0;
             InvokeExternalCursorMove = true;
-            Stretch = PlaneFacing.Right;
             RightClick += FormTitleBar_RightClick;
             CursorMove += FormTitleBar_CursorMove;
         }
