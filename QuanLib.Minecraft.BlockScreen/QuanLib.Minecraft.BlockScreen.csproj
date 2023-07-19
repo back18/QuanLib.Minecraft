@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FFMediaToolkit" Version="4.5.0" />
+    <PackageReference Include="MongoDB.Bson" Version="2.20.0" />
+    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="PostSharp" Version="2023.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="QuanLib">
+      <HintPath>..\..\QuanLib\release\QuanLib\QuanLib.dll</HintPath>
+    </Reference>
+    <Reference Include="QuanLib.BDF">
+      <HintPath>..\..\QuanLib\release\QuanLib.BDF\QuanLib.BDF.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
