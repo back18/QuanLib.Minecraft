@@ -32,7 +32,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
 
         private readonly PictureBox Picture_PictureBox;
 
-        private readonly Panel Setting_Panel;
+        private readonly Panel<Control> Setting_Panel;
 
         private readonly ComboButton<ResizeMode> ResizeMode_ComboButton;
 

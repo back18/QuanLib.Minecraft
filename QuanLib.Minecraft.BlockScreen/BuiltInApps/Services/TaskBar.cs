@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Controls;
+﻿using QuanLib.Minecraft.BlockScreen.BuiltInApps.TaskManager;
+using QuanLib.Minecraft.BlockScreen.Controls;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 {
-    public class TaskBar : ItemCollectionControl<Process>
+    public class TaskBar : ControlContainer<Control>
     {
         public TaskBar(RootForm owner)
         {
@@ -16,10 +17,9 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 
             BorderWidth = 0;
             ControlSyncer = new(_owner, (oldPosition, newPosition) => { }, (oldSize, newSize) => Width = newSize.Width);
-            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Yellow));
+            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
 
             StartMenu_Switch = new();
-            Time_Label = new();
             TeskItems_Panel = new();
             FullScreen_Button = new();
         }
@@ -28,9 +28,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 
         private readonly Switch StartMenu_Switch;
 
-        private readonly Panel TeskItems_Panel;
-
-        private readonly Label Time_Label;
+        private readonly Panel<TaskIcon> TeskItems_Panel;
 
         private readonly Button FullScreen_Button;
 
@@ -38,11 +36,12 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
         {
             base.Initialize();
 
-            if (_owner != ParentControl)
+            if (_owner != ParentContainer)
                 throw new InvalidOperationException();
 
+            MCOS os = GetMCOS();
             string dir = PathManager.SystemResources_Textures_Control_Dir;
-            string lghtGray = ConcretePixel.ToBlockID(MinecraftColor.LightGray);
+            string green = ConcretePixel.ToBlockID(MinecraftColor.Green);
 
             SubControls.Add(FullScreen_Button);
             FullScreen_Button.BorderWidth = 0;
@@ -51,9 +50,22 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             FullScreen_Button.ClientLocation = this.LifeLayout(null, FullScreen_Button, 0, 0);
             FullScreen_Button.Anchor = PlaneFacing.Bottom | PlaneFacing.Right;
             FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-            FullScreen_Button.Skin.SetBackgroundBlockID(ControlState.Hover, lghtGray);
-            FullScreen_Button.Skin.SetBackgroundBlockID(ControlState.Hover | ControlState.Selected, lghtGray);
+            FullScreen_Button.Skin.BackgroundBlockID_Hover = green;
+            FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = green;
             FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
+
+            SubControls.Add(StartMenu_Switch);
+            StartMenu_Switch.BorderWidth = 0;
+            StartMenu_Switch.ClientSize = new(16, 16);
+            ImageFrame startOFF = new(Path.Combine(dir, "Start_OFF.png"), os.Screen.NormalFacing, StartMenu_Switch.ClientSize);
+            ImageFrame startON = new(Path.Combine(dir, "Start_ON.png"), os.Screen.NormalFacing, StartMenu_Switch.ClientSize);
+            StartMenu_Switch.Skin.BackgroundImage = startOFF;
+            StartMenu_Switch.Skin.BackgroundImage_Hover = startOFF;
+            StartMenu_Switch.Skin.BackgroundImage_Selected = startON;
+            StartMenu_Switch.Skin.BackgroundImage_Hover_Selected = startON;
+
+            SubControls.Add(TeskItems_Panel);
+
         }
 
         private void HideTitleBar_Button_RightClick(Point position)

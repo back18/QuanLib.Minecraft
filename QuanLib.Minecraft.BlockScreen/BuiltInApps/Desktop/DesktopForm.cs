@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
-            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Pink));
             //Skin.SetAllBackgroundBlockID("minecraft:air");
         }
 

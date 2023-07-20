@@ -52,17 +52,17 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
 
         private void DesktopIcon_CursorEnter(Point position, CursorMode mode)
         {
-            ParentControl?.SubControls.TryAdd(Name_Label);
+            ParentContainer?.SubControls.TryAdd(Name_Label);
         }
 
         private void DesktopIcon_CursorLeave(Point position, CursorMode mode)
         {
-            ParentControl?.SubControls.Remove(Name_Label);
+            ParentContainer?.SubControls.Remove(Name_Label);
         }
 
         private void DesktopIcon_CursorMove(Point position, CursorMode mode)
         {
-            if (ParentControl?.SubControls.Contains(Name_Label) ?? false)
+            if (ParentContainer?.SubControls.Contains(Name_Label) ?? false)
             {
                 Point parent = SubPos2ParentPos(position);
                 parent.Y += 5;
@@ -86,7 +86,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
         private void DesktopIcon_DoubleRightClick(Point position)
         {
             GetMCOS().RunApp(_appInfo.ID, Array.Empty<string>(), GetProcess());
-            ParentControl?.SubControls.ClearSelected();
+            ParentContainer?.SubControls.ClearSelected();
         }
     }
 }

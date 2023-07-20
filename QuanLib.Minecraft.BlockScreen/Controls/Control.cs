@@ -19,10 +19,9 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
     {
         protected Control()
         {
-            SubControls = new(this);
             InvokeExternalCursorMove = false;
             _ControlSyncer = null;
-            ParentControl = null;
+            ParentContainer = null;
             LastRightClickTime = DateTime.MinValue;
             LastLeftClickTime = DateTime.MinValue;
             _DisplayPriority = 0;
@@ -59,8 +58,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             BeforeFrame += Control_BeforeFrame;
             AfterFrame += Control_AfterFrame;
             InitializeCallback += () => { };
-            OnAddSubControl += (obj) => { };
-            OnRemoveSubControl += (obj) => { };
             OnSelected += () => { };
             OnDeselected += () => { };
             OnTextUpdate += Control_OnTextUpdate;
@@ -88,32 +85,17 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         private Size ClientSize_Old;
 
-        public ControlCollection SubControls { get; }
+        public ControlContainer? ParentContainer { get; internal protected set; }
 
-        public bool InvokeExternalCursorMove { get; set; }
+        public int ParentBorderWidth => ParentContainer?.BorderWidth ?? 0;
 
-        public int Index => ParentControl?.SubControls.IndexOf(this) ?? -1;
-
-        public ControlSyncer? ControlSyncer
-        {
-            get => _ControlSyncer;
-            set
-            {
-                _ControlSyncer?.Unbinding();
-                _ControlSyncer = value;
-                _ControlSyncer?.Binding();
-                _ControlSyncer?.Sync();
-            }
-        }
-        private ControlSyncer? _ControlSyncer;
-
-        public Control? ParentControl { get; protected internal set; }
-
-        public int ParentBorderWidth => ParentControl?.BorderWidth ?? 0;
+        public int Index => ParentContainer?.GetSubControls().IndexOf(this) ?? -1;
 
         public DateTime LastRightClickTime { get; private set; }
 
         public DateTime LastLeftClickTime { get; private set; }
+
+        public bool InvokeExternalCursorMove { get; set; }
 
         public string Text
         {
@@ -278,7 +260,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public int BottomToBorder
         {
-            get => (ParentControl?.Height - ParentBorderWidth ?? GetMCOS().FormsPanelSize.Height) - (Location.Y + Height);
+            get => (ParentContainer?.Height - ParentBorderWidth ?? GetMCOS().FormsPanelSize.Height) - (Location.Y + Height);
             set
             {
                 int offset = BottomToBorder - value;
@@ -299,7 +281,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public int RightToBorder
         {
-            get => (ParentControl?.Width - ParentBorderWidth ?? GetMCOS().Screen.Width) - (Location.X + Width);
+            get => (ParentContainer?.Width - ParentBorderWidth ?? GetMCOS().Screen.Width) - (Location.X + Width);
             set
             {
                 int offset = RightToBorder - value;
@@ -342,7 +324,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             {
                 _DisplayPriority = value;
                 if (!IsSelected)
-                    ParentControl?.SubControls.Sort();
+                    ParentContainer?.GetSubControls().Sort();
             }
         }
         private int _DisplayPriority;
@@ -354,7 +336,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             {
                 _MaxDisplayPriority = value;
                 if (IsSelected)
-                    ParentControl?.SubControls.Sort();
+                    ParentContainer?.GetSubControls().Sort();
             }
         }
         private int _MaxDisplayPriority;
@@ -435,11 +417,23 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                         ControlState ^= ControlState.Selected;
                         OnDeselected.Invoke();
                     }
-                    ParentControl?.SubControls.Sort();
+                    ParentContainer?.GetSubControls().Sort();
                 }
-
             }
         }
+
+        public ControlSyncer? ControlSyncer
+        {
+            get => _ControlSyncer;
+            set
+            {
+                _ControlSyncer?.Unbinding();
+                _ControlSyncer = value;
+                _ControlSyncer?.Binding();
+                _ControlSyncer?.Sync();
+            }
+        }
+        private ControlSyncer? _ControlSyncer;
 
         #endregion
 
@@ -466,10 +460,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         public event Action AfterFrame;
 
         public event Action InitializeCallback;
-
-        public event Action<Control> OnAddSubControl;
-
-        public event Action<Control> OnRemoveSubControl;
 
         public event Action OnSelected;
 
@@ -552,10 +542,13 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         private void Control_OnLayoutSubControl(Size oldSize, Size newSize)
         {
-            foreach (var control in SubControls)
+            if (this is ControlContainer container)
             {
-                if (control.LayoutMode == LayoutMode.Auto)
-                    control.OnOnLayout(oldSize, newSize);
+                foreach (var control in container.GetSubControls())
+                {
+                    if (control.LayoutMode == LayoutMode.Auto)
+                        control.OnOnLayout(oldSize, newSize);
+                }
             }
         }
 
@@ -565,11 +558,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         internal virtual void HandleCursorMove(Point position, CursorMode mode)
         {
-            foreach (var control in SubControls.ToArray())
-            {
-                control.HandleCursorMove(control.ParentPos2SubPos(position), mode);
-            }
-
             UpdateHoverState(position, mode);
 
             if (IncludedOnControl(position) || InvokeExternalCursorMove)
@@ -580,9 +568,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         internal virtual bool HandleRightClick(Point position)
         {
-            Control? control = SubControls.FirstHover;
-            control?.HandleRightClick(control.ParentPos2SubPos(position));
-
             if (Visible)
             {
                 if (IsHover)
@@ -606,9 +591,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         internal virtual bool HandleLeftClick(Point position)
         {
-            Control? control = SubControls.FirstHover;
-            control?.HandleLeftClick(control.ParentPos2SubPos(position));
-
             if (Visible)
             {
                 if (IsHover)
@@ -632,11 +614,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         internal virtual void HandleTextEditorUpdate(Point position, string text)
         {
-            foreach (var control in SubControls.ToArray())
-            {
-                control.HandleTextEditorUpdate(control.ParentPos2SubPos(position), text);
-            }
-
             if (Visible)
             {
                 if (IncludedOnControl(position))
@@ -646,29 +623,22 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         internal virtual void HandleBeforeFrame()
         {
-            foreach (var control in SubControls.ToArray())
-            {
-                control.HandleBeforeFrame();
-            }
-
             BeforeFrame.Invoke();
         }
 
         internal virtual void HandleAfterFrame()
         {
-            foreach (var control in SubControls.ToArray())
-            {
-                control.HandleAfterFrame();
-            }
-
             AfterFrame.Invoke();
         }
 
         protected void UpdateAllHoverState(Point position, CursorMode mode)
         {
-            foreach (var control in SubControls.ToArray())
+            if (this is ControlContainer container)
             {
-                control.UpdateAllHoverState(control.ParentPos2SubPos(position), mode);
+                foreach (var control in container.GetSubControls().ToArray())
+                {
+                    control.UpdateAllHoverState(control.ParentPos2SubPos(position), mode);
+                }
             }
 
             UpdateHoverState(position, mode);
@@ -689,7 +659,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             {
                 if (included)
                 {
-                    Control? control = ParentControl?.SubControls.FirstHover;
+                    Control? control = ParentContainer?.GetSubControls().FirstHover;
                     if (control is not null)
                     {
                         if (control.Index < Index)
@@ -788,36 +758,48 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             Initialize();
             InitializeCallback.Invoke();
-            foreach (var control in SubControls)
+            if (this is ControlContainer container)
             {
-                control.HandleInitialize();
+                foreach (var control in container.GetSubControls())
+                {
+                    control.HandleInitialize();
+                }
             }
         }
 
         internal void HandleOnInitComplete1()
         {
             OnInitComplete1();
-            foreach (var control in SubControls)
+            if (this is ControlContainer container)
             {
-                control.HandleOnInitComplete1();
+                foreach (var control in container.GetSubControls())
+                {
+                    control.HandleOnInitComplete1();
+                }
             }
         }
 
         internal void HandleOnInitComplete2()
         {
             OnInitComplete2();
-            foreach (var control in SubControls)
+            if (this is ControlContainer container)
             {
-                control.HandleOnInitComplete2();
+                foreach (var control in container.GetSubControls())
+                {
+                    control.HandleOnInitComplete2();
+                }
             }
         }
 
         internal void HandleOnInitComplete3()
         {
             OnInitComplete3();
-            foreach (var control in SubControls)
+            if (this is ControlContainer container)
             {
-                control.HandleOnInitComplete3();
+                foreach (var control in container.GetSubControls())
+                {
+                    control.HandleOnInitComplete3();
+                }
             }
         }
 
@@ -828,7 +810,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         protected void RequestUpdateFrame()
         {
             Frame_Update = true;
-            ParentControl?.RequestUpdateFrame();
+            ParentContainer?.RequestUpdateFrame();
         }
 
         public virtual Frame RenderingFrame()
@@ -868,11 +850,11 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     throw new InvalidOperationException();
                 }
 
-                if (control.SubControls.Count == 0)
+                if (control is not ControlContainer container || container.GetSubControls().Count == 0)
                     return _task.Result;
 
                 List<(Task<Frame?> task, Point location)> results = new();
-                foreach (Control subControl in control.SubControls)
+                foreach (Control subControl in container.GetSubControls())
                     results.Add((Task.Run(() => UpdateSubControls(subControl)), subControl.Location));
                 Task.WaitAll(results.Select(i => i.task).ToArray());
                 Frame frame = _task.Result;
@@ -1041,11 +1023,11 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         public Control[] GetParentControls()
         {
             List<Control> result = new();
-            Control? parent = ParentControl;
+            Control? parent = ParentContainer;
             while (parent is not null)
             {
                 result.Add(parent);
-                parent = parent.ParentControl;
+                parent = parent.ParentContainer;
             }
             result.Reverse();
             return result.ToArray();
@@ -1056,7 +1038,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             Control result = this;
             while (true)
             {
-                Control? parent = result.ParentControl;
+                Control? parent = result.ParentContainer;
                 if (parent is null)
                     return result;
                 else
@@ -1074,7 +1056,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 else if (result is Form form)
                     return form;
                 else
-                    result = result.ParentControl;
+                    result = result.ParentContainer;
             }
         }
 
@@ -1100,9 +1082,10 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public void ClearAllControlSyncer()
         {
+            if (this is ControlContainer container)
+                container.GetSubControls().ClearSyncers();
+
             ControlSyncer = null;
-            foreach (var control in SubControls)
-                control.ClearAllControlSyncer();
         }
 
         public virtual void OnOnLayout(Size oldSize, Size newSize)
@@ -1570,191 +1553,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     default:
                         throw new InvalidOperationException();
                 }
-            }
-        }
-
-        public class ControlCollection : IList<Control>, IReadOnlyList<Control>
-        {
-            public ControlCollection(Control owner)
-            {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
-                _items = new();
-            }
-
-            private readonly Control _owner;
-
-            private readonly List<Control> _items;
-
-            public int Count => _items.Count;
-
-            public bool IsReadOnly => false;
-
-            public bool HaveHover => FirstHover is not null;
-
-            public Control? FirstHover
-            {
-                get
-                {
-                    for (int i = _items.Count - 1; i >= 0; i--)
-                    {
-                        if (_items[i].IsHover)
-                            return _items[i];
-                    }
-                    return null;
-                }
-            }
-
-            public bool HaveSelected => FirstSelected is not null;
-
-            public Control? FirstSelected
-            {
-                get
-                {
-                    for (int i = _items.Count - 1; i >= 0; i--)
-                    {
-                        if (_items[i].IsSelected)
-                            return _items[i];
-                    }
-                    return null;
-                }
-            }
-
-            public Control? RecentlyAddedControl { get; private set; }
-
-            public Control? RecentlyRemovedControl { get; private set; }
-
-            Control IList<Control>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
-
-            public Control this[int index] => _items[index];
-
-            public void ClearSelected()
-            {
-                foreach (Control control in _items.ToArray())
-                    control.IsSelected = false;
-            }
-
-            public void Add(Control item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                item.ParentControl = _owner;
-                item.OnSelected += Sort;
-                item.OnDeselected += Sort;
-
-                bool insert = false;
-                for (int i = _items.Count - 1; i >= 0; i--)
-                {
-                    if (item.DisplayPriority >= _items[i].DisplayPriority)
-                    {
-                        _items.Insert(i + 1, item);
-                        insert = true;
-                        break;
-                    }
-                }
-                if (!insert)
-                    _items.Insert(0, item);
-                RecentlyAddedControl = item;
-                _owner.OnAddSubControl.Invoke(item);
-                _owner.RequestUpdateFrame();
-            }
-
-            public bool TryAdd(Control item)
-            {
-                if (_items.Contains(item))
-                {
-                    return false;
-                }
-                else
-                {
-                    Add(item);
-                    return true;
-                }
-            }
-
-            void IList<Control>.Insert(int index, Control item)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool Remove(Control item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                item.ParentControl = null;
-                item.OnSelected -= Sort;
-                item.OnDeselected -= Sort;
-                bool result = _items.Remove(item);
-                RecentlyRemovedControl = item;
-                _owner.OnAddSubControl.Invoke(item);
-                _owner.RequestUpdateFrame();
-
-                return result;
-            }
-
-            public void RemoveAt(int index)
-            {
-                _items.Remove(_items[index]);
-            }
-
-            public void Clear()
-            {
-                foreach (var item in _items.ToArray())
-                    Remove(item);
-            }
-
-            public void Sort()
-            {
-                _items.Sort();
-            }
-
-            public bool Contains(Control item)
-            {
-                return _items.Contains(item);
-            }
-
-            public int IndexOf(Control item)
-            {
-                return _items.IndexOf(item);
-            }
-
-            public Control[] GetHovers()
-            {
-                List<Control> result = new();
-                foreach (var item in _items)
-                    if (item.IsHover)
-                        result.Add(item);
-                return result.ToArray();
-            }
-
-            public Control[] GetSelecteds()
-            {
-                List<Control> result = new();
-                foreach (var item in _items)
-                    if (item.IsSelected)
-                        result.Add(item);
-                return result.ToArray();
-            }
-
-            public Control[] ToArray()
-            {
-                return _items.ToArray();
-            }
-
-            public void CopyTo(Control[] array, int arrayIndex)
-            {
-                _items.CopyTo(array, arrayIndex);
-            }
-
-            public IEnumerator<Control> GetEnumerator()
-            {
-                return _items.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable)_items).GetEnumerator();
             }
         }
     }

@@ -1,0 +1,36 @@
+﻿using QuanLib.Minecraft.Datas;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace QuanLib.Minecraft.BlockScreen.Controls
+{
+    public interface IReadOnlyControlCollection<out T> : IReadOnlyList<T> where T : Control
+    {
+        public T? FirstHover { get; }
+
+        public T? FirstSelected { get; }
+
+        public T? RecentlyAddedControl { get; }
+
+        public T? RecentlyRemovedControl { get; }
+
+        public bool HaveHover => FirstHover is not null;
+
+        public bool HaveSelected => FirstSelected is not null;
+
+        public IReadOnlyList<T> GetHovers();
+
+        public IReadOnlyList<T> GetSelecteds();
+
+        public void ClearSelected();
+
+        public void ClearSyncers();
+
+        public void Sort();
+
+        public T[] ToArray();
+    }
+}

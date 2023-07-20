@@ -30,7 +30,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             base.Initialize();
 
-            if (_owner != ParentControl)
+            if (_owner != ParentContainer)
                 throw new InvalidOperationException();
         }
 

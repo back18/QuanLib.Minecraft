@@ -47,7 +47,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.FileExplorer
 
         private readonly TextBox Path_TextBox;
 
-        private readonly Panel PathList_Panel;
+        private readonly Panel<PathIcon> PathList_Panel;
 
         private readonly Dictionary<int, PathIcon[]> _pages;
 
