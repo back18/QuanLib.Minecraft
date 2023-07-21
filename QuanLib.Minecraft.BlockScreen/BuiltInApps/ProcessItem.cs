@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps
 {
-    public class ProcessItem : Control
+    public class ProcessItem : ContainerControl<Control>
     {
         public ProcessItem(Process process)
         {

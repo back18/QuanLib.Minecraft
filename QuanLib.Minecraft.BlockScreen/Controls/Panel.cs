@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class Panel<T> : ControlContainer<T> where T : Control
+    public class Panel<T> : ContainerControl<T> where T : Control
     {
 
     }

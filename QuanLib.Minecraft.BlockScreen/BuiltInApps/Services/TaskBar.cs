@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 {
-    public class TaskBar : ControlContainer<Control>
+    public class TaskBar : ContainerControl<Control>
     {
         public TaskBar(RootForm owner)
         {
@@ -64,7 +64,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             StartMenu_Switch.Skin.BackgroundImage_Selected = startON;
             StartMenu_Switch.Skin.BackgroundImage_Hover_Selected = startON;
 
-            SubControls.Add(TeskItems_Panel);
+            //SubControls.Add(TeskItems_Panel);
 
         }
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public abstract class Form : ControlContainer<Control>, IApplicationComponent
+    public abstract class Form : ContainerControl<Control>, IApplicationComponent
     {
         protected Form()
         {

@@ -60,13 +60,12 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             InitializeCallback += () => { };
             OnSelected += () => { };
             OnDeselected += () => { };
-            OnTextUpdate += Control_OnTextUpdate;
+            OnTextUpdate += (arg1, arg2) => { };
             OnMove += Control_OnMove;
             OnResize += Control_OnResize;
             OnTextUpdateNow += (arg1, arg2) => { };
             OnMoveNow += (arg1, arg2) => { };
             OnResizeNow += (arg1, arg2) => { };
-            OnLayoutSubControl += Control_OnLayoutSubControl;
         }
 
         private bool Frame_Update;
@@ -85,7 +84,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         private Size ClientSize_Old;
 
-        public ControlContainer? ParentContainer { get; internal protected set; }
+        public ContainerControl? ParentContainer { get; internal protected set; }
 
         public int ParentBorderWidth => ParentContainer?.BorderWidth ?? 0;
 
@@ -477,8 +476,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public event Action<Size, Size> OnResizeNow;
 
-        public event Action<Size, Size> OnLayoutSubControl;
-
         #endregion
 
         #region 事件订阅
@@ -505,7 +502,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             {
                 if (ClientSize != ClientSize_Old)
                 {
-                    OnLayoutSubControl.Invoke(ClientSize_Old, ClientSize);
                     OnResize.Invoke(ClientSize_Old, ClientSize);
                 }
                 ClientSize_Update = false;
@@ -516,12 +512,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         private void Control_AfterFrame()
         {
 
-        }
-
-        private void Control_OnTextUpdate(string oldText, string newText)
-        {
-            if (AutoSize)
-                AutoSetSize();
         }
 
         private void Control_OnMove(Point oldPosition, Point newPosition)
@@ -538,18 +528,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 return;
             MCOS os = GetMCOS();
             UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
-        }
-
-        private void Control_OnLayoutSubControl(Size oldSize, Size newSize)
-        {
-            if (this is ControlContainer container)
-            {
-                foreach (var control in container.GetSubControls())
-                {
-                    if (control.LayoutMode == LayoutMode.Auto)
-                        control.OnOnLayout(oldSize, newSize);
-                }
-            }
         }
 
         #endregion
@@ -633,7 +611,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         protected void UpdateAllHoverState(Point position, CursorMode mode)
         {
-            if (this is ControlContainer container)
+            if (this is ContainerControl container)
             {
                 foreach (var control in container.GetSubControls().ToArray())
                 {
@@ -758,7 +736,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             Initialize();
             InitializeCallback.Invoke();
-            if (this is ControlContainer container)
+            if (this is ContainerControl container)
             {
                 foreach (var control in container.GetSubControls())
                 {
@@ -770,7 +748,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         internal void HandleOnInitComplete1()
         {
             OnInitComplete1();
-            if (this is ControlContainer container)
+            if (this is ContainerControl container)
             {
                 foreach (var control in container.GetSubControls())
                 {
@@ -782,7 +760,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         internal void HandleOnInitComplete2()
         {
             OnInitComplete2();
-            if (this is ControlContainer container)
+            if (this is ContainerControl container)
             {
                 foreach (var control in container.GetSubControls())
                 {
@@ -794,7 +772,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         internal void HandleOnInitComplete3()
         {
             OnInitComplete3();
-            if (this is ControlContainer container)
+            if (this is ContainerControl container)
             {
                 foreach (var control in container.GetSubControls())
                 {
@@ -850,7 +828,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     throw new InvalidOperationException();
                 }
 
-                if (control is not ControlContainer container || container.GetSubControls().Count == 0)
+                if (control is not ContainerControl container || container.GetSubControls().Count == 0)
                     return _task.Result;
 
                 List<(Task<Frame?> task, Point location)> results = new();
@@ -1082,13 +1060,13 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public void ClearAllControlSyncer()
         {
-            if (this is ControlContainer container)
+            if (this is ContainerControl container)
                 container.GetSubControls().ClearSyncers();
 
             ControlSyncer = null;
         }
 
-        public virtual void OnOnLayout(Size oldSize, Size newSize)
+        public virtual void Layout(Size oldSize, Size newSize)
         {
             Size offset = newSize - oldSize;
             if (offset.Height != 0)
@@ -1122,7 +1100,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public virtual void AutoSetSize()
         {
-            ClientSize = MCOS.DefaultFont.GetTotalSize(Text);
+
         }
 
         public virtual bool IncludedOnControl(Point position)

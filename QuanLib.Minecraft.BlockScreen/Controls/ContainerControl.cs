@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public abstract class ControlContainer<T> : ControlContainer where T : Control
+    public abstract class ContainerControl<T> : ContainerControl where T : Control
     {
-        protected ControlContainer()
+        protected ContainerControl()
         {
             SubControls = new(this);
         }
@@ -29,23 +29,49 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         public ControlCollection<T> SubControls { get; }
 
         public Type SubControlType => typeof(T);
+
+        public bool IsSubControlType<R>() => typeof(R) == SubControlType;
     }
 
-    public abstract class ControlContainer : Control
+    public abstract class ContainerControl : Control
     {
-        protected ControlContainer()
+        protected ContainerControl()
         {
             OnAddSubControl += (obj) => { };
             OnRemoveSubControl += (obj) => { };
+            OnLayoutSubControl += LayoutAll;
+
+            OnResize += ControlContainer_OnResize;
         }
+
+        public abstract IReadOnlyControlCollection<Control> GetSubControls();
+
+        public abstract ControlCollection<R>? AsControlCollection<R>() where R : Control;
 
         public event Action<Control> OnAddSubControl;
 
         public event Action<Control> OnRemoveSubControl;
 
-        public abstract IReadOnlyControlCollection<Control> GetSubControls();
+        public event Action<Size, Size> OnLayoutSubControl;
 
-        public abstract ControlCollection<R>? AsControlCollection<R>() where R : Control;
+        private void ControlContainer_OnResize(Size oldSize, Size newSize)
+        {
+            OnLayoutSubControl.Invoke(oldSize, newSize);
+        }
+
+        public virtual void ActiveLayoutAll()
+        {
+
+        }
+
+        public virtual void LayoutAll(Size oldSize, Size newSize)
+        {
+            foreach (var control in GetSubControls())
+            {
+                if (control.LayoutMode == LayoutMode.Auto)
+                    control.Layout(oldSize, newSize);
+            }
+        }
 
         internal override void HandleCursorMove(Point position, CursorMode mode)
         {
@@ -105,19 +131,23 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public class ControlCollection<T> : IList<T>, IReadOnlyControlCollection<T> where T : Control
         {
-            public ControlCollection(ControlContainer owner)
+            public ControlCollection(ContainerControl owner)
             {
                 _owner = owner ?? throw new ArgumentNullException(nameof(owner));
                 _items = new();
             }
 
-            private readonly ControlContainer _owner;
+            private readonly ContainerControl _owner;
 
             private readonly List<T> _items;
 
             public int Count => _items.Count;
 
             public bool IsReadOnly => false;
+
+            public bool HaveHover => FirstHover is not null;
+
+            public bool HaveSelected => FirstSelected is not null;
 
             public T? FirstHover
             {

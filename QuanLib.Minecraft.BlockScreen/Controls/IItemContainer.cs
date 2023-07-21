@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class Label : TextControl
+    public interface IItemContainer<T> where T : notnull
     {
-        public Label()
-        {
-            AutoSize = true;
-            BorderWidth = 0;
-        }
+        public ItemCollection<T> Items { get; }
     }
 }

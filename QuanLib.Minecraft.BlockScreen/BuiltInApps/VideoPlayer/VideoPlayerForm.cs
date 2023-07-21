@@ -34,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
 
             Client_Panel.SubControls.Add(Video_VideoPlayer);
             Video_VideoPlayer.Visible = false;
-            Video_VideoPlayer.ResizeOptions.Size = Client_Panel.ClientSize;
+            Video_VideoPlayer.VideoBox.ResizeOptions.Size = Client_Panel.ClientSize;
             Video_VideoPlayer.Stretch = PlaneFacing.Bottom | PlaneFacing.Right;
 
             Client_Panel.SubControls.Add(Read_Button);
@@ -52,12 +52,12 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
 
         private void Read_Button_RightClick(Point position)
         {
-            if (Video_VideoPlayer.TryReadMediaFile(Path_TextBox.Text))
+            if (Video_VideoPlayer.VideoBox.TryReadMediaFile(Path_TextBox.Text))
             {
                 Read_Button.Visible = false;
                 Path_TextBox.Visible = false;
                 Video_VideoPlayer.Visible = true;
-                Video_VideoPlayer.Play();
+                Video_VideoPlayer.VideoBox.Play();
             }
             else
             {
@@ -75,7 +75,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
 
         private void Client_Panel_OnResize(Size oldSize, Size newSize)
         {
-            Video_VideoPlayer.ResizeOptions.Size = newSize;
+            Video_VideoPlayer.VideoBox.ResizeOptions.Size = newSize;
         }
 
         internal void Open(string path)
@@ -86,7 +86,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
 
         public override void CloseForm()
         {
-            Video_VideoPlayer.Dispose();
+            Video_VideoPlayer.VideoBox.Dispose();
             
             base.CloseForm();
         }

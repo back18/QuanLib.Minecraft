@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class TitleBar : ControlContainer<Control>
+    public class TitleBar : ContainerControl<Control>
     {
         public TitleBar(WindowForm owner)
         {
@@ -50,7 +50,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             set
             {
                 _ButtonsToShow = value;
-                RefreshButtons();
+                ActiveLayoutAll();
             }
         }
         private TitleBarButtonType _ButtonsToShow;
@@ -109,7 +109,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             base.OnInitComplete3();
 
-            RefreshButtons();
+            ActiveLayoutAll();
         }
 
         private void Owner_InitializeCallback()
@@ -172,7 +172,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 MaximizeOrRestore_Switch.IsSelected = false;
         }
 
-        public void RefreshButtons()
+        public override void ActiveLayoutAll()
         {
             if (!FormIsInitialize())
                 return;

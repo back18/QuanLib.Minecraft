@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class VideoProgressBar : VideoPlayerSubControl
+    public class VideoProgressBar : Control
     {
-        public VideoProgressBar(VideoPlayer owner) : base(owner)
+        public VideoProgressBar(VideoPlayer owner)
         {
+            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+
             Time_Label = new();
 
             Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
@@ -21,8 +23,10 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             CursorMove += VideoProgressBar_CursorMove;
             RightClick += VideoProgressBar_RightClick;
 
-            _owner.OnVideoFrameUpdate += VideoPlayer_OnVideoFrameUpdate;
+            _owner.VideoBox.OnVideoFrameUpdate += VideoPlayer_OnVideoFrameUpdate;
         }
+
+        protected readonly VideoPlayer _owner;
 
         private readonly Label Time_Label;
 
@@ -64,12 +68,12 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         private void VideoProgressBar_RightClick(Point position)
         {
-            _owner.CurrentPosition = GetProgressBarPosition(position.X);
+            _owner.VideoBox.CurrentPosition = GetProgressBarPosition(position.X);
         }
 
         public override Frame RenderingFrame()
         {
-            double proportion = _owner.CurrentPosition / _owner.TotalTime;
+            double proportion = _owner.VideoBox.CurrentPosition / _owner.VideoBox.TotalTime;
             int length = (int)(ClientSize.Width * proportion);
 
             FrameBuilder fb = new();
@@ -87,7 +91,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         private TimeSpan GetProgressBarPosition(int x)
         {
-            return _owner.TotalTime * ((double)x / ClientSize.Width);
+            return _owner.VideoBox.TotalTime * ((double)x / ClientSize.Width);
         }
     }
 }

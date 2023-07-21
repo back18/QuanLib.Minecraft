@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class TextBox : Control
+    public class TextBox : TextControl
     {
         public TextBox()
         {

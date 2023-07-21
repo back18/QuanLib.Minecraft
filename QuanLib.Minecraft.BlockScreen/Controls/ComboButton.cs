@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Minecraft.Datas;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class ComboButton<T> : ItemCollectionControl<T>, IButton where T : notnull
+    public class ComboButton<T> : TextControl, IItemContainer<T>, IButton where T : notnull
     {
         public ComboButton()
         {
+            Items = new();
             ReboundTime = 5;
             ReboundCountdown = 0;
             _Title = string.Empty;
@@ -23,8 +25,10 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
             RightClick += ComboButton_RightClick;
             BeforeFrame += ComboButton_BeforeFrame;
-            SelectedItemChanged += ComboButton_SelectedItemChanged;
+            Items.SelectedItemChanged += Items_SelectedItemChanged;
         }
+
+        public ItemCollection<T> Items { get; }
 
         public int ReboundTime { get; set; }
 
@@ -42,12 +46,14 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 }
             }
         }
+
         private string _Title;
 
-        private void ComboButton_SelectedItemChanged(T? oldItem, T? newItem)
+        public override void Initialize()
         {
-            string? item = ItemToString(newItem) ?? string.Empty;
-            Text = string.IsNullOrEmpty(Title) ? item : $"{Title}: {item}";
+            base.Initialize();
+
+            SetText(Items.SelectedItem);
         }
 
         private void ComboButton_RightClick(Point position)
@@ -61,10 +67,10 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             if (Items.Count < 1)
                 return;
 
-            if (SelectedItemIndex + 1 > Items.Count - 1)
-                SelectedItemIndex = 0;
+            if (Items.SelectedItemIndex + 1 > Items.Count - 1)
+                Items.SelectedItemIndex = 0;
             else
-                SelectedItemIndex++;
+                Items.SelectedItemIndex++;
         }
 
         private void ComboButton_BeforeFrame()
@@ -75,6 +81,17 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 if (ReboundCountdown <= 0)
                     IsSelected = false;
             }
+        }
+
+        private void Items_SelectedItemChanged(T? oldItem, T? newItem)
+        {
+            SetText(newItem);
+        }
+
+        private void SetText(T? item)
+        {
+            string text = Items.ItemToString(item);
+            Text = string.IsNullOrEmpty(Title) ? text : $"{Title}: {text}";
         }
     }
 }

@@ -48,7 +48,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             (oldPosition, newPosition) => { },
             (oldSize, newSize) =>
             {
-                control.OnOnLayout(oldSize, newSize);
+                control.Layout(oldSize, newSize);
             });
         }
 

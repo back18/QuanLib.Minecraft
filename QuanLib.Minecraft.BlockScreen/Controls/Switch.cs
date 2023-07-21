@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class Switch : Control
+    public class Switch : TextControl
     {
         public Switch()
         {

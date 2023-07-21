@@ -86,8 +86,8 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
             ResizeMode_ComboButton.Skin.BackgroundBlockID = string.Empty;
             ResizeMode_ComboButton.Title = "模式";
             ResizeMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<ResizeMode>());
-            ResizeMode_ComboButton.SelectedItem = PictureBox.DefaultResizeOptions.Mode;
-            ResizeMode_ComboButton.ItemToString = (item) =>
+            ResizeMode_ComboButton.Items.SelectedItem = PictureBox.DefaultResizeOptions.Mode;
+            ResizeMode_ComboButton.Items.ItemToStringFunc = (item) =>
             {
                 return item switch
                 {
@@ -108,8 +108,8 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
             AnchorPositionMode_ComboButton.Skin.BackgroundBlockID = string.Empty;
             AnchorPositionMode_ComboButton.Title = "锚点";
             AnchorPositionMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<AnchorPositionMode>());
-            AnchorPositionMode_ComboButton.SelectedItem = PictureBox.DefaultResizeOptions.Position;
-            AnchorPositionMode_ComboButton.ItemToString = (item) =>
+            AnchorPositionMode_ComboButton.Items.SelectedItem = PictureBox.DefaultResizeOptions.Position;
+            AnchorPositionMode_ComboButton.Items.ItemToStringFunc = (item) =>
             {
                 return item switch
                 {
@@ -144,11 +144,11 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
             Resampler_ComboButton.Items.Add(KnownResamplers.Robidoux, nameof(KnownResamplers.Robidoux));
             Resampler_ComboButton.Items.Add(KnownResamplers.RobidouxSharp, nameof(KnownResamplers.RobidouxSharp));
             Resampler_ComboButton.Items.Add(KnownResamplers.Spline, nameof(KnownResamplers.Spline));
-            Resampler_ComboButton.SelectedItem = PictureBox.DefaultResizeOptions.Sampler;
+            Resampler_ComboButton.Items.SelectedItem = PictureBox.DefaultResizeOptions.Sampler;
 
             foreach (var control in Setting_Panel.SubControls)
             {
-                control.HandleOnInitComplete3();
+                control.Initialize();
             }
         }
 
@@ -178,9 +178,9 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
             else
                 options = Picture_PictureBox.Image.ResizeOptions;
 
-            options.Mode = ResizeMode_ComboButton.SelectedItem;
-            options.Position = AnchorPositionMode_ComboButton.SelectedItem;
-            options.Sampler = Resampler_ComboButton.SelectedItem ?? PictureBox.DefaultResizeOptions.Sampler;
+            options.Mode = ResizeMode_ComboButton.Items.SelectedItem;
+            options.Position = AnchorPositionMode_ComboButton.Items.SelectedItem;
+            options.Sampler = Resampler_ComboButton.Items.SelectedItem ?? PictureBox.DefaultResizeOptions.Sampler;
             Client_Panel.SubControls.Remove(Setting_Panel);
         }
 

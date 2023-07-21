@@ -17,9 +17,9 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public T? RecentlyRemovedControl { get; }
 
-        public bool HaveHover => FirstHover is not null;
+        public bool HaveHover { get; }
 
-        public bool HaveSelected => FirstSelected is not null;
+        public bool HaveSelected { get; }
 
         public IReadOnlyList<T> GetHovers();
 

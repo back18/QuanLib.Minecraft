@@ -7,21 +7,20 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class VideoPlayer : VideoBox
+    public class VideoPlayer : ContainerControl<Control>
     {
         public VideoPlayer()
         {
+            VideoBox = new();
             PauseOrResume_Switch = new();
             ProgressBar_VideoProgressBar = new(this);
             TimeText_VideoTimeTextBox = new(this);
 
-            BorderWidth = 0;
-            DisplayPriority = -16;
-            MaxDisplayPriority = -15;
-
             OverlayLayerShowTime = 20;
             OverlayLayerCountdown = 0;
         }
+
+        public readonly VideoBox VideoBox;
 
         private readonly Switch PauseOrResume_Switch;
 
@@ -45,9 +44,14 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             BeforeFrame += VideoPlayer_BeforeFrame;
             OnSelected += VideoPlayer_OnSelected;
             OnDeselected += VideoPlayer_OnDeselected;
-            OnResume += VideoPlayer_OnResume;
-            OnPause += VideoPlayer_OnPause;
-            OnEndedPlay += VideoPlayer_OnEndedPlay;
+
+            SubControls.Add(VideoBox);
+            VideoBox.BorderWidth = 0;
+            VideoBox.DisplayPriority = -16;
+            VideoBox.MaxDisplayPriority = -15;
+            VideoBox.OnResume += VideoBox_OnResume;
+            VideoBox.OnPause += VideoBox_OnPause;
+            VideoBox.OnEndedPlay += VideoBox_OnEndedPlay;
 
             SubControls.Add(PauseOrResume_Switch);
             PauseOrResume_Switch.Visible = false;
@@ -62,7 +66,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, resume);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, pause);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, pause);
-            PauseOrResume_Switch.IsSelected = PlayerState == VideoPlayerState.Playing;
+            PauseOrResume_Switch.IsSelected = VideoBox.PlayerState == VideoPlayerState.Playing;
             PauseOrResume_Switch.OnSelected += PauseOrResume_Switch_OnSelected;
             PauseOrResume_Switch.OnDeselected += PauseOrResume_Switch_OnDeselected;
 
@@ -124,29 +128,29 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             TimeText_VideoTimeTextBox.Visible = false;
         }
 
-        private void VideoPlayer_OnResume()
+        private void VideoBox_OnResume()
         {
             PauseOrResume_Switch.IsSelected = true;
         }
 
-        private void VideoPlayer_OnPause()
+        private void VideoBox_OnPause()
         {
             PauseOrResume_Switch.IsSelected = false;
         }
 
-        private void VideoPlayer_OnEndedPlay()
+        private void VideoBox_OnEndedPlay()
         {
             PauseOrResume_Switch.IsSelected = false;
         }
 
         private void PauseOrResume_Switch_OnSelected()
         {
-            Resume();
+            VideoBox.Resume();
         }
 
         private void PauseOrResume_Switch_OnDeselected()
         {
-            Pause();
+            VideoBox.Pause();
         }
 
         public static string FromTimeSpan(TimeSpan time)
