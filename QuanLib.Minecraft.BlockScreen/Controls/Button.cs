@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class Button : Control, IButton
+    public class Button : TextControl, IButton
     {
         public Button()
         {

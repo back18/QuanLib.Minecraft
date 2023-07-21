@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
 {
-    public class DesktopIcon : Switch
+    public class DesktopIcon : ContainerControl<Control>
     {
         public DesktopIcon(ApplicationInfo appInfo)
         {
@@ -27,6 +27,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
             CursorEnter += DesktopIcon_CursorEnter;
             CursorLeave += DesktopIcon_CursorLeave;
             CursorMove += DesktopIcon_CursorMove;
+            RightClick += DesktopIcon_RightClick;
             DoubleRightClick += DesktopIcon_DoubleRightClick;
         }
 
@@ -52,17 +53,17 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
 
         private void DesktopIcon_CursorEnter(Point position, CursorMode mode)
         {
-            ParentControl?.SubControls.TryAdd(Name_Label);
+            ParentContainer?.AsControlCollection<Control>()?.TryAdd(Name_Label);
         }
 
         private void DesktopIcon_CursorLeave(Point position, CursorMode mode)
         {
-            ParentControl?.SubControls.Remove(Name_Label);
+            ParentContainer? .AsControlCollection<Control>()?.Remove(Name_Label);
         }
 
         private void DesktopIcon_CursorMove(Point position, CursorMode mode)
         {
-            if (ParentControl?.SubControls.Contains(Name_Label) ?? false)
+            if (ParentContainer?.AsControlCollection<Control>()?.Contains(Name_Label) ?? false)
             {
                 Point parent = SubPos2ParentPos(position);
                 parent.Y += 5;
@@ -83,10 +84,15 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
             }
         }
 
+        private void DesktopIcon_RightClick(Point position)
+        {
+            IsSelected = !IsSelected;
+        }
+
         private void DesktopIcon_DoubleRightClick(Point position)
         {
             GetMCOS().RunApp(_appInfo.ID, Array.Empty<string>(), GetProcess());
-            ParentControl?.SubControls.ClearSelected();
+            ParentContainer?.AsControlCollection<Control>()?.ClearSelected();
         }
     }
 }

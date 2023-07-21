@@ -234,7 +234,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             foreach (var process in _process.ToArray())
             {
-                Control.ControlCollection forms = ServicesApp.RootForm.FormsPanel.SubControls;
+                var forms = ServicesApp.RootForm.FormsPanel.SubControls;
                 if (process.Key != ServicesApp.AppID)
                 {
                     Form form = process.Value.Application.ForegroundForm;

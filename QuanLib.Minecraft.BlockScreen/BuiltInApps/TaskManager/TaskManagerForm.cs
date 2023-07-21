@@ -29,7 +29,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.TaskManager
 
         private readonly Button Close_Button;
 
-        private readonly Panel TaskList_Panel;
+        private readonly Panel<TaskIcon> TaskList_Panel;
 
         public override void Initialize()
         {

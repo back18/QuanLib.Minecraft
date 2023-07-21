@@ -18,7 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public readonly TitleBar TitleBar;
 
-        public readonly Panel Client_Panel;
+        public readonly Panel<Control> Client_Panel;
 
         public readonly Button ShowTitleBar_Button;
 

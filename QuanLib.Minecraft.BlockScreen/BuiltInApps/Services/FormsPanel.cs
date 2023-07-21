@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 {
-    public class FormsPanel : Panel
+    public class FormsPanel : Panel<Form>
     {
         public FormsPanel(RootForm owner)
         {
@@ -34,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
         {
             base.Initialize();
 
-            if (_owner != ParentControl)
+            if (_owner != ParentContainer)
                 throw new InvalidOperationException();
         }
 
@@ -48,7 +48,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             (oldPosition, newPosition) => { },
             (oldSize, newSize) =>
             {
-                control.OnOnLayout(oldSize, newSize);
+                control.Layout(oldSize, newSize);
             });
         }
 

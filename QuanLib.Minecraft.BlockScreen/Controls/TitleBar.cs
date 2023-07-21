@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class TitleBar : Control
+    public class TitleBar : ContainerControl<Control>
     {
         public TitleBar(WindowForm owner)
         {
@@ -50,7 +50,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             set
             {
                 _ButtonsToShow = value;
-                RefreshButtons();
+                ActiveLayoutAll();
             }
         }
         private TitleBarButtonType _ButtonsToShow;
@@ -61,7 +61,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             base.Initialize();
 
-            if (_owner != ParentControl)
+            if (_owner != ParentContainer)
                 throw new InvalidOperationException();
 
             MCOS os = GetMCOS();
@@ -91,8 +91,8 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             Minimize_Button.ClientSize = new(16, 16);
             Minimize_Button.Anchor = PlaneFacing.Top | PlaneFacing.Right;
             Minimize_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-            Minimize_Button.Skin.SetBackgroundBlockID(ControlState.Hover, lghtGray);
-            Minimize_Button.Skin.SetBackgroundBlockID(ControlState.Hover | ControlState.Selected, lghtGray);
+            Minimize_Button.Skin.BackgroundBlockID_Hover = lghtGray;
+            Minimize_Button.Skin.BackgroundBlockID_Hover_Selected = lghtGray;
             Minimize_Button.RightClick += Minimize_Button_RightClick;
 
             FullScreen_Button.BorderWidth = 0;
@@ -100,8 +100,8 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             FullScreen_Button.ClientSize = new(16, 16);
             FullScreen_Button.Anchor = PlaneFacing.Top | PlaneFacing.Right;
             FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-            FullScreen_Button.Skin.SetBackgroundBlockID(ControlState.Hover, lghtGray);
-            FullScreen_Button.Skin.SetBackgroundBlockID(ControlState.Hover | ControlState.Selected, lghtGray);
+            FullScreen_Button.Skin.BackgroundBlockID_Hover = lghtGray;
+            FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = lghtGray;
             FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
         }
 
@@ -109,7 +109,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             base.OnInitComplete3();
 
-            RefreshButtons();
+            ActiveLayoutAll();
         }
 
         private void Owner_InitializeCallback()
@@ -123,7 +123,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             if (IsSelected)
                 IsSelected = false;
-            else if (_owner.IsSelected && !SubControls.HaveHover)
+            else if (_owner.IsSelected && !GetSubControls().HaveHover)
             {
                 IsSelected = true;
                 MoveAnchorPoint = position;
@@ -172,7 +172,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 MaximizeOrRestore_Switch.IsSelected = false;
         }
 
-        public void RefreshButtons()
+        public override void ActiveLayoutAll()
         {
             if (!FormIsInitialize())
                 return;

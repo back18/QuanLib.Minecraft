@@ -132,21 +132,17 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             if (!form.AllowSelected)
                 return false;
 
-            Control[] controls = FormsPanel.SubControls.GetSelecteds();
+            var controls = FormsPanel.SubControls.GetSelecteds();
             foreach (var control in controls)
             {
-                if (control is Form selected)
-                {
-                    if (!selected.AllowDeselected)
-                        return false;
-                }
+                if (!control.AllowDeselected)
+                    return false;
             }
 
             form.IsSelected = true;
             foreach (var control in controls)
             {
-                if (control is Form selected)
-                    selected.IsSelected = false;
+                control.IsSelected = false;
             }
 
             return true;
