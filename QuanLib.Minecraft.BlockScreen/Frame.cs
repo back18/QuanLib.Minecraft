@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using QuanLib.ExceptionHelpe;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
@@ -18,8 +19,16 @@ namespace QuanLib.Minecraft.BlockScreen
             _ids = ids ?? throw new ArgumentNullException(nameof(ids));
         }
 
-        public readonly string[,] _ids;
-        
+        public Frame(Frame frame)
+        {
+            if (frame is null)
+                throw new ArgumentNullException(nameof(frame));
+
+            _ids = frame._ids;
+        }
+
+        private string[,] _ids;
+
         public int Width => _ids.GetLength(0);
 
         public int Height => _ids.GetLength(1);
@@ -27,8 +36,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public string GetBlockID(int x, int y)
             => _ids[x, y];
 
-        public void SetBlockID(int x, int y, string value)
-            => _ids[x, y] = value;
+        public void SetBlockID(int x, int y, string id)
+            => _ids[x, y] = id;
 
         public string[,] GetAllBlockID()
             => _ids;
@@ -39,11 +48,29 @@ namespace QuanLib.Minecraft.BlockScreen
             return new(copy);
         }
 
-        public void Overwrite(Frame frame, Point location, Point offset)
+        public void Clear()
+        {
+            _ids = new string[0, 0];
+        }
+
+        public void Load(string[,] ids)
+        {
+            _ids = ids ?? throw new ArgumentNullException(nameof(ids));
+        }
+
+        public void Load(Frame frame)
         {
             if (frame is null)
                 throw new ArgumentNullException(nameof(frame));
 
+            _ids = frame._ids;
+        }
+
+        public BoundingBox Overwrite(Frame frame, Point location, Point offset)
+        {
+            if (frame is null)
+                throw new ArgumentNullException(nameof(frame));
+            
             int offsetX = location.X - offset.X;
             int offsetY = location.Y - offset.Y;
 
@@ -68,15 +95,157 @@ namespace QuanLib.Minecraft.BlockScreen
                 startY1 = offsetY;
                 startY2 = 0;
             }
-            int maxWidth = offsetX + frame.Width < Width ? offsetX + frame.Width : Width;
-            int maxHeight = offsetY + frame.Height < Height ? offsetY + frame.Height : Height;
-            for (int x1 = startX1, x2 = startX2; x1 < maxWidth; x1++, x2++)
-                for (int y1 = startY1, y2 = startY2; y1 < maxHeight; y1++, y2++)
+            int endX = offsetX + frame.Width < Width ? offsetX + frame.Width - 1 : Width - 1;
+            int endY = offsetY + frame.Height < Height ? offsetY + frame.Height - 1: Height - 1;
+            for (int x1 = startX1, x2 = startX2; x1 <= endX; x1++, x2++)
+                for (int y1 = startY1, y2 = startY2; y1 <= endY; y1++, y2++)
                 {
                     string newBlcokID = frame.GetBlockID(x2, y2);
                     if (!string.IsNullOrEmpty(newBlcokID))
                         _ids[x1, y1] = newBlcokID;
                 }
+
+            return new(startY1, endY, startX1, endX);
+        }
+
+        public BoundingBox Overwrite(Frame frame, Point location)
+        {
+            return Overwrite(frame, location, new(0, 0));
+        }
+
+        public bool DrawRow(int row, int start, int length, string id)
+        {
+            if (row < 0 || row > Height - 1)
+                return false;
+
+            if (start >= Width)
+                return false;
+            else if (start < 0)
+            {
+                length += start;
+                if (length <= 0)
+                    return false;
+                start = 0;
+            }
+
+            int end = start + length - 1;
+            if (end >= Width)
+                end = Width - 1;
+
+            for (int x = start; x <= end; x++)
+                _ids[x, row] = id;
+
+            return true;
+        }
+
+        public bool DrawColumn(int column, int start, int length, string id)
+        {
+            if (column < 0 || column > Width - 1)
+                return false;
+
+            if (start >= Height)
+                return false;
+            else if (start < 0)
+            {
+                length += start;
+                if (length <= 0)
+                    return false;
+                start = 0;
+            }
+            int end = start + length - 1;
+            if (end >= Height)
+                end = Height - 1;
+
+            for (int y = start; y <= end; y++)
+                _ids[column, y] = id;
+
+            return true;
+        }
+
+        public bool FillRow(int row, string id)
+        {
+            if (row < 0 || row > Height - 1)
+                return false;
+
+            for (int x = 0; x < Width; x++)
+                _ids[x, row] = id;
+
+            return true;
+        }
+
+        public bool FillColumn(int column, string id)
+        {
+            if (column < 0 || column > Width - 1)
+                return false;
+
+            for (int y = 0; y < Height; y++)
+                _ids[column, y] = id;
+
+            return true;
+        }
+
+        public bool FillLeft(string id, int count)
+        {
+            if (count <= 0)
+                return false;
+
+            if (count > Width)
+                count = Width;
+            for (int x = 0; x < count; x++)
+                for (int y = 0; y < Height; y++)
+                    _ids[x, y] = id;
+
+            return true;
+        }
+
+        public bool FillRight(string id, int count)
+        {
+            if (count <= 0)
+                return false;
+
+            if (count > Width)
+                count = Width;
+            for (int x = Width - 1; x >= Width - count; x--)
+                for (int y = 0; y < Height; y++)
+                    _ids[x, y] = id;
+
+            return true;
+        }
+
+        public bool FillTop(string id, int count)
+        {
+            if (count <= 0)
+                return false;
+
+            if (count > Height)
+                count = Height;
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < count; y++)
+                    _ids[x, y] = id;
+
+            return true;
+        }
+
+        public bool FillBottom(string id, int count)
+        {
+            if (count <= 0)
+                return false;
+
+            if (count > Height)
+                count = Height;
+            for (int x = 0; x < Width; x++)
+                for (int y = Height - 1; y >= Height - count; y--)
+                    _ids[x, y] = id;
+
+            return true;
+        }
+
+        public bool FillBorder(string id, int count)
+        {
+            if (count <= 0)
+                return false;
+
+            return FillLeft(id, count) & FillRight(id, count) & FillTop(id, count) & FillBottom(id, count);
         }
 
         public List<ScreenPixel> GetAllPixel()
@@ -90,25 +259,23 @@ namespace QuanLib.Minecraft.BlockScreen
             return result;
         }
 
-        public static List<ScreenPixel> GetDifferencesPixels(Frame oldFrame, Frame newFrame)
+        public static List<ScreenPixel> GetDifferencesPixels(Frame frame1, Frame frame2)
         {
-            if (oldFrame is null)
-                throw new ArgumentNullException(nameof(oldFrame));
-
-            if (newFrame is null)
-                throw new ArgumentNullException(nameof(newFrame));
-
-            if (oldFrame.Width != newFrame.Width || oldFrame.Height != newFrame.Height)
-                throw new ArgumentException("参数必须为相同尺寸的帧");
+            if (frame1 is null)
+                throw new ArgumentNullException(nameof(frame1));
+            if (frame2 is null)
+                throw new ArgumentNullException(nameof(frame2));
+            if (frame1.Width != frame2.Width || frame1.Height != frame2.Height)
+                throw new ArgumentException("相同尺寸的帧才能获取差异");
 
             List<ScreenPixel> result = new();
-            int width = newFrame.Width;
-            int height = newFrame.Height;
+            int width = frame2.Width;
+            int height = frame2.Height;
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                 {
-                    string newBlockID = newFrame.GetBlockID(x, y);
-                    if (newBlockID != oldFrame.GetBlockID(x, y))
+                    string newBlockID = frame2.GetBlockID(x, y);
+                    if (newBlockID != frame1.GetBlockID(x, y))
                         result.Add(new(new(x, y), newBlockID));
                 }
 

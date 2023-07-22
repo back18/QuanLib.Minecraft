@@ -313,7 +313,7 @@ namespace QuanLib.Minecraft.BlockScreen
             frame = Frame.BuildFrame(Screen.Width, Screen.Height, ScreenDefaultBackgroundBlcokID);
             Frame? formFrame = ServicesApp.RootForm.RenderingAllFrame();
             if (formFrame is not null)
-                frame.Overwrite(formFrame, ServicesApp.ForegroundForm.Location, new(0, 0));
+                frame.Overwrite(formFrame, ServicesApp.ForegroundForm.Location);
             frame.Overwrite(_cursors[CursorType].Frame, CurrentPosition, _cursors[CursorType].Offset);
 
             stopwatch.Stop();

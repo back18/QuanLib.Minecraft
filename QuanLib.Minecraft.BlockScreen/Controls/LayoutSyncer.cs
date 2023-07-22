@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
     /// <summary>
-    /// 控件同步器
+    /// 控件布局同步器
     /// </summary>
-    public class ControlSyncer
+    public class LayoutSyncer
     {
-        public ControlSyncer(Control target, Action<Point, Point> onMove, Action<Size, Size> onResize)
+        public LayoutSyncer(Control target, Action<Point, Point> onMove, Action<Size, Size> onResize)
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
             OnMove = onMove;
@@ -44,7 +44,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         }
         
         /// <summary>
-        /// 调用同步委托
+        /// 主动调用同步委托
         /// </summary>
         public void Sync()
         {

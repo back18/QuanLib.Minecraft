@@ -7,26 +7,27 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
-    public class IconTextControl : ContainerControl<Control>
+    public class IconTextBox : ContainerControl<Control>
     {
-        public IconTextControl()
+        public IconTextBox()
         {
             Image_PictureBox = new();
             Text_Label = new();
 
             ClientSize = new(MCOS.DefaultFont.HalfWidth * 6, MCOS.DefaultFont.Height);
+            OnTextUpdateNow += (string oldText, string newText) => Text_Label.Text = newText;
         }
 
         private readonly PictureBox Image_PictureBox;
 
         private readonly Label Text_Label;
 
-        public ImageFrame? Image
+        public ImageFrame? Icon
         {
             get => Image_PictureBox.Image;
             set
             {
-                if (Image != value)
+                if (Icon != value)
                 {
                     Image_PictureBox.Image = value;
                     RequestUpdateFrame();
@@ -38,24 +39,30 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             base.Initialize();
 
+            SubControls.Add(Image_PictureBox);
+            Image_PictureBox.BorderWidth = 0;
+            Image_PictureBox.ResizeOptions.Size = new(16, 16);
+
+            SubControls.Add(Text_Label);
+
             ActiveLayoutAll();
         }
 
         public override void ActiveLayoutAll()
         {
-            Image_PictureBox.ClientLocation = this.HorizontalCenterLayout(Image_PictureBox, 0);
-            Text_Label.ClientLocation = this.HorizontalCenterLayout(Text_Label, Image_PictureBox.RightLocation + 1);
+            Image_PictureBox.ClientLocation = this.VerticalCenterLayout(Image_PictureBox, 0);
+            Text_Label.ClientLocation = this.VerticalCenterLayout(Text_Label, Image_PictureBox.RightLocation + 1);
         }
 
         public override void AutoSetSize()
         {
             Size size = MCOS.DefaultFont.GetTotalSize(Text);
-            if (Image is not null)
+            if (Icon is not null)
             {
-                size.Width += Image.FrameSize.Width;
-                if (Image.FrameSize.Height > size.Height)
+                size.Width += Icon.FrameSize.Width;
+                if (Icon.FrameSize.Height > size.Height)
                 {
-                    size.Height = Image.FrameSize.Height;
+                    size.Height = Icon.FrameSize.Height;
                 }
             }
             ClientSize = size;

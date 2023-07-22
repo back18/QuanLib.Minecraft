@@ -36,7 +36,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             ResizeOptions = DefaultResizeOptions.Copy();
 
             AutoSize = true;
-            ContentLayout = ContentLayout.Centered;
+            ContentAnchor = ContentAnchor.Centered;
 
             OnStartedPlay += VideoPlayer_OnStartedPlay;
             OnEndedPlay += VideoPlayer_OnEndedPlay;

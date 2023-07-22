@@ -176,9 +176,9 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.FileExplorer
             PageTurning(1);
 
             if (MCOS.DefaultFont.GetTotalSize(newText).Width > Path_TextBox.ClientSize.Width)
-                Path_TextBox.ContentLayout = ContentLayout.UpperRight;
+                Path_TextBox.ContentAnchor = ContentAnchor.UpperRight;
             else
-                Path_TextBox.ContentLayout = ContentLayout.UpperLeft;
+                Path_TextBox.ContentAnchor = ContentAnchor.UpperLeft;
         }
 
         private void PreviousPage_Button_RightClick(Point position)

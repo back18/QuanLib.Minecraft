@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
@@ -20,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         protected Control()
         {
             InvokeExternalCursorMove = false;
-            _ControlSyncer = null;
+            _LayoutSyncer = null;
             ParentContainer = null;
             LastRightClickTime = DateTime.MinValue;
             LastLeftClickTime = DateTime.MinValue;
@@ -35,7 +36,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             Skin = new(this);
             Anchor = PlaneFacing.Top | PlaneFacing.Left;
             Stretch = PlaneFacing.None;
-            _ControlLayout = ContentLayout.UpperLeft;
+            _ContentAnchor = ContentAnchor.UpperLeft;
             _ControlState = ControlState.None;
 
             Frame_Update = true;
@@ -129,6 +130,9 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         #region 位置与尺寸
 
+        /// <summary>
+        /// 当前控件在父容器控件内的位置（即包含自身边框也包含父边框）
+        /// </summary>
         public Point Location
         {
             get => new(ClientLocation.X + ParentBorderWidth, ClientLocation.Y + ParentBorderWidth);
@@ -138,6 +142,9 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             }
         }
 
+        /// <summary>
+        /// 当前控件在父容器控件工作区内的位置（包含自身边框但不包含父边框）
+        /// </summary>
         public Point ClientLocation
         {
             get => _ClientLocation;
@@ -154,6 +161,18 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             }
         }
         private Point _ClientLocation;
+
+        /// <summary>
+        /// 当前控件不包含自身边框的情况下，在父容器控件工作区内的位置（即不包含自身边框也不包含父边框）
+        /// </summary>
+        public Point RenderingLocation
+        {
+            get => new(ClientLocation.X + BorderWidth, ClientLocation.Y + BorderWidth);
+            set
+            {
+                ClientLocation = new(value.X - BorderWidth, value.Y - BorderWidth);
+            }
+        }
 
         public Size ClientSize
         {
@@ -259,7 +278,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public int BottomToBorder
         {
-            get => (ParentContainer?.Height - ParentBorderWidth ?? GetMCOS().FormsPanelSize.Height) - (Location.Y + Height);
+            get => (ParentContainer?.Height - ParentBorderWidth ?? GetMCOS().Screen.Height) - (Location.Y + Height);
             set
             {
                 int offset = BottomToBorder - value;
@@ -350,21 +369,34 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         /// </summary>
         public PlaneFacing Stretch { get; set; }
 
-        public LayoutMode LayoutMode => ControlSyncer is null ? LayoutMode.Auto : LayoutMode.Sync;
+        public LayoutMode LayoutMode => LayoutSyncer is null ? LayoutMode.Auto : LayoutMode.Sync;
 
-        public ContentLayout ContentLayout
+        public ContentAnchor ContentAnchor
         {
-            get => _ControlLayout;
+            get => _ContentAnchor;
             set
             {
-                if (_ControlLayout != value)
+                if (_ContentAnchor != value)
                 {
-                    _ControlLayout = value;
+                    _ContentAnchor = value;
                     RequestUpdateFrame();
                 }
             }
         }
-        private ContentLayout _ControlLayout;
+        private ContentAnchor _ContentAnchor;
+
+        public ControlContent ControlContent
+        {
+            get
+            {
+                ControlContent result = ControlContent.None;
+                if (!string.IsNullOrEmpty(Text))
+                    result |= ControlContent.Text;
+                if (Skin.GetBackgroundImage() is not null)
+                    result |= ControlContent.Image;
+                return result;
+            }
+        }
 
         public ControlState ControlState
         {
@@ -421,18 +453,18 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             }
         }
 
-        public ControlSyncer? ControlSyncer
+        public LayoutSyncer? LayoutSyncer
         {
-            get => _ControlSyncer;
+            get => _LayoutSyncer;
             set
             {
-                _ControlSyncer?.Unbinding();
-                _ControlSyncer = value;
-                _ControlSyncer?.Binding();
-                _ControlSyncer?.Sync();
+                _LayoutSyncer?.Unbinding();
+                _LayoutSyncer = value;
+                _LayoutSyncer?.Binding();
+                _LayoutSyncer?.Sync();
             }
         }
-        private ControlSyncer? _ControlSyncer;
+        private LayoutSyncer? _LayoutSyncer;
 
         #endregion
 
@@ -656,54 +688,6 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         #endregion
 
-        #region 位置移动
-
-        public void ToTopMove(int offset)
-        {
-            Location = new(Location.X, Location.Y - offset);
-        }
-
-        public void ToBottomMove(int offset)
-        {
-            Location = new(Location.X, Location.Y + offset);
-        }
-
-        public void ToLeftMove(int offset)
-        {
-            Location = new(Location.X - offset, Location.Y);
-        }
-
-        public void ToRightMove(int offset)
-        {
-            Location = new(Location.X + offset, Location.Y);
-        }
-
-        public void MoveToTop(int distance)
-        {
-            int offset = TopToBorder - distance;
-            ToTopMove(offset);
-        }
-
-        public void MoveToBottom(int distance)
-        {
-            int offset = BottomToBorder - distance;
-            ToBottomMove(offset);
-        }
-
-        public void MoveToLeft(int distance)
-        {
-            int offset = LeftToBorder - distance;
-            ToLeftMove(offset);
-        }
-
-        public void MoveToRight(int distance)
-        {
-            int offset = RightToBorder - distance;
-            ToRightMove(offset);
-        }
-
-        #endregion
-
         #region 初始化
 
         public virtual void Initialize()
@@ -783,17 +767,60 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         #endregion
 
+        #region 位置移动
+
+        public void ToTopMove(int offset)
+        {
+            Location = new(Location.X, Location.Y - offset);
+        }
+
+        public void ToBottomMove(int offset)
+        {
+            Location = new(Location.X, Location.Y + offset);
+        }
+
+        public void ToLeftMove(int offset)
+        {
+            Location = new(Location.X - offset, Location.Y);
+        }
+
+        public void ToRightMove(int offset)
+        {
+            Location = new(Location.X + offset, Location.Y);
+        }
+
+        public void MoveToTop(int distance)
+        {
+            int offset = TopToBorder - distance;
+            ToTopMove(offset);
+        }
+
+        public void MoveToBottom(int distance)
+        {
+            int offset = BottomToBorder - distance;
+            ToBottomMove(offset);
+        }
+
+        public void MoveToLeft(int distance)
+        {
+            int offset = LeftToBorder - distance;
+            ToLeftMove(offset);
+        }
+
+        public void MoveToRight(int distance)
+        {
+            int offset = RightToBorder - distance;
+            ToRightMove(offset);
+        }
+
+        #endregion
+
         #region 帧渲染处理
 
         protected void RequestUpdateFrame()
         {
             Frame_Update = true;
             ParentContainer?.RequestUpdateFrame();
-        }
-
-        public virtual Frame RenderingFrame()
-        {
-            return RenderingDefaultFrame().ToFrame();
         }
 
         internal Frame? RenderingAllFrame()
@@ -831,163 +858,161 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                 if (control is not ContainerControl container || container.GetSubControls().Count == 0)
                     return _task.Result;
 
-                List<(Task<Frame?> task, Point location)> results = new();
+                List<(Control control, Task<Frame?> task)> results = new();
                 foreach (Control subControl in container.GetSubControls())
-                    results.Add((Task.Run(() => UpdateSubControls(subControl)), subControl.Location));
+                    results.Add((subControl, Task.Run(() => UpdateSubControls(subControl))));
                 Task.WaitAll(results.Select(i => i.task).ToArray());
                 Frame frame = _task.Result;
 
-                foreach (var (task, location) in results)
+                foreach (var (subControl, task) in results)
                 {
                     if (task.Result is not null)
-                        frame.Overwrite(task.Result, location, new(0, 0));
+                    {
+                        frame.Overwrite(task.Result, subControl.RenderingLocation);
+                        if (subControl.BorderWidth > 0)
+                        {
+                            int startTop = subControl.TopLocation + subControl.BorderWidth - 1;
+                            int startBottom = subControl.BottomLocation - subControl.BorderWidth + 1;
+                            int startLeft = subControl.LeftLocation + subControl.BorderWidth - 1;
+                            int startRigth = subControl.RightLocation - subControl.BorderWidth + 1;
+                            int endTop = subControl.TopLocation < 0 ? 0 : subControl.TopLocation;
+                            int endBottom = subControl.BottomLocation > control.Height - 1 ? control.Height - 1 : subControl.BottomLocation;
+                            int endLeft = subControl.LeftLocation < 0 ? 0 : subControl.LeftLocation;
+                            int endRight = subControl.RightLocation > control.Width - 1 ? control.Width - 1 : subControl.RightLocation;
+                            string blockID = subControl.Skin.GetBorderBlockID();
+
+                            for (int y = startTop; y >= endTop; y--)
+                                frame.DrawRow(y, endLeft, subControl.Width, blockID);
+                            for (int y = startBottom; y <= endBottom; y++)
+                                frame.DrawRow(y, endLeft, subControl.Width, blockID);
+                            for (int x = startLeft; x >= endLeft; x--)
+                                frame.DrawColumn(x, endTop, subControl.Height, blockID);
+                            for (int x = startRigth; x <= endRight; x++)
+                                frame.DrawColumn(x, endTop, subControl.Height, blockID);
+                        }
+                    }
                 }
 
                 return frame;
             }
         }
 
-        protected FrameBuilder RenderingDefaultFrame()
+        public virtual Frame RenderingFrame()
         {
-            FrameBuilder fb;
-            ImageFrame? image = Skin.GetBackgroundImage();
-            Frame? frame = image?.GetFrameCopy();
-
-            int state = 0b00;
-            if (!string.IsNullOrEmpty(Text))
-                state += 0b01;
-            if (frame is not null)
-                state += 0b10;
-
-            switch (state)
-            {
-                case 0b00:
-                    fb = new(Frame.BuildFrame(ClientSize.Width, ClientSize.Height, Skin.GetBackgroundBlockID()));
-                    break;
-                case 0b01:
-                    fb = RenderingText(Skin.GetForegroundBlockID(), Skin.GetBackgroundBlockID());
-                    break;
-                case 0b10:
-                    fb = new(frame!);
-                    break;
-                case 0b11:
-                    FrameBuilder text = RenderingText(Skin.GetForegroundBlockID(), string.Empty);
-                    frame!.Overwrite(text.ToFrame(), new(0, 0), new(0, 0));
-                    fb = new(frame);
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            CorrectSize(fb);
-
-            return fb;
-
-            FrameBuilder RenderingText(string foreground, string background)
-            {
-                FrameBuilder result = new();
-                switch (ContentLayout)
-                {
-                    case ContentLayout.UpperLeft:
-                    case ContentLayout.LowerLeft:
-                    case ContentLayout.Centered:
-                        foreach (var c in Text)
-                        {
-                            result.AddRight(Frame.BuildFrame(MCOS.DefaultFont[c].GetBitMap(), foreground, background));
-                            if (result.Width >= Width)
-                                break;
-                        }
-                        break;
-                    case ContentLayout.UpperRight:
-                    case ContentLayout.LowerRight:
-                        for (int i = Text.Length - 1; i >= 0; i--)
-                        {
-                            result.AddLeft(Frame.BuildFrame(MCOS.DefaultFont[Text[i]].GetBitMap(), foreground, background));
-                            if (result.Width >= Width)
-                                break;
-                        }
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-                return result;
-            }
+            return Frame.BuildFrame(ClientSize.Width, ClientSize.Height, Skin.GetBackgroundBlockID());
         }
 
-        protected void CorrectSize(FrameBuilder fb)
+        protected void CorrectSize(Frame frame)
         {
-            string background = Skin.GetBackgroundBlockID();
-            string border = Skin.GetBorderBlockID();
+            if (frame is null)
+                throw new ArgumentNullException(nameof(frame));
 
-            switch (ContentLayout)
+            if (frame.Width == ClientSize.Width && frame.Height == ClientSize.Height)
+                return;
+
+            Frame newFrame = Frame.BuildFrame(ClientSize.Width, ClientSize.Height, Skin.GetBackgroundBlockID());
+
+            switch (ContentAnchor)
             {
-                case ContentLayout.UpperLeft:
-                    if (fb.Width < ClientSize.Width)
-                        fb.AddRight(background, ClientSize.Width - fb.Width);
-                    else if (fb.Width > ClientSize.Width)
-                        fb.RemoveRight(fb.Width - ClientSize.Width);
-                    if (fb.Height < ClientSize.Height)
-                        fb.AddBottom(background, ClientSize.Height - fb.Height);
-                    else if (fb.Height > ClientSize.Height)
-                        fb.RemoveBottom(fb.Height - ClientSize.Height);
+                case ContentAnchor.UpperLeft:
+                    newFrame.Overwrite(frame, new(0, 0));
                     break;
-                case ContentLayout.UpperRight:
-                    if (fb.Width < ClientSize.Width)
-                        fb.AddLeft(background, ClientSize.Width - fb.Width);
-                    else if (fb.Width > ClientSize.Width)
-                        fb.RemoveLeft(fb.Width - ClientSize.Width);
-                    if (fb.Height < ClientSize.Height)
-                        fb.AddBottom(background, ClientSize.Height - fb.Height);
-                    else if (fb.Height > ClientSize.Height)
-                        fb.RemoveBottom(fb.Height - ClientSize.Height);
+                case ContentAnchor.UpperRight:
+                    newFrame.Overwrite(frame, new(newFrame.Width - frame.Width, 0));
                     break;
-                case ContentLayout.LowerLeft:
-                    if (fb.Width < ClientSize.Width)
-                        fb.AddRight(background, ClientSize.Width - fb.Width);
-                    else if (fb.Width > ClientSize.Width)
-                        fb.RemoveRight(fb.Width - ClientSize.Width);
-                    if (fb.Height < ClientSize.Height)
-                        fb.AddTop(background, ClientSize.Height - fb.Height);
-                    else if (fb.Height > ClientSize.Height)
-                        fb.RemoveTop(fb.Height - ClientSize.Height);
+                case ContentAnchor.LowerLeft:
+                    newFrame.Overwrite(frame, new(0, newFrame.Height - frame.Height));
                     break;
-                case ContentLayout.LowerRight:
-                    if (fb.Width < ClientSize.Width)
-                        fb.AddLeft(background, ClientSize.Width - fb.Width);
-                    else if (fb.Width > ClientSize.Width)
-                        fb.RemoveLeft(fb.Width - ClientSize.Width);
-                    if (fb.Height < ClientSize.Height)
-                        fb.AddTop(background, ClientSize.Height - fb.Height);
-                    else if (fb.Height > ClientSize.Height)
-                        fb.RemoveTop(fb.Height - ClientSize.Height);
+                case ContentAnchor.LowerRight:
+                    newFrame.Overwrite(frame, new(newFrame.Width - frame.Width, newFrame.Height - frame.Height));
                     break;
-                case ContentLayout.Centered:
-                    if (fb.Width < ClientSize.Width)
-                    {
-                        fb.AddLeft(background, (ClientSize.Width - fb.Width) / 2);
-                        fb.AddRight(background, ClientSize.Width - fb.Width);
-                    }
-                    else if (fb.Width > ClientSize.Width)
-                    {
-                        fb.RemoveLeft((fb.Width - ClientSize.Width) / 2);
-                        fb.RemoveRight(fb.Width - ClientSize.Width);
-                    }
-                    if (fb.Height < ClientSize.Height)
-                    {
-                        fb.AddTop(background, (ClientSize.Height - fb.Height) / 2);
-                        fb.AddBottom(background, ClientSize.Height - fb.Height);
-                    }
-                    else if (fb.Height > ClientSize.Height)
-                    {
-                        fb.RemoveTop((fb.Height - ClientSize.Height) / 2);
-                        fb.RemoveBottom(fb.Height - ClientSize.Height);
-                    }
+                case ContentAnchor.Centered:
+                    newFrame.Overwrite(frame, new(newFrame.Width / 2 - frame.Width / 2, newFrame.Width / 2 - frame.Width / 2));
                     break;
                 default:
                     throw new InvalidOperationException();
             }
 
-            fb.AddBorder(border, BorderWidth);
+            frame.Load(newFrame);
+        }
+
+        protected void CorrectSize(FrameBuilder frameBuilder)
+        {
+            if (frameBuilder is null)
+                throw new ArgumentNullException(nameof(frameBuilder));
+
+            if (frameBuilder.Width == ClientSize.Width && frameBuilder.Height == ClientSize.Height)
+                return;
+
+            string background = Skin.GetBackgroundBlockID();
+
+            switch (ContentAnchor)
+            {
+                case ContentAnchor.UpperLeft:
+                    if (frameBuilder.Width < ClientSize.Width)
+                        frameBuilder.AddRight(background, ClientSize.Width - frameBuilder.Width);
+                    else if (frameBuilder.Width > ClientSize.Width)
+                        frameBuilder.RemoveRight(frameBuilder.Width - ClientSize.Width);
+                    if (frameBuilder.Height < ClientSize.Height)
+                        frameBuilder.AddBottom(background, ClientSize.Height - frameBuilder.Height);
+                    else if (frameBuilder.Height > ClientSize.Height)
+                        frameBuilder.RemoveBottom(frameBuilder.Height - ClientSize.Height);
+                    break;
+                case ContentAnchor.UpperRight:
+                    if (frameBuilder.Width < ClientSize.Width)
+                        frameBuilder.AddLeft(background, ClientSize.Width - frameBuilder.Width);
+                    else if (frameBuilder.Width > ClientSize.Width)
+                        frameBuilder.RemoveLeft(frameBuilder.Width - ClientSize.Width);
+                    if (frameBuilder.Height < ClientSize.Height)
+                        frameBuilder.AddBottom(background, ClientSize.Height - frameBuilder.Height);
+                    else if (frameBuilder.Height > ClientSize.Height)
+                        frameBuilder.RemoveBottom(frameBuilder.Height - ClientSize.Height);
+                    break;
+                case ContentAnchor.LowerLeft:
+                    if (frameBuilder.Width < ClientSize.Width)
+                        frameBuilder.AddRight(background, ClientSize.Width - frameBuilder.Width);
+                    else if (frameBuilder.Width > ClientSize.Width)
+                        frameBuilder.RemoveRight(frameBuilder.Width - ClientSize.Width);
+                    if (frameBuilder.Height < ClientSize.Height)
+                        frameBuilder.AddTop(background, ClientSize.Height - frameBuilder.Height);
+                    else if (frameBuilder.Height > ClientSize.Height)
+                        frameBuilder.RemoveTop(frameBuilder.Height - ClientSize.Height);
+                    break;
+                case ContentAnchor.LowerRight:
+                    if (frameBuilder.Width < ClientSize.Width)
+                        frameBuilder.AddLeft(background, ClientSize.Width - frameBuilder.Width);
+                    else if (frameBuilder.Width > ClientSize.Width)
+                        frameBuilder.RemoveLeft(frameBuilder.Width - ClientSize.Width);
+                    if (frameBuilder.Height < ClientSize.Height)
+                        frameBuilder.AddTop(background, ClientSize.Height - frameBuilder.Height);
+                    else if (frameBuilder.Height > ClientSize.Height)
+                        frameBuilder.RemoveTop(frameBuilder.Height - ClientSize.Height);
+                    break;
+                case ContentAnchor.Centered:
+                    if (frameBuilder.Width < ClientSize.Width)
+                    {
+                        frameBuilder.AddLeft(background, (ClientSize.Width - frameBuilder.Width) / 2);
+                        frameBuilder.AddRight(background, ClientSize.Width - frameBuilder.Width);
+                    }
+                    else if (frameBuilder.Width > ClientSize.Width)
+                    {
+                        frameBuilder.RemoveLeft((frameBuilder.Width - ClientSize.Width) / 2);
+                        frameBuilder.RemoveRight(frameBuilder.Width - ClientSize.Width);
+                    }
+                    if (frameBuilder.Height < ClientSize.Height)
+                    {
+                        frameBuilder.AddTop(background, (ClientSize.Height - frameBuilder.Height) / 2);
+                        frameBuilder.AddBottom(background, ClientSize.Height - frameBuilder.Height);
+                    }
+                    else if (frameBuilder.Height > ClientSize.Height)
+                    {
+                        frameBuilder.RemoveTop((frameBuilder.Height - ClientSize.Height) / 2);
+                        frameBuilder.RemoveBottom(frameBuilder.Height - ClientSize.Height);
+                    }
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         #endregion
@@ -1063,7 +1088,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             if (this is ContainerControl container)
                 container.GetSubControls().ClearSyncers();
 
-            ControlSyncer = null;
+            LayoutSyncer = null;
         }
 
         public virtual void Layout(Size oldSize, Size newSize)

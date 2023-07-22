@@ -16,7 +16,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
             Text = _owner.Text;
-            ControlSyncer = new(_owner, (oldPosition, newPosition) => { }, (oldSize, newSize) => Width = newSize.Width);
+            LayoutSyncer = new(_owner, (oldPosition, newPosition) => { }, (oldSize, newSize) => Width = newSize.Width);
             _owner.OnTextUpdateNow += (oldText, newText) => Text = _owner.Text;
             _owner.InitializeCallback += Owner_InitializeCallback;
 

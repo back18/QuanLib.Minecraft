@@ -33,7 +33,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     {
                         SubControls.TryAdd(TitleBar);
                         SubControls.Remove(ShowTitleBar_Button);
-                        Client_Panel?.ControlSyncer?.Sync();
+                        Client_Panel?.LayoutSyncer?.Sync();
                     }
                 }
                 else
@@ -42,7 +42,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     {
                         SubControls.Remove(TitleBar);
                         SubControls.TryAdd(ShowTitleBar_Button);
-                        Client_Panel?.ControlSyncer?.Sync();
+                        Client_Panel?.LayoutSyncer?.Sync();
                     }
                 }
             }
@@ -59,7 +59,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
             SubControls.Add(Client_Panel);
             Client_Panel.BorderWidth = 0;
-            Client_Panel.ControlSyncer = new(this,
+            Client_Panel.LayoutSyncer = new(this,
             (oldPosition, newPosition) =>
             {
                 if (ShowTitleBar)
@@ -75,13 +75,13 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
                     Client_Panel.ClientSize = new(ClientSize.Width, ClientSize.Height);
             });
 
-            Client_Panel?.ControlSyncer?.Sync();
+            Client_Panel?.LayoutSyncer?.Sync();
 
             ShowTitleBar_Button.Visible = false;
             ShowTitleBar_Button.InvokeExternalCursorMove = true;
             ShowTitleBar_Button.Text = "↓";
             ShowTitleBar_Button.ClientSize = new(16, 16);
-            ShowTitleBar_Button.ControlSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) => ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0));
+            ShowTitleBar_Button.LayoutSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) => ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0));
             ShowTitleBar_Button.Anchor = PlaneFacing.Top | PlaneFacing.Right;
             ShowTitleBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;

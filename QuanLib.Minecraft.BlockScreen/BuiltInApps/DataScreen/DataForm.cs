@@ -70,10 +70,5 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.DataScreen
                 GameTimeSyncCountdown = GameTimeSyncTime;
             }
         }
-
-        public override Frame RenderingFrame()
-        {
-            return Frame.BuildFrame(Width, Height, Skin.BackgroundBlockID);
-        }
     }
 }

@@ -26,11 +26,6 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop
             UpdateAppList();
         }
 
-        public override Frame RenderingFrame()
-        {
-            return Frame.BuildFrame(Width, Height, Skin.GetBackgroundBlockID());
-        }
-
         private void UpdateAppList()
         {
             MCOS os = GetMCOS();

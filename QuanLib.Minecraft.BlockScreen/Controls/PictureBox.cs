@@ -27,7 +27,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             ResizeOptions = DefaultResizeOptions.Copy();
 
             AutoSize = true;
-            ContentLayout = ContentLayout.Centered;
+            ContentAnchor = ContentAnchor.Centered;
         }
 
         public static ResizeOptions DefaultResizeOptions { get; }
@@ -51,6 +51,14 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         private ImageFrame? _ImageFrame;
 
         public ResizeOptions ResizeOptions { get; }
+
+        public override Frame RenderingFrame()
+        {
+            Frame? frame = Skin.GetBackgroundImage()?.GetFrame();
+            if (frame is null)
+                return base.RenderingFrame();
+            return frame;
+        }
 
         public override void AutoSetSize()
         {

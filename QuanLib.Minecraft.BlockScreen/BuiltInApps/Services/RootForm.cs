@@ -34,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                     {
                         SubControls.TryAdd(TaskBar);
                         SubControls.Remove(ShowTaskBar_Button);
-                        FormsPanel?.ControlSyncer?.Sync();
+                        FormsPanel?.LayoutSyncer?.Sync();
                     }
                 }
                 else
@@ -43,7 +43,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                     {
                         SubControls.Remove(TaskBar);
                         SubControls.TryAdd(ShowTaskBar_Button);
-                        FormsPanel?.ControlSyncer?.Sync();
+                        FormsPanel?.LayoutSyncer?.Sync();
                     }
                 }
             }
@@ -67,13 +67,13 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             TaskBar.ClientLocation = new(0, ClientSize.Height - 16);
 
             SubControls.Add(FormsPanel);
-            FormsPanel.ControlSyncer?.Sync();
+            FormsPanel.LayoutSyncer?.Sync();
 
             ShowTaskBar_Button.Visible = false;
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
             ShowTaskBar_Button.Text = "↑";
             ShowTaskBar_Button.ClientSize = new(16, 16);
-            ShowTaskBar_Button.ControlSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) => ShowTaskBar_Button.ClientLocation = this.LifeLayout(null, ShowTaskBar_Button, 0, newSize.Height - ShowTaskBar_Button.Height));
+            ShowTaskBar_Button.LayoutSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) => ShowTaskBar_Button.ClientLocation = this.LifeLayout(null, ShowTaskBar_Button, 0, newSize.Height - ShowTaskBar_Button.Height));
             ShowTaskBar_Button.Anchor = PlaneFacing.Top | PlaneFacing.Right;
             ShowTaskBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;

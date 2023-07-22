@@ -28,9 +28,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
 
         public ControlCollection<T> SubControls { get; }
 
-        public Type SubControlType => typeof(T);
-
-        public bool IsSubControlType<R>() => typeof(R) == SubControlType;
+        public override Type SubControlType => typeof(T);
     }
 
     public abstract class ContainerControl : Control
@@ -39,24 +37,28 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
         {
             OnAddSubControl += (obj) => { };
             OnRemoveSubControl += (obj) => { };
-            OnLayoutSubControl += LayoutAll;
+            OnLayoutAll += LayoutAll;
 
             OnResize += ControlContainer_OnResize;
         }
+
+        public abstract Type SubControlType { get; }
 
         public abstract IReadOnlyControlCollection<Control> GetSubControls();
 
         public abstract ControlCollection<R>? AsControlCollection<R>() where R : Control;
 
+        public bool IsSubControlType<R>() => typeof(R) == SubControlType;
+
         public event Action<Control> OnAddSubControl;
 
         public event Action<Control> OnRemoveSubControl;
 
-        public event Action<Size, Size> OnLayoutSubControl;
+        public event Action<Size, Size> OnLayoutAll;
 
         private void ControlContainer_OnResize(Size oldSize, Size newSize)
         {
-            OnLayoutSubControl.Invoke(oldSize, newSize);
+            OnLayoutAll.Invoke(oldSize, newSize);
         }
 
         public virtual void ActiveLayoutAll()
@@ -286,7 +288,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             public void ClearSyncers()
             {
                 foreach (T control in _items)
-                    control.ControlSyncer = null;
+                    control.LayoutSyncer = null;
             }
 
             public void Sort()

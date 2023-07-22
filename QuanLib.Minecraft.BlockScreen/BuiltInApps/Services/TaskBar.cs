@@ -16,7 +16,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
             BorderWidth = 0;
-            ControlSyncer = new(_owner, (oldPosition, newPosition) => { }, (oldSize, newSize) => Width = newSize.Width);
+            LayoutSyncer = new(_owner, (oldPosition, newPosition) => { }, (oldSize, newSize) => Width = newSize.Width);
             Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
 
             StartMenu_Switch = new();

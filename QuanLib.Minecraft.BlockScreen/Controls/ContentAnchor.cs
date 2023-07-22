@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft.BlockScreen.Controls
 {
     /// <summary>
-    /// 控件内容布局
+    /// 控件内容锚定位置
     /// </summary>
-    public enum ContentLayout
+    public enum ContentAnchor
     {
         /// <summary>
         /// 左上

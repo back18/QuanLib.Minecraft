@@ -85,7 +85,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             if (subControl is null)
                 throw new ArgumentNullException(nameof(subControl));
 
-            return new(start, control.Height / 2 - subControl.Height / 2);
+            return new(start, control.ClientSize.Height / 2 - subControl.Height / 2);
         }
 
         public static Point HorizontalCenterLayout(this Control control, Control subControl, int start)
@@ -93,7 +93,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             if (subControl is null)
                 throw new ArgumentNullException(nameof(subControl));
 
-            return new(control.Width / 2 - subControl.Width / 2, start);
+            return new(control.ClientSize.Width / 2 - subControl.Width / 2, start);
         }
 
         public static Point CenterLayout(this Control control, Control subControl)

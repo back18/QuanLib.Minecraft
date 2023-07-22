@@ -100,12 +100,5 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             TextBox1.Text = string.Empty;
         }
-
-        public override Frame RenderingFrame()
-        {
-            FrameBuilder fb = new(Frame.BuildFrame(Width, Height, ConcretePixel.ToBlockID(MinecraftColor.Lime)));
-            CorrectSize(fb);
-            return fb.ToFrame();
-        }
     }
 }

@@ -58,7 +58,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             PauseOrResume_Switch.BorderWidth = 0;
             PauseOrResume_Switch.ClientSize = new(16, 16);
             PauseOrResume_Switch.ClientLocation = this.CenterLayout(PauseOrResume_Switch);
-            PauseOrResume_Switch.ControlSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) =>
+            PauseOrResume_Switch.LayoutSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) =>
             PauseOrResume_Switch.ClientLocation = this.CenterLayout(PauseOrResume_Switch));
             ImageFrame pause = new(Path.Combine(dir, "暂停.png"), os.Screen.NormalFacing, PauseOrResume_Switch.ClientSize);
             ImageFrame resume = new(Path.Combine(dir, "播放.png"), os.Screen.NormalFacing, PauseOrResume_Switch.ClientSize);

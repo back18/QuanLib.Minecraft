@@ -68,9 +68,9 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
         private void Path_TextBox_TextEditorUpdate(Point position, string text)
         {
             if (MCOS.DefaultFont.GetTotalSize(text).Width > Path_TextBox.ClientSize.Width)
-                Path_TextBox.ContentLayout = ContentLayout.UpperRight;
+                Path_TextBox.ContentAnchor = ContentAnchor.UpperRight;
             else
-                Path_TextBox.ContentLayout = ContentLayout.UpperLeft;
+                Path_TextBox.ContentAnchor = ContentAnchor.UpperLeft;
         }
 
         private void Client_Panel_OnResize(Size oldSize, Size newSize)

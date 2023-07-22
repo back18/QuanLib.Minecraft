@@ -18,7 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.Controls
             Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Yellow);
             Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
             Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
-            ContentLayout = ContentLayout.Centered;
+            ContentAnchor = ContentAnchor.Centered;
 
             RightClick += Button_RightClick;
             BeforeFrame += Button_BeforeFrame;

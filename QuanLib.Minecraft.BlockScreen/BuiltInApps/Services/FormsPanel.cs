@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
             BorderWidth = 0;
-            ControlSyncer = new(_owner,
+            LayoutSyncer = new(_owner,
             (oldPosition, newPosition) => { },
             (oldSize, newSize) =>
             {
@@ -44,7 +44,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                 return;
 
             control.Stretch = PlaneFacing.Bottom;
-            control.ControlSyncer = new(this,
+            control.LayoutSyncer = new(this,
             (oldPosition, newPosition) => { },
             (oldSize, newSize) =>
             {
@@ -57,7 +57,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             if (control is not Form)
                 return;
 
-            control.ControlSyncer = null;
+            control.LayoutSyncer = null;
         }
 
         internal override void HandleCursorMove(Point position, CursorMode mode)

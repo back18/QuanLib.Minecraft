@@ -18,6 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps
             label1 = new();
             switch1 = new();
             switch2 = new();
+            iconTextBox1 = new();
         }
 
         private readonly Button button1;
@@ -32,6 +33,8 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps
 
         private readonly Switch switch2;
 
+        private readonly IconTextBox iconTextBox1;
+
         public override void Initialize()
         {
             base.Initialize();
@@ -41,13 +44,12 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps
 
             ClientLocation = new(3, 3);
             BorderWidth = 8;
-            Width = Application.MCOS.Screen.Width - 7;
-            Height = Application.MCOS.Screen.Height - 10;
+            Width = Application.MCOS.FormsPanelSize.Width - 7;
+            Height = Application.MCOS.FormsPanelSize.Height - 10;
 
             Client_Panel.SubControls.Add(button1);
             button1.ClientLocation = new(5, 5);
             button1.Text = "Open";
-            //button1.RightClick += Button1_RightClick;
 
             Client_Panel.SubControls.Add(textBox1);
             textBox1.ClientLocation = new(5, 25);
@@ -78,40 +80,11 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps
             comboButton1.Items.Add(PlaneFacing.Bottom);
             comboButton1.Items.Add(PlaneFacing.Right);
             comboButton1.Items.Add(PlaneFacing.Left);
-        }
 
-        int i = 0;
-        private void Button1_RightClick(Point obj)
-        {
-            //((Test02App)GetApplication()).Run = false;
-
-
-            switch (i)
-            {
-                case 0:
-                    button1.MoveToRight(5);
-                    break;
-                case 1:
-                    button1.MoveToBottom(5);
-                    break;
-                case 2:
-                    button1.MoveToLeft(5);
-                    break;
-                case 3:
-                    button1.MoveToTop(5);
-                    break;
-            }
-
-            i++;
-            if (i > 3)
-                i = 0;
-        }
-
-        public override Frame RenderingFrame()
-        {
-            FrameBuilder fb = new(Frame.BuildFrame(Width, Height, ConcretePixel.ToBlockID(MinecraftColor.White)));
-            CorrectSize(fb);
-            return fb.ToFrame();
+            Client_Panel.SubControls.Add(iconTextBox1);
+            iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), os.Screen.NormalFacing, new Size(16, 16));
+            iconTextBox1.Text = "hello";
+            iconTextBox1.ClientLocation = Client_Panel.RightLayout(textBox1, 2);
         }
     }
 }

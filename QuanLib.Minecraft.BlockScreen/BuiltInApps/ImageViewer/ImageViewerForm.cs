@@ -187,9 +187,9 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
         private void Path_TextBox_TextEditorUpdate(Point position, string text)
         {
             if (MCOS.DefaultFont.GetTotalSize(text).Width > Path_TextBox.ClientSize.Width)
-                Path_TextBox.ContentLayout = ContentLayout.UpperRight;
+                Path_TextBox.ContentAnchor = ContentAnchor.UpperRight;
             else
-                Path_TextBox.ContentLayout = ContentLayout.UpperLeft;
+                Path_TextBox.ContentAnchor = ContentAnchor.UpperLeft;
         }
 
         private void Generate_Button_RightClick(Point position)
