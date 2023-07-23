@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _frames = new();
         }
 
-        private readonly List<Frame> _frames;
+        private readonly List<ArrayFrame> _frames;
 
         private int _index;
 

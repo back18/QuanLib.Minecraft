@@ -64,7 +64,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private Image<Rgba32>? _result;
 
-        private Frame? _frame;
+        private ArrayFrame? _frame;
 
         private bool _get;
 
@@ -74,18 +74,18 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             get
             {
-                Frame frame = _frame ?? Update();
+                ArrayFrame frame = _frame ?? Update();
                 return new(frame.Width, frame.Height);
             }
         }
 
-        public Frame GetFrame()
+        public ArrayFrame GetFrame()
         {
             _get = true;
             return _frame ?? Update();
         }
 
-        public Frame GetFrameCopy()
+        public ArrayFrame GetFrameCopy()
         {
             if (_get)
                 return GetFrame().Copy();
@@ -93,12 +93,12 @@ namespace QuanLib.Minecraft.BlockScreen
                 return GetFrame();
         }
 
-        public Frame Update()
+        public ArrayFrame Update()
         {
             _result?.Dispose();
             _result = _original.Clone();
             _result.Mutate(x => x.Resize(ResizeOptions));
-            _frame = Frame.FromImage(_facing, _result);
+            _frame = ArrayFrame.FromImage(_facing, _result);
             return _frame;
         }
 

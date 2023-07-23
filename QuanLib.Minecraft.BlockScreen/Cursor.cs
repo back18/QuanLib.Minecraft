@@ -18,14 +18,14 @@ namespace QuanLib.Minecraft.BlockScreen
 
             CursorType = json.CursorType;
             Offset = new(json.XOffset, json.YOffset);
-            Frame = Frame.FromJson(json.Frame);
+            Frame = ArrayFrame.FromJson(json.Frame);
         }
 
         public CursorType CursorType { get; }
 
         public Point Offset { get; }
 
-        public Frame Frame { get; }
+        public ArrayFrame Frame { get; }
 
         public class Json
         {

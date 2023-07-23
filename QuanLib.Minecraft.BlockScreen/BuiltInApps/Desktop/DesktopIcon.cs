@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.BlockScreen.Controls;
+﻿using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;

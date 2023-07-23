@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Controls;
+﻿using QuanLib.Minecraft.BlockScreen.UI;
+using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
             Video_VideoPlayer = new();
         }
 
-        private readonly Controls.VideoPlayer Video_VideoPlayer;
+        private readonly UI.Controls.VideoPlayer Video_VideoPlayer;
 
         private readonly Button Read_Button;
 

@@ -172,9 +172,9 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public RectangleRange ScreenRange { get; }
 
-        public Frame? LastFrame { get; private set; }
+        public ArrayFrame? LastFrame { get; private set; }
 
-        public void ShowNewFrame(Frame frame, Task? wait = null)
+        public void ShowNewFrame(ArrayFrame frame, Task? wait = null)
         {
             List<ScreenPixel> pixels = GetDifferencesPixels(frame);
             LastFrame = frame;
@@ -203,7 +203,7 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public async Task ShowNewFrameAsync(Frame frame, Task? wait = null)
+        public async Task ShowNewFrameAsync(ArrayFrame frame, Task? wait = null)
         {
             List<ScreenPixel> pixels = GetDifferencesPixels(frame);
             LastFrame = frame;
@@ -323,7 +323,7 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        private List<ScreenPixel> GetDifferencesPixels(Frame frame)
+        private List<ScreenPixel> GetDifferencesPixels(ArrayFrame frame)
         {
             if (frame is null)
                 throw new ArgumentNullException(nameof(frame));
@@ -334,19 +334,19 @@ namespace QuanLib.Minecraft.BlockScreen
             if (LastFrame is null)
                 pixels = frame.GetAllPixel();
             else
-                pixels = Frame.GetDifferencesPixels(LastFrame, frame);
+                pixels = ArrayFrame.GetDifferencesPixels(LastFrame, frame);
 
             return pixels;
         }
 
         public void Clear()
         {
-            ShowNewFrame(Frame.BuildFrame(Width, Height, ConcretePixel.ToBlockID(MinecraftColor.Black)));
+            ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, ConcretePixel.ToBlockID(MinecraftColor.Black)));
         }
 
         public void Stop()
         {
-            ShowNewFrame(Frame.BuildFrame(Width, Height, "minecraft:air"));
+            ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, "minecraft:air"));
         }
 
         public WorldPixel ToWorldPixel(ScreenPixel pixel)

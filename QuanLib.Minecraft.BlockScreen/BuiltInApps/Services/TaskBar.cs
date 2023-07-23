@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BuiltInApps.TaskManager;
-using QuanLib.Minecraft.BlockScreen.Controls;
+using QuanLib.Minecraft.BlockScreen.UI;
+using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

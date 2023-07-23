@@ -1,8 +1,6 @@
 ﻿#define DebugTimer
 
 using Newtonsoft.Json;
-using QuanLib.Minecraft.BlockScreen.Controls;
-using QuanLib.Minecraft.BlockScreen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,12 +9,13 @@ using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Files;
-using QuanLib.Minecraft.BlockScreen.BuiltInApps;
 using QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop;
 using QuanLib.Minecraft.BlockScreen.BuiltInApps.Services;
 using QuanLib.BDF;
 using SixLabors.ImageSharp;
 using FFMediaToolkit;
+using QuanLib.Minecraft.BlockScreen.UI.Controls;
+using QuanLib.Minecraft.BlockScreen.UI;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
@@ -50,6 +49,8 @@ namespace QuanLib.Minecraft.BlockScreen
 
             _fonts = new();
             RegisterFont("DefaultFont", DefaultFont);
+
+            UIRenderer = new ControlRenderer();
         }
 
         public MCOS(
@@ -110,6 +111,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public static BdfFont DefaultFont { get; private set; }
 
         public static IReadOnlyDictionary<string, BdfFont> FontList => _fonts;
+
+        public static UIRenderer<IControlRendering> UIRenderer { get; }
 
         public bool Runing => _runing;
 
@@ -306,12 +309,12 @@ namespace QuanLib.Minecraft.BlockScreen
             return stopwatch.Elapsed;
         }
 
-        private TimeSpan HandleRenderingFrame(out Frame frame)
+        private TimeSpan HandleRenderingFrame(out ArrayFrame frame)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            frame = Frame.BuildFrame(Screen.Width, Screen.Height, ScreenDefaultBackgroundBlcokID);
-            Frame? formFrame = ServicesApp.RootForm.RenderingAllFrame();
+            frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, ScreenDefaultBackgroundBlcokID);
+            ArrayFrame? formFrame = UIRenderer.Rendering(ServicesApp.RootForm);
             if (formFrame is not null)
                 frame.Overwrite(formFrame, ServicesApp.ForegroundForm.Location);
             frame.Overwrite(_cursors[CursorType].Frame, CurrentPosition, _cursors[CursorType].Offset);
@@ -321,7 +324,7 @@ namespace QuanLib.Minecraft.BlockScreen
             return stopwatch.Elapsed;
         }
 
-        private TimeSpan HandleUpdateScreen(Frame frame)
+        private TimeSpan HandleUpdateScreen(ArrayFrame frame)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 

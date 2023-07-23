@@ -1,5 +1,5 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BuiltInApps.DataScreen;
-using QuanLib.Minecraft.BlockScreen.Controls;
+using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;

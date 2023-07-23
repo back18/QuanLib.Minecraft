@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.BuiltInApps
+namespace QuanLib.Minecraft.BlockScreen
 {
     public abstract class ApplicationInfo
     {

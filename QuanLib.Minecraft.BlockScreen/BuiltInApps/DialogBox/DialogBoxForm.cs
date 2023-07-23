@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Controls;
+﻿using QuanLib.Minecraft.BlockScreen.UI;
+using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.DialogBox
         {
             AllowDeselected = false;
             AllowResize = false;
-            TitleBar.ButtonsToShow = TitleBarButtonType.Close;
+            TitleBar.ButtonsToShow = FormButton.Close;
 
             _ButtonsToShow = DialogBoxReturnValue.Yes | DialogBoxReturnValue.No | DialogBoxReturnValue.Cancel;
             ButtonSize = new(32, 16);
