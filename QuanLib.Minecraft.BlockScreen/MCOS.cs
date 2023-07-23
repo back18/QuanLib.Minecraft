@@ -50,7 +50,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _fonts = new();
             RegisterFont("DefaultFont", DefaultFont);
 
-            UIRenderer = new ControlRenderer();
+            ControlRenderer = new ControlRenderer();
         }
 
         public MCOS(
@@ -112,7 +112,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public static IReadOnlyDictionary<string, BdfFont> FontList => _fonts;
 
-        public static UIRenderer<IControlRendering> UIRenderer { get; }
+        public static ControlRenderer ControlRenderer { get; }
 
         public bool Runing => _runing;
 
@@ -235,35 +235,38 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
+            var forms = ServicesApp.RootForm.FormsPanel.SubControls;
             foreach (var process in _process.ToArray())
             {
-                var forms = ServicesApp.RootForm.FormsPanel.SubControls;
-                if (process.Key != ServicesApp.AppID)
+                if (process.Key == ServicesApp.AppID)
+                    continue;
+
+                //TODO: ServicesApp.RootForm.FormsPanel.SubControls 无法容纳 IForm
+                foreach (var active in process.Value.Application.ActiveForms)
                 {
-                    Form form = process.Value.Application.ForegroundForm;
                     switch (process.Value.ProcessState)
                     {
                         case ProcessState.Running:
-                            if (!forms.Contains(form))
+                            if (!forms.Contains(active))
                             {
-                                forms.Add(form);
-                                ServicesApp.RootForm.TrySwitchForm(form);
+                                forms.Add(active);
+                                ServicesApp.RootForm.TrySwitchForm(active);
                             }
                             break;
                         case ProcessState.Pending:
-                            if (ServicesApp.RootForm.SubControls.Contains(form))
+                            if (ServicesApp.RootForm.SubControls.Contains(active))
                             {
-                                form.IsSelected = false;
-                                forms.Remove(form);
+                                active.IsSelected = false;
+                                forms.Remove(active);
                                 ServicesApp.RootForm.SelectedMaxDisplayPriority();
                             }
                             break;
                         case ProcessState.Stopped:
-                            if (forms.Contains(form))
+                            if (forms.Contains(active))
                             {
                                 _process.Remove(process.Key);
-                                form.IsSelected = false;
-                                forms.Remove(form);
+                                active.IsSelected = false;
+                                forms.Remove(active);
                                 ServicesApp.RootForm.SelectedMaxDisplayPriority();
                             }
                             break;
@@ -291,7 +294,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            ServicesApp.ForegroundForm.HandleBeforeFrame();
+            ServicesApp.RootForm.HandleBeforeFrame();
 
             stopwatch.Stop();
             Timer.HandleBeforeFrame.Add(stopwatch.Elapsed);
@@ -302,7 +305,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            ServicesApp.ForegroundForm.HandleAfterFrame();
+            ServicesApp.RootForm.HandleAfterFrame();
 
             stopwatch.Stop();
             Timer.HandleAfterFrame.Add(stopwatch.Elapsed);
@@ -314,9 +317,9 @@ namespace QuanLib.Minecraft.BlockScreen
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, ScreenDefaultBackgroundBlcokID);
-            ArrayFrame? formFrame = UIRenderer.Rendering(ServicesApp.RootForm);
+            ArrayFrame? formFrame = ControlRenderer.Rendering(ServicesApp.RootForm);
             if (formFrame is not null)
-                frame.Overwrite(formFrame, ServicesApp.ForegroundForm.Location);
+                frame.Overwrite(formFrame, ServicesApp.RootForm.Location);
             frame.Overwrite(_cursors[CursorType].Frame, CurrentPosition, _cursors[CursorType].Offset);
 
             stopwatch.Stop();

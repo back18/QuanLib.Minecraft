@@ -10,5 +10,7 @@ namespace QuanLib.Minecraft.BlockScreen
     public interface IApplicationComponent
     {
         public Application Application { get; }
+
+        public void SetApplication(Application application);
     }
 }

@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public class ControlRenderer : UIRenderer<IControlRendering>
+    public class ControlRenderer
     {
-        public override ArrayFrame? Rendering(IControlRendering rendering)
+        public ArrayFrame? Rendering(IControlRendering rendering)
         {
             Task<ArrayFrame> _task;
             if (rendering.NeedRendering())
             {
                 if (!rendering.Visible)
+                    return null;
+
+                if (rendering.RenderingSize.Width < 0 || rendering.RenderingSize.Height < 0)
                     return null;
 
                 _task = Task.Run(() =>
@@ -46,32 +49,37 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                     continue;
 
                 frame.Overwrite(task.Result, subRendering.RenderingLocation);
-                if (subRendering.BorderWidth > 0)
-                {
-                    int width = subRendering.RenderingSize.Width + subRendering.BorderWidth * 2;
-                    int heigth = subRendering.RenderingSize.Height + subRendering.BorderWidth * 2;
-                    int startTop = subRendering.RenderingLocation.Y - 1;
-                    int startBottom = subRendering.RenderingLocation.Y + subRendering.RenderingSize.Height;
-                    int startLeft = subRendering.RenderingLocation.X - 1;
-                    int startRigth = subRendering.RenderingLocation.X + subRendering.RenderingSize.Width;
-                    int endTop = subRendering.RenderingLocation.Y - subRendering.BorderWidth;
-                    int endBottom = subRendering.RenderingLocation.Y + subRendering.RenderingSize.Height + subRendering.BorderWidth - 1;
-                    int endLeft = subRendering.RenderingLocation.X - subRendering.BorderWidth;
-                    int endRight = subRendering.RenderingLocation.X + subRendering.RenderingSize.Width + subRendering.BorderWidth - 1;
-                    string blockID = subRendering.Skin.GetBorderBlockID();
-
-                    for (int y = startTop; y >= endTop; y--)
-                        frame.DrawRow(y, endLeft, width, blockID);
-                    for (int y = startBottom; y <= endBottom; y++)
-                        frame.DrawRow(y, endLeft, width, blockID);
-                    for (int x = startLeft; x >= endLeft; x--)
-                        frame.DrawColumn(x, endTop, heigth, blockID);
-                    for (int x = startRigth; x <= endRight; x++)
-                        frame.DrawColumn(x, endTop, heigth, blockID);
-                }
+                DrawBorder(frame, subRendering);
             }
 
             return frame;
+        }
+
+        private static void DrawBorder(ArrayFrame frame, IControlRendering rendering)
+        {
+            if (rendering.BorderWidth > 0)
+            {
+                int width = rendering.RenderingSize.Width + rendering.BorderWidth * 2;
+                int heigth = rendering.RenderingSize.Height + rendering.BorderWidth * 2;
+                int startTop = rendering.RenderingLocation.Y - 1;
+                int startBottom = rendering.RenderingLocation.Y + rendering.RenderingSize.Height;
+                int startLeft = rendering.RenderingLocation.X - 1;
+                int startRigth = rendering.RenderingLocation.X + rendering.RenderingSize.Width;
+                int endTop = rendering.RenderingLocation.Y - rendering.BorderWidth;
+                int endBottom = rendering.RenderingLocation.Y + rendering.RenderingSize.Height + rendering.BorderWidth - 1;
+                int endLeft = rendering.RenderingLocation.X - rendering.BorderWidth;
+                int endRight = rendering.RenderingLocation.X + rendering.RenderingSize.Width + rendering.BorderWidth - 1;
+                string blockID = rendering.Skin.GetBorderBlockID();
+
+                for (int y = startTop; y >= endTop; y--)
+                    frame.DrawRow(y, endLeft, width, blockID);
+                for (int y = startBottom; y <= endBottom; y++)
+                    frame.DrawRow(y, endLeft, width, blockID);
+                for (int x = startLeft; x >= endLeft; x--)
+                    frame.DrawColumn(x, endTop, heigth, blockID);
+                for (int x = startRigth; x <= endRight; x++)
+                    frame.DrawColumn(x, endTop, heigth, blockID);
+            }
         }
     }
 }

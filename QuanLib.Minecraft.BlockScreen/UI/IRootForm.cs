@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public abstract class UIRenderer<T> where T : IUIRendering
+    public interface IRootForm : IForm
     {
-        public abstract ArrayFrame? Rendering(T rendering);
+
     }
 }

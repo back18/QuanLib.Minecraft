@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public interface IControlRendering : IUIRendering
+    public interface IControlRendering
     {
         public bool Visible { get; }
 

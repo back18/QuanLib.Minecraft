@@ -38,6 +38,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
         public override void Exit()
         {
             Console.WriteLine("尝试关机");
+            //base.Exit();
         }
     }
 }

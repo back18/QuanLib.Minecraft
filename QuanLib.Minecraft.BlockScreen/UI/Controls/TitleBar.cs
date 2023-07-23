@@ -105,9 +105,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
         }
 
-        public override void OnInitComplete3()
+        public override void OnInitCompleted3()
         {
-            base.OnInitComplete3();
+            base.OnInitCompleted3();
 
             ActiveLayoutAll();
         }
@@ -174,7 +174,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         public override void ActiveLayoutAll()
         {
-            if (!FormIsInitialize())
+            if (!AllowGetApplication())
                 return;
 
             SubControls.Clear();

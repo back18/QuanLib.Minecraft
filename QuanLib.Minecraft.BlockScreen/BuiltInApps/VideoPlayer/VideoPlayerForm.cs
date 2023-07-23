@@ -88,7 +88,6 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer
         public override void CloseForm()
         {
             Video_VideoPlayer.VideoBox.Dispose();
-            
             base.CloseForm();
         }
     }

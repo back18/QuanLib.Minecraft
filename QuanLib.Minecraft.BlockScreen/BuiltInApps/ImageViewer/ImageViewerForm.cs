@@ -146,11 +146,6 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer
             Resampler_ComboButton.Items.Add(KnownResamplers.RobidouxSharp, nameof(KnownResamplers.RobidouxSharp));
             Resampler_ComboButton.Items.Add(KnownResamplers.Spline, nameof(KnownResamplers.Spline));
             Resampler_ComboButton.Items.SelectedItem = PictureBox.DefaultResizeOptions.Sampler;
-
-            foreach (var control in Setting_Panel.SubControls)
-            {
-                control.Initialize();
-            }
         }
 
         private void Client_FormPanel_OnResize(Size oldSize, Size newSize)

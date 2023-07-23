@@ -18,6 +18,10 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         public override IReadOnlyControlCollection<Control> GetSubControls() => SubControls;
 
+        public ControlCollection<T> SubControls { get; }
+
+        public override Type SubControlType => typeof(T);
+
         public override ControlCollection<R>? AsControlCollection<R>()
         {
             if (SubControls is ControlCollection<R> result)
@@ -26,17 +30,23 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return null;
         }
 
-        public ControlCollection<T> SubControls { get; }
+        public override void ClearAllLayoutSyncer()
+        {
+            foreach (Control control in SubControls)
+            {
+                control.ClearAllLayoutSyncer();
+            }
 
-        public override Type SubControlType => typeof(T);
+            base.ClearAllLayoutSyncer();
+        }
     }
 
     public abstract class ContainerControl : Control, IControlRendering
     {
         protected ContainerControl()
         {
-            OnAddSubControl += (obj) => { };
-            OnRemoveSubControl += (obj) => { };
+            OnAddedSubControl += ContainerControl_OnAddSubControl;
+            OnRemovedSubControl += (obj) => { };
             OnLayoutAll += LayoutAll;
 
             OnResize += ControlContainer_OnResize;
@@ -50,11 +60,18 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         public bool IsSubControlType<R>() => typeof(R) == SubControlType;
 
-        public event Action<Control> OnAddSubControl;
+        public event Action<Control> OnAddedSubControl;
 
-        public event Action<Control> OnRemoveSubControl;
+        public event Action<Control> OnRemovedSubControl;
 
         public event Action<Size, Size> OnLayoutAll;
+
+        private void ContainerControl_OnAddSubControl(Control control)
+        {
+            IControlInitializeHandling handling = control;
+            if (InitializeCompleted && !handling.InitializeCompleted)
+                handling.HandleAllInitialize();
+        }
 
         private void ControlContainer_OnResize(Size oldSize, Size newSize)
         {
@@ -80,7 +97,47 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return GetSubControls();
         }
 
-        internal override void HandleCursorMove(Point position, CursorMode mode)
+        public override void HandleInitialize()
+        {
+            base.HandleInitialize();
+
+            foreach (var control in GetSubControls())
+            {
+                control.HandleInitialize();
+            }
+        }
+
+        public override void HandleOnInitCompleted1()
+        {
+            base.HandleOnInitCompleted1();
+
+            foreach (var control in GetSubControls())
+            {
+                control.HandleOnInitCompleted1();
+            }
+        }
+
+        public override void HandleOnInitCompleted2()
+        {
+            base.HandleOnInitCompleted2();
+
+            foreach (var control in GetSubControls())
+            {
+                control.HandleOnInitCompleted2();
+            }
+        }
+
+        public override void HandleOnInitCompleted3()
+        {
+            base.HandleOnInitCompleted3();
+
+            foreach (var control in GetSubControls())
+            {
+                control.HandleOnInitCompleted3();
+            }
+        }
+
+        public override void HandleCursorMove(Point position, CursorMode mode)
         {
             foreach (var control in GetSubControls().ToArray())
             {
@@ -90,7 +147,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             base.HandleCursorMove(position, mode);
         }
 
-        internal override bool HandleRightClick(Point position)
+        public override bool HandleRightClick(Point position)
         {
             Control? control = GetSubControls().FirstHover;
             control?.HandleRightClick(control.ParentPos2SubPos(position));
@@ -98,7 +155,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return base.HandleRightClick(position);
         }
 
-        internal override bool HandleLeftClick(Point position)
+        public override bool HandleLeftClick(Point position)
         {
             Control? control = GetSubControls().FirstHover;
             control?.HandleLeftClick(control.ParentPos2SubPos(position));
@@ -106,7 +163,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return base.HandleLeftClick(position);
         }
 
-        internal override void HandleTextEditorUpdate(Point position, string text)
+        public override void HandleTextEditorUpdate(Point position, string text)
         {
             foreach (var control in GetSubControls().ToArray())
             {
@@ -116,7 +173,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             base.HandleTextEditorUpdate(position, text);
         }
 
-        internal override void HandleBeforeFrame()
+        public override void HandleBeforeFrame()
         {
             foreach (var control in GetSubControls().ToArray())
             {
@@ -126,7 +183,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             base.HandleBeforeFrame();
         }
 
-        internal override void HandleAfterFrame()
+        public override void HandleAfterFrame()
         {
             foreach (var control in GetSubControls().ToArray())
             {
@@ -212,21 +269,17 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
                 if (!insert)
                     _items.Insert(0, item);
                 RecentlyAddedControl = item;
-                _owner.OnAddSubControl.Invoke(item);
+                _owner.OnAddedSubControl.Invoke(item);
                 _owner.RequestUpdateFrame();
             }
 
             public bool TryAdd(T item)
             {
                 if (_items.Contains(item))
-                {
                     return false;
-                }
-                else
-                {
-                    Add(item);
-                    return true;
-                }
+
+                Add(item);
+                return true;
             }
 
             public bool Remove(T item)
@@ -234,15 +287,16 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
                 if (item is null)
                     throw new ArgumentNullException(nameof(item));
 
+                if (!_items.Remove(item))
+                    return false;
+
                 item.ParentContainer = null;
                 item.OnSelected -= Sort;
                 item.OnDeselected -= Sort;
-                bool result = _items.Remove(item);
                 RecentlyRemovedControl = item;
-                _owner.OnAddSubControl.Invoke(item);
+                _owner.OnAddedSubControl.Invoke(item);
                 _owner.RequestUpdateFrame();
-
-                return result;
+                return true;
             }
 
             public void RemoveAt(int index)

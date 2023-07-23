@@ -255,7 +255,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         private void NextFrame()
         {
-            if (!FormIsInitialize())
+            if (!AllowGetApplication())
                 return;
 
             if (_decoder is not null)

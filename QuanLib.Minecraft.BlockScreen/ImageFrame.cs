@@ -109,5 +109,15 @@ namespace QuanLib.Minecraft.BlockScreen
 
             GC.SuppressFinalize(this);
         }
+
+        public static bool operator ==(ImageFrame image1, ImageFrame image2)
+        {
+            return image1?._original == image2?._original;
+        }
+
+        public static bool operator !=(ImageFrame image1, ImageFrame image2)
+        {
+            return image1?._original != image2?._original;
+        }
     }
 }

@@ -30,15 +30,16 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.DialogBox
 
         internal DialogBoxReturnValue ReturnValue { get; set; }
 
-        public override void Exit()
-        {
-            _exit.Set();
-        }
-
         public override object? Main(string[] args)
         {
             _exit.WaitOne();
             return ReturnValue;
+        }
+
+        public override void Exit()
+        {
+            _exit.Set();
+            base.Exit();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
     /// <summary>
     /// 控件
     /// </summary>
-    public abstract class Control : IControlRendering, IComparer<Control>, IComparable<Control>
+    public abstract class Control : IControl, IComparer<Control>, IComparable<Control>
     {
         protected Control()
         {
@@ -94,6 +94,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
         public DateTime LastLeftClickTime { get; private set; }
 
         public bool InvokeExternalCursorMove { get; set; }
+
+        public bool InitializeCompleted { get; private set; }
 
         public string Text
         {
@@ -534,7 +536,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         private void Control_OnMove(Point oldPosition, Point newPosition)
         {
-            if (!FormIsInitialize())
+            if (!AllowGetApplication())
                 return;
             MCOS os = GetMCOS();
             UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
@@ -542,7 +544,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         private void Control_OnResize(Size oldSize, Size newSize)
         {
-            if (!FormIsInitialize())
+            if (!AllowGetApplication())
                 return;
             MCOS os = GetMCOS();
             UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
@@ -552,7 +554,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         #region 事件处理
 
-        internal virtual void HandleCursorMove(Point position, CursorMode mode)
+        public virtual void HandleCursorMove(Point position, CursorMode mode)
         {
             UpdateHoverState(position, mode);
 
@@ -562,7 +564,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             }
         }
 
-        internal virtual bool HandleRightClick(Point position)
+        public virtual bool HandleRightClick(Point position)
         {
             if (Visible)
             {
@@ -585,7 +587,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return false;
         }
 
-        internal virtual bool HandleLeftClick(Point position)
+        public virtual bool HandleLeftClick(Point position)
         {
             if (Visible)
             {
@@ -608,7 +610,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return false;
         }
 
-        internal virtual void HandleTextEditorUpdate(Point position, string text)
+        public virtual void HandleTextEditorUpdate(Point position, string text)
         {
             if (Visible)
             {
@@ -617,12 +619,12 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             }
         }
 
-        internal virtual void HandleBeforeFrame()
+        public virtual void HandleBeforeFrame()
         {
             BeforeFrame.Invoke();
         }
 
-        internal virtual void HandleAfterFrame()
+        public virtual void HandleAfterFrame()
         {
             AfterFrame.Invoke();
         }
@@ -682,17 +684,17 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
                 AutoSetSize();
         }
 
-        public virtual void OnInitComplete1()
+        public virtual void OnInitCompleted1()
         {
 
         }
 
-        public virtual void OnInitComplete2()
+        public virtual void OnInitCompleted2()
         {
 
         }
 
-        public virtual void OnInitComplete3()
+        public virtual void OnInitCompleted3()
         {
             Text_Update = false;
             Text_Old = Text;
@@ -700,55 +702,29 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             ClientLocation_Old = ClientLocation;
             ClientSize_Update = false;
             ClientSize_Old = ClientSize;
+
+            InitializeCompleted = true;
         }
 
-        internal void HandleInitialize()
+        public virtual void HandleInitialize()
         {
             Initialize();
             InitializeCallback.Invoke();
-            if (this is ContainerControl container)
-            {
-                foreach (var control in container.GetSubControls())
-                {
-                    control.HandleInitialize();
-                }
-            }
         }
 
-        internal void HandleOnInitComplete1()
+        public virtual void HandleOnInitCompleted1()
         {
-            OnInitComplete1();
-            if (this is ContainerControl container)
-            {
-                foreach (var control in container.GetSubControls())
-                {
-                    control.HandleOnInitComplete1();
-                }
-            }
+            OnInitCompleted1();
         }
 
-        internal void HandleOnInitComplete2()
+        public virtual void HandleOnInitCompleted2()
         {
-            OnInitComplete2();
-            if (this is ContainerControl container)
-            {
-                foreach (var control in container.GetSubControls())
-                {
-                    control.HandleOnInitComplete2();
-                }
-            }
+            OnInitCompleted2();
         }
 
-        internal void HandleOnInitComplete3()
+        public virtual void HandleOnInitCompleted3()
         {
-            OnInitComplete3();
-            if (this is ContainerControl container)
-            {
-                foreach (var control in container.GetSubControls())
-                {
-                    control.HandleOnInitComplete3();
-                }
-            }
+            OnInitCompleted3();
         }
 
         #endregion
@@ -889,7 +865,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         public Process GetProcess() => GetApplication().Process;
 
-        public bool FormIsInitialize() => GetForm()?.IsInitialize ?? false;
+        public bool AllowGetApplication() => GetForm()?.ApplicationIsNotNull ?? false;
 
         #endregion
 
@@ -903,11 +879,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             GetMCOS().PlayerCursorReader.ResetText();
         }
 
-        public void ClearAllControlSyncer()
+        public virtual void ClearAllLayoutSyncer()
         {
-            if (this is ContainerControl container)
-                container.GetSubControls().ClearSyncers();
-
             LayoutSyncer = null;
         }
 

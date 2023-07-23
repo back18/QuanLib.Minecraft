@@ -37,6 +37,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Settings
         public override void Exit()
         {
             _exit.Set();
+            base.Exit();
         }
     }
 }

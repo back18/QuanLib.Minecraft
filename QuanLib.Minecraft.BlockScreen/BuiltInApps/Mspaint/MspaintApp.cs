@@ -36,6 +36,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Mspaint
         public override void Exit()
         {
             _exit.Set();
+            base.Exit();
         }
     }
 }

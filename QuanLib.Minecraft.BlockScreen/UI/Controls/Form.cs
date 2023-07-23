@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 {
-    public abstract class Form : ContainerControl<Control>, IApplicationComponent
+    public abstract class Form : ContainerControl<Control>, IForm
     {
         protected Form()
         {
             AllowSelected = true;
             AllowDeselected = true;
             AllowResize = true;
-            IsOnResize = false;
+            Resizeing = false;
             ResizeBorder = PlaneFacing.None;
+
+            OnFormClose += (obj) => { };
         }
 
         public bool AllowSelected { get; set; }
@@ -25,7 +27,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         public bool AllowResize { get; set; }
 
-        public bool IsOnResize { get; internal set; }
+        public bool Resizeing { get; internal set; }
 
         public PlaneFacing ResizeBorder { get; private set; }
 
@@ -47,11 +49,13 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
                     throw new InvalidOperationException();
                 return _Application;
             }
-            internal set => _Application = value;
+            private set => _Application = value;
         }
         private Application? _Application;
 
-        public bool IsInitialize => _Application is not null;
+        public bool ApplicationIsNotNull => _Application is not null;
+
+        public event Action<IForm> OnFormClose;
 
         public override void Initialize()
         {
@@ -85,9 +89,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
         private void Form_CursorMove(Point position, CursorMode mode)
         {
             Point parent = SubPos2ParentPos(position);
-            if (AllowResize && IsSelected)
+            if (AllowResize && IsSelected && !IsMaximize)
             {
-                if (IsOnResize)
+                if (Resizeing)
                 {
                     if (ResizeBorder.HasFlag(PlaneFacing.Top))
                         TopLocation = parent.Y;
@@ -162,8 +166,13 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         public virtual void CloseForm()
         {
-            ClearAllControlSyncer();
-            Application.Exit();
+            ClearAllLayoutSyncer();
+            OnFormClose.Invoke(this);
+        }
+
+        void IApplicationComponent.SetApplication(Application application)
+        {
+            Application = application;
         }
     }
 }

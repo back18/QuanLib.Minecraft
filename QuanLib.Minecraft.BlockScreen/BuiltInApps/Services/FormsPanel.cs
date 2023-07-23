@@ -24,8 +24,8 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                 else
                     ClientSize = new(newSize.Width, newSize.Height);
             });
-            OnAddSubControl += FormsPanel_OnAddSubControl;
-            OnRemoveSubControl += FormsPanel_OnRemoveSubControl;
+            OnAddedSubControl += FormsPanel_OnAddSubControl;
+            OnRemovedSubControl += FormsPanel_OnRemoveSubControl;
         }
 
         private readonly RootForm _owner;
@@ -60,7 +60,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             control.LayoutSyncer = null;
         }
 
-        internal override void HandleCursorMove(Point position, CursorMode mode)
+        public override void HandleCursorMove(Point position, CursorMode mode)
         {
             foreach (var control in SubControls.Reverse())
             {
@@ -73,7 +73,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             UpdateHoverState(position, mode);
         }
 
-        internal override bool HandleRightClick(Point position)
+        public override bool HandleRightClick(Point position)
         {
             bool result = false;
             foreach (var control in SubControls.Reverse())
@@ -83,7 +83,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                 {
                     if (form.ResizeBorder != PlaneFacing.None)
                     {
-                        form.IsOnResize = !form.IsOnResize;
+                        form.Resizeing = !form.Resizeing;
                         result = true;
                         break;
                     }
@@ -107,7 +107,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                 return SubControls.FirstHover.HandleRightClick(SubControls.FirstHover.ParentPos2SubPos(position));
         }
 
-        internal override bool HandleLeftClick(Point position)
+        public override bool HandleLeftClick(Point position)
         {
             bool result = false;
             foreach (var control in SubControls.Reverse())
@@ -121,7 +121,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             return result;
         }
 
-        internal override void HandleTextEditorUpdate(Point position, string text)
+        public override void HandleTextEditorUpdate(Point position, string text)
         {
             foreach (var control in SubControls.Reverse())
             {

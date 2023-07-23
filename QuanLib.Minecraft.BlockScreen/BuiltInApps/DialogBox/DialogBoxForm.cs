@@ -41,16 +41,16 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.DialogBox
             Client_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
         }
 
-        public override void OnInitComplete3()
+        public override void OnInitCompleted3()
         {
-            base.OnInitComplete3();
+            base.OnInitCompleted3();
 
             RefreshButtons();
         }
 
         private void RefreshButtons()
         {
-            if (!FormIsInitialize())
+            if (!AllowGetApplication())
                 return;
 
             Client_Panel.SubControls.Clear();
@@ -100,7 +100,8 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.DialogBox
         {
             DialogBoxApp app = (DialogBoxApp)GetApplication();
             app.ReturnValue = returnValue;
-            app.Exit();
+
+            CloseForm();
         }
     }
 }

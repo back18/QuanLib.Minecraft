@@ -89,9 +89,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             ShowTitleBar_Button.RightClick += ShowTitleBar_Button_RightClick;
         }
 
-        public override void OnInitComplete1()
+        public override void OnInitCompleted1()
         {
-            base.OnInitComplete1();
+            base.OnInitCompleted1();
 
             ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0);
         }

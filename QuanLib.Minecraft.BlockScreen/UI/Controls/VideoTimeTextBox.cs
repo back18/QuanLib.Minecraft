@@ -47,9 +47,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             TotalTime_Label.Skin.SetAllBackgroundBlockID(string.Empty);
         }
 
-        public override void OnInitComplete3()
+        public override void OnInitCompleted3()
         {
-            base.OnInitComplete3();
+            base.OnInitCompleted3();
 
             AutoLayout();
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public interface IUIRendering
+    public interface IControl : IControlInitializeHandling, IControlEventHandling, IControlRendering
     {
 
     }
