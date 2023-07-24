@@ -3,6 +3,7 @@ using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +74,10 @@ namespace QuanLib.Minecraft.BlockScreen
         private void Form_OnFormConse(IForm form)
         {
             ActiveForms.Remove(form);
+            if (MCOS.RootForm.ContainsForm(form))
+            {
+                MCOS.RootForm.RemoveForm(form);
+            }
 
             if (ActiveForms.Count == 0)
                 Exit();
@@ -149,7 +154,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 if (item is null)
                     throw new ArgumentNullException(nameof(item));
 
-                if (!Remove(item))
+                if (!_forms.Remove(item))
                     return false;
 
                 _owner.OnRemovedForm.Invoke(item);

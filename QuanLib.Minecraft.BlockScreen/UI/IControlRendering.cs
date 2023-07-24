@@ -9,17 +9,17 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public interface IControlRendering
     {
-        public bool Visible { get; }
+        public bool Visible { get; set; }
+
+        public Point RenderingLocation { get; set; }
+
+        public Size RenderingSize { get; set; }
+
+        public int BorderWidth { get; set; }
+
+        public ContentAnchor ContentAnchor { get; set; }
 
         public ISkin Skin { get; }
-
-        public Point RenderingLocation { get; }
-
-        public Size RenderingSize { get; }
-
-        public int BorderWidth { get; }
-
-        public ContentAnchor ContentAnchor { get; }
 
         public AbstractFrame RenderingFrame();
 
@@ -28,7 +28,5 @@ namespace QuanLib.Minecraft.BlockScreen.UI
         public ArrayFrame? GetFrameCache();
 
         public void OnRenderingCompleted(ArrayFrame frame);
-
-        public IEnumerable<IControlRendering> GetSubRenderings();
     }
 }

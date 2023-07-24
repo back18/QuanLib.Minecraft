@@ -132,7 +132,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public string ScreenDefaultBackgroundBlcokID { get; set; }
 
-        public Size FormsPanelSize => ServicesApp.RootForm.FormsPanel.ClientSize;
+        public Size FormsPanelSize => ServicesApp.RootForm.FormsPanelClientSize;
 
         public string Operator { get; set; }
 
@@ -161,6 +161,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public ServicesApp ServicesApp => (ServicesApp)ServicesProcess.Application;
 
         public DesktopApp DesktopApp => (DesktopApp)DesktopProcess.Application;
+
+        public IRootForm RootForm => ServicesApp.RootForm;
 
         public void Initialize()
         {
@@ -235,7 +237,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            var forms = ServicesApp.RootForm.FormsPanel.SubControls;
+            var root = ServicesApp.RootForm;
             foreach (var process in _process.ToArray())
             {
                 if (process.Key == ServicesApp.AppID)
@@ -247,27 +249,21 @@ namespace QuanLib.Minecraft.BlockScreen
                     switch (process.Value.ProcessState)
                     {
                         case ProcessState.Running:
-                            if (!forms.Contains(active))
+                            if (!root.ContainsForm(active))
                             {
-                                forms.Add(active);
-                                ServicesApp.RootForm.TrySwitchForm(active);
+                                root.AddForm(active);
                             }
                             break;
                         case ProcessState.Pending:
-                            if (ServicesApp.RootForm.SubControls.Contains(active))
+                            if (root.ContainsForm(active))
                             {
-                                active.IsSelected = false;
-                                forms.Remove(active);
-                                ServicesApp.RootForm.SelectedMaxDisplayPriority();
+                                root.RemoveForm(active);
                             }
                             break;
                         case ProcessState.Stopped:
-                            if (forms.Contains(active))
+                            if (root.ContainsForm(active))
                             {
-                                _process.Remove(process.Key);
-                                active.IsSelected = false;
-                                forms.Remove(active);
-                                ServicesApp.RootForm.SelectedMaxDisplayPriority();
+                                root.RemoveForm(active);
                             }
                             break;
                     }
@@ -358,10 +354,11 @@ namespace QuanLib.Minecraft.BlockScreen
         private void RunApp(ApplicationInfo appInfo, string[] args, Process? initiator = null)
         {
             Process process = new(appInfo, args, initiator);
-            _process.Add(process.Application.AppID, process);
             process.MCOS = this;
             process.Application.MCOS = this;
             process.Application.Process = process;
+            process.OnStopped += Process_OnStopped; ;
+            _process.Add(process.Application.AppID, process);
             process.Application.Initialize();
             process.MainThread.Start();
         }
@@ -383,6 +380,11 @@ namespace QuanLib.Minecraft.BlockScreen
             {
                 throw new ArgumentException("未知的AppID", nameof(appID));
             }
+        }
+
+        private void Process_OnStopped(Process process)
+        {
+            _process.Remove(process.Application.AppID);
         }
 
         public void RegisterApp(ApplicationInfo appInfo)

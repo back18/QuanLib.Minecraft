@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public interface IButton : IControl
+    public interface IContainerControl : IControl
     {
-        public int ReboundTime { get; set; }
-
-        public int ReboundCountdown { get; }
+        public IReadOnlyControlCollection<IControl> GetSubControls();
     }
 }

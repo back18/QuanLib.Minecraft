@@ -12,16 +12,16 @@ namespace QuanLib.Minecraft.BlockScreen
         public Process(ApplicationInfo appInfo, string[] args, Process? initiator = null)
         {
             ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
-            OnStart += () => { };
-            OnStopped += () => { };
+            OnStart += (obj) => { };
+            OnStopped += (obj) => { };
             Application = Application.CreateApplication(ApplicationInfo.TypeObject);
             Initiator = initiator;
             SubprocessCallbackQueue = new();
             MainThread = new(() =>
             {
-                OnStart.Invoke();
+                OnStart.Invoke(this);
                 object? @return = Application.Main(args);
-                OnStopped.Invoke();
+                OnStopped.Invoke(this);
                 if (Initiator?.Initiator?.SubprocessCallbackQueue?.TryDequeue(out var callback) ?? false)
                     callback.Invoke(@return);
             })
@@ -71,9 +71,9 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public event Action OnStart;
+        public event Action<Process> OnStart;
 
-        public event Action OnStopped;
+        public event Action<Process> OnStopped;
 
         public void Pending()
         {

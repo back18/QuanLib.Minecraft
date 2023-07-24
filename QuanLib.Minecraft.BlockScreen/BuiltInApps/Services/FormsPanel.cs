@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI.Controls;
+﻿using QuanLib.Minecraft.BlockScreen.UI;
+using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 {
-    public class FormsPanel : Panel<Form>
+    public class FormsPanel : GenericPanel<IForm>
     {
         public FormsPanel(RootForm owner)
         {
@@ -20,12 +21,18 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             (oldSize, newSize) =>
             {
                 if (_owner.ShowTitleBar)
+                {
                     ClientSize = new(newSize.Width, newSize.Height - 16);
+                    foreach (var form in SubControls)
+                        form.RenderingSize = new(form.RenderingSize.Width, form.RenderingSize.Height - 16);
+                }
                 else
+                {
                     ClientSize = new(newSize.Width, newSize.Height);
+                    foreach (var form in SubControls)
+                        form.RenderingSize = new(form.RenderingSize.Width, form.RenderingSize.Height + 16);
+                }
             });
-            OnAddedSubControl += FormsPanel_OnAddSubControl;
-            OnRemovedSubControl += FormsPanel_OnRemoveSubControl;
         }
 
         private readonly RootForm _owner;
@@ -38,27 +45,27 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                 throw new InvalidOperationException();
         }
 
-        private void FormsPanel_OnAddSubControl(Control control)
-        {
-            if (control is not Form)
-                return;
+        //private void FormsPanel_OnAddSubControl(Control control)
+        //{
+        //    if (control is not Form)
+        //        return;
 
-            control.Stretch = PlaneFacing.Bottom;
-            control.LayoutSyncer = new(this,
-            (oldPosition, newPosition) => { },
-            (oldSize, newSize) =>
-            {
-                control.Layout(oldSize, newSize);
-            });
-        }
+        //    control.Stretch = PlaneFacing.Bottom;
+        //    control.LayoutSyncer = new(this,
+        //    (oldPosition, newPosition) => { },
+        //    (oldSize, newSize) =>
+        //    {
+        //        control.Layout(oldSize, newSize);
+        //    });
+        //}
 
-        private void FormsPanel_OnRemoveSubControl(Control control)
-        {
-            if (control is not Form)
-                return;
+        //private void FormsPanel_OnRemoveSubControl(Control control)
+        //{
+        //    if (control is not Form)
+        //        return;
 
-            control.LayoutSyncer = null;
-        }
+        //    control.LayoutSyncer = null;
+        //}
 
         public override void HandleCursorMove(Point position, CursorMode mode)
         {
@@ -92,7 +99,7 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
                         if (form.IsSelected)
                             form.HandleRightClick(sub);
                         else
-                            _owner.TrySwitchForm(form);
+                            _owner.TrySwitchSelectedForm(form);
                         result = true;
                         break;
                     }

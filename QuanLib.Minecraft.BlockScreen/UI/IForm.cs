@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public interface IForm : IControl, IApplicationComponent
+    public interface IForm : IContainerControl, IApplicationComponent
     {
         public bool AllowSelected { get; }
 

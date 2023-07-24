@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
     /// <summary>
     /// 控件
     /// </summary>
-    public abstract class Control : IControl, IComparer<Control>, IComparable<Control>
+    public abstract class Control : IControl
     {
         protected Control()
         {
@@ -83,7 +83,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
 
         private Size ClientSize_Old;
 
-        public ContainerControl? ParentContainer { get; internal protected set; }
+        public IContainerControl? GenericContainerControl { get; private set; }
+
+        public ContainerControl? ParentContainer { get; private set; }
 
         public int ParentBorderWidth => ParentContainer?.BorderWidth ?? 0;
 
@@ -159,9 +161,17 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
         }
         private Size _ClientSize;
 
-        Point IControlRendering.RenderingLocation => new(ClientLocation.X + BorderWidth, ClientLocation.Y + BorderWidth);
+        Point IControlRendering.RenderingLocation
+        {
+            get => new(ClientLocation.X + BorderWidth, ClientLocation.Y + BorderWidth);
+            set => ClientLocation = new (value.X - BorderWidth, value.Y - BorderWidth);
+        }
 
-        Size IControlRendering.RenderingSize => ClientSize;
+        Size IControlRendering.RenderingSize
+        {
+            get => ClientSize;
+            set => ClientSize = value;
+        }
 
         public int Width
         {
@@ -279,6 +289,22 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             }
         }
 
+        public bool AutoSize
+        {
+            get => _AutoSize;
+            set
+            {
+                if (_AutoSize != value)
+                {
+                    if (value)
+                        AutoSetSize();
+                    _AutoSize = value;
+                    RequestUpdateFrame();
+                }
+            }
+        }
+        private bool _AutoSize;
+
         #endregion
 
         #region 外观与布局
@@ -297,24 +323,6 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
         }
         private bool _Visible;
 
-        public ControlSkin Skin { get; }
-
-        public bool AutoSize
-        {
-            get => _AutoSize;
-            set
-            {
-                if (_AutoSize != value)
-                {
-                    if (value)
-                        AutoSetSize();
-                    _AutoSize = value;
-                    RequestUpdateFrame();
-                }
-            }
-        }
-        private bool _AutoSize;
-
         public int DisplayPriority
         {
             get
@@ -328,7 +336,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             {
                 _DisplayPriority = value;
                 if (!IsSelected)
-                    ParentContainer?.GetSubControls().Sort();
+                    GenericContainerControl?.GetSubControls().Sort();
             }
         }
         private int _DisplayPriority;
@@ -340,10 +348,12 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             {
                 _MaxDisplayPriority = value;
                 if (IsSelected)
-                    ParentContainer?.GetSubControls().Sort();
+                    GenericContainerControl?.GetSubControls().Sort();
             }
         }
         private int _MaxDisplayPriority;
+
+        public ControlSkin Skin { get; }
 
         /// <summary>
         /// 锚定，大小不变，位置自适应父控件
@@ -434,7 +444,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
                         ControlState ^= ControlState.Selected;
                         OnDeselected.Invoke();
                     }
-                    ParentContainer?.GetSubControls().Sort();
+                    GenericContainerControl?.GetSubControls().Sort();
                 }
             }
         }
@@ -629,20 +639,12 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             AfterFrame.Invoke();
         }
 
-        protected void UpdateAllHoverState(Point position, CursorMode mode)
+        public virtual void UpdateAllHoverState(Point position, CursorMode mode)
         {
-            if (this is ContainerControl container)
-            {
-                foreach (var control in container.GetSubControls().ToArray())
-                {
-                    control.UpdateAllHoverState(control.ParentPos2SubPos(position), mode);
-                }
-            }
-
             UpdateHoverState(position, mode);
         }
 
-        protected void UpdateHoverState(Point position, CursorMode mode)
+        public void UpdateHoverState(Point position, CursorMode mode)
         {
             bool included = IncludedOnControl(position);
             if (IsHover)
@@ -806,11 +808,6 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             Frame_Old = frame;
         }
 
-        IEnumerable<IControlRendering> IControlRendering.GetSubRenderings()
-        {
-            return Array.Empty<IControlRendering>();
-        }
-
         #endregion
 
         #region 父级相关处理
@@ -950,19 +947,18 @@ namespace QuanLib.Minecraft.BlockScreen.UI.Controls
             return $"Type:{GetType().Name}|Text:{Text}|Pos:{ClientLocation.X},{ClientLocation.Y}|Size:{ClientSize.Width},{ClientSize.Height}";
         }
 
-        public int Compare(Control? x, Control? y)
-        {
-            if (x?.DisplayPriority < y?.DisplayPriority)
-                return -1;
-            else if (x?.DisplayPriority > y?.DisplayPriority)
-                return 1;
-            else
-                return 0;
-        }
-
-        public int CompareTo(Control? other)
+        public int CompareTo(IControl? other)
         {
             return DisplayPriority.CompareTo(other?.DisplayPriority);
+        }
+
+        void IControl.SetGenericContainerControl(IContainerControl? container)
+        {
+            GenericContainerControl = container;
+            if (container is null)
+                ParentContainer = null;
+            else if (container is ContainerControl containerControl)
+                ParentContainer = containerControl;
         }
 
         public class ControlSkin : ISkin

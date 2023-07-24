@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public static class Extensions
     {
-        public static int IndexOf<T>(this IReadOnlyControlCollection<T> source, T item) where T : Control
+        public static int IndexOf<T>(this IReadOnlyControlCollection<T> source, T item) where T : class, IControl
         {
             for (int i = 0; i < source.Count; i++)
             {

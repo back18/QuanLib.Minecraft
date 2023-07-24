@@ -9,8 +9,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public class ControlRenderer
     {
-        public ArrayFrame? Rendering(IControlRendering rendering)
+        public ArrayFrame? Rendering(IControl control)
         {
+            IControlRendering rendering = control;
             Task<ArrayFrame> _task;
             if (rendering.NeedRendering())
             {
@@ -33,23 +34,23 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 _task = Task.Run(() => rendering.GetFrameCache() ?? throw new InvalidOperationException());
             }
 
-            var subRenderings = rendering.GetSubRenderings();
-            if (!subRenderings.Any())
+            var subControls = (control as IContainerControl)?.GetSubControls();
+            if (subControls is null || !subControls.Any())
                 return _task.Result.ToArrayFrame();
 
             List<(IControlRendering rendering, Task<ArrayFrame?> task)> results = new();
-            foreach (var subRendering in subRenderings)
-                results.Add((subRendering, Task.Run(() => Rendering(subRendering))));
+            foreach (var subControl in subControls)
+                results.Add((subControl, Task.Run(() => Rendering(subControl))));
             Task.WaitAll(results.Select(i => i.task).ToArray());
             ArrayFrame frame = _task.Result;
 
-            foreach (var (subRendering, task) in results)
+            foreach (var (subControl, task) in results)
             {
                 if (task.Result is null)
                     continue;
 
-                frame.Overwrite(task.Result, subRendering.RenderingLocation);
-                DrawBorder(frame, subRendering);
+                frame.Overwrite(task.Result, subControl.RenderingLocation);
+                DrawBorder(frame, subControl);
             }
 
             return frame;

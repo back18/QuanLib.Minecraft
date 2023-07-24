@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
 {
-    public class RootForm : Form
+    public class RootForm : Form, IRootForm
     {
         public RootForm()
         {
@@ -18,11 +18,13 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             ShowTaskBar_Button = new();
         }
 
-        public readonly TaskBar TaskBar;
+        private readonly TaskBar TaskBar;
 
-        public readonly FormsPanel FormsPanel;
+        private readonly FormsPanel FormsPanel;
 
-        public readonly Button ShowTaskBar_Button;
+        private readonly Button ShowTaskBar_Button;
+
+        public Size FormsPanelClientSize => FormsPanel.ClientSize;
 
         public bool ShowTitleBar
         {
@@ -97,33 +99,28 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             ShowTitleBar = true;
         }
 
-        public List<Form> GetFormList()
+        public void AddForm(IForm form)
         {
-            List<Form> result = new();
-            foreach (var control in FormsPanel.SubControls)
-            {
-                if (control is Form form)
-                    result.Add(form);
-            }
-            return result;
+            FormsPanel.SubControls.Add(form);
+            TrySwitchSelectedForm(form);
         }
 
-        public void SelectedMaxDisplayPriority()
+        public bool RemoveForm(IForm form)
         {
-            if (FormsPanel.SubControls.Count > 0)
-            {
-                for (int i = FormsPanel.SubControls.Count - 1; i >= 0; i--)
-                {
-                    if (FormsPanel.SubControls[i] is Form form && form.AllowSelected)
-                    {
-                        form.IsSelected = true;
-                        break;
-                    }
-                }
-            }
+            if (!FormsPanel.SubControls.Remove(form))
+                return false;
+
+            form.IsSelected = false;
+            SelectedMaxDisplayPriority();
+            return true;
         }
 
-        public bool TrySwitchForm(Form form)
+        public bool ContainsForm(IForm form)
+        {
+            return FormsPanel.SubControls.Contains(form);
+        }
+
+        public bool TrySwitchSelectedForm(IForm form)
         {
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
@@ -133,20 +130,35 @@ namespace QuanLib.Minecraft.BlockScreen.BuiltInApps.Services
             if (!form.AllowSelected)
                 return false;
 
-            var controls = FormsPanel.SubControls.GetSelecteds();
-            foreach (var control in controls)
+            var selecteds = FormsPanel.SubControls.GetSelecteds();
+            foreach (var selected in selecteds)
             {
-                if (!control.AllowDeselected)
+                if (!selected.AllowDeselected)
                     return false;
             }
 
             form.IsSelected = true;
-            foreach (var control in controls)
+            foreach (var electeds in selecteds)
             {
-                control.IsSelected = false;
+                electeds.IsSelected = false;
             }
 
             return true;
+        }
+
+        public void SelectedMaxDisplayPriority()
+        {
+            if (FormsPanel.SubControls.Count > 0)
+            {
+                for (int i = FormsPanel.SubControls.Count - 1; i >= 0; i--)
+                {
+                    if (FormsPanel.SubControls[i].AllowSelected)
+                    {
+                        FormsPanel.SubControls[i].IsSelected = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

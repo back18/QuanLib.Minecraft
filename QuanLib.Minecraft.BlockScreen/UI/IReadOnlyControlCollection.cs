@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public interface IReadOnlyControlCollection<out T> : IReadOnlyList<T> where T : Control
+    public interface IReadOnlyControlCollection<out T> : IReadOnlyList<T> where T : class, IControl
     {
         public T? FirstHover { get; }
 
@@ -25,10 +25,6 @@ namespace QuanLib.Minecraft.BlockScreen.UI
         public IReadOnlyList<T> GetHovers();
 
         public IReadOnlyList<T> GetSelecteds();
-
-        public void ClearSelected();
-
-        public void ClearSyncers();
 
         public void Sort();
 
