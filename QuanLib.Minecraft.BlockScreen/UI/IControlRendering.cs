@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Minecraft.BlockScreen.Frame;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,11 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public int BorderWidth { get; set; }
 
-        public ContentAnchor ContentAnchor { get; set; }
+        public AnchorPosition ContentAnchor { get; set; }
 
         public ISkin Skin { get; }
 
-        public AbstractFrame RenderingFrame();
+        public IFrame RenderingFrame();
 
         public bool NeedRendering();
 

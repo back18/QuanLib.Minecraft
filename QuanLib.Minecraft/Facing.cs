@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft
 {
     /// <summary>
-    /// 方向
+    /// 三维方向
     /// </summary>
     public enum Facing
     {

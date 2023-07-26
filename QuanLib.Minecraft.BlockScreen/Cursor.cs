@@ -1,5 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen;
-using QuanLib.Minecraft.BlockScreen.Datas;
+﻿using QuanLib.Minecraft.BlockScreen.Data;
+using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI.Controls;
+﻿using QuanLib.Minecraft.BlockScreen.Frame;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
                 _task = Task.Run(() =>
                 {
-                    AbstractFrame frame = rendering.RenderingFrame();
+                    IFrame frame = rendering.RenderingFrame();
                     frame.CorrectSize(rendering.RenderingSize, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
                     return frame.ToArrayFrame();
                 });

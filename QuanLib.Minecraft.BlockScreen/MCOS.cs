@@ -9,13 +9,11 @@ using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Files;
-using QuanLib.Minecraft.BlockScreen.BuiltInApps.Desktop;
-using QuanLib.Minecraft.BlockScreen.BuiltInApps.Services;
 using QuanLib.BDF;
 using SixLabors.ImageSharp;
 using FFMediaToolkit;
-using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using QuanLib.Minecraft.BlockScreen.UI;
+using QuanLib.Minecraft.BlockScreen.Frame;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
@@ -23,13 +21,9 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         static MCOS()
         {
-            Task<BdfFont> task1 = Task.Run(() => BdfFont.Load(Path.Combine(PathManager.SystemResources_Fonts_Dir, "DefaultFont.bdf")));
-            Task task2 = Task.Run(() =>
-            {
-                FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
-                FFmpegLoader.LoadFFmpeg();
-            });
-            Task<BlockTextureCollection> task3 = Task.Run(() => BlockTextureCollection.Load(Path.Combine(PathManager.MinecraftResources_Dir, "assets", "minecraft")));
+            Task<McbsConfig> task1 = Task.Run(() => new McbsConfig(JsonConvert.DeserializeObject<McbsConfig.Json>(File.ReadAllText(Path.Combine(PathManager.Main_Dir, "MCBS.json"))) ?? throw new FormatException()));
+            Task<BlockTextureCollection> task2 = Task.Run(() => BlockTextureCollection.Load(Path.Combine(PathManager.MinecraftResources_Dir, "assets", "minecraft")));
+            Task<BdfFont> task3 = Task.Run(() => BdfFont.Load(Path.Combine(PathManager.SystemResources_Fonts_Dir, "DefaultFont.bdf")));
             Task<Dictionary<CursorType, Cursor>> task4 = Task.Run(() =>
             {
                 Dictionary<CursorType, Cursor> result = new();
@@ -41,11 +35,18 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
                 return result;
             });
+            Task task5 = Task.Run(() =>
+            {
+                FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
+                FFmpegLoader.LoadFFmpeg();
+            });
 
-            DefaultFont = task1.Result;
-            task2.Wait();
-            BlockTextureCollection = task3.Result;
+
+            McbsConfig = task1.Result;
+            BlockTextureCollection = task2.Result;
+            DefaultFont = task3.Result;
             _cursors = task4.Result;
+            task5.Wait();
 
             _fonts = new();
             RegisterFont("DefaultFont", DefaultFont);
@@ -56,18 +57,16 @@ namespace QuanLib.Minecraft.BlockScreen
         public MCOS(
             MinecraftServer minecraftServer,
             Screen screen,
-            AccelerationEngine ae,
-            PlayerCursorReader cursorReader)
+            PlayerCursorReader cursorReader,
+            AccelerationEngine accelerationEngine)
         {
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
-            AccelerationEngine = ae ?? throw new ArgumentNullException(nameof(ae));
             PlayerCursorReader = cursorReader ?? throw new ArgumentNullException(nameof(cursorReader));
-            GroupTextReader = new();
+            AccelerationEngine = accelerationEngine ?? throw new ArgumentNullException(nameof(accelerationEngine));
 
             Screen.MCOS = this;
             PlayerCursorReader.MCOS = this;
-            GroupTextReader.MCOS = this;
 
             EnableAccelerationEngine = true;
             FrameCount = 0;
@@ -78,6 +77,8 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenDefaultBackgroundBlcokID = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
             Operator = string.Empty;
             CursorType = CursorType.Default;
+            ServicesAppID = McbsConfig.ServicesAppID;
+            StartupChecklist = McbsConfig.StartupChecklist;
 
             _apps = new();
             _process = new();
@@ -85,9 +86,6 @@ namespace QuanLib.Minecraft.BlockScreen
             _stopwatch = new();
 
             AccelerationEngine.Start();
-
-            RegisterApp(new ServicesAppInfo());
-            RegisterApp(new DesktopAppInfo());
         }
 
         private static readonly Dictionary<string, BdfFont> _fonts;
@@ -105,6 +103,8 @@ namespace QuanLib.Minecraft.BlockScreen
         private Task? _screen;
 
         private bool _runing;
+
+        public static McbsConfig McbsConfig { get; }
 
         public static BlockTextureCollection BlockTextureCollection { get; private set; }
 
@@ -132,7 +132,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public string ScreenDefaultBackgroundBlcokID { get; set; }
 
-        public Size FormsPanelSize => ServicesApp.RootForm.FormsPanelClientSize;
+        public Size FormsPanelSize => RootForm.FormsPanelClientSize;
 
         public string Operator { get; set; }
 
@@ -148,19 +148,19 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public PlayerCursorReader PlayerCursorReader { get; }
 
-        public GroupTextReader GroupTextReader { get; }
-
         public IReadOnlyDictionary<string, ApplicationInfo> ApplicationList => _apps;
 
         public IReadOnlyDictionary<string, Process> ProcessList => _process;
 
-        public Process ServicesProcess => _process[ServicesApp.ID];
+        public string ServicesAppID { get; }
 
-        public Process DesktopProcess => _process[DesktopApp.ID];
+        public IReadOnlyList<string> StartupChecklist { get; }
 
-        public ServicesApp ServicesApp => (ServicesApp)ServicesProcess.Application;
+        public ApplicationInfo ServicesAppInfo => _apps[ServicesAppID];
 
-        public DesktopApp DesktopApp => (DesktopApp)DesktopProcess.Application;
+        public Process ServicesProcess => _process[ServicesAppID];
+
+        public ServicesApplication ServicesApp => (ServicesApplication)ServicesProcess.Application;
 
         public IRootForm RootForm => ServicesApp.RootForm;
 
@@ -169,22 +169,22 @@ namespace QuanLib.Minecraft.BlockScreen
             PlayerCursorReader.OnCursorMove += (Point position, CursorMode mode) =>
             {
                 CurrentPosition = position;
-                ServicesApp.RootForm.HandleCursorMove(position, mode);
+                RootForm.HandleCursorMove(position, mode);
             };
 
-            PlayerCursorReader.OnRightClick += (Point position) => ServicesApp.RootForm.HandleRightClick(position);
+            PlayerCursorReader.OnRightClick += (Point position) => RootForm.HandleRightClick(position);
 
-            PlayerCursorReader.OnLeftClick += (Point position) => ServicesApp.RootForm.HandleLeftClick(position);
+            PlayerCursorReader.OnLeftClick += (Point position) => RootForm.HandleLeftClick(position);
 
-            PlayerCursorReader.OnTextUpdate += (Point position, string text) => ServicesApp.RootForm.HandleTextEditorUpdate(position, text);
+            PlayerCursorReader.OnTextUpdate += (Point position, string text) => RootForm.HandleTextEditorUpdate(position, text);
         }
 
         public void Start()
         {
             _runing = true;
 
-            RunApp(ServicesApp.ID, Array.Empty<string>());
-            RunApp(DesktopApp.ID, Array.Empty<string>(), ServicesProcess);
+            RunServicesApp();
+            RunStartupChecklist();
 
             Console.CursorVisible = false;
             int lags = 0;
@@ -237,33 +237,31 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            var root = ServicesApp.RootForm;
             foreach (var process in _process.ToArray())
             {
-                if (process.Key == ServicesApp.AppID)
+                if (process.Key == ServicesAppInfo.ID)
                     continue;
 
-                //TODO: ServicesApp.RootForm.FormsPanel.SubControls 无法容纳 IForm
                 foreach (var active in process.Value.Application.ActiveForms)
                 {
                     switch (process.Value.ProcessState)
                     {
                         case ProcessState.Running:
-                            if (!root.ContainsForm(active))
+                            if (!RootForm.ContainsForm(active))
                             {
-                                root.AddForm(active);
+                                RootForm.AddForm(active);
                             }
                             break;
                         case ProcessState.Pending:
-                            if (root.ContainsForm(active))
+                            if (RootForm.ContainsForm(active))
                             {
-                                root.RemoveForm(active);
+                                RootForm.RemoveForm(active);
                             }
                             break;
                         case ProcessState.Stopped:
-                            if (root.ContainsForm(active))
+                            if (RootForm.ContainsForm(active))
                             {
-                                root.RemoveForm(active);
+                                RootForm.RemoveForm(active);
                             }
                             break;
                     }
@@ -290,7 +288,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            ServicesApp.RootForm.HandleBeforeFrame();
+            RootForm.HandleBeforeFrame();
 
             stopwatch.Stop();
             Timer.HandleBeforeFrame.Add(stopwatch.Elapsed);
@@ -301,7 +299,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            ServicesApp.RootForm.HandleAfterFrame();
+            RootForm.HandleAfterFrame();
 
             stopwatch.Stop();
             Timer.HandleAfterFrame.Add(stopwatch.Elapsed);
@@ -313,9 +311,9 @@ namespace QuanLib.Minecraft.BlockScreen
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, ScreenDefaultBackgroundBlcokID);
-            ArrayFrame? formFrame = ControlRenderer.Rendering(ServicesApp.RootForm);
+            ArrayFrame? formFrame = ControlRenderer.Rendering(RootForm);
             if (formFrame is not null)
-                frame.Overwrite(formFrame, ServicesApp.RootForm.Location);
+                frame.Overwrite(formFrame, RootForm.RenderingLocation);
             frame.Overwrite(_cursors[CursorType].Frame, CurrentPosition, _cursors[CursorType].Offset);
 
             stopwatch.Stop();
@@ -357,8 +355,8 @@ namespace QuanLib.Minecraft.BlockScreen
             process.MCOS = this;
             process.Application.MCOS = this;
             process.Application.Process = process;
-            process.OnStopped += Process_OnStopped; ;
-            _process.Add(process.Application.AppID, process);
+            process.OnStopped += Process_OnStopped;
+            _process.Add(process.ApplicationInfo.ID, process);
             process.Application.Initialize();
             process.MainThread.Start();
         }
@@ -382,9 +380,23 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        private void Process_OnStopped(Process process)
+        public void RunApp(string appID, Process? initiator = null)
         {
-            _process.Remove(process.Application.AppID);
+            RunApp(appID, Array.Empty<string>(), initiator);
+        }
+
+        private void RunServicesApp()
+        {
+            if (!_apps[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
+                throw new InvalidOperationException("无效的ServicesAppID");
+
+            RunApp(ServicesAppID);
+        }
+
+        private void RunStartupChecklist()
+        {
+            foreach (var item in StartupChecklist)
+                RunApp(item);
         }
 
         public void RegisterApp(ApplicationInfo appInfo)
@@ -397,6 +409,11 @@ namespace QuanLib.Minecraft.BlockScreen
                 Directory.CreateDirectory(dir);
 
             _apps.Add(appInfo.ID, appInfo);
+        }
+
+        private void Process_OnStopped(Process process)
+        {
+            _process.Remove(process.ApplicationInfo.ID);
         }
 
         public static void RegisterFont(string id, BdfFont font)

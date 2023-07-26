@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuanLib.Minecraft.BlockScreen.BlockForms\QuanLib.Minecraft.BlockScreen.BlockForms.csproj" />
+    <ProjectReference Include="..\QuanLib.Minecraft.BlockScreen\QuanLib.Minecraft.BlockScreen.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="QuanLib">
+      <HintPath>..\..\QuanLib\release\QuanLib\QuanLib.dll</HintPath>
+    </Reference>
+    <Reference Include="QuanLib.BDF">
+      <HintPath>..\..\QuanLib\release\QuanLib.BDF\QuanLib.BDF.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

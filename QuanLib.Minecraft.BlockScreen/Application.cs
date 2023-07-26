@@ -1,5 +1,4 @@
 ﻿using QuanLib.Minecraft.BlockScreen.UI;
-using QuanLib.Minecraft.BlockScreen.UI.Controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,11 +43,19 @@ namespace QuanLib.Minecraft.BlockScreen
         }
         private Process? _Process;
 
-        public abstract string AppID { get; }
+        public ApplicationInfo ApplicationInfo
+        {
+            get
+            {
+                if (_ApplicationInfo is null)
+                    throw new InvalidOperationException();
+                return _ApplicationInfo;
+            }
+            internal set => _ApplicationInfo = value;
+        }
+        private ApplicationInfo? _ApplicationInfo;
 
-        public abstract string AppName { get; }
-
-        public abstract Form MainForm { get; }
+        public abstract IForm MainForm { get; }
 
         public FormCollection ActiveForms { get; }
 

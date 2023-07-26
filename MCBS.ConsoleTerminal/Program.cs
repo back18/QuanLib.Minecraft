@@ -1,6 +1,6 @@
 ﻿using QuanLib.Minecraft;
 using QuanLib.Minecraft.BlockScreen;
-using QuanLib.Minecraft.BlockScreen.BuiltInApps;
+using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Fabric;
 
 namespace MCBS.ConsoleTerminal
@@ -79,12 +79,9 @@ namespace MCBS.ConsoleTerminal
             //Screen screen = new(new(64, 62, -192), Facing.Xp, Facing.Zp, 128, 128);
 
             Screen screen = new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144);
-
             AccelerationEngine ae = new("127.0.0.1", 0, 12345);
-
             PlayerCursorReader cursor = new("snowball_mouse");
-
-            MCOS os = new(server, screen, ae, cursor);
+            MCOS os = new(server, screen, cursor, ae);
 
             //MCOS.BlockTextureCollection.BuildMapCache(screen.ScreenFacing);
             //Console.WriteLine("完成，按回车继续");
@@ -104,14 +101,16 @@ namespace MCBS.ConsoleTerminal
             //}
 
             os.Initialize();
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.Settings.SettingsAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.TaskManager.TaskManagerAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.FileExplorer.FileExplorerAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.ImageViewer.ImageViewerAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.VideoPlayer.VideoPlayerAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.Mspaint.MspaintAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.DataScreen.DataScreenAppInfo());
-            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.BuiltInApps.DialogBox.DialogBoxAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager.TaskManagerAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer.FileExplorerAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer.ImageViewerAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Mspaint.MspaintAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen.DataScreenAppInfo());
+            os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox.DialogBoxAppInfo());
             os.RegisterApp(new Test01AppInfo());
             os.RegisterApp(new Test02AppInfo());
             os.RegisterApp(new Test03AppInfo());

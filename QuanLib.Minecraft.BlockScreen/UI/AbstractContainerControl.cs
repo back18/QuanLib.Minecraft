@@ -71,6 +71,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
             if (_items.Contains(item))
                 return false;
 
+            RecentlyAddedControl = item;
             Add(item);
             return true;
         }
@@ -80,7 +81,11 @@ namespace QuanLib.Minecraft.BlockScreen.UI
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            return _items.Remove(item);
+            if (!_items.Remove(item))
+                return false;
+
+            RecentlyRemovedControl = item;
+            return true;
         }
 
         public void RemoveAt(int index)

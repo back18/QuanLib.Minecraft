@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftPlayerRanking
+namespace QuanLib.Minecraft
 {
     /// <summary>
     /// 统计数据

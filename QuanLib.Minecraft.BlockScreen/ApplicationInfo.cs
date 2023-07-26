@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen
             DefaultIcon = Image.Load<Rgba32>(Path.Combine(PathManager.SystemResources_Textures_Icon_Dir, "DefaultIcon.png"));
         }
 
-        protected internal ApplicationInfo(Type typeObject)
+        protected ApplicationInfo(Type typeObject)
         {
             TypeObject = typeObject;
         }

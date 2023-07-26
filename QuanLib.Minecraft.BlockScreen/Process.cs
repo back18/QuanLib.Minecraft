@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     callback.Invoke(@return);
             })
             {
-                Name = Application.AppID,
+                Name = ApplicationInfo.Name,
                 IsBackground = true
             };
             IsPending = false;

@@ -12,11 +12,15 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public bool AllowDeselected { get; }
 
+        public bool AllowMove { get; set; }
+
         public bool AllowResize { get; }
+
+        public bool Moveing { get; }
 
         public bool Resizeing { get; }
 
-        public PlaneFacing ResizeBorder { get; }
+        public Direction ResizeBorder { get; }
 
         public bool IsMaximize { get; }
 
