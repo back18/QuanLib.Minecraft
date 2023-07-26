@@ -13,4 +13,10 @@
     <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="QuanLib.ExceptionHelper">
+      <HintPath>..\..\QuanLib\release\QuanLib.ExceptionHelper\QuanLib.ExceptionHelper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

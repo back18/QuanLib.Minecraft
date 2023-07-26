@@ -2,6 +2,7 @@
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Fabric;
+using QuanLib.Minecraft.Vectors;
 
 namespace MCBS.ConsoleTerminal
 {
@@ -73,6 +74,8 @@ namespace MCBS.ConsoleTerminal
 
             server.ConnectExistingServer();
 
+            bool outs = server.CommandHelper.RemoveForceLoadChunkAsync(new(22, -15)).Result;
+
             //Screen screen = new(new(50, 206, 100), Facing.Zm, Facing.Ym, 256, 144);
             //Screen screen = new(new(250, 206, 300), Facing.Xm, Facing.Ym, 256, 144);
             //Screen screen = new(new(-207, 62, -160), Facing.Zm, Facing.Xp, 256, 256);
@@ -82,6 +85,9 @@ namespace MCBS.ConsoleTerminal
             AccelerationEngine ae = new("127.0.0.1", 0, 12345);
             PlayerCursorReader cursor = new("snowball_mouse");
             MCOS os = new(server, screen, cursor, ae);
+
+            //screen.Start();
+            //screen.Stop();
 
             //MCOS.BlockTextureCollection.BuildMapCache(screen.ScreenFacing);
             //Console.WriteLine("完成，按回车继续");

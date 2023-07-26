@@ -74,7 +74,6 @@ namespace QuanLib.Minecraft.BlockScreen
             PreviousFrameTime = TimeSpan.Zero;
             NextFrameTime = PreviousFrameTime + FrameMinTime;
             Timer = new();
-            ScreenDefaultBackgroundBlcokID = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
             Operator = string.Empty;
             CursorType = CursorType.Default;
             ServicesAppID = McbsConfig.ServicesAppID;
@@ -129,8 +128,6 @@ namespace QuanLib.Minecraft.BlockScreen
         public int FrameCount { get; private set; }
 
         public SystemTimer Timer { get; }
-
-        public string ScreenDefaultBackgroundBlcokID { get; set; }
 
         public Size FormsPanelSize => RootForm.FormsPanelClientSize;
 
@@ -310,7 +307,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, ScreenDefaultBackgroundBlcokID);
+            frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
             ArrayFrame? formFrame = ControlRenderer.Rendering(RootForm);
             if (formFrame is not null)
                 frame.Overwrite(formFrame, RootForm.RenderingLocation);

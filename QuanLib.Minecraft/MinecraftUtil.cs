@@ -56,5 +56,17 @@ namespace QuanLib.Minecraft
             result = default;
             return false;
         }
+
+        public static SurfacePos BlockPos2ChunkPos(SurfacePos blockPos)
+        {
+            return new SurfacePos
+                    ((int)Math.Round(blockPos.X / 16.0, MidpointRounding.ToNegativeInfinity),
+                    (int)Math.Round(blockPos.Z / 16.0, MidpointRounding.ToNegativeInfinity));
+        }
+
+        public static SurfacePos ChunkPos2BlockPos(SurfacePos chunkPos)
+        {
+            return new(chunkPos.X * 16, chunkPos.Z * 16);
+        }
     }
 }

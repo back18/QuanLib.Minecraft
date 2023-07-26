@@ -22,5 +22,10 @@ namespace QuanLib.Minecraft.Vectors
         public T Y { get; set; }
 
         public T Z { get; set; }
+
+        public override string ToString()
+        {
+            return $"[{X},{Y},{Z}]";
+        }
     }
 }

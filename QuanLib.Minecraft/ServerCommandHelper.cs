@@ -530,6 +530,26 @@ namespace QuanLib.Minecraft
 
         #endregion
 
+        public virtual async Task<bool> AddForceLoadChunkAsync(SurfacePos blockPos)
+        {
+            string output = await SendCommandAsync($"forceload add {blockPos.X} {blockPos.Z}");
+
+            if (output.StartsWith("Marked chunk"))
+                return true;
+            else
+                return false;
+        }
+
+        public virtual async Task<bool> RemoveForceLoadChunkAsync(SurfacePos blockPos)
+        {
+            string output = await SendCommandAsync($"forceload remove {blockPos.X} {blockPos.Z}");
+
+            if (output.StartsWith("Unmarked chunk"))
+                return true;
+            else
+                return false;
+        }
+
         private static string SplitEntitySnbt(string output)
             => output.Split("entity data: ")[^1];
 

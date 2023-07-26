@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Frame;
+﻿using QuanLib.ExceptionHelpe;
+using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.Vectors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -20,6 +21,9 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         public Screen(Vector3<int> startPosition, Facing xFacing, Facing yFacing, int width, int height)
         {
+            ThrowHelper.TryThrowArgumentOutOfMinException(1, width, nameof(width));
+            ThrowHelper.TryThrowArgumentOutOfMinException(1, height, nameof(height));
+
             string xyFacing = xFacing.ToString() + yFacing.ToString();
             switch (xyFacing)
             {
@@ -135,7 +139,12 @@ namespace QuanLib.Minecraft.BlockScreen
             YFacing = yFacing;
             Width = width;
             Height = height;
+            DefaultBackgroundBlcokID = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
+
+            _chunks = new();
         }
+
+        private readonly List<SurfacePos> _chunks;
 
         public MCOS MCOS
         {
@@ -172,6 +181,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public int TotalPixels => Width * Height;
 
         public RectangleRange ScreenRange { get; }
+
+        public string DefaultBackgroundBlcokID { get; set; }
 
         public ArrayFrame? LastFrame { get; private set; }
 
@@ -340,14 +351,47 @@ namespace QuanLib.Minecraft.BlockScreen
             return pixels;
         }
 
+        public void Reset()
+        {
+            ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, DefaultBackgroundBlcokID));
+        }
+
         public void Clear()
         {
-            ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, ConcretePixel.ToBlockID(MinecraftColor.Black)));
+            ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, "minecraft:air"));
+        }
+
+        public void Start()
+        {
+            LoadScreenChunks();
+            Reset();
         }
 
         public void Stop()
         {
-            ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, "minecraft:air"));
+            UnloadScreenChunks();
+            Clear();
+        }
+
+        public void LoadScreenChunks()
+        {
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                {
+                    var blockPos = ToWorldPosition(new(x, y));
+                    SurfacePos chunkPos = MinecraftUtil.BlockPos2ChunkPos(new(blockPos.X, blockPos.Z));
+                    if (!_chunks.Contains(chunkPos))
+                        _chunks.Add(chunkPos);
+                }
+
+            foreach (var chunk in _chunks)
+                MCOS.MinecraftServer.CommandHelper.AddForceLoadChunkAsync(MinecraftUtil.ChunkPos2BlockPos(chunk)).Wait();
+        }
+
+        public void UnloadScreenChunks()
+        {
+            foreach (var chunk in _chunks)
+                MCOS.MinecraftServer.CommandHelper.RemoveForceLoadChunkAsync(MinecraftUtil.ChunkPos2BlockPos(chunk)).Wait();
         }
 
         public WorldPixel ToWorldPixel(ScreenPixel pixel)
