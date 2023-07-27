@@ -68,5 +68,19 @@ namespace QuanLib.Minecraft
         {
             return new(chunkPos.X * 16, chunkPos.Z * 16);
         }
+
+        public static Facing ToReverseFacing(Facing facing)
+        {
+            return facing switch
+            {
+                Facing.Xp => Facing.Xm,
+                Facing.Xm => Facing.Xp,
+                Facing.Yp => Facing.Ym,
+                Facing.Ym => Facing.Yp,
+                Facing.Zp => Facing.Zm,
+                Facing.Zm => Facing.Zp,
+                _ => throw new InvalidOperationException(),
+            };
+        }
     }
 }

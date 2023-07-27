@@ -56,8 +56,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
             if (DayTimeSyncCountdown <= 0)
             {
                 ServerCommandHelper command = GetMCOS().MinecraftServer.CommandHelper;
-                int gameDays = command.GetGameDays().Result;
-                TimeSpan dayTime = MinecraftUtil.DayTimeToTimeSpan(command.GetDayTime().Result);
+                int gameDays = command.GetGameDays();
+                TimeSpan dayTime = MinecraftUtil.DayTimeToTimeSpan(command.GetDayTime());
                 DayTime_Label.Text = $"游戏时间：{gameDays}日{(int)dayTime.TotalHours}时{dayTime.Minutes}分";
                 DayTimeSyncCountdown = DayTimeSyncTime;
             }
@@ -65,7 +65,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
             GameTimeSyncCountdown--;
             if (GameTimeSyncCountdown <= 0)
             {
-                TimeSpan gameTime = MinecraftUtil.GameTicksToTimeSpan(GetMCOS().MinecraftServer.CommandHelper.GetGameTime().Result);
+                TimeSpan gameTime = MinecraftUtil.GameTicksToTimeSpan(GetMCOS().MinecraftServer.CommandHelper.GetGameTime());
                 GameTime_Label.Text = $"开服时长：{gameTime.Days}天{gameTime.Hours}小时{gameTime.Minutes}分钟";
                 GameTimeSyncCountdown = GameTimeSyncTime;
             }

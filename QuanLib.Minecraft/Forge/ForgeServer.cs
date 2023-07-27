@@ -138,15 +138,15 @@ namespace QuanLib.Minecraft.Forge
             }
         }
 
-        public async Task<TPS> GetTps()
+        public TPS GetTps()
         {
-            string output = await CommandHelper.SendCommandAsync("forge tps");
+            string output = CommandHelper.SendCommand("forge tps");
             return TPS.Parse(output.Split('\n', StringSplitOptions.RemoveEmptyEntries)[^1]);
         }
 
-        public async Task<TPS[]> GetAllDimensionTps()
+        public TPS[] GetAllDimensionTps()
         {
-            string output = await CommandHelper.SendCommandAsync("forge tps");
+            string output = CommandHelper.SendCommand("forge tps");
             string[] lines = output.Split("\n", StringSplitOptions.RemoveEmptyEntries)[..^1];
             List<TPS> result = new();
             foreach (var line in lines)

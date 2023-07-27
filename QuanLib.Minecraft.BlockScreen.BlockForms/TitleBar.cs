@@ -132,7 +132,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void FormTitleBar_CursorMove(Point position, CursorMode mode)
+        private void FormTitleBar_CursorMove(Point position)
         {
             if (_owner.Moveing)
             {

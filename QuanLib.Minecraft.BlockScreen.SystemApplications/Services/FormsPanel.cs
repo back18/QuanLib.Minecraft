@@ -68,17 +68,17 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
         //    control.LayoutSyncer = null;
         //}
 
-        public override void HandleCursorMove(Point position, CursorMode mode)
+        public override void HandleCursorMove(Point position)
         {
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    control.HandleCursorMove(control.ParentPos2SubPos(position), mode);
+                    control.HandleCursorMove(control.ParentPos2SubPos(position));
                 }
             }
 
-            UpdateHoverState(position, mode);
+            UpdateHoverState(position);
         }
 
         public override bool HandleRightClick(Point position)

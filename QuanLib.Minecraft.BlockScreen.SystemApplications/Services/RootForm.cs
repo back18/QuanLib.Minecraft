@@ -85,12 +85,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
         }
 
-        private void ShowTaskBar_Button_CursorEnter(Point position, CursorMode mode)
+        private void ShowTaskBar_Button_CursorEnter(Point position)
         {
             ShowTaskBar_Button.Visible = true;
         }
 
-        private void ShowTaskBar_Button_CursorLeave(Point position, CursorMode mode)
+        private void ShowTaskBar_Button_CursorLeave(Point position)
         {
             ShowTaskBar_Button.Visible = false;
         }

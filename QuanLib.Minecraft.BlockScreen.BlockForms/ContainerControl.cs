@@ -68,14 +68,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        public override void UpdateAllHoverState(Point position, CursorMode mode)
+        public override void UpdateAllHoverState(Point position)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.UpdateAllHoverState(control.ParentPos2SubPos(position), mode);
+                control.UpdateAllHoverState(control.ParentPos2SubPos(position));
             }
 
-            base.UpdateAllHoverState(position, mode);
+            base.UpdateAllHoverState(position);
         }
 
         public class ControlCollection<T> : AbstractControlCollection<T> where T : Control

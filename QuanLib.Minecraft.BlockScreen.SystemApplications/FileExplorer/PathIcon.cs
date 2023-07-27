@@ -27,13 +27,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         public abstract string Path { get; }
 
-        private void PathIcon_CursorEnter(Point position, CursorMode mode)
+        private void PathIcon_CursorEnter(Point position)
         {
             BorderWidth = 2;
             Location = ClientLocation;
         }
 
-        private void PathIcon_CursorLeave(Point position, CursorMode mode)
+        private void PathIcon_CursorLeave(Point position)
         {
             BorderWidth = 1;
             ClientLocation = Location;

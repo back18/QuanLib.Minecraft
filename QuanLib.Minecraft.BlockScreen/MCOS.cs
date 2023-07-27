@@ -57,16 +57,18 @@ namespace QuanLib.Minecraft.BlockScreen
         public MCOS(
             MinecraftServer minecraftServer,
             Screen screen,
-            PlayerCursorReader cursorReader,
+            ScreenInputReader cursorReader,
             AccelerationEngine accelerationEngine)
         {
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
-            PlayerCursorReader = cursorReader ?? throw new ArgumentNullException(nameof(cursorReader));
+            ScreenInputReader = cursorReader ?? throw new ArgumentNullException(nameof(cursorReader));
+            ScreenConstructor = new("snowball_mouse");
             AccelerationEngine = accelerationEngine ?? throw new ArgumentNullException(nameof(accelerationEngine));
 
             Screen.MCOS = this;
-            PlayerCursorReader.MCOS = this;
+            ScreenInputReader.MCOS = this;
+            ScreenConstructor.MCOS = this;
 
             EnableAccelerationEngine = true;
             FrameCount = 0;
@@ -83,8 +85,6 @@ namespace QuanLib.Minecraft.BlockScreen
             _process = new();
             _callbacks = new();
             _stopwatch = new();
-
-            AccelerationEngine.Start();
         }
 
         private static readonly Dictionary<string, BdfFont> _fonts;
@@ -143,7 +143,9 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public AccelerationEngine AccelerationEngine { get; }
 
-        public PlayerCursorReader PlayerCursorReader { get; }
+        public ScreenInputReader ScreenInputReader { get; }
+
+        public ScreenConstructor ScreenConstructor { get; }
 
         public IReadOnlyDictionary<string, ApplicationInfo> ApplicationList => _apps;
 
@@ -163,17 +165,17 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Initialize()
         {
-            PlayerCursorReader.OnCursorMove += (Point position, CursorMode mode) =>
+            ScreenInputReader.OnCursorMove += (Point position) =>
             {
                 CurrentPosition = position;
-                RootForm.HandleCursorMove(position, mode);
+                RootForm.HandleCursorMove(position);
             };
 
-            PlayerCursorReader.OnRightClick += (Point position) => RootForm.HandleRightClick(position);
+            ScreenInputReader.OnRightClick += (Point position) => RootForm.HandleRightClick(position);
 
-            PlayerCursorReader.OnLeftClick += (Point position) => RootForm.HandleLeftClick(position);
+            ScreenInputReader.OnLeftClick += (Point position) => RootForm.HandleLeftClick(position);
 
-            PlayerCursorReader.OnTextUpdate += (Point position, string text) => RootForm.HandleTextEditorUpdate(position, text);
+            ScreenInputReader.OnTextUpdate += (Point position, string text) => RootForm.HandleTextEditorUpdate(position, text);
         }
 
         public void Start()
@@ -182,8 +184,12 @@ namespace QuanLib.Minecraft.BlockScreen
 
             RunServicesApp();
             RunStartupChecklist();
+            AccelerationEngine.Start();
 
+#if DebugTimer
             Console.CursorVisible = false;
+#endif
+
             int lags = 0;
             _stopwatch.Start();
             while (_runing)
@@ -203,7 +209,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     _callbacks.Enqueue(() => HandleCursorEvent());
                     lags++;
                 }
-
+                ScreenConstructor.Handle();
                 HandleBeforeFrame();
                 HandleRenderingFrame(out var frame);
                 HandleUpdateScreen(frame);
@@ -212,6 +218,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
                 Timer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
 
+#if DebugTimer
                 string empty = new(' ', 200);
                 Console.SetCursorPosition(0, 0);
                 for (int i = 0; i < 10; i++)
@@ -220,6 +227,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 Console.WriteLine(Timer.ToString(BlockScreen.Timer.Duration.Tick20));
                 Console.WriteLine($"帧: {FrameCount}");
                 Console.WriteLine($"滞后: {lags}");
+#endif
             }
 
             _stopwatch.Stop();
@@ -274,7 +282,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            PlayerCursorReader.Handle();
+            ScreenInputReader.Handle();
 
             stopwatch.Stop();
             Timer.CursorEvent.Add(stopwatch.Elapsed);

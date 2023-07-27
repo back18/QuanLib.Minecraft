@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.Datas
 
         public sbyte Slot { get; }
 
-        public Dictionary<string, object> Tag { get; }
+        public Dictionary<string, object>? Tag { get; }
 
         public class Nbt
         {
@@ -36,7 +36,7 @@ namespace QuanLib.Minecraft.Datas
 
             public sbyte Slot { get; set; }
 
-            public Dictionary<string, object> tag { get; set; }
+            public Dictionary<string, object>? tag { get; set; }
         }
     }
 }

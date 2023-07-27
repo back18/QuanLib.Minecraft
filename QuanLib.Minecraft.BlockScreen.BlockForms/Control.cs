@@ -48,9 +48,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ClientSize_Update = false;
             ClientSize_Old = ClientSize;
 
-            CursorMove += (arg1, arg2) => { };
-            CursorEnter += (arg1, arg2) => { };
-            CursorLeave += (arg1, arg2) => { };
+            CursorMove += (obj) => { };
+            CursorEnter += (obj) => { };
+            CursorLeave += (obj) => { };
             RightClick += (obj) => { };
             LeftClick += (obj) => { };
             DoubleRightClick += (obj) => { };
@@ -470,11 +470,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         #region 事件声明
 
-        public event Action<Point, CursorMode> CursorMove;
+        public event Action<Point> CursorMove;
 
-        public event Action<Point, CursorMode> CursorEnter;
+        public event Action<Point> CursorEnter;
 
-        public event Action<Point, CursorMode> CursorLeave;
+        public event Action<Point> CursorLeave;
 
         public event Action<Point> RightClick;
 
@@ -551,7 +551,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (!AllowGetApplication())
                 return;
             MCOS os = GetMCOS();
-            UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
+            UpdateAllHoverState(ScreenPos2ControlPos(os.ScreenInputReader.CurrentPosition));
         }
 
         private void Control_OnResize(Size oldSize, Size newSize)
@@ -559,20 +559,20 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (!AllowGetApplication())
                 return;
             MCOS os = GetMCOS();
-            UpdateAllHoverState(ScreenPos2ControlPos(os.PlayerCursorReader.CurrentPosition), os.PlayerCursorReader.CursorMode);
+            UpdateAllHoverState(ScreenPos2ControlPos(os.ScreenInputReader.CurrentPosition));
         }
 
         #endregion
 
         #region 事件处理
 
-        public virtual void HandleCursorMove(Point position, CursorMode mode)
+        public virtual void HandleCursorMove(Point position)
         {
-            UpdateHoverState(position, mode);
+            UpdateHoverState(position);
 
             if (IncludedOnControl(position) || InvokeExternalCursorMove)
             {
-                CursorMove.Invoke(position, mode);
+                CursorMove.Invoke(position);
             }
         }
 
@@ -641,12 +641,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             AfterFrame.Invoke();
         }
 
-        public virtual void UpdateAllHoverState(Point position, CursorMode mode)
+        public virtual void UpdateAllHoverState(Point position)
         {
-            UpdateHoverState(position, mode);
+            UpdateHoverState(position);
         }
 
-        public void UpdateHoverState(Point position, CursorMode mode)
+        public void UpdateHoverState(Point position)
         {
             bool included = IncludedOnControl(position);
             if (IsHover)
@@ -654,7 +654,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (!included)
                 {
                     IsHover = false;
-                    CursorLeave.Invoke(position, mode);
+                    CursorLeave.Invoke(position);
                 }
             }
             else
@@ -667,13 +667,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                         if (control.Index < Index)
                         {
                             control.IsHover = false;
-                            control.CursorLeave.Invoke(position, mode);
+                            control.CursorLeave.Invoke(position);
                         }
                         else
                             return;
                     }
                     IsHover = true;
-                    CursorEnter.Invoke(position, mode);
+                    CursorEnter.Invoke(position);
                 }
             }
         }
@@ -870,12 +870,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         protected void SetTextEditorInitialText()
         {
-            GetMCOS().PlayerCursorReader.InitialText = Text;
+            GetMCOS().ScreenInputReader.InitialText = Text;
         }
 
         protected void ResetTextEditor()
         {
-            GetMCOS().PlayerCursorReader.ResetText();
+            GetMCOS().ScreenInputReader.ResetText();
         }
 
         public virtual void ClearAllLayoutSyncer()

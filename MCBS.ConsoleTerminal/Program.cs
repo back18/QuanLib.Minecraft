@@ -46,6 +46,8 @@ namespace MCBS.ConsoleTerminal
             //byte[] bytes = AccelerationEngine.DataPacket.ToDataPacket(pixels).ToBytes();
             //temp.SendData(bytes);
 
+            Screen screen1 = Screen.CreateScreen(new(0, 100, 0), new(0, 0, -100));
+
             //ForgeServer server = new("D:\\程序\\HMCL\\forge-1.19.2-43.2.8-new", "127.0.0.1");
             FabricServer server = new("D:\\程序\\HMCL\\fabric-server-mc.1.20.1-loader.0.14.21-launcher.0.11.2", "127.0.0.1");
             //FabricServer server = new("C:\\Users\\Administrator\\Desktop\\fabric-server-mc.1.20.1-loader.0.14.21-launcher.0.11.2", "127.0.0.1");
@@ -74,7 +76,7 @@ namespace MCBS.ConsoleTerminal
 
             server.ConnectExistingServer();
 
-            bool outs = server.CommandHelper.RemoveForceLoadChunkAsync(new(22, -15)).Result;
+            var outs = server.CommandHelper.GetPlayersSbnt("@a", "XpSeed");
 
             //Screen screen = new(new(50, 206, 100), Facing.Zm, Facing.Ym, 256, 144);
             //Screen screen = new(new(250, 206, 300), Facing.Xm, Facing.Ym, 256, 144);
@@ -83,7 +85,7 @@ namespace MCBS.ConsoleTerminal
 
             Screen screen = new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144);
             AccelerationEngine ae = new("127.0.0.1", 0, 12345);
-            PlayerCursorReader cursor = new("snowball_mouse");
+            ScreenInputReader cursor = new("snowball_mouse");
             MCOS os = new(server, screen, cursor, ae);
 
             //screen.Start();

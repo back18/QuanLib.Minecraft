@@ -54,7 +54,7 @@ namespace QuanLib.Minecraft.Datas
             }
         }
 
-        public Facing PitchFacing => _Pitch < 0 ? Facing.Ym : Facing.Yp;
+        public Facing PitchFacing => _Pitch < 0 ? Facing.Yp : Facing.Ym;
 
         public bool Contain(Facing facing)
         {

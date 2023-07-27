@@ -27,9 +27,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Text = text;
         }
 
-        private void TextBox_CursorEnter(Point position, CursorMode mode)
+        private void TextBox_CursorEnter(Point position)
         {
-            if (mode == CursorMode.TextEditor)
+            if (GetMCOS().ScreenInputReader.CurrenMode == CursorMode.TextEditor)
             {
                 IsSelected = true;
                 SetTextEditorInitialText();
@@ -37,7 +37,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void TextBox_CursorLeave(Point position, CursorMode mode)
+        private void TextBox_CursorLeave(Point position)
         {
             if (IsSelected)
                 IsSelected = false;

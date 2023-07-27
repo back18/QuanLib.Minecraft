@@ -27,5 +27,37 @@ namespace QuanLib.Minecraft.Vectors
         {
             return $"[{X},{Y},{Z}]";
         }
+
+        public static bool operator ==(Vector3<T> v1, Vector3<T> v2)
+        {
+            return v1.Equals(v2);
+        }
+
+        public static bool operator !=(Vector3<T> v1, Vector3<T> v2)
+        {
+            return !v1.Equals(v2);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Vector3<T> other)
+            {
+                return Equals(other);
+            }
+
+            return false;
+        }
+
+        public bool Equals(Vector3<T> other)
+        {
+            return EqualityComparer<T>.Default.Equals(X, other.X)
+                   && EqualityComparer<T>.Default.Equals(Y, other.Y)
+                   && EqualityComparer<T>.Default.Equals(Z, other.Z);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z);
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace QuanLib.Minecraft.Vectors
 
         public static bool CheckPlaneReachability(Vector3Double position, Rotation rotation, Facing normalFacing, int target)
         {
-            if (!rotation.Contain((Facing)(-(int)normalFacing)))
+            if (!rotation.Contain(MinecraftUtil.ToReverseFacing(normalFacing)))
                 return false;
 
             position.Y += 1.625;

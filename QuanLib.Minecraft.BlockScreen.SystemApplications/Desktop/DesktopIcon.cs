@@ -51,17 +51,17 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             Name_Label.Text = _appInfo.Name;
         }
 
-        private void DesktopIcon_CursorEnter(Point position, CursorMode mode)
+        private void DesktopIcon_CursorEnter(Point position)
         {
             ParentContainer?.AsControlCollection<Control>()?.TryAdd(Name_Label);
         }
 
-        private void DesktopIcon_CursorLeave(Point position, CursorMode mode)
+        private void DesktopIcon_CursorLeave(Point position)
         {
             ParentContainer?.AsControlCollection<Control>()?.Remove(Name_Label);
         }
 
-        private void DesktopIcon_CursorMove(Point position, CursorMode mode)
+        private void DesktopIcon_CursorMove(Point position)
         {
             if (ParentContainer?.AsControlCollection<Control>()?.Contains(Name_Label) ?? false)
             {

@@ -69,7 +69,7 @@ namespace QuanLib.Minecraft.BlockScreen
                         {
                             if (!string.IsNullOrEmpty(InitialText))
                             {
-                                command.SetPlayerHotbarItemAsync(op, solt, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}").Wait();
+                                command.SetPlayerHotbarItem(op, solt, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
                                 _textCaches[op] = InitialText;
                             }
                         }

@@ -96,14 +96,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        public override void HandleCursorMove(Point position, CursorMode mode)
+        public override void HandleCursorMove(Point position)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.HandleCursorMove(control.ParentPos2SubPos(position), mode);
+                control.HandleCursorMove(control.ParentPos2SubPos(position));
             }
 
-            base.HandleCursorMove(position, mode);
+            base.HandleCursorMove(position);
         }
 
         public override bool HandleRightClick(Point position)

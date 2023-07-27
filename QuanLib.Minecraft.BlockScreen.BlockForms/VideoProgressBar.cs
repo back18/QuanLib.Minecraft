@@ -44,17 +44,17 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             RequestUpdateFrame();
         }
 
-        private void VideoProgressBar_CursorEnter(Point position, CursorMode mode)
+        private void VideoProgressBar_CursorEnter(Point position)
         {
             _owner.SubControls.TryAdd(Time_Label);
         }
 
-        private void VideoProgressBar_CursorLeave(Point position, CursorMode mode)
+        private void VideoProgressBar_CursorLeave(Point position)
         {
             _owner.SubControls.Remove(Time_Label);
         }
 
-        private void VideoProgressBar_CursorMove(Point position, CursorMode mode)
+        private void VideoProgressBar_CursorMove(Point position)
         {
             if (_owner.SubControls.Contains(Time_Label))
             {

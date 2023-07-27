@@ -23,6 +23,8 @@ namespace QuanLib.Minecraft
 
         private const string POS = "Pos";
 
+        public const int DUAL_WIELD_SLOT = -106;
+
         private readonly RCON _rcon;
 
         private readonly SemaphoreSlim _semaphore;
@@ -52,15 +54,40 @@ namespace QuanLib.Minecraft
             }
         }
 
+        public virtual string SendCommand(string command, bool retry = false, int maxRetrys = -1)
+        {
+            _semaphore.Wait();
+            try
+            {
+                int retryCount = 0;
+                retry:
+                string output = _rcon.SendCommandAsync(command).Result;
+                if (retry && string.IsNullOrEmpty(output) && (maxRetrys == -1 || retryCount < maxRetrys))
+                {
+                    retryCount++;
+                    goto retry;
+                }
+                return output;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         public virtual bool TrySendCommand(string command, [MaybeNullWhen(false)] out string output, bool retry = false, int maxRetrys = -1)
         {
-            output = SendCommandAsync(command, retry, maxRetrys).Result;
+            output = SendCommand(command, retry, maxRetrys);
             return !string.IsNullOrEmpty(output);
         }
 
-        public virtual async Task<PlayerList> GetPlayerListAsync()
+        public virtual PlayerList GetPlayerList()
         {
-            string output = await SendCommandAsync("list");
+            string output = SendCommand("list");
             Match match = Regex.Match(output, @"There are (\d+) of a max of (\d+) players online: (.+)");
             if (match.Success)
             {
@@ -75,27 +102,27 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public virtual async Task<int> GetGameDays()
+        public virtual int GetGameDays()
         {
-            string output = await SendCommandAsync("time query day");
+            string output = SendCommand("time query day");
             return int.Parse(output.Split(' ')[^1]);
         }
 
-        public virtual async Task<int> GetDayTime()
+        public virtual int GetDayTime()
         {
-            string output = await SendCommandAsync("time query daytime");
+            string output = SendCommand("time query daytime");
             return int.Parse(output.Split(' ')[^1]);
         }
 
-        public virtual async Task<int> GetGameTime()
+        public virtual int GetGameTime()
         {
-            string output = await SendCommandAsync("time query gametime");
+            string output = SendCommand("time query gametime");
             return int.Parse(output.Split(' ')[^1]);
         }
 
-        public virtual async Task<bool> TelePortAsync(string source, string target)
+        public virtual bool TelePort(string source, string target)
         {
-            string output = await SendCommandAsync($"tp {source} {target}");
+            string output = SendCommand($"tp {source} {target}");
             if (output.StartsWith("No entity was found"))
             {
                 return false;
@@ -106,9 +133,9 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public virtual async Task<bool> TelePortAsync(string source, double x, double y, double z)
+        public virtual bool TelePort(string source, double x, double y, double z)
         {
-            string output = await SendCommandAsync($"tp {source} {x} {y} {z}");
+            string output = SendCommand($"tp {source} {x} {y} {z}");
             if (output.StartsWith("No entity was found"))
             {
                 return false;
@@ -119,9 +146,9 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public virtual async Task<bool> TelePortAsync(string source, IVector3<double> target)
+        public virtual bool TelePort(string source, IVector3<double> target)
         {
-            string output = await SendCommandAsync($"tp {source} {target.X} {target.Y} {target.Z}");
+            string output = SendCommand($"tp {source} {target.X} {target.Y} {target.Z}");
             if (output.StartsWith("No entity was found"))
             {
                 return false;
@@ -132,12 +159,12 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public virtual async Task<bool> SetBlockAsync(int x, int y, int z, string id)
+        public virtual bool SetBlock(int x, int y, int z, string id)
         {
             if (id is null)
                 throw new ArgumentNullException(nameof(id));
 
-            string output = await SendCommandAsync($"setblock {x} {y} {z} {id}");
+            string output = SendCommand($"setblock {x} {y} {z} {id}");
 
             if (output.StartsWith("Changed the block at"))
                 return true;
@@ -145,12 +172,12 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual async Task<bool> SetBlockAsync(IVector3<int> pos, string id)
+        public virtual bool SetBlock(IVector3<int> pos, string id)
         {
             if (id is null)
                 throw new ArgumentNullException(nameof(id));
 
-            string output = await SendCommandAsync($"setblock {pos.X} {pos.Y} {pos.Z} {id}");
+            string output = SendCommand($"setblock {pos.X} {pos.Y} {pos.Z} {id}");
 
             if (output.StartsWith("Changed the block at"))
                 return true;
@@ -158,61 +185,61 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual async Task SendChatMessageAsync(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
+        public virtual void SendChatMessage(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
-            await SendCommandAsync($"tellraw {target} {CommandUtil.ToJson(text, color, bold)}");
+            SendCommand($"tellraw {target} {CommandUtil.ToJson(text, color, bold)}");
         }
 
         #region 发送title
 
-        public virtual async Task SendTitleAsync(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
+        public virtual void SendTitle(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
-            await SendCommandAsync($"title {target} title {CommandUtil.ToJson(text, color, bold)}");
+            SendCommand($"title {target} title {CommandUtil.ToJson(text, color, bold)}");
         }
 
-        public virtual async Task SendSubTitleAsync(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
+        public virtual void SendSubTitle(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
-            await SendCommandAsync($"title {target} subtitle {CommandUtil.ToJson(text, color, bold)}");
+            SendCommand($"title {target} subtitle {CommandUtil.ToJson(text, color, bold)}");
         }
 
-        public virtual async Task SendActionbarTitleAsync(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
+        public virtual void SendActionbarTitle(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
-            await SendCommandAsync($"title {target} actionbar {CommandUtil.ToJson(text, color, bold)}");
+            SendCommand($"title {target} actionbar {CommandUtil.ToJson(text, color, bold)}");
         }
 
-        public virtual async Task SetTitleTimesAsync(Selector target, int fadeIn, int stay, int fadeOut)
+        public virtual void SetTitleTimes(Selector target, int fadeIn, int stay, int fadeOut)
         {
-            await SendCommandAsync($"title {target} times {fadeIn} {stay} {fadeOut}");
+            SendCommand($"title {target} times {fadeIn} {stay} {fadeOut}");
         }
 
-        public virtual async Task ClearTitleAsync(Selector target)
+        public virtual void ClearTitle(Selector target)
         {
-            await SendCommandAsync($"title {target} clear");
+            SendCommand($"title {target} clear");
         }
 
-        public virtual async Task ResetTitleAsync(Selector target)
+        public virtual void ResetTitle(Selector target)
         {
-            await SendCommandAsync($"title {target} reset");
+            SendCommand($"title {target} reset");
         }
 
         #endregion
 
         #region 获取SNBT
 
-        public virtual async Task<PlayerEntity> GetPlayerEntityDataAsync(string name)
+        public virtual PlayerEntity GetPlayerEntityData(string name)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
 
-            string output = await SendCommandAsync("data get entity " + name);
+            string output = SendCommand("data get entity " + name);
             return new(SnbtSerializer.DeserializeObject<PlayerEntity.Nbt>(SplitEntitySnbt(output)));
         }
 
@@ -221,7 +248,7 @@ namespace QuanLib.Minecraft
             if (string.IsNullOrEmpty(name))
                 goto err;
 
-            string output = SendCommandAsync("data get entity " + name).Result;
+            string output = SendCommand("data get entity " + name);
             if (output.StartsWith("No entity was found"))
                 goto err;
 
@@ -304,17 +331,17 @@ namespace QuanLib.Minecraft
 
         public virtual bool TryGetPlayerDualWieldItem(string name, [MaybeNullWhen(false)] out Item result)
         {
-            return TryGetPlayerItem(name, -106, out result);
+            return TryGetPlayerItem(name, DUAL_WIELD_SLOT, out result);
         }
 
-        public virtual async Task<bool> SetPlayerHotbarItemAsync(string name, int slot, string itemID)
+        public virtual bool SetPlayerHotbarItem(string name, int slot, string itemID)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
             if (string.IsNullOrEmpty(itemID))
                 throw new ArgumentException($"“{nameof(itemID)}”不能为 null 或空。", nameof(itemID));
 
-            string output = await SendCommandAsync($"item replace entity {name} hotbar.{slot} with {itemID}");
+            string output = SendCommand($"item replace entity {name} hotbar.{slot} with {itemID}");
             if (output.StartsWith("Replaced a slot on"))
                 return true;
             else
@@ -341,7 +368,7 @@ namespace QuanLib.Minecraft
             }
             return Rotation.TryParse(snbt, out result);
         }
-        
+
         public virtual bool TryGetEntityHealth(string target, out float result)
         {
             if (!TryGetEntitySnbt(target, "Health", out var snbt))
@@ -352,20 +379,63 @@ namespace QuanLib.Minecraft
             return float.TryParse(snbt[..^1], out result);
         }
 
-        public virtual async Task<Dictionary<string, string>> GetPlayersSbnt(string target, string path)
+        public virtual Dictionary<string, string> GetPlayersSbnt(string target, string path)
         {
             if (string.IsNullOrEmpty(target))
                 throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
 
+            Dictionary<string, string> result = new();
+            PlayerList list = GetPlayerList();
+            if (list.Players.Count == 0)
+                return result;
+
             string command = $"execute as {target} run data get entity @s";
             if (!string.IsNullOrEmpty(path))
                 command += ' ' + path;
-            string output = await SendCommandAsync(command);
+            string output = SendCommand(command);
+            if (string.IsNullOrEmpty(output))
+                return result;
 
-            string[] items = output.Split(']', StringSplitOptions.RemoveEmptyEntries);
-            Dictionary<string, string> result = new();
+            List<int> indexs = new();
+            foreach (var player in list.Players)
+            {
+                int index = output.IndexOf(player + " has the following");
+                if (index != -1)
+                    indexs.Add(index);
+            }
+            indexs.Sort();
+
+            List<string> items = new();
+            int current = 0;
+            foreach (var index in indexs)
+            {
+                if (index <= current)
+                    continue;
+
+                items.Add(output[current..index]);
+                current = index;
+            }
+            if (current < output.Length)
+                items.Add(output[current..output.Length]);
+
             foreach (string item in items)
-                result.Add(item.Split(' ')[0], SplitEntitySnbt(item + ']'));
+                result.Add(item.Split(' ')[0], SplitEntitySnbt(item));
+            return result;
+        }
+
+        /// <summary>
+        /// 获取所有玩家的坐标
+        /// </summary>
+        /// <returns></returns>
+        public virtual Dictionary<string, IVector3<double>> GetAllPlayerPosition()
+        {
+            Dictionary<string, string> items = GetPlayersSbnt("@a", POS);
+            Dictionary<string, IVector3<double>> result = new();
+            foreach (var item in items)
+            {
+                if (MinecraftUtil.TryEntityPositionSbnt(item.Value, out var position))
+                    result.Add(item.Key, position);
+            }
             return result;
         }
 
@@ -375,9 +445,9 @@ namespace QuanLib.Minecraft
         /// <param name="centre">中心点坐标</param>
         /// <param name="radius">半径</param>
         /// <returns></returns>
-        public virtual async Task<Dictionary<string, IVector3<double>>> GetRadiusPlayerPositionAsync(Vector3Double centre, int radius)
+        public virtual Dictionary<string, IVector3<double>> GetRadiusPlayerPosition(Vector3Double centre, int radius)
         {
-            Dictionary<string, string> items = await GetPlayersSbnt(ToTarget("a", centre, radius), POS);
+            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", centre, radius), POS);
             Dictionary<string, IVector3<double>> result = new();
             foreach (var item in items)
             {
@@ -393,9 +463,9 @@ namespace QuanLib.Minecraft
         /// <param name="start">起始点坐标</param>
         /// <param name="range">范围</param>
         /// <returns></returns>
-        public virtual async Task<Dictionary<string, IVector3<double>>> GetRangePlayerPositionAsync(IVector3<double> start, IVector3<double> range)
+        public virtual Dictionary<string, IVector3<double>> GetRangePlayerPosition(IVector3<double> start, IVector3<double> range)
         {
-            Dictionary<string, string> items = await GetPlayersSbnt(ToTarget("a", start, range), POS);
+            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", start, range), POS);
             Dictionary<string, IVector3<double>> result = new();
             foreach (var item in items)
             {
@@ -405,9 +475,9 @@ namespace QuanLib.Minecraft
             return result;
         }
 
-        public virtual async Task<Dictionary<string, int>> GetRadiusPlayerSelectedItemSlotAsync(IVector3<double> centre, int radius)
+        public virtual Dictionary<string, int> GetAllPlayerSelectedItemSlot()
         {
-            Dictionary<string, string> items = await GetPlayersSbnt(ToTarget("a", centre, radius), "SelectedItemSlot");
+            Dictionary<string, string> items = GetPlayersSbnt("@a", "SelectedItemSlot");
             Dictionary<string, int> result = new();
             foreach (var item in items)
             {
@@ -417,9 +487,21 @@ namespace QuanLib.Minecraft
             return result;
         }
 
-        public virtual async Task<Dictionary<string, Item>> GetRadiusPlayerItemAsync(Vector3Double centre, int radius, int slot)
+        public virtual Dictionary<string, int> GetRadiusPlayerSelectedItemSlot(IVector3<double> centre, int radius)
         {
-            Dictionary<string, string> items = await GetPlayersSbnt(ToTarget("a", centre, radius), $"Inventory[{{Slot:{slot}b}}]");
+            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", centre, radius), "SelectedItemSlot");
+            Dictionary<string, int> result = new();
+            foreach (var item in items)
+            {
+                if (int.TryParse(item.Value, out var slot))
+                    result.Add(item.Key, slot);
+            }
+            return result;
+        }
+
+        public virtual Dictionary<string, Item> GetAllPlayerItem(int slot)
+        {
+            Dictionary<string, string> items = GetPlayersSbnt("@a", $"Inventory[{{Slot:{slot}b}}]");
             Dictionary<string, Item> result = new();
             foreach (var item in items)
             {
@@ -428,14 +510,35 @@ namespace QuanLib.Minecraft
             return result;
         }
 
-        public virtual async Task<Dictionary<string, Item>> GetRadiusPlayerSelectedItemAsync(Vector3Double centre, int radius)
+        public virtual Dictionary<string, Item> GetRadiusPlayerItem(Vector3Double centre, int radius, int slot)
         {
-            return GetPlayersItem(await GetRadiusPlayerSelectedItemSlotAsync(centre, radius));
+            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", centre, radius), $"Inventory[{{Slot:{slot}b}}]");
+            Dictionary<string, Item> result = new();
+            foreach (var item in items)
+            {
+                result.Add(item.Key, new(SnbtSerializer.DeserializeObject<Item.Nbt>(item.Value)));
+            }
+            return result;
         }
 
-        public virtual async Task<Dictionary<string, Item>> GetRadiusPlayerDualWieldItemAsync(Vector3Double centre, int radius)
+        public virtual Dictionary<string, Item> GetAllPlayerSelectedItem()
         {
-            return await GetRadiusPlayerItemAsync(centre, radius, -106);
+            return GetPlayersItem(GetAllPlayerSelectedItemSlot());
+        }
+
+        public virtual Dictionary<string, Item> GetRadiusPlayerSelectedItem(Vector3Double centre, int radius)
+        {
+            return GetPlayersItem(GetRadiusPlayerSelectedItemSlot(centre, radius));
+        }
+
+        public virtual Dictionary<string, Item> GetAllPlayerDualWieldItem()
+        {
+            return GetAllPlayerItem(DUAL_WIELD_SLOT);
+        }
+
+        public virtual Dictionary<string, Item> GetRadiusPlayerDualWieldItem(Vector3Double centre, int radius)
+        {
+            return GetRadiusPlayerItem(centre, radius, DUAL_WIELD_SLOT);
         }
 
         public virtual bool TryGetPlayerScoreboard(string playerName, string scoreboardName, out int result)
@@ -443,7 +546,7 @@ namespace QuanLib.Minecraft
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(scoreboardName))
                 goto err;
 
-            string output = SendCommandAsync($"scoreboard players get {playerName} {scoreboardName}").Result;
+            string output = SendCommand($"scoreboard players get {playerName} {scoreboardName}");
 
             if (output.StartsWith("No entity was found") ||
                 output.StartsWith("Can't get value") ||
@@ -465,63 +568,63 @@ namespace QuanLib.Minecraft
 
         #region 设置SNBT
 
-        public virtual async Task<bool> SetEntityNbtAsync(string target, string path, string value)
+        public virtual bool SetEntityNbt(string target, string path, string value)
         {
             if (string.IsNullOrEmpty(target) || string.IsNullOrEmpty(path) || string.IsNullOrEmpty(value))
                 return false;
 
-            string output = await SendCommandAsync($"data modify entity {target} {path} set value {value}");
+            string output = SendCommand($"data modify entity {target} {path} set value {value}");
             if (output.StartsWith("Modified entity data of"))
                 return true;
             else
                 return false;
         }
 
-        public virtual async Task<bool> SetEntityHealthAsync(string target, float value)
+        public virtual bool SetEntityHealth(string target, float value)
         {
-            return await SetEntityNbtAsync(target, "Health", value.ToString());
+            return SetEntityNbt(target, "Health", value.ToString());
         }
 
         #endregion
 
         #region 计分板
 
-        public virtual async Task<string[]> GetScoreboardListAsync()
+        public virtual string[] GetScoreboardList()
         {
             List<string> result = new();
-            string output = await SendCommandAsync("scoreboard objectives list");
+            string output = SendCommand("scoreboard objectives list");
             MatchCollection matche = new Regex(@"\[(.*?)\]").Matches(output);
             foreach (Match match in matche.Cast<Match>())
                 result.Add(match.Value);
             return result.ToArray();
         }
 
-        public virtual async Task<bool> SetPlayerScoreboardAsync(string playerName, string scoreboardName, int score)
+        public virtual bool SetPlayerScoreboard(string playerName, string scoreboardName, int score)
         {
             if (string.IsNullOrEmpty(playerName))
                 throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
             if (string.IsNullOrEmpty(scoreboardName))
                 throw new ArgumentException($"“{nameof(scoreboardName)}”不能为 null 或空。", nameof(scoreboardName));
 
-            string output = await SendCommandAsync($"scoreboard players set {playerName} {scoreboardName} {score}");
+            string output = SendCommand($"scoreboard players set {playerName} {scoreboardName} {score}");
             if (output.StartsWith("Set"))
                 return true;
             else
                 return false;
         }
 
-        public virtual async Task<bool> CreatScoreboard(string scoreboardName, string criteria)
+        public virtual bool CreatScoreboard(string scoreboardName, string criteria)
         {
-            string output = await SendCommandAsync($"scoreboard objectives add {scoreboardName} {criteria}");
+            string output = SendCommand($"scoreboard objectives add {scoreboardName} {criteria}");
             if (output.StartsWith("Created new objective"))
                 return true;
             else
                 return false;
         }
 
-        public virtual async Task<bool> RemoveScoreboard(string scoreboardName)
+        public virtual bool RemoveScoreboard(string scoreboardName)
         {
-            string output = await SendCommandAsync($"scoreboard objectives remove {scoreboardName}");
+            string output = SendCommand($"scoreboard objectives remove {scoreboardName}");
             if (output.StartsWith("Removed objective"))
                 return true;
             else
@@ -530,20 +633,18 @@ namespace QuanLib.Minecraft
 
         #endregion
 
-        public virtual async Task<bool> AddForceLoadChunkAsync(SurfacePos blockPos)
+        public virtual bool AddForceLoadChunk(SurfacePos blockPos)
         {
-            string output = await SendCommandAsync($"forceload add {blockPos.X} {blockPos.Z}");
-
+            string output = SendCommand($"forceload add {blockPos.X} {blockPos.Z}");
             if (output.StartsWith("Marked chunk"))
                 return true;
             else
                 return false;
         }
 
-        public virtual async Task<bool> RemoveForceLoadChunkAsync(SurfacePos blockPos)
+        public virtual bool RemoveForceLoadChunk(SurfacePos blockPos)
         {
-            string output = await SendCommandAsync($"forceload remove {blockPos.X} {blockPos.Z}");
-
+            string output = SendCommand($"forceload remove {blockPos.X} {blockPos.Z}");
             if (output.StartsWith("Unmarked chunk"))
                 return true;
             else

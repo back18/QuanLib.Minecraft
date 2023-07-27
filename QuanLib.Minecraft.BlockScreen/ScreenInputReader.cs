@@ -1,5 +1,6 @@
 ﻿using CoreRCON;
 using QuanLib.Minecraft.BlockScreen;
+using QuanLib.Minecraft.Datas;
 using QuanLib.Minecraft.Vectors;
 using SixLabors.ImageSharp;
 using System;
@@ -12,21 +13,26 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft.BlockScreen
 {
     /// <summary>
-    /// 光标
+    /// 屏幕输入读取器
     /// </summary>
-    public class PlayerCursorReader : IMCOSComponent
+    public class ScreenInputReader : ICursorReader, ITextReader, IMCOSComponent
     {
-        public PlayerCursorReader(string scoreboard)
+        public ScreenInputReader(string objective)
         {
-            _scoreboard = scoreboard ?? throw new ArgumentNullException(nameof(scoreboard));
+            if (string.IsNullOrEmpty(objective))
+                throw new ArgumentException($"“{nameof(objective)}”不能为 null 或空。", nameof(objective));
+
+            _objective = objective;
             _batuuid = "f78b8570-3f3f-43be-8ade-5f11e77a4563";
             IsInitialState = true;
             CurrentPlayer = string.Empty;
-            CursorMode = CursorMode.Mouse;
+            CurrenMode = CursorMode.Mouse;
+            CurrentPosition = new(0, 0);
+            CurrentItem = null;
             InitialText = string.Empty;
             CurrentText = string.Empty;
 
-            OnCursorMove += (arg1, arg2) => { };
+            OnCursorMove += (obj) => { };
             OnRightClick += (obj) => { };
             OnLeftClick += (obj) => { };
             OnTextUpdate += (arg1, arg2) => { };
@@ -36,11 +42,9 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private const string TEXTEDITOR_ITEM = "minecraft:writable_book";
 
-        private readonly string _scoreboard;
+        private readonly string _objective;
 
         private readonly string _batuuid;
-
-        public bool IsInitialState { get; private set; }
 
         public MCOS MCOS
         {
@@ -54,49 +58,26 @@ namespace QuanLib.Minecraft.BlockScreen
         }
         private MCOS? _MCOS;
 
-        /// <summary>
-        /// 光标模式
-        /// </summary>
-        public CursorMode CursorMode { get; private set; }
+        public bool IsInitialState { get; private set; }
 
-        /// <summary>
-        /// 初始文本
-        /// </summary>
-        public string InitialText { get; set; }
-
-        /// <summary>
-        /// 当前文本
-        /// </summary>
-        public string CurrentText { get; private set; }
-
-        /// <summary>
-        /// 光标当前的位置
-        /// </summary>
-        public Point CurrentPosition { get; private set; }
-
-        /// <summary>
-        /// 光标的操作员
-        /// </summary>
         public string CurrentPlayer { get; private set; }
 
-        /// <summary>
-        /// 当光标移动时
-        /// </summary>
-        public event Action<Point, CursorMode> OnCursorMove;
+        public CursorMode CurrenMode { get; private set; }
 
-        /// <summary>
-        /// 当光标右键点击时
-        /// </summary>
+        public Point CurrentPosition { get; private set; }
+
+        public Item? CurrentItem { get; private set; }
+
+        public string InitialText { get; set; }
+
+        public string CurrentText { get; private set; }
+
+        public event Action<Point> OnCursorMove;
+
         public event Action<Point> OnRightClick;
 
-        /// <summary>
-        /// 当光标右键点击时
-        /// </summary>
         public event Action<Point> OnLeftClick;
 
-        /// <summary>
-        /// 当文本编辑器更新时
-        /// </summary>
         public event Action<Point, string> OnTextUpdate;
 
         public void ResetText()
@@ -115,15 +96,15 @@ namespace QuanLib.Minecraft.BlockScreen
             Vector3<double> start = new(center.X - length, center.Y - length, center.Z - length);
             Vector3<double> range = new(length * 2, length * 2, length * 2);
 
-            Dictionary<string, IVector3<double>> players = command.GetRangePlayerPositionAsync(start, range).Result;
+            Dictionary<string, IVector3<double>> players = command.GetRangePlayerPosition(start, range);
             if (players.Count == 0)
                 return;
 
             Func<IVector3<double>, double> GetDistance = screen.NormalFacing switch
             {
-                Facing.Xp or Facing.Xm => (vector3) => Math.Abs(vector3.X - screen.ScreenPlaneCoordinate),
-                Facing.Yp or Facing.Ym => (vector3) => Math.Abs(vector3.Y - screen.ScreenPlaneCoordinate),
-                Facing.Zp or Facing.Zm => (vector3) => Math.Abs(vector3.Z - screen.ScreenPlaneCoordinate),
+                Facing.Xp or Facing.Xm => (vector3) => Math.Abs(vector3.X - screen.PlaneCoordinate),
+                Facing.Yp or Facing.Ym => (vector3) => Math.Abs(vector3.Y - screen.PlaneCoordinate),
+                Facing.Zp or Facing.Zm => (vector3) => Math.Abs(vector3.Z - screen.PlaneCoordinate),
                 _ => throw new InvalidOperationException(),
             };
             List<(string name, double distance)> distances = new();
@@ -143,39 +124,62 @@ namespace QuanLib.Minecraft.BlockScreen
             Screen screen = MCOS.Screen;
             ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
 
-            if (!command.TryGetPlayerSelectedItemSlot(player, out var solt) || !command.TryGetPlayerItem(player, solt, out var item))
+            if (!command.TryGetPlayerSelectedItem(player, out var selectedItem) & !command.TryGetPlayerDualWieldItem(player, out var dualWieldItem))
                 return false;
 
-            if (item.ID != MOUSE_ITEM && item.ID != TEXTEDITOR_ITEM)
+            if (selectedItem is not null && (selectedItem.ID == MOUSE_ITEM || selectedItem.ID == TEXTEDITOR_ITEM))
+            {
+
+            }
+            else if (dualWieldItem is not null && (dualWieldItem.ID == MOUSE_ITEM || dualWieldItem.ID == TEXTEDITOR_ITEM))
+            {
+                Item? temp = selectedItem;
+                selectedItem = dualWieldItem;
+                dualWieldItem = temp;
+            }
+            else
+            {
                 return false;
+            }
 
             if (!command.TryGetEntityPosition(player, out var position) || !command.TryGetEntityRotation(player, out var rotation))
                 return false;
 
-            if (!Vector3Double.CheckPlaneReachability(position, rotation, screen.NormalFacing, screen.ScreenPlaneCoordinate))
+            if (!Vector3Double.CheckPlaneReachability(position, rotation, screen.NormalFacing, screen.PlaneCoordinate))
                 return false;
 
             position.Y += 1.625;
-            Vector3<int> targetBlock = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), screen.NormalFacing, screen.ScreenPlaneCoordinate).ToVector3Int();
+            Vector3<int> targetBlock = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToVector3Int();
             Point targetPosition = screen.ToScreenPosition(targetBlock);
             if (!screen.IncludedOnScreen(targetPosition))
                 return false;
 
             CurrentPlayer = player;
+            CurrentItem = dualWieldItem;
+
+            switch (selectedItem.ID)
+            {
+                case MOUSE_ITEM:
+                    CurrenMode = CursorMode.Mouse;
+                    break;
+                case TEXTEDITOR_ITEM:
+                    CurrenMode = CursorMode.TextEditor;
+                    break;
+            }
 
             if (targetPosition != CurrentPosition)
             {
                 CurrentPosition = targetPosition;
-                OnCursorMove.Invoke(CurrentPosition, CursorMode);
+                OnCursorMove.Invoke(CurrentPosition);
             }
 
-            switch (item.ID)
+            switch (selectedItem.ID)
             {
                 case MOUSE_ITEM:
-                    if (command.TryGetPlayerScoreboard(player, _scoreboard, out var score) && score > 0)
+                    if (command.TryGetPlayerScoreboard(player, _objective, out var score) && score > 0)
                     {
                         OnRightClick.Invoke(CurrentPosition);
-                        command.SetPlayerScoreboardAsync(player, _scoreboard, 0).Wait();
+                        command.SetPlayerScoreboard(player, _objective, 0);
                     }
                     //if (command.TryGetEntityHealth(_batuuid, out var health) && health < 6)
                     //{
@@ -183,19 +187,21 @@ namespace QuanLib.Minecraft.BlockScreen
                     //    Console.WriteLine("左键");
                     //    command.SetEntityHealthAsync(_batuuid, 6).Wait();
                     //}
-                    CursorMode = CursorMode.Mouse;
                     break;
                 case TEXTEDITOR_ITEM:
                     if (IsInitialState)
                     {
                         if (string.IsNullOrEmpty(InitialText))
-                            command.SetPlayerHotbarItemAsync(player, solt, $"minecraft:writable_book{{pages:[]}}").Wait();
+                            command.SetPlayerHotbarItem(player, selectedItem.Slot, $"minecraft:writable_book{{pages:[]}}");
                         else
-                            command.SetPlayerHotbarItemAsync(player, solt, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}").Wait();
+                            command.SetPlayerHotbarItem(player, selectedItem.Slot, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
                         CurrentText = InitialText;
                         IsInitialState = false;
                     }
-                    else if (item.Tag.TryGetValue("pages", out var pagesTag) && pagesTag is string[] texts && texts.Length > 0)
+                    else if (
+                        selectedItem.Tag is not null &&
+                        selectedItem.Tag.TryGetValue("pages", out var pagesTag) &&
+                        pagesTag is string[] texts && texts.Length > 0)
                     {
                         if (texts[0] != CurrentText)
                         {
@@ -208,10 +214,7 @@ namespace QuanLib.Minecraft.BlockScreen
                         CurrentText = string.Empty;
                         OnTextUpdate.Invoke(CurrentPosition, CurrentText);
                     }
-                    CursorMode = CursorMode.TextEditor;
                     break;
-                default:
-                    throw new InvalidOperationException();
             }
 
             //position.Y -= 0.5;

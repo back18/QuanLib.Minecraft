@@ -122,12 +122,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             TitleBar.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightGray));
         }
 
-        private void ShowTitleBar_Button_CursorEnter(Point position, CursorMode mode)
+        private void ShowTitleBar_Button_CursorEnter(Point position)
         {
             ShowTitleBar_Button.Visible = true;
         }
 
-        private void ShowTitleBar_Button_CursorLeave(Point position, CursorMode mode)
+        private void ShowTitleBar_Button_CursorLeave(Point position)
         {
             ShowTitleBar_Button.Visible = false;
         }

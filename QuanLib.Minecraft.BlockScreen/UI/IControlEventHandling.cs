@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public interface IControlEventHandling
     {
-        public void HandleCursorMove(Point position, CursorMode mode);
+        public void HandleCursorMove(Point position);
 
         public bool HandleRightClick(Point position);
 

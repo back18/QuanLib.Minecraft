@@ -21,6 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         public Screen(Vector3<int> startPosition, Facing xFacing, Facing yFacing, int width, int height)
         {
+            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
             ThrowHelper.TryThrowArgumentOutOfMinException(1, width, nameof(width));
             ThrowHelper.TryThrowArgumentOutOfMinException(1, height, nameof(height));
 
@@ -32,42 +33,42 @@ namespace QuanLib.Minecraft.BlockScreen
                 case "ZpYp":
                 case "YpZm":
                     NormalFacing = Facing.Xp;
-                    ScreenPlaneCoordinate = startPosition.X;
+                    PlaneCoordinate = startPosition.X;
                     break;
                 case "ZpYm":
                 case "YmZm":
                 case "ZmYp":
                 case "YpZp":
                     NormalFacing = Facing.Xm;
-                    ScreenPlaneCoordinate = startPosition.X;
+                    PlaneCoordinate = startPosition.X;
                     break;
                 case "XpYm":
                 case "YmXm":
                 case "XmYp":
                 case "YpXp":
                     NormalFacing = Facing.Zp;
-                    ScreenPlaneCoordinate = startPosition.Z;
+                    PlaneCoordinate = startPosition.Z;
                     break;
                 case "XmYm":
                 case "YmXp":
                 case "XpYp":
                 case "Ypym":
                     NormalFacing = Facing.Zm;
-                    ScreenPlaneCoordinate = startPosition.Z;
+                    PlaneCoordinate = startPosition.Z;
                     break;
                 case "XpZp":
                 case "ZpXm":
                 case "XmZm":
                 case "ZmXp":
                     NormalFacing = Facing.Yp;
-                    ScreenPlaneCoordinate = startPosition.Y;
+                    PlaneCoordinate = startPosition.Y;
                     break;
                 case "XpZm":
                 case "ZmXm":
                 case "XmZp":
                 case "ZpXp":
                     NormalFacing = Facing.Ym;
-                    ScreenPlaneCoordinate = startPosition.Y;
+                    PlaneCoordinate = startPosition.Y;
                     break;
                 default:
                     throw new ArgumentException("xFacing 与 yFacing 不应该在同一轴向上");
@@ -78,27 +79,27 @@ namespace QuanLib.Minecraft.BlockScreen
             {
                 case Facing.Xp:
                     top = startPosition.X;
-                    bottom = startPosition.X + height;
+                    bottom = startPosition.X + height - 1;
                     break;
                 case Facing.Xm:
                     top = startPosition.X;
-                    bottom = startPosition.X - height;
+                    bottom = startPosition.X - height - 1;
                     break;
                 case Facing.Yp:
                     top = startPosition.Y;
-                    bottom = startPosition.Y + height;
+                    bottom = startPosition.Y + height - 1;
                     break;
                 case Facing.Ym:
                     top = startPosition.Y;
-                    bottom = startPosition.Y - height;
+                    bottom = startPosition.Y - height - 1;
                     break;
                 case Facing.Zp:
                     top = startPosition.Z;
-                    bottom = startPosition.Z + height;
+                    bottom = startPosition.Z + height - 1;
                     break;
                 case Facing.Zm:
                     top = startPosition.Z;
-                    bottom = startPosition.Z - height;
+                    bottom = startPosition.Z - height - 1;
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -107,27 +108,27 @@ namespace QuanLib.Minecraft.BlockScreen
             {
                 case Facing.Xp:
                     left = startPosition.X;
-                    right = startPosition.X + height;
+                    right = startPosition.X + height - 1;
                     break;
                 case Facing.Xm:
                     left = startPosition.X;
-                    right = startPosition.X - height;
+                    right = startPosition.X - height - 1;
                     break;
                 case Facing.Yp:
                     left = startPosition.Y;
-                    right = startPosition.Y + height;
+                    right = startPosition.Y + height - 1;
                     break;
                 case Facing.Ym:
                     left = startPosition.Y;
-                    right = startPosition.Y - height;
+                    right = startPosition.Y - height - 1;
                     break;
                 case Facing.Zp:
                     left = startPosition.Z;
-                    right = startPosition.Z + height;
+                    right = startPosition.Z + height - 1;
                     break;
                 case Facing.Zm:
                     left = startPosition.Z;
-                    right = startPosition.Z - height;
+                    right = startPosition.Z - height - 1;
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -139,7 +140,7 @@ namespace QuanLib.Minecraft.BlockScreen
             YFacing = yFacing;
             Width = width;
             Height = height;
-            DefaultBackgroundBlcokID = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
+            DefaultBackgroundBlcokID = "minecraft:smooth_stone";
 
             _chunks = new();
         }
@@ -166,7 +167,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public Point ScreenCenterPosition => new(Width / 2, Height / 2);
 
-        public int ScreenPlaneCoordinate { get; }
+        public int PlaneCoordinate { get; }
 
         public Facing XFacing { get; }
 
@@ -185,6 +186,60 @@ namespace QuanLib.Minecraft.BlockScreen
         public string DefaultBackgroundBlcokID { get; set; }
 
         public ArrayFrame? LastFrame { get; private set; }
+
+        public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition)
+        {
+            Facing xFacing, yFacing;
+            int width, height;
+            if (startPosition.X == endPosition.X)
+            {
+                if (startPosition.Z > endPosition.Z)
+                    xFacing = Facing.Zm;
+                else
+                    xFacing = Facing.Zp;
+                if (startPosition.Y > endPosition.Y)
+                    yFacing = Facing.Ym;
+                else
+                    yFacing = Facing.Yp;
+
+                width = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+                height = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+            }
+            else if (startPosition.Y == endPosition.Y)
+            {
+                if (startPosition.X > endPosition.X)
+                    xFacing = Facing.Xm;
+                else
+                    xFacing = Facing.Xp;
+                if (startPosition.Z > endPosition.Z)
+                    yFacing = Facing.Zm;
+                else
+                    yFacing = Facing.Zp;
+
+                width = Math.Abs(startPosition.X - endPosition.X) + 1;
+                height = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+            }
+            else if (startPosition.Z == endPosition.Z)
+            {
+                if (startPosition.X > endPosition.X)
+                    xFacing = Facing.Xm;
+                else
+                    xFacing = Facing.Xp;
+                if (startPosition.Y > endPosition.Y)
+                    yFacing = Facing.Ym;
+                else
+                    yFacing = Facing.Yp;
+
+                width = Math.Abs(startPosition.X - endPosition.X) + 1;
+                height = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+            }
+            else
+            {
+                throw new ArgumentException("屏幕的起始点与截止点不在一个平面");
+            }
+
+            return new(startPosition, xFacing, yFacing, width, height);
+        }
 
         public void ShowNewFrame(ArrayFrame frame, Task? wait = null)
         {
@@ -291,7 +346,7 @@ namespace QuanLib.Minecraft.BlockScreen
             string function = ToSetBlockFunction(pixels);
             HandleWaitAndCallbacks(wait);
             sender.SendCommand(function);
-            MCOS.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime").Wait();
+            MCOS.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
 
         private async Task StandardInputCommandSendAsync(IStandardInputCommandSender sender, List<ScreenPixel> pixels, Task? wait)
@@ -351,7 +406,44 @@ namespace QuanLib.Minecraft.BlockScreen
             return pixels;
         }
 
-        public void Reset()
+        public void Replace(Screen screen)
+        {
+            if (screen is null)
+                throw new ArgumentNullException(nameof(screen));
+
+            if (screen.LastFrame is null)
+            {
+                Fill();
+                return;
+            }
+
+            ArrayFrame frame = ArrayFrame.BuildFrame(Width, Height, DefaultBackgroundBlcokID);
+
+            List<WorldPixel> worldPixels1 = new();
+            foreach (var pixel in screen.LastFrame.GetAllPixel())
+                worldPixels1.Add(screen.ToWorldPixel(pixel));
+
+            List<WorldPixel> worldPixels2 = new();
+            foreach (var pixel in frame.GetAllPixel())
+                worldPixels2.Add(ToWorldPixel(pixel));
+
+            var differences = worldPixels1.Except(worldPixels2);
+
+            if (differences.Any())
+            {
+                if (MCOS.EnableAccelerationEngine)
+                {
+                    byte[] bytes = AccelerationEngine.DataPacket.ToDataPacket(differences).ToBytes();
+                    MCOS.AccelerationEngine.SendData(bytes);
+                }
+                else
+                {
+
+                }
+            }
+        }
+
+        public void Fill()
         {
             ShowNewFrame(ArrayFrame.BuildFrame(Width, Height, DefaultBackgroundBlcokID));
         }
@@ -364,7 +456,7 @@ namespace QuanLib.Minecraft.BlockScreen
         public void Start()
         {
             LoadScreenChunks();
-            Reset();
+            Fill();
         }
 
         public void Stop()
@@ -385,13 +477,13 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
 
             foreach (var chunk in _chunks)
-                MCOS.MinecraftServer.CommandHelper.AddForceLoadChunkAsync(MinecraftUtil.ChunkPos2BlockPos(chunk)).Wait();
+                MCOS.MinecraftServer.CommandHelper.AddForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
         }
 
         public void UnloadScreenChunks()
         {
             foreach (var chunk in _chunks)
-                MCOS.MinecraftServer.CommandHelper.RemoveForceLoadChunkAsync(MinecraftUtil.ChunkPos2BlockPos(chunk)).Wait();
+                MCOS.MinecraftServer.CommandHelper.RemoveForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
         }
 
         public WorldPixel ToWorldPixel(ScreenPixel pixel)
@@ -495,9 +587,9 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             bool isScreenPlane = NormalFacing switch
             {
-                Facing.Xp or Facing.Xm => blockPos.X == ScreenPlaneCoordinate,
-                Facing.Yp or Facing.Ym => blockPos.Y == ScreenPlaneCoordinate,
-                Facing.Zp or Facing.Zm => blockPos.Z == ScreenPlaneCoordinate,
+                Facing.Xp or Facing.Xm => blockPos.X == PlaneCoordinate,
+                Facing.Yp or Facing.Ym => blockPos.Y == PlaneCoordinate,
+                Facing.Zp or Facing.Zm => blockPos.Z == PlaneCoordinate,
                 _ => throw new InvalidOperationException()
             };
             return isScreenPlane && IncludedOnScreen(ToScreenPosition(blockPos));

@@ -100,7 +100,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void VideoPlayer_CursorMove(Point position, CursorMode mode)
+        private void VideoPlayer_CursorMove(Point position)
         {
             IsSelected = true;
             OverlayLayerCountdown = OverlayLayerShowTime;

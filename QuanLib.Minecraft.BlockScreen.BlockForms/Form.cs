@@ -93,7 +93,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void Form_CursorMove(Point position, CursorMode mode)
+        private void Form_CursorMove(Point position)
         {
             Point parent = SubPos2ParentPos(position);
             if (AllowResize && IsSelected && !IsMaximize)
