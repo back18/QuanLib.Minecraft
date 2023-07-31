@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
-    public class ControlRenderer
+    public static class UIRenderer
     {
-        public ArrayFrame? Rendering(IControl control)
+        public static ArrayFrame? Rendering(IControl control)
         {
             IControlRendering rendering = control;
             Task<ArrayFrame> _task;
@@ -31,20 +31,20 @@ namespace QuanLib.Minecraft.BlockScreen.UI
             }
             else
             {
-                _task = Task.Run(() => rendering.GetFrameCache() ?? throw new InvalidOperationException());
+                _task = Task.Run(() => rendering.GetFrameCache() ?? throw new InvalidOperationException("无法获取帧缓存"));
             }
 
             var subControls = (control as IContainerControl)?.GetSubControls();
             if (subControls is null || !subControls.Any())
                 return _task.Result.ToArrayFrame();
 
-            List<(IControlRendering rendering, Task<ArrayFrame?> task)> results = new();
-            foreach (var subControl in subControls)
-                results.Add((subControl, Task.Run(() => Rendering(subControl))));
-            Task.WaitAll(results.Select(i => i.task).ToArray());
+            List<(IControlRendering rendering, Task<ArrayFrame?> task)> tasks = new();
+            foreach (var subControl in subControls.ToArray())   //TODO: 未知的并发修改异常？
+                tasks.Add((subControl, Task.Run(() => Rendering(subControl))));
+            Task.WaitAll(tasks.Select(i => i.task).ToArray());
             ArrayFrame frame = _task.Result;
 
-            foreach (var (subControl, task) in results)
+            foreach (var (subControl, task) in tasks)
             {
                 if (task.Result is null)
                     continue;

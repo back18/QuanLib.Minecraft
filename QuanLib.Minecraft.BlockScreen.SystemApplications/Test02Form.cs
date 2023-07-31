@@ -41,13 +41,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
         {
             base.Initialize();
 
-            MCOS os = GetMCOS();
             string dir = PathManager.SystemResources_Textures_Control_Dir;
 
             ClientLocation = new(3, 3);
             BorderWidth = 8;
-            Width = Application.MCOS.FormsPanelSize.Width - 7;
-            Height = Application.MCOS.FormsPanelSize.Height - 10;
+            Width = GetFormContainerSize().Width - 7;
+            Height = GetFormContainerSize().Height - 10;
 
             Client_Panel.SubControls.Add(button1);
             button1.ClientLocation = new(5, 5);
@@ -68,10 +67,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             switch2.ClientLocation = new(5, 85);
             switch2.OnText = string.Empty;
             switch2.OffText = string.Empty;
-            switch2.Skin.BackgroundImage = new(Path.Combine(dir, "OFF.png"), os.Screen.NormalFacing, switch2.ClientSize);
-            switch2.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "ON.png"), os.Screen.NormalFacing, switch2.ClientSize);
-            switch2.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "OFF过度.png"), os.Screen.NormalFacing, switch2.ClientSize);
-            switch2.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "ON过度.png"), os.Screen.NormalFacing, switch2.ClientSize);
+            switch2.Skin.BackgroundImage = new(Path.Combine(dir, "OFF.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            switch2.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "ON.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            switch2.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "OFF过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            switch2.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "ON过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
 
             Client_Panel.SubControls.Add(comboButton1);
             comboButton1.ClientSize = new(110, 16);
@@ -84,7 +83,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             comboButton1.Items.Add(Direction.Left);
 
             Client_Panel.SubControls.Add(iconTextBox1);
-            iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), os.Screen.NormalFacing, new Size(16, 16));
+            iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), GetScreenPlaneSize().NormalFacing, new Size(16, 16));
             iconTextBox1.Text = "hello";
             iconTextBox1.ClientLocation = Client_Panel.RightLayout(textBox1, 2);
         }

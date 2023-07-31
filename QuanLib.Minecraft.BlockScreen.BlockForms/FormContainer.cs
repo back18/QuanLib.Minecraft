@@ -1,5 +1,4 @@
 ﻿using QuanLib.Minecraft.BlockScreen.UI;
-using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using SixLabors.ImageSharp;
 using System;
@@ -7,29 +6,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
+namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
-    public class FormsPanel : GenericPanel<IForm>
+    public class FormContainer : GenericPanel<IForm>
     {
-        public FormsPanel(RootForm owner)
+        public FormContainer(RootForm owner)
         {
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
             BorderWidth = 0;
             LayoutSyncer = new(_owner,
-            (oldPosition, newPosition) => { },
-            (oldSize, newSize) =>
+            (sender, e) => { },
+            (sender, e) =>
             {
                 if (_owner.ShowTitleBar)
                 {
-                    ClientSize = new(newSize.Width, newSize.Height - 16);
+                    ClientSize = new(e.NewSize.Width, e.NewSize.Height - 16);
                     foreach (var form in SubControls)
                         form.RenderingSize = new(form.RenderingSize.Width, form.RenderingSize.Height - 16);
                 }
                 else
                 {
-                    ClientSize = new(newSize.Width, newSize.Height);
+                    ClientSize = new(e.NewSize.Width, e.NewSize.Height);
                     foreach (var form in SubControls)
                         form.RenderingSize = new(form.RenderingSize.Width, form.RenderingSize.Height + 16);
                 }
@@ -46,47 +46,25 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
                 throw new InvalidOperationException();
         }
 
-        //private void FormsPanel_OnAddSubControl(Control control)
-        //{
-        //    if (control is not Form)
-        //        return;
-
-        //    control.Stretch = PlaneFacing.Bottom;
-        //    control.LayoutSyncer = new(this,
-        //    (oldPosition, newPosition) => { },
-        //    (oldSize, newSize) =>
-        //    {
-        //        control.Layout(oldSize, newSize);
-        //    });
-        //}
-
-        //private void FormsPanel_OnRemoveSubControl(Control control)
-        //{
-        //    if (control is not Form)
-        //        return;
-
-        //    control.LayoutSyncer = null;
-        //}
-
-        public override void HandleCursorMove(Point position)
+        public override void HandleCursorMove(CursorEventArgs e)
         {
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    control.HandleCursorMove(control.ParentPos2SubPos(position));
+                    control.HandleCursorMove(new(control.ParentPos2SubPos(e.Position)));
                 }
             }
 
-            UpdateHoverState(position);
+            UpdateHoverState(e);
         }
 
-        public override bool HandleRightClick(Point position)
+        public override bool HandleRightClick(CursorEventArgs e)
         {
             bool result = false;
             foreach (var control in SubControls.Reverse())
             {
-                Point sub = control.ParentPos2SubPos(position);
+                Point sub = control.ParentPos2SubPos(e.Position);
                 if (control is Form form)
                 {
                     if (form.ResizeBorder != Direction.None)
@@ -98,7 +76,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
                     else if (form.IncludedOnControl(sub))
                     {
                         if (form.IsSelected)
-                            form.HandleRightClick(sub);
+                            form.HandleRightClick(new(sub));
                         else
                             _owner.TrySwitchSelectedForm(form);
                         result = true;
@@ -112,30 +90,41 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
             else if (SubControls.FirstHover is null)
                 return false;
             else
-                return SubControls.FirstHover.HandleRightClick(SubControls.FirstHover.ParentPos2SubPos(position));
+                return SubControls.FirstHover.HandleRightClick(new(SubControls.FirstHover.ParentPos2SubPos(e.Position)));
         }
 
-        public override bool HandleLeftClick(Point position)
+        public override bool HandleLeftClick(CursorEventArgs e)
         {
             bool result = false;
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    result = control.HandleLeftClick(control.ParentPos2SubPos(position));
+                    result = control.HandleLeftClick(new(control.ParentPos2SubPos(e.Position)));
                 }
             }
 
             return result;
         }
 
-        public override void HandleTextEditorUpdate(Point position, string text)
+        public override void HandleCursorItemChanged(CursorItemEventArgs e)
         {
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    control.HandleTextEditorUpdate(control.ParentPos2SubPos(position), text);
+                    control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
+                }
+            }
+        }
+
+        public override void HandleTextEditorChanged(CursorTextEventArgs e)
+        {
+            foreach (var control in SubControls.Reverse())
+            {
+                if (control.IsSelected)
+                {
+                    control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
                 }
             }
         }

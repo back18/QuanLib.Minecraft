@@ -38,8 +38,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
 
             Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
             Client_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
-            BeforeFrame += DataForm_BeforeFrame;
-            DataForm_BeforeFrame();
+            OnBeforeFrame(this, EventArgs.Empty);
 
             Client_Panel.SubControls.Add(DayTime_Label);
             DayTime_Label.ClientLocation = new(2, 2);
@@ -50,12 +49,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
             GameTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
         }
 
-        private void DataForm_BeforeFrame()
+        protected override void OnBeforeFrame(Control sender, EventArgs e)
         {
+            base.OnBeforeFrame(sender, e);
+
             DayTimeSyncCountdown--;
             if (DayTimeSyncCountdown <= 0)
             {
-                ServerCommandHelper command = GetMCOS().MinecraftServer.CommandHelper;
+                ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
                 int gameDays = command.GetGameDays();
                 TimeSpan dayTime = MinecraftUtil.DayTimeToTimeSpan(command.GetDayTime());
                 DayTime_Label.Text = $"游戏时间：{gameDays}日{(int)dayTime.TotalHours}时{dayTime.Minutes}分";
@@ -65,7 +66,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
             GameTimeSyncCountdown--;
             if (GameTimeSyncCountdown <= 0)
             {
-                TimeSpan gameTime = MinecraftUtil.GameTicksToTimeSpan(GetMCOS().MinecraftServer.CommandHelper.GetGameTime());
+                TimeSpan gameTime = MinecraftUtil.GameTicksToTimeSpan(MCOS.GetMCOS().MinecraftServer.CommandHelper.GetGameTime());
                 GameTime_Label.Text = $"开服时长：{gameTime.Days}天{gameTime.Hours}小时{gameTime.Minutes}分钟";
                 GameTimeSyncCountdown = GameTimeSyncTime;
             }

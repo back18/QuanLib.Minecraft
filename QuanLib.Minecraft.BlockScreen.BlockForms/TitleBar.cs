@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -18,8 +19,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
             Text = _owner.Text;
-            LayoutSyncer = new(_owner, (oldPosition, newPosition) => { }, (oldSize, newSize) => Width = newSize.Width);
-            _owner.OnTextUpdateNow += (oldText, newText) => Text = _owner.Text;
+            LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
+            _owner.TextChangedNow += (sender, e) => Text = _owner.Text;
             _owner.InitializeCallback += Owner_InitializeCallback;
 
             MoveAnchorPoint = new(0, 0);
@@ -32,8 +33,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             BorderWidth = 0;
             InvokeExternalCursorMove = true;
-            RightClick += FormTitleBar_RightClick;
-            CursorMove += FormTitleBar_CursorMove;
         }
 
         private readonly WindowForm _owner;
@@ -66,7 +65,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (_owner != ParentContainer)
                 throw new InvalidOperationException();
 
-            MCOS os = GetMCOS();
+            MCOS os = MCOS.GetMCOS();
             string dir = PathManager.SystemResources_Textures_Control_Dir;
             string lghtGray = ConcretePixel.ToBlockID(MinecraftColor.LightGray);
             string red = ConcretePixel.ToBlockID(MinecraftColor.Red);
@@ -83,10 +82,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             MaximizeOrRestore_Switch.BorderWidth = 0;
             MaximizeOrRestore_Switch.ClientSize = new(16, 16);
             MaximizeOrRestore_Switch.Anchor = Direction.Top | Direction.Right;
-            MaximizeOrRestore_Switch.Skin.BackgroundImage = new(Path.Combine(dir, "最大化.png"), os.Screen.NormalFacing, MaximizeOrRestore_Switch.ClientSize);
-            MaximizeOrRestore_Switch.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "还原.png"), os.Screen.NormalFacing, MaximizeOrRestore_Switch.ClientSize);
-            MaximizeOrRestore_Switch.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "最大化过度.png"), os.Screen.NormalFacing, MaximizeOrRestore_Switch.ClientSize);
-            MaximizeOrRestore_Switch.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "还原过度.png"), os.Screen.NormalFacing, MaximizeOrRestore_Switch.ClientSize);
+            MaximizeOrRestore_Switch.Skin.BackgroundImage = new(Path.Combine(dir, "最大化.png"), GetScreenPlaneSize().NormalFacing, MaximizeOrRestore_Switch.ClientSize);
+            MaximizeOrRestore_Switch.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "还原.png"), GetScreenPlaneSize().NormalFacing, MaximizeOrRestore_Switch.ClientSize);
+            MaximizeOrRestore_Switch.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "最大化过度.png"), GetScreenPlaneSize().NormalFacing, MaximizeOrRestore_Switch.ClientSize);
+            MaximizeOrRestore_Switch.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "还原过度.png"), GetScreenPlaneSize().NormalFacing, MaximizeOrRestore_Switch.ClientSize);
 
             Minimize_Button.BorderWidth = 0;
             Minimize_Button.Text = "一";
@@ -114,54 +113,58 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ActiveLayoutAll();
         }
 
-        private void Owner_InitializeCallback()
+        private void Owner_InitializeCallback(Control sender, EventArgs e)
         {
             UpdateMaximizeOrRestore();
-            MaximizeOrRestore_Switch.OnSelected += MaximizeOrRestore_Switch_OnSelected;
-            MaximizeOrRestore_Switch.OnDeselected += MaximizeOrRestore_Switch_OnDeselected;
+            MaximizeOrRestore_Switch.ControlSelected += MaximizeOrRestore_Switch_ControlSelected;
+            MaximizeOrRestore_Switch.ControlDeselected += MaximizeOrRestore_Switch_ControlDeselected;
         }
 
-        private void FormTitleBar_RightClick(Point position)
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
+            base.OnCursorMove(sender, e);
+
+            if (_owner.Moveing)
+            {
+                Point offset = new(e.Position.X - MoveAnchorPoint.X, e.Position.Y - MoveAnchorPoint.Y);
+                _owner.ClientLocation = new(_owner.ClientLocation.X + offset.X, _owner.ClientLocation.Y + offset.Y);
+            }
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
             if (_owner.Moveing)
                 _owner.Moveing = false;
             else if (_owner.IsSelected && _owner.AllowMove && !GetSubControls().HaveHover)
             {
                 _owner.Moveing = true;
-                MoveAnchorPoint = position;
+                MoveAnchorPoint = e.Position;
             }
         }
 
-        private void FormTitleBar_CursorMove(Point position)
-        {
-            if (_owner.Moveing)
-            {
-                Point offset = new(position.X - MoveAnchorPoint.X, position.Y - MoveAnchorPoint.Y);
-                _owner.ClientLocation = new(_owner.ClientLocation.X + offset.X, _owner.ClientLocation.Y + offset.Y);
-            }
-        }
-
-        private void Exit_Button_RightClick(Point position)
+        private void Exit_Button_RightClick(Control sender, CursorEventArgs e)
         {
             _owner.CloseForm();
         }
 
-        private void MaximizeOrRestore_Switch_OnSelected()
+        private void MaximizeOrRestore_Switch_ControlSelected(Control sender, EventArgs e)
         {
             _owner.MaximizeForm();
         }
 
-        private void MaximizeOrRestore_Switch_OnDeselected()
+        private void MaximizeOrRestore_Switch_ControlDeselected(Control sender, EventArgs e)
         {
             _owner.RestoreForm();
         }
 
-        private void Minimize_Button_RightClick(Point position)
+        private void Minimize_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            GetProcess().Pending();
+            _owner.MinimizeForm();
         }
 
-        private void HideTitleBar_Button_RightClick(Point position)
+        private void HideTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
         {
             _owner.ShowTitleBar = false;
         }
@@ -176,9 +179,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override void ActiveLayoutAll()
         {
-            if (!AllowGetApplication())
-                return;
-
             SubControls.Clear();
             if (ButtonsToShow.HasFlag(FormButton.Close))
             {

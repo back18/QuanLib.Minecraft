@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -24,11 +25,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.White);
             Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
             Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Blue);
-            CursorEnter += DesktopIcon_CursorEnter;
-            CursorLeave += DesktopIcon_CursorLeave;
-            CursorMove += DesktopIcon_CursorMove;
-            RightClick += DesktopIcon_RightClick;
-            DoubleRightClick += DesktopIcon_DoubleRightClick;
         }
 
         private readonly PictureBox Icon_PictureBox;
@@ -51,21 +47,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             Name_Label.Text = _appInfo.Name;
         }
 
-        private void DesktopIcon_CursorEnter(Point position)
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
-            ParentContainer?.AsControlCollection<Control>()?.TryAdd(Name_Label);
-        }
+            base.OnCursorMove(sender, e);
 
-        private void DesktopIcon_CursorLeave(Point position)
-        {
-            ParentContainer?.AsControlCollection<Control>()?.Remove(Name_Label);
-        }
-
-        private void DesktopIcon_CursorMove(Point position)
-        {
             if (ParentContainer?.AsControlCollection<Control>()?.Contains(Name_Label) ?? false)
             {
-                Point parent = SubPos2ParentPos(position);
+                Point parent = SubPos2ParentPos(e.Position);
                 parent.Y += 5;
                 Name_Label.ClientLocation = parent;
                 if (Name_Label.BottomToBorder < 0)
@@ -84,14 +72,32 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             }
         }
 
-        private void DesktopIcon_RightClick(Point position)
+        protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
+            base.OnCursorEnter(sender, e);
+
+            ParentContainer?.AsControlCollection<Control>()?.Remove(Name_Label);
+        }
+
+        protected override void OnCursorLeave(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorLeave(sender, e);
+
+            ParentContainer?.AsControlCollection<Control>()?.Remove(Name_Label);
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
             IsSelected = !IsSelected;
         }
 
-        private void DesktopIcon_DoubleRightClick(Point position)
+        protected override void OnDoubleRightClick(Control sender, CursorEventArgs e)
         {
-            GetMCOS().RunApp(_appInfo.ID, GetProcess());
+            base.OnDoubleRightClick(sender, e);
+
+            MCOS.GetMCOS().ProcessManager.Process.Add(_appInfo, GetForm());
             ParentContainer?.AsControlCollection<Control>()?.ClearSelected();
         }
     }

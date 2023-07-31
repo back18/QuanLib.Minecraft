@@ -11,6 +11,9 @@ namespace QuanLib.Minecraft.BlockScreen
         static PathManager()
         {
             Main_Dir = "MCBS";
+            MinecraftConfig_File = Path.Combine(Main_Dir, "Minecraft.json");
+            SystemConfig_File = Path.Combine(Main_Dir, "System.json");
+            ScreenConfig_File = Path.Combine(Main_Dir, "Screen.json");
             Applications_Dir = Path.Combine(Main_Dir, "Applications");
             FFmpeg_Dir = Path.Combine(Main_Dir, "FFmpeg");
             MinecraftResources_Dir = Path.Combine(Main_Dir, "MinecraftResources");
@@ -23,6 +26,12 @@ namespace QuanLib.Minecraft.BlockScreen
         }
 
         public static string Main_Dir { get; }
+
+        public static string MinecraftConfig_File { get; }
+
+        public static string SystemConfig_File { get; }
+
+        public static string ScreenConfig_File { get; }
 
         public static string Applications_Dir { get; }
 

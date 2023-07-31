@@ -51,9 +51,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
 
         private void RefreshButtons()
         {
-            if (!AllowGetApplication())
-                return;
-
             Client_Panel.SubControls.Clear();
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.Yes))
             {
@@ -61,7 +58,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
                 button.Text = "是";
                 button.ClientSize = ButtonSize;
                 button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
-                button.RightClick += (position) => Complete(DialogBoxReturnValue.Yes);
+                button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.Yes);
                 Client_Panel.SubControls.Add(button);
             }
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.No))
@@ -70,7 +67,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
                 button.Text = "否";
                 button.ClientSize = ButtonSize;
                 button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
-                button.RightClick += (position) => Complete(DialogBoxReturnValue.No);
+                button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.No);
                 Client_Panel.SubControls.Add(button);
             }
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.OK))
@@ -79,7 +76,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
                 button.Text = "确认";
                 button.ClientSize = ButtonSize;
                 button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
-                button.RightClick += (position) => Complete(DialogBoxReturnValue.OK);
+                button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.OK);
                 Client_Panel.SubControls.Add(button);
             }
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.Cancel))
@@ -88,7 +85,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
                 button.Text = "取消";
                 button.ClientSize = ButtonSize;
                 button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
-                button.RightClick += (position) => Complete(DialogBoxReturnValue.Cancel);
+                button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.Cancel);
                 Client_Panel.SubControls.Add(button);
             }
 
@@ -99,8 +96,9 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
 
         private void Complete(DialogBoxReturnValue returnValue)
         {
-            DialogBoxApp app = (DialogBoxApp)GetApplication();
-            app.ReturnValue = returnValue;
+            DialogBoxApp? app = GetProcess()?.Application as DialogBoxApp;
+            if (app is not null)
+                app.ReturnValue = returnValue;
 
             CloseForm();
         }

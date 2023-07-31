@@ -9,15 +9,13 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public interface IControl : IControlInitializeHandling, IControlEventHandling, IControlRendering, IComparable<IControl>
     {
-        public IContainerControl? GenericContainerControl { get; }
+        public IContainerControl? GenericParentContainer { get; }
 
         public bool IsHover { get; }
 
         public bool IsSelected { get; set; }
 
         public int DisplayPriority { get; set; }
-
-        public void Layout(Size oldSize, Size newSize);
 
         public Point ParentPos2SubPos(Point position);
 

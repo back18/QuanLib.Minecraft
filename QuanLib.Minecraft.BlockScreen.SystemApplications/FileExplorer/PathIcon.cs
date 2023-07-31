@@ -1,5 +1,6 @@
 ﻿using QuanLib.IO;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -19,22 +20,24 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             AutoSize = true;
             Skin.BorderBlockID__Hover = ConcretePixel.ToBlockID(MinecraftColor.Pink);
             Skin.BorderBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Pink);
-            CursorEnter += PathIcon_CursorEnter;
-            CursorLeave += PathIcon_CursorLeave;
         }
 
         public PathType PathType { get; }
 
         public abstract string Path { get; }
 
-        private void PathIcon_CursorEnter(Point position)
+        protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
+            base.OnCursorEnter(sender, e);
+
             BorderWidth = 2;
             Location = ClientLocation;
         }
 
-        private void PathIcon_CursorLeave(Point position)
+        protected override void OnCursorLeave(Control sender, CursorEventArgs e)
         {
+            base.OnCursorLeave(sender, e);
+
             BorderWidth = 1;
             ClientLocation = Location;
         }

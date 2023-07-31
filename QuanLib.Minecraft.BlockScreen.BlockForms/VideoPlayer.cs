@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -38,39 +39,33 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.Initialize();
 
-            MCOS os = GetMCOS();
+            MCOS os = MCOS.GetMCOS();
             string dir = PathManager.SystemResources_Textures_Control_Dir;
-
-            CursorMove += VideoPlayer_CursorMove;
-            RightClick += VideoPlayer_RightClick;
-            BeforeFrame += VideoPlayer_BeforeFrame;
-            OnSelected += VideoPlayer_OnSelected;
-            OnDeselected += VideoPlayer_OnDeselected;
 
             SubControls.Add(VideoBox);
             VideoBox.BorderWidth = 0;
             VideoBox.DisplayPriority = -16;
             VideoBox.MaxDisplayPriority = -15;
-            VideoBox.OnResume += VideoBox_OnResume;
-            VideoBox.OnPause += VideoBox_OnPause;
-            VideoBox.OnEndedPlay += VideoBox_OnEndedPlay;
+            VideoBox.Resume += VideoBox_Resume;
+            VideoBox.Pause += VideoBox_Pause;
+            VideoBox.EndedPlay += VideoBox_EndedPlay;
 
             SubControls.Add(PauseOrResume_Switch);
             PauseOrResume_Switch.Visible = false;
             PauseOrResume_Switch.BorderWidth = 0;
             PauseOrResume_Switch.ClientSize = new(16, 16);
             PauseOrResume_Switch.ClientLocation = this.CenterLayout(PauseOrResume_Switch);
-            PauseOrResume_Switch.LayoutSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) =>
+            PauseOrResume_Switch.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             PauseOrResume_Switch.ClientLocation = this.CenterLayout(PauseOrResume_Switch));
-            ImageFrame pause = new(Path.Combine(dir, "暂停.png"), os.Screen.NormalFacing, PauseOrResume_Switch.ClientSize);
-            ImageFrame resume = new(Path.Combine(dir, "播放.png"), os.Screen.NormalFacing, PauseOrResume_Switch.ClientSize);
+            ImageFrame pause = new(Path.Combine(dir, "暂停.png"), GetScreenPlaneSize().NormalFacing, PauseOrResume_Switch.ClientSize);
+            ImageFrame resume = new(Path.Combine(dir, "播放.png"), GetScreenPlaneSize().NormalFacing, PauseOrResume_Switch.ClientSize);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, resume);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, resume);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, pause);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, pause);
             PauseOrResume_Switch.IsSelected = VideoBox.PlayerState == VideoPlayerState.Playing;
-            PauseOrResume_Switch.OnSelected += PauseOrResume_Switch_OnSelected;
-            PauseOrResume_Switch.OnDeselected += PauseOrResume_Switch_OnDeselected;
+            PauseOrResume_Switch.ControlSelected += PauseOrResume_Switch_OnSelected;
+            PauseOrResume_Switch.ControlDeselected += PauseOrResume_Switch_ControlDeselected;
 
             SubControls.Add(ProgressBar_VideoProgressBar);
             ProgressBar_VideoProgressBar.Visible = false;
@@ -86,8 +81,18 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             TimeText_VideoTimeTextBox.Anchor = Direction.Bottom | Direction.Left;
         }
 
-        private void VideoPlayer_RightClick(Point position)
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
+            base.OnCursorMove(sender, e);
+
+            IsSelected = true;
+            OverlayLayerCountdown = OverlayLayerShowTime;
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
             if (IsSelected && !SubControls.HaveHover)
             {
                 IsSelected = false;
@@ -100,14 +105,28 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void VideoPlayer_CursorMove(Point position)
+        protected override void OnControlSelected(Control sender, EventArgs e)
         {
-            IsSelected = true;
-            OverlayLayerCountdown = OverlayLayerShowTime;
+            base.OnControlSelected(sender, e);
+
+            PauseOrResume_Switch.Visible = true;
+            ProgressBar_VideoProgressBar.Visible = true;
+            TimeText_VideoTimeTextBox.Visible = true;
         }
 
-        private void VideoPlayer_BeforeFrame()
+        protected override void OnControlDeselected(Control sender, EventArgs e)
         {
+            base.OnControlDeselected(sender, e);
+
+            PauseOrResume_Switch.Visible = false;
+            ProgressBar_VideoProgressBar.Visible = false;
+            TimeText_VideoTimeTextBox.Visible = false;
+        }
+
+        protected override void OnBeforeFrame(Control sender, EventArgs e)
+        {
+            base.OnBeforeFrame(sender, e);
+
             if (IsSelected && !SubControls.HaveHover)
             {
                 if (OverlayLayerCountdown <= 0)
@@ -116,43 +135,29 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void VideoPlayer_OnSelected()
-        {
-            PauseOrResume_Switch.Visible = true;
-            ProgressBar_VideoProgressBar.Visible = true;
-            TimeText_VideoTimeTextBox.Visible = true;
-        }
-
-        private void VideoPlayer_OnDeselected()
-        {
-            PauseOrResume_Switch.Visible = false;
-            ProgressBar_VideoProgressBar.Visible = false;
-            TimeText_VideoTimeTextBox.Visible = false;
-        }
-
-        private void VideoBox_OnResume()
+        private void VideoBox_Resume(VideoBox sender, EventArgs e)
         {
             PauseOrResume_Switch.IsSelected = true;
         }
 
-        private void VideoBox_OnPause()
+        private void VideoBox_Pause(VideoBox sender, EventArgs e)
         {
             PauseOrResume_Switch.IsSelected = false;
         }
 
-        private void VideoBox_OnEndedPlay()
+        private void VideoBox_EndedPlay(VideoBox sender, EventArgs e)
         {
             PauseOrResume_Switch.IsSelected = false;
         }
 
-        private void PauseOrResume_Switch_OnSelected()
+        private void PauseOrResume_Switch_OnSelected(Control sender, EventArgs e)
         {
-            VideoBox.Resume();
+            VideoBox.Resumeing();
         }
 
-        private void PauseOrResume_Switch_OnDeselected()
+        private void PauseOrResume_Switch_ControlDeselected(Control sender, EventArgs e)
         {
-            VideoBox.Pause();
+            VideoBox.Pauseing();
         }
 
         public static string FromTimeSpan(TimeSpan time)

@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -20,82 +21,74 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Moveing = false;
             Resizeing = false;
             ResizeBorder = Direction.None;
+            IsMinimize = false;
+            Stretch = Direction.Bottom | Direction.Right;
 
-            OnFormClose += (obj) => { };
+            FormMinimize += OnFormMinimize;
+            FormUnminimize += OnFormUnminimize;
+            FormClose += OnFormClose;
         }
 
-        public bool AllowSelected { get; set; }
+        public virtual bool AllowSelected { get; set; }
 
-        public bool AllowDeselected { get; set; }
+        public virtual bool AllowDeselected { get; set; }
 
-        public bool AllowMove { get; set; }
+        public virtual bool AllowMove { get; set; }
 
-        public bool AllowResize { get; set; }
+        public virtual bool AllowResize { get; set; }
 
-        public bool Moveing { get; set; }
+        public virtual bool Moveing { get; set; }
 
-        public bool Resizeing { get; set; }
+        public virtual bool Resizeing { get; set; }
 
-        public Direction ResizeBorder { get; private set; }
+        public virtual Direction ResizeBorder { get; private set; }
 
-        public bool IsMaximize => Location == MaximizeLocation && Width == MaximizeSize.Width && Height == MaximizeSize.Height;
+        public virtual bool IsMinimize { get; private set; }
 
-        public Point MaximizeLocation => new(0, 0);
-
-        public Size MaximizeSize => GetMCOS().FormsPanelSize;
-
-        public Point RestoreLocation { get; private set; }
-
-        public Size RestoreSize { get; private set; }
-
-        public Application Application
+        public virtual bool IsMaximize
         {
             get
             {
-                if (_Application is null)
-                    throw new InvalidOperationException();
-                return _Application;
+                Size maximizeSize = MaximizeSize;
+                return Location == MaximizeLocation && Width == maximizeSize.Width && Height == maximizeSize.Height;
             }
-            private set => _Application = value;
         }
-        private Application? _Application;
 
-        public bool ApplicationIsNotNull => _Application is not null;
+        public virtual Point MaximizeLocation => new(0, 0);
 
-        public event Action<IForm> OnFormClose;
+        public virtual Size MaximizeSize => GetFormContainerSize();
+
+        public virtual Point RestoreLocation { get; private set; }
+
+        public virtual Size RestoreSize { get; private set; }
+
+        public event EventHandler<IForm, EventArgs> FormMinimize;
+
+        public event EventHandler<IForm, EventArgs> FormUnminimize;
+
+        public event EventHandler<IForm, EventArgs> FormClose;
+
+        protected virtual void OnFormMinimize(IForm sender, EventArgs e) { }
+
+        protected virtual void OnFormUnminimize(IForm sender, EventArgs e) { }
+
+        protected virtual void OnFormClose(IForm sender, EventArgs e) { }
 
         public override void Initialize()
         {
             base.Initialize();
 
-            MCOS os = GetMCOS();
-            Text = GetProcess().ApplicationInfo.Name;
-            Width = os.FormsPanelSize.Width;
-            Height = os.FormsPanelSize.Height;
+            Size maximizeSize = MaximizeSize;
+            Width = maximizeSize.Width;
+            Height = maximizeSize.Height;
             InvokeExternalCursorMove = true;
-            CursorMove += Form_CursorMove;
-            OnMove += Form_OnMove;
-            OnResize += Form_OnResize;
-            InitializeCallback += Form_InitializeCallback;
         }
 
-        private void Form_InitializeCallback()
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
-            if (IsMaximize)
-            {
-                RestoreSize = ClientSize * 2 / 3;
-                RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
-            }
-            else
-            {
-                RestoreSize = ClientSize;
-                RestoreLocation = ClientLocation;
-            }
-        }
+            base.OnCursorMove(sender, e);
 
-        private void Form_CursorMove(Point position)
-        {
-            Point parent = SubPos2ParentPos(position);
+            Point parent = SubPos2ParentPos(e.Position);
             if (AllowResize && IsSelected && !IsMaximize)
             {
                 if (Resizeing)
@@ -127,7 +120,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                             ResizeBorder |= Direction.Right;
                     }
 
-                    GetMCOS().CursorType = ResizeBorder switch
+                    MCOS.GetMCOS().CursorType = ResizeBorder switch
                     {
                         Direction.Top or Direction.Bottom => CursorType.VerticalResize,
                         Direction.Left or Direction.Right => CursorType.HorizontalResize,
@@ -139,8 +132,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        protected virtual void Form_OnMove(Point oldPosition, Point newPosition)
+        protected override void OnMove(Control sender, PositionChangedEventArgs e)
         {
+            base.OnMove(sender, e);
+
             if (!IsMaximize)
             {
                 RestoreLocation = ClientLocation;
@@ -148,8 +143,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        protected virtual void Form_OnResize(Size oldSize, Size newSize)
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
+            base.OnResize(sender, e);
+
             if (!IsMaximize)
             {
                 RestoreLocation = ClientLocation;
@@ -157,7 +154,23 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        public void MaximizeForm()
+        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        {
+            base.OnInitializeCallback(sender, e);
+
+            if (IsMaximize)
+            {
+                RestoreSize = ClientSize * 2 / 3;
+                RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
+            }
+            else
+            {
+                RestoreSize = ClientSize;
+                RestoreLocation = ClientLocation;
+            }
+        }
+
+        public virtual void MaximizeForm()
         {
             Size maximize = MaximizeSize;
             Width = maximize.Width;
@@ -165,21 +178,27 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Location = new(0, 0);
         }
 
-        public void RestoreForm()
+        public virtual void RestoreForm()
         {
             ClientLocation = RestoreLocation;
             ClientSize = RestoreSize;
+        }
+        public virtual void MinimizeForm()
+        {
+            IsMinimize = true;
+            FormMinimize.Invoke(this, EventArgs.Empty);
+        }
+
+        public virtual void UnminimizeForm()
+        {
+            IsMinimize = false;
+            FormUnminimize.Invoke(this, EventArgs.Empty);
         }
 
         public virtual void CloseForm()
         {
             ClearAllLayoutSyncer();
-            OnFormClose.Invoke(this);
-        }
-
-        void IApplicationComponent.SetApplication(Application application)
-        {
-            Application = application;
+            FormClose.Invoke(this, EventArgs.Empty);
         }
     }
 }

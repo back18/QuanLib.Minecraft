@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,26 +13,26 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
     /// </summary>
     public class LayoutSyncer
     {
-        public LayoutSyncer(Control target, Action<Point, Point> onMove, Action<Size, Size> onResize)
+        public LayoutSyncer(Control target, EventHandler<Control, PositionChangedEventArgs> move, EventHandler<Control, SizeChangedEventArgs> resize)
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
-            OnMove = onMove;
-            OnResize = onResize;
+            Move = move;
+            Resize = resize;
         }
 
         public Control Target { get; }
 
-        public Action<Point, Point> OnMove;
+        public event EventHandler<Control, PositionChangedEventArgs> Move;
 
-        public Action<Size, Size> OnResize;
+        public event EventHandler<Control, SizeChangedEventArgs> Resize;
 
         /// <summary>
         /// 绑定
         /// </summary>
         public void Binding()
         {
-            Target.OnMoveNow += OnMove;
-            Target.OnResizeNow += OnResize;
+            Target.MoveNow += Move;
+            Target.ResizeNow += Resize;
         }
 
         /// <summary>
@@ -39,8 +40,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
         /// </summary>
         public void Unbinding()
         {
-            Target.OnMoveNow -= OnMove;
-            Target.OnResizeNow -= OnResize;
+            Target.MoveNow -= Move;
+            Target.ResizeNow -= Resize;
         }
 
         /// <summary>
@@ -48,8 +49,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
         /// </summary>
         public void Sync()
         {
-            OnMove.Invoke(Target.ClientLocation, Target.ClientLocation);
-            OnResize.Invoke(Target.ClientSize, Target.ClientSize);
+            Move.Invoke(Target, new(Target.ClientLocation, Target.ClientLocation));
+            Resize.Invoke(Target, new(Target.ClientSize, Target.ClientSize));
         }
     }
 }

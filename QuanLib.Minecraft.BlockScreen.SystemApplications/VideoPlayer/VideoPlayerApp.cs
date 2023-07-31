@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
 {
     public class VideoPlayerApp : Application
     {
-        public VideoPlayerApp()
+        public VideoPlayerApp(string arguments) : base(arguments)
         {
             VideoPlayerForm = new VideoPlayerForm();
             MainForm = VideoPlayerForm;
@@ -26,12 +26,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
 
         public override IForm MainForm { get; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
-            if (args.Length > 0)
-            {
-                VideoPlayerForm.Open(args[0]);
-            }
+            //if (args.Length > 0)
+            //{
+            //    VideoPlayerForm.Open(args[0]);
+            //}
             _exit.WaitOne();
             return null;
         }

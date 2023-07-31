@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 {
@@ -25,17 +27,24 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
         {
             base.Initialize();
 
-            UpdateAppList();
+            ActiveLayoutAll();
         }
 
-        private void UpdateAppList()
+        public override void ActiveLayoutAll()
         {
-            MCOS os = GetMCOS();
+            MCOS os = MCOS.GetMCOS();
             SubControls.Clear();
             foreach (var app in os.ApplicationList.Values)
                 if (app.AppendToDesktop)
                     SubControls.Add(new DesktopIcon(app));
             this.FillLayout(0, SubControls, 0);
+        }
+
+        public override void OnLayout(Control sender, SizeChangedEventArgs e)
+        {
+            base.OnLayout(sender, e);
+
+            ActiveLayoutAll();
         }
     }
 }

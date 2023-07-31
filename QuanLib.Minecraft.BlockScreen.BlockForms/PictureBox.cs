@@ -71,7 +71,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public void SetImage(Image<Rgba32> image)
         {
-            Image = new(image, GetMCOS().Screen.NormalFacing, ResizeOptions);
+            Image = new(image, GetScreenPlaneSize().NormalFacing, ResizeOptions);
         }
 
         public bool TryReadImageFile(string path)
@@ -81,7 +81,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             try
             {
-                Image = new(SixLabors.ImageSharp.Image.Load<Rgba32>(File.ReadAllBytes(path)), GetMCOS().Screen.NormalFacing, ResizeOptions);
+                Image = new(SixLabors.ImageSharp.Image.Load<Rgba32>(File.ReadAllBytes(path)), GetScreenPlaneSize().NormalFacing, ResizeOptions);
                 return true;
             }
             catch

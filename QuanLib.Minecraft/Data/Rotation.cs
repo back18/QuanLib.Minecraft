@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Datas
+namespace QuanLib.Minecraft.Data
 {
     public struct Rotation
     {

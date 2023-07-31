@@ -1,6 +1,6 @@
 ﻿using CoreRCON;
 using CoreRCON.Parsers.Standard;
-using QuanLib.Minecraft.Datas;
+using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Files;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
 {
@@ -29,10 +30,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
         {
             base.Initialize();
 
-            Screen screen = GetMCOS().Screen;
-            ClientSize = new Size(screen.Width, screen.Height) * 2 / 3;
-            ClientLocation = new(screen.Width / 2 - ClientSize.Width / 2, screen.Height / 2 - ClientSize.Height / 2);
-            Client_Panel.OnResize += Client_Panel_OnResize;
+            Client_Panel.Resize += Client_Panel_OnResize;
 
             Client_Panel.SubControls.Add(Video_VideoPlayer);
             Video_VideoPlayer.Visible = false;
@@ -49,10 +47,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
             Path_TextBox.ClientLocation = new(2, 2);
             Path_TextBox.Width = Client_Panel.ClientSize.Width - Read_Button.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
-            Path_TextBox.TextEditorUpdate += Path_TextBox_TextEditorUpdate;
+            Path_TextBox.TextEditorChanged += Path_TextBox_TextEditorChanged;
         }
 
-        private void Read_Button_RightClick(Point position)
+        private void Read_Button_RightClick(Control sender, CursorEventArgs e)
         {
             if (Video_VideoPlayer.VideoBox.TryReadMediaFile(Path_TextBox.Text))
             {
@@ -67,23 +65,17 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
             }
         }
 
-        private void Path_TextBox_TextEditorUpdate(Point position, string text)
+        private void Path_TextBox_TextEditorChanged(Control sender, CursorTextEventArgs e)
         {
-            if (MCOS.DefaultFont.GetTotalSize(text).Width > Path_TextBox.ClientSize.Width)
+            if (MCOS.DefaultFont.GetTotalSize(e.Text).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
-        private void Client_Panel_OnResize(Size oldSize, Size newSize)
+        private void Client_Panel_OnResize(Control sender, SizeChangedEventArgs e)
         {
-            Video_VideoPlayer.VideoBox.ResizeOptions.Size = newSize;
-        }
-
-        internal void Open(string path)
-        {
-            Path_TextBox.Text = path;
-            Read_Button_RightClick(new(0, 0));
+            Video_VideoPlayer.VideoBox.ResizeOptions.Size = e.NewSize;
         }
 
         public override void CloseForm()

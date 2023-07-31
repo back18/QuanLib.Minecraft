@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft
 {
     /// <summary>
-    /// 表示平面
+    /// 表示三维中的平面
     /// </summary>
     public enum Plane
     {
-        XZ,
+        XY,
 
-        YX,
+        ZY,
 
-        YZ
+        XZ
     }
 }

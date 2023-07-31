@@ -1,6 +1,7 @@
 ﻿using CoreRCON;
-using QuanLib.Minecraft.BlockScreen;
-using QuanLib.Minecraft.Datas;
+using QuanLib.Minecraft.BlockScreen.Config;
+using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Vectors;
 using SixLabors.ImageSharp;
 using System;
@@ -10,59 +11,48 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen
+namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     /// <summary>
-    /// 屏幕输入读取器
+    /// 屏幕输入处理
     /// </summary>
-    public class ScreenInputReader : ICursorReader, ITextReader, IMCOSComponent
+    public class ScreenInputHandler : ICursorReader, ITextEditor
     {
-        public ScreenInputReader(string objective)
+        public ScreenInputHandler(Screen owner)
         {
-            if (string.IsNullOrEmpty(objective))
-                throw new ArgumentException($"“{nameof(objective)}”不能为 null 或空。", nameof(objective));
-
-            _objective = objective;
+            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            _objective = ConfigManager.ScreenConfig.RightClickObjective;
             _batuuid = "f78b8570-3f3f-43be-8ade-5f11e77a4563";
             IsInitialState = true;
             CurrentPlayer = string.Empty;
-            CurrenMode = CursorMode.Mouse;
+            CurrenMode = CursorMode.Cursor;
             CurrentPosition = new(0, 0);
             CurrentItem = null;
             InitialText = string.Empty;
             CurrentText = string.Empty;
 
-            OnCursorMove += (obj) => { };
-            OnRightClick += (obj) => { };
-            OnLeftClick += (obj) => { };
-            OnTextUpdate += (arg1, arg2) => { };
+            CursorMove += OnCursorMove;
+            RightClick += OnRightClick;
+            LeftClick += OnLeftClick;
+            CursorItemChanged += OnCursorItemChanged;
+            TextEditorChanged += OnTextEditorChanged;
         }
 
         private const string MOUSE_ITEM = "minecraft:snowball";
 
         private const string TEXTEDITOR_ITEM = "minecraft:writable_book";
 
+        private readonly Screen _owner;
+
         private readonly string _objective;
 
         private readonly string _batuuid;
 
-        public MCOS MCOS
-        {
-            get
-            {
-                if (_MCOS is null)
-                    throw new InvalidOperationException();
-                return _MCOS;
-            }
-            internal set => _MCOS = value;
-        }
-        private MCOS? _MCOS;
-
         public bool IsInitialState { get; private set; }
 
-        public string CurrentPlayer { get; private set; }
-
         public CursorMode CurrenMode { get; private set; }
+
+        public string CurrentPlayer { get; private set; }
 
         public Point CurrentPosition { get; private set; }
 
@@ -72,13 +62,25 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public string CurrentText { get; private set; }
 
-        public event Action<Point> OnCursorMove;
+        public event EventHandler<ICursorReader, CursorEventArgs> CursorMove;
 
-        public event Action<Point> OnRightClick;
+        public event EventHandler<ICursorReader, CursorEventArgs> RightClick;
 
-        public event Action<Point> OnLeftClick;
+        public event EventHandler<ICursorReader, CursorEventArgs> LeftClick;
 
-        public event Action<Point, string> OnTextUpdate;
+        public event EventHandler<ICursorReader, CursorItemEventArgs> CursorItemChanged;
+
+        public event EventHandler<ICursorReader, CursorTextEventArgs> TextEditorChanged;
+
+        protected virtual void OnCursorMove(ICursorReader sender, CursorEventArgs e) { }
+
+        protected virtual void OnRightClick(ICursorReader sender, CursorEventArgs e) { }
+
+        protected virtual void OnLeftClick(ICursorReader sender, CursorEventArgs e) { }
+
+        protected virtual void OnCursorItemChanged(ICursorReader sender, CursorItemEventArgs e) { }
+
+        protected virtual void OnTextEditorChanged(ICursorReader sender, CursorTextEventArgs e) { }
 
         public void ResetText()
         {
@@ -86,10 +88,10 @@ namespace QuanLib.Minecraft.BlockScreen
             IsInitialState = true;
         }
 
-        public void Handle()
+        public void HandleInput()
         {
-            Screen screen = MCOS.Screen;
-            ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
+            Screen screen = _owner;
+            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
 
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
             Vector3<int> center = screen.WorldCenterPosition;
@@ -121,8 +123,8 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private bool HandlePlayer(string player)
         {
-            Screen screen = MCOS.Screen;
-            ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
+            Screen screen = _owner;
+            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
 
             if (!command.TryGetPlayerSelectedItem(player, out var selectedItem) & !command.TryGetPlayerDualWieldItem(player, out var dualWieldItem))
                 return false;
@@ -160,7 +162,7 @@ namespace QuanLib.Minecraft.BlockScreen
             switch (selectedItem.ID)
             {
                 case MOUSE_ITEM:
-                    CurrenMode = CursorMode.Mouse;
+                    CurrenMode = CursorMode.Cursor;
                     break;
                 case TEXTEDITOR_ITEM:
                     CurrenMode = CursorMode.TextEditor;
@@ -170,7 +172,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (targetPosition != CurrentPosition)
             {
                 CurrentPosition = targetPosition;
-                OnCursorMove.Invoke(CurrentPosition);
+                CursorMove.Invoke(this, new(CurrentPosition));
             }
 
             switch (selectedItem.ID)
@@ -178,7 +180,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 case MOUSE_ITEM:
                     if (command.TryGetPlayerScoreboard(player, _objective, out var score) && score > 0)
                     {
-                        OnRightClick.Invoke(CurrentPosition);
+                        RightClick.Invoke(this, new(CurrentPosition));
                         command.SetPlayerScoreboard(player, _objective, 0);
                     }
                     //if (command.TryGetEntityHealth(_batuuid, out var health) && health < 6)
@@ -206,13 +208,13 @@ namespace QuanLib.Minecraft.BlockScreen
                         if (texts[0] != CurrentText)
                         {
                             CurrentText = texts[0];
-                            OnTextUpdate.Invoke(CurrentPosition, CurrentText);
+                            TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText));
                         }
                     }
                     else if (!string.IsNullOrEmpty(CurrentText))
                     {
                         CurrentText = string.Empty;
-                        OnTextUpdate.Invoke(CurrentPosition, CurrentText);
+                        TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText));
                     }
                     break;
             }

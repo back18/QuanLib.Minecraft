@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -20,17 +21,16 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
             Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
             ContentAnchor = AnchorPosition.Centered;
-
-            RightClick += Button_RightClick;
-            BeforeFrame += Button_BeforeFrame;
         }
 
         public int ReboundTime { get; set; }
 
         public int ReboundCountdown { get; private set; }
 
-        private void Button_RightClick(Point position)
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
+            base.OnRightClick(sender, e);
+
             if (!IsSelected)
             {
                 IsSelected = true;
@@ -38,8 +38,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void Button_BeforeFrame()
+        protected override void OnBeforeFrame(Control sender, EventArgs e)
         {
+            base.OnBeforeFrame(sender, e);
+
             if (IsSelected)
             {
                 if (ReboundCountdown <= 0)

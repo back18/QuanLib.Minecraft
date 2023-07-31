@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft;
 using QuanLib.Minecraft.BlockScreen;
+using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Fabric;
 using QuanLib.Minecraft.Vectors;
@@ -46,7 +47,7 @@ namespace MCBS.ConsoleTerminal
             //byte[] bytes = AccelerationEngine.DataPacket.ToDataPacket(pixels).ToBytes();
             //temp.SendData(bytes);
 
-            Screen screen1 = Screen.CreateScreen(new(0, 100, 0), new(0, 0, -100));
+            ConfigManager.Load();
 
             //ForgeServer server = new("D:\\程序\\HMCL\\forge-1.19.2-43.2.8-new", "127.0.0.1");
             FabricServer server = new("D:\\程序\\HMCL\\fabric-server-mc.1.20.1-loader.0.14.21-launcher.0.11.2", "127.0.0.1");
@@ -83,10 +84,8 @@ namespace MCBS.ConsoleTerminal
             //Screen screen = new(new(-207, 62, -160), Facing.Zm, Facing.Xp, 256, 256);
             //Screen screen = new(new(64, 62, -192), Facing.Xp, Facing.Zp, 128, 128);
 
-            Screen screen = new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144);
             AccelerationEngine ae = new("127.0.0.1", 0, 12345);
-            ScreenInputReader cursor = new("snowball_mouse");
-            MCOS os = new(server, screen, cursor, ae);
+            MCOS os = new(server, ae);
 
             //screen.Start();
             //screen.Stop();
@@ -108,7 +107,6 @@ namespace MCBS.ConsoleTerminal
             //    Console.WriteLine($"{id}\t{Color.FromRgba(color.R, color.G, color.B, color.A)}");
             //}
 
-            os.Initialize();
             os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
             os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
             os.RegisterApp(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());

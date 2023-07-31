@@ -14,6 +14,9 @@ using SixLabors.ImageSharp;
 using FFMediaToolkit;
 using QuanLib.Minecraft.BlockScreen.UI;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using System.Collections.Concurrent;
+using QuanLib.Minecraft.BlockScreen.Config;
+using QuanLib.Minecraft.BlockScreen.Screens;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
@@ -21,7 +24,6 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         static MCOS()
         {
-            Task<McbsConfig> task1 = Task.Run(() => new McbsConfig(JsonConvert.DeserializeObject<McbsConfig.Json>(File.ReadAllText(Path.Combine(PathManager.Main_Dir, "MCBS.json"))) ?? throw new FormatException()));
             Task<BlockTextureCollection> task2 = Task.Run(() => BlockTextureCollection.Load(Path.Combine(PathManager.MinecraftResources_Dir, "assets", "minecraft")));
             Task<BdfFont> task3 = Task.Run(() => BdfFont.Load(Path.Combine(PathManager.SystemResources_Fonts_Dir, "DefaultFont.bdf")));
             Task<Dictionary<CursorType, Cursor>> task4 = Task.Run(() =>
@@ -41,8 +43,6 @@ namespace QuanLib.Minecraft.BlockScreen
                 FFmpegLoader.LoadFFmpeg();
             });
 
-
-            McbsConfig = task1.Result;
             BlockTextureCollection = task2.Result;
             DefaultFont = task3.Result;
             _cursors = task4.Result;
@@ -50,25 +50,17 @@ namespace QuanLib.Minecraft.BlockScreen
 
             _fonts = new();
             RegisterFont("DefaultFont", DefaultFont);
-
-            ControlRenderer = new ControlRenderer();
         }
 
         public MCOS(
             MinecraftServer minecraftServer,
-            Screen screen,
-            ScreenInputReader cursorReader,
             AccelerationEngine accelerationEngine)
         {
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
-            Screen = screen ?? throw new ArgumentNullException(nameof(screen));
-            ScreenInputReader = cursorReader ?? throw new ArgumentNullException(nameof(cursorReader));
-            ScreenConstructor = new("snowball_mouse");
             AccelerationEngine = accelerationEngine ?? throw new ArgumentNullException(nameof(accelerationEngine));
-
-            Screen.MCOS = this;
-            ScreenInputReader.MCOS = this;
-            ScreenConstructor.MCOS = this;
+            ScreenManager = new();
+            ProcessManager = new();
+            FormManager = new();
 
             EnableAccelerationEngine = true;
             FrameCount = 0;
@@ -78,24 +70,25 @@ namespace QuanLib.Minecraft.BlockScreen
             Timer = new();
             Operator = string.Empty;
             CursorType = CursorType.Default;
-            ServicesAppID = McbsConfig.ServicesAppID;
-            StartupChecklist = McbsConfig.StartupChecklist;
+            ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
+            StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
             _apps = new();
-            _process = new();
             _callbacks = new();
             _stopwatch = new();
+
+            _mcos = this;
         }
+
+        private static MCOS? _mcos;
 
         private static readonly Dictionary<string, BdfFont> _fonts;
 
-        private static readonly Dictionary<CursorType, Cursor> _cursors;
+        public static readonly Dictionary<CursorType, Cursor> _cursors;
 
         private readonly Dictionary<string, ApplicationInfo> _apps;
 
-        private readonly Dictionary<string, Process> _process;
-
-        internal readonly Queue<Action> _callbacks;
+        internal readonly ConcurrentQueue<Action> _callbacks;
 
         private readonly Stopwatch _stopwatch;
 
@@ -103,15 +96,11 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private bool _runing;
 
-        public static McbsConfig McbsConfig { get; }
-
         public static BlockTextureCollection BlockTextureCollection { get; private set; }
 
         public static BdfFont DefaultFont { get; private set; }
 
         public static IReadOnlyDictionary<string, BdfFont> FontList => _fonts;
-
-        public static ControlRenderer ControlRenderer { get; }
 
         public bool Runing => _runing;
 
@@ -129,8 +118,6 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public SystemTimer Timer { get; }
 
-        public Size FormsPanelSize => RootForm.FormsPanelClientSize;
-
         public string Operator { get; set; }
 
         public Point CurrentPosition { get; private set; }
@@ -139,52 +126,26 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public MinecraftServer MinecraftServer { get; }
 
-        public Screen Screen { get; }
-
         public AccelerationEngine AccelerationEngine { get; }
 
-        public ScreenInputReader ScreenInputReader { get; }
+        public ScreenManager ScreenManager { get; }
 
-        public ScreenConstructor ScreenConstructor { get; }
+        public ProcessManager ProcessManager { get; }
+
+        public FormManager FormManager { get; }
 
         public IReadOnlyDictionary<string, ApplicationInfo> ApplicationList => _apps;
-
-        public IReadOnlyDictionary<string, Process> ProcessList => _process;
 
         public string ServicesAppID { get; }
 
         public IReadOnlyList<string> StartupChecklist { get; }
 
-        public ApplicationInfo ServicesAppInfo => _apps[ServicesAppID];
-
-        public Process ServicesProcess => _process[ServicesAppID];
-
-        public ServicesApplication ServicesApp => (ServicesApplication)ServicesProcess.Application;
-
-        public IRootForm RootForm => ServicesApp.RootForm;
-
-        public void Initialize()
-        {
-            ScreenInputReader.OnCursorMove += (Point position) =>
-            {
-                CurrentPosition = position;
-                RootForm.HandleCursorMove(position);
-            };
-
-            ScreenInputReader.OnRightClick += (Point position) => RootForm.HandleRightClick(position);
-
-            ScreenInputReader.OnLeftClick += (Point position) => RootForm.HandleLeftClick(position);
-
-            ScreenInputReader.OnTextUpdate += (Point position, string text) => RootForm.HandleTextEditorUpdate(position, text);
-        }
-
         public void Start()
         {
             _runing = true;
 
-            RunServicesApp();
-            RunStartupChecklist();
             AccelerationEngine.Start();
+            ScreenManager.ScreenContexts.Add(new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144));
 
 #if DebugTimer
             Console.CursorVisible = false;
@@ -200,19 +161,20 @@ namespace QuanLib.Minecraft.BlockScreen
 
                 HandleProcessScheduling();
 
+                ScreenManager.ScreenConstructor.Handle();
                 if (_screen?.IsCompleted ?? true)
                 {
-                    HandleCursorEvent();
+                    HandleScreenInput();
                 }
                 else
                 {
-                    _callbacks.Enqueue(() => HandleCursorEvent());
+                    _callbacks.Enqueue(() => HandleScreenInput());
                     lags++;
                 }
-                ScreenConstructor.Handle();
+
                 HandleBeforeFrame();
-                HandleRenderingFrame(out var frame);
-                HandleUpdateScreen(frame);
+                HandleUIRendering(out var frames);
+                HandleScreenOutput(frames);
                 HandleAfterFrame();
                 HandleSystemInterrupt();
 
@@ -242,50 +204,19 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            foreach (var process in _process.ToArray())
-            {
-                if (process.Key == ServicesAppInfo.ID)
-                    continue;
-
-                foreach (var active in process.Value.Application.ActiveForms)
-                {
-                    switch (process.Value.ProcessState)
-                    {
-                        case ProcessState.Running:
-                            if (!RootForm.ContainsForm(active))
-                            {
-                                RootForm.AddForm(active);
-                            }
-                            break;
-                        case ProcessState.Pending:
-                            if (RootForm.ContainsForm(active))
-                            {
-                                RootForm.RemoveForm(active);
-                            }
-                            break;
-                        case ProcessState.Stopped:
-                            if (RootForm.ContainsForm(active))
-                            {
-                                RootForm.RemoveForm(active);
-                            }
-                            break;
-                    }
-                }
-            }
-
             stopwatch.Stop();
             Timer.ProcessScheduling.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
-        private TimeSpan HandleCursorEvent()
+        private TimeSpan HandleScreenInput()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            ScreenInputReader.Handle();
+            ScreenManager.HandleAllScreenInput();
 
             stopwatch.Stop();
-            Timer.CursorEvent.Add(stopwatch.Elapsed);
+            Timer.ScreenInput.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -293,7 +224,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            RootForm.HandleBeforeFrame();
+            ScreenManager.HandleAllBeforeFrame();
 
             stopwatch.Stop();
             Timer.HandleBeforeFrame.Add(stopwatch.Elapsed);
@@ -304,38 +235,33 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            RootForm.HandleAfterFrame();
+            ScreenManager.HandleAllAfterFrame();
 
             stopwatch.Stop();
             Timer.HandleAfterFrame.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
-        private TimeSpan HandleRenderingFrame(out ArrayFrame frame)
+        private TimeSpan HandleUIRendering(out Dictionary<int, ArrayFrame> frames)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
-            ArrayFrame? formFrame = ControlRenderer.Rendering(RootForm);
-            if (formFrame is not null)
-                frame.Overwrite(formFrame, RootForm.RenderingLocation);
-            frame.Overwrite(_cursors[CursorType].Frame, CurrentPosition, _cursors[CursorType].Offset);
+            ScreenManager.HandleAllUIRendering(out frames);
 
             stopwatch.Stop();
-            Timer.RenderingFrame.Add(stopwatch.Elapsed);
+            Timer.UIRendering.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
-        private TimeSpan HandleUpdateScreen(ArrayFrame frame)
+        private TimeSpan HandleScreenOutput(Dictionary<int, ArrayFrame> frames)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            Task? previous = _screen;
-            _screen = Screen.ShowNewFrameAsync(frame, previous);
-            previous?.Wait();
+            _screen = ScreenManager.HandleAllScreenOutputAsync(frames);
+            ScreenManager.WaitAllScreenPrevious();
 
             stopwatch.Stop();
-            Timer.UpdateScreen.Add(stopwatch.Elapsed);
+            Timer.ScreenOutput.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -354,54 +280,75 @@ namespace QuanLib.Minecraft.BlockScreen
             return stopwatch.Elapsed;
         }
 
-        private void RunApp(ApplicationInfo appInfo, string[] args, Process? initiator = null)
+        public Process? ProcessOf(Application application)
         {
-            Process process = new(appInfo, args, initiator);
-            process.MCOS = this;
-            process.Application.MCOS = this;
-            process.Application.Process = process;
-            process.OnStopped += Process_OnStopped;
-            _process.Add(process.ApplicationInfo.ID, process);
-            process.Application.Initialize();
-            process.MainThread.Start();
+            if (application is null)
+                throw new ArgumentNullException(nameof(application));
+
+            foreach (var process in ProcessManager.Process.Values)
+                if (application == process.Application)
+                    return process;
+
+            return null;
         }
 
-        public void RunApp(string appID, string[] args, Process? initiator = null)
+        public Process? ProcessOf(IForm form)
         {
-            if (appID is null)
-                throw new ArgumentNullException(nameof(appID));
+            if (form is null)
+                throw new ArgumentNullException(nameof(form));
 
-            if (_process.TryGetValue(appID, out var process))
-            {
-                process.IsPending = false;
-            }
-            else if (_apps.TryGetValue(appID, out var appInfo))
-            {
-                RunApp(appInfo, args, initiator);
-            }
-            else
-            {
-                throw new ArgumentException("未知的AppID", nameof(appID));
-            }
+            foreach (var process in ProcessManager.Process.Values)
+                foreach (var activeForm in process.Application.FormManager.Forms)
+                    if (activeForm == form)
+                        return process;
+
+            return null;
         }
 
-        public void RunApp(string appID, Process? initiator = null)
+        public ScreenContext? ScreenContextOf(IForm form)
         {
-            RunApp(appID, Array.Empty<string>(), initiator);
+            if (form is null)
+                throw new ArgumentNullException(nameof(form));
+
+            foreach (var context in ScreenManager.ScreenContexts.Values)
+                if (context.RootForm == form || context.RootForm.ContainsForm(form))
+                    return context;
+
+            return null;
         }
 
-        private void RunServicesApp()
+        public ScreenContext CreateScreenContext(Screen screen)
+        {
+            if (screen is null)
+                throw new ArgumentNullException(nameof(screen));
+
+            Process process = RunServicesApp();
+            IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
+            rootForm.RenderingSize = screen.Size;
+            RunStartupChecklist(rootForm);
+            return new(screen, rootForm);
+        }
+
+        public void ClearScreenContext(ScreenContext screentContext)
+        {
+            if (screentContext is null)
+                throw new ArgumentNullException(nameof(screentContext));
+
+            //TODO
+        }
+
+        private Process RunServicesApp()
         {
             if (!_apps[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
-            RunApp(ServicesAppID);
+            return ProcessManager.Process.Add(_apps[ServicesAppID]);
         }
 
-        private void RunStartupChecklist()
+        private void RunStartupChecklist(IForm? initiator = null)
         {
-            foreach (var item in StartupChecklist)
-                RunApp(item);
+            foreach (var id in StartupChecklist)
+                ProcessManager.Process.Add(_apps[id], initiator);
         }
 
         public void RegisterApp(ApplicationInfo appInfo)
@@ -416,11 +363,6 @@ namespace QuanLib.Minecraft.BlockScreen
             _apps.Add(appInfo.ID, appInfo);
         }
 
-        private void Process_OnStopped(Process process)
-        {
-            _process.Remove(process.ApplicationInfo.ID);
-        }
-
         public static void RegisterFont(string id, BdfFont font)
         {
             if (string.IsNullOrEmpty(id))
@@ -429,6 +371,13 @@ namespace QuanLib.Minecraft.BlockScreen
                 throw new ArgumentNullException(nameof(font));
 
             _fonts.Add(id, font);
+        }
+
+        public static MCOS GetMCOS()
+        {
+            if (_mcos is null)
+                throw new InvalidOperationException();
+            return _mcos;
         }
     }
 }

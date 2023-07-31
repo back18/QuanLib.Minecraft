@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,15 +32,15 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         protected GenericContainerControl()
         {
-            OnAddedSubControl += (obj) => { };
-            OnRemovedSubControl += (obj) => { };
+            AddedSubControl += (sender, e) => { };
+            RemovedSubControl += (sender, e) => { };
         }
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : class, IControl;
 
-        public override event Action<IControl> OnAddedSubControl;
+        public override event EventHandler<AbstractContainer<IControl>, ControlEventArgs<IControl>> AddedSubControl;
 
-        public override event Action<IControl> OnRemovedSubControl;
+        public override event EventHandler<AbstractContainer<IControl>, ControlEventArgs<IControl>> RemovedSubControl;
 
         public class ControlCollection<T> : AbstractControlCollection<T> where T : class, IControl
         {
@@ -70,7 +71,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 item.SetGenericContainerControl(_owner);
                 RecentlyAddedControl = item;
-                _owner.OnAddedSubControl.Invoke(item);
+                _owner.AddedSubControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
             }
 
@@ -84,7 +85,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 item.SetGenericContainerControl(null);
                 RecentlyRemovedControl = item;
-                _owner.OnAddedSubControl.Invoke(item);
+                _owner.AddedSubControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
                 return true;
             }

@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
     public class FileExplorerApp : Application
     {
-        public FileExplorerApp()
+        public FileExplorerApp(string arguments) : base(arguments)
         {
             MainForm = new FileExplorerForm();
             ReturnValue = Array.Empty<string>();
@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         internal string[] ReturnValue { get; set; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
             _exit.WaitOne();
             return ReturnValue;

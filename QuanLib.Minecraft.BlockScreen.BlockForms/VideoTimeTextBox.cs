@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -21,8 +22,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             BorderWidth = 0;
             Skin.SetAllBackgroundBlockID(string.Empty);
 
-            _owner.VideoBox.OnVideoFrameUpdate += VideoPlayer_OnVideoFrameUpdate;
-            _owner.VideoBox.OnMediaFileUpdate += VideoPlayer__OnMediaFileUpdate;
+            _owner.VideoBox.VideoFrameChanged += VideoPlayer_VideoFrameChanged;
+            _owner.VideoBox.MediaFileChanged += VideoPlayer__MediaFileChanged;
         }
 
         protected readonly VideoPlayer _owner;
@@ -56,12 +57,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             AutoLayout();
         }
 
-        private void VideoPlayer_OnVideoFrameUpdate(VideoFrame frame)
+        private void VideoPlayer_VideoFrameChanged(VideoBox sender, VideoFrameChangedEventArgs e)
         {
             RequestUpdateFrame();
         }
 
-        private void VideoPlayer__OnMediaFileUpdate(MediaFile? mediaFile)
+        private void VideoPlayer__MediaFileChanged(VideoBox sender, MediaFileChangedEventArge e)
         {
             TotalTime_Label.Text = '/' + VideoPlayer.FromTimeSpan(_owner.VideoBox.TotalTime);
             CurrentTime_TextBox.AutoSetSize();

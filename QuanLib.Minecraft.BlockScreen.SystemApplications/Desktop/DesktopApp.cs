@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 {
     public class DesktopApp : Application
     {
-        public DesktopApp()
+        public DesktopApp(string arguments) : base(arguments)
         {
             MainForm = new DesktopForm();
         }
@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 
         public override IForm MainForm { get; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
             while (true)
             {

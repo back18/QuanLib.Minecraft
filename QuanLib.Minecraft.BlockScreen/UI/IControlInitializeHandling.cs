@@ -12,18 +12,18 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public void HandleInitialize();
 
-        public void HandleOnInitCompleted1();
+        public void HandleInitCompleted1();
 
-        public void HandleOnInitCompleted2();
+        public void HandleInitCompleted2();
 
-        public void HandleOnInitCompleted3();
+        public void HandleInitCompleted3();
 
         public void HandleAllInitialize()
         {
             HandleInitialize();
-            HandleOnInitCompleted1();
-            HandleOnInitCompleted2();
-            HandleOnInitCompleted3();
+            HandleInitCompleted1();
+            HandleInitCompleted2();
+            HandleInitCompleted3();
         }
     }
 }

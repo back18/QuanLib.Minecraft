@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Text_Label = new();
 
             ClientSize = new(MCOS.DefaultFont.HalfWidth * 6, MCOS.DefaultFont.Height);
-            OnTextUpdateNow += (oldText, newText) => Text_Label.Text = newText;
         }
 
         private readonly PictureBox Image_PictureBox;
@@ -47,6 +47,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             SubControls.Add(Text_Label);
 
             ActiveLayoutAll();
+        }
+
+        protected override void OnTextChangedNow(Control sender, TextChangedEventArgs e)
+        {
+            base.OnTextChangedNow(sender, e);
+
+            Text_Label.Text = e.NewText;
         }
 
         public override void ActiveLayoutAll()

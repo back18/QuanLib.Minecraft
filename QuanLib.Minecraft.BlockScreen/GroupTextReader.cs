@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public class GroupTextReader : IMCOSComponent, ISwitchable
+    public class GroupTextReader : ISwitchable
     {
         public GroupTextReader()
         {
@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _textCaches = new();
             InitialText = string.Empty;
 
-            OnTextUpdate += (arg1, arg2) => { };
+            OnTextChanged += (arg1, arg2) => { };
         }
 
         private readonly Dictionary<string, string> _textCaches;
@@ -23,18 +23,6 @@ namespace QuanLib.Minecraft.BlockScreen
         private bool _runing;
 
         public bool Runing => _runing;
-
-        public MCOS MCOS
-        {
-            get
-            {
-                if (_MCOS is null)
-                    throw new InvalidOperationException();
-                return _MCOS;
-            }
-            internal set => _MCOS = value;
-        }
-        private MCOS? _MCOS;
 
         /// <summary>
         /// 初始文本
@@ -49,11 +37,11 @@ namespace QuanLib.Minecraft.BlockScreen
         /// <summary>
         /// 当文本更新时
         /// </summary>
-        public event Action<string, string> OnTextUpdate;
+        public event Action<string, string> OnTextChanged;
 
         public void Start()
         {
-            ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
+            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
 
             _runing = true;
             while (_runing)
@@ -77,13 +65,13 @@ namespace QuanLib.Minecraft.BlockScreen
                         {
                             if (texts[0] != textCache)
                             {
-                                OnTextUpdate.Invoke(op, texts[0]);
+                                OnTextChanged.Invoke(op, texts[0]);
                                 _textCaches[op] = texts[0];
                             }
                         }
                         else if (!string.IsNullOrEmpty(textCache))
                         {
-                            OnTextUpdate.Invoke(op, string.Empty);
+                            OnTextChanged.Invoke(op, string.Empty);
                             _textCaches[op] = string.Empty;
                         }
                     }
@@ -94,9 +82,6 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Handle()
         {
-            Screen screen = MCOS.Screen;
-            ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
-
 
         }
 

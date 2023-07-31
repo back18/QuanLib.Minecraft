@@ -1,7 +1,9 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
 using Microsoft.VisualBasic;
+using NAudio.Midi;
 using NAudio.Wave;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -36,20 +38,18 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             AutoSize = true;
             ContentAnchor = AnchorPosition.Centered;
 
-            OnStartedPlay += VideoPlayer_OnStartedPlay;
-            OnEndedPlay += VideoPlayer_OnEndedPlay;
-            OnPause += VideoPlayer_OnPause;
-            OnResume += VideoPlayer_OnResume;
-            OnVideoFrameUpdate += (obj) => { };
-            OnMediaFileUpdate += VideoPlayer_OnMediaFileUpdate;
+            StartedPlay += OnStartedPlay;
+            EndedPlay += OnEndedPlay;
+            Pause += OnPause;
+            Resume += OnResume;
+            VideoFrameChanged += OnVideoFrameChanged;
+            MediaFileChanged += OnMediaFileChanged;
 
             _decoder = null;
             _audio = null;
             _event = null;
             _start = TimeSpan.Zero;
             _stopwatch = new();
-
-            AfterFrame += VideoPlayer_AfterFrame;
         }
 
         public static MediaOptions DefaultMediaOptions { get; }
@@ -78,19 +78,19 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                     if ((temp == VideoPlayerState.Unstarted || temp == VideoPlayerState.Ended) && _PlayerState == VideoPlayerState.Playing)
                     {
-                        OnStartedPlay.Invoke();
+                        StartedPlay.Invoke(this, EventArgs.Empty);
                     }
 
                     switch (_PlayerState)
                     {
                         case VideoPlayerState.Playing:
-                            OnResume.Invoke();
+                            Resume.Invoke(this, EventArgs.Empty);
                             break;
                         case VideoPlayerState.Pause:
-                            OnPause.Invoke();
+                            Pause.Invoke(this, EventArgs.Empty);
                             break;
                         case VideoPlayerState.Ended:
-                            OnEndedPlay.Invoke();
+                            EndedPlay.Invoke(this, EventArgs.Empty);
                             break;
                     }
                 }
@@ -125,7 +125,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 _MediaFile = value;
                 if (AutoSize)
                     AutoSetSize();
-                OnMediaFileUpdate.Invoke(_MediaFile);
+                MediaFileChanged.Invoke(this, new(_MediaFile));
                 RequestUpdateFrame();
             }
         }
@@ -137,37 +137,30 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public ResizeOptions ResizeOptions { get; }
 
-        public event Action OnStartedPlay;
+        public event EventHandler<VideoBox, EventArgs> StartedPlay;
 
-        public event Action OnEndedPlay;
+        public event EventHandler<VideoBox, EventArgs> EndedPlay;
 
-        public event Action OnPause;
+        public event EventHandler<VideoBox, EventArgs> Pause;
 
-        public event Action OnResume;
+        public event EventHandler<VideoBox, EventArgs> Resume;
 
-        public event Action<VideoFrame> OnVideoFrameUpdate;
+        public event EventHandler<VideoBox, VideoFrameChangedEventArgs> VideoFrameChanged;
 
-        public event Action<MediaFile?> OnMediaFileUpdate;
+        public event EventHandler<VideoBox, MediaFileChangedEventArge> MediaFileChanged;
 
-        public override IFrame RenderingFrame()
+        protected override void OnAfterFrame(Control sender, EventArgs e)
         {
-            if (CurrentVideoFrame is not null)
+            base.OnAfterFrame(sender, e);
+
+            if (_decoder is not null && PlayerState == VideoPlayerState.Playing)
             {
-                CurrentVideoFrame.Image.Mutate(x => x.Resize(ResizeOptions));
-                return ArrayFrame.FromImage(GetMCOS().Screen.NormalFacing, CurrentVideoFrame.Image);
-            }
-            else
-            {
-                return ArrayFrame.BuildFrame(ResizeOptions.Size.Width, ResizeOptions.Size.Height, Skin.GetBackgroundBlockID());
+                NextFrame();
+                RequestUpdateFrame();
             }
         }
 
-        public override void AutoSetSize()
-        {
-            ClientSize = ResizeOptions.Size;
-        }
-
-        private void VideoPlayer_OnStartedPlay()
+        protected virtual void OnStartedPlay(VideoBox sender, EventArgs e)
         {
             if (_decoder is not null)
             {
@@ -184,42 +177,56 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void VideoPlayer_OnEndedPlay()
+        protected virtual void OnEndedPlay(VideoBox sender, EventArgs e)
         {
             _stopwatch.Stop();
             _decoder?.Stop();
             _event?.Stop();
         }
 
-        private void VideoPlayer_OnPause()
+        protected virtual void OnPause(VideoBox sender, EventArgs e)
         {
             _stopwatch.Stop();
             _event?.Pause();
         }
 
-        private void VideoPlayer_OnResume()
+        protected virtual void OnResume(VideoBox sender, EventArgs e)
         {
             _stopwatch.Start();
             _event?.Play();
         }
 
-        private void VideoPlayer_OnMediaFileUpdate(MediaFile? mediaFile)
+        protected virtual void OnVideoFrameChanged(VideoBox sender, VideoFrameChangedEventArgs e)
+        {
+
+        }
+
+        protected virtual void OnMediaFileChanged(VideoBox sender, MediaFileChangedEventArge e)
         {
             _stopwatch.Stop();
             _decoder?.Stop();
-            if (mediaFile is null)
+            if (e.MediaFile is null)
                 _decoder = null;
             else
-                _decoder = new(mediaFile.Video);
+                _decoder = new(e.MediaFile.Video);
             PlayerState = VideoPlayerState.Unstarted;
         }
 
-        private void VideoPlayer_AfterFrame()
+        public override void AutoSetSize()
         {
-            if (_decoder is not null && PlayerState == VideoPlayerState.Playing)
+            ClientSize = ResizeOptions.Size;
+        }
+
+        public override IFrame RenderingFrame()
+        {
+            if (CurrentVideoFrame is not null)
             {
-                NextFrame();
-                RequestUpdateFrame();
+                CurrentVideoFrame.Image.Mutate(x => x.Resize(ResizeOptions));
+                return ArrayFrame.FromImage(GetScreenPlaneSize().NormalFacing, CurrentVideoFrame.Image);
+            }
+            else
+            {
+                return ArrayFrame.BuildFrame(ResizeOptions.Size.Width, ResizeOptions.Size.Height, Skin.GetBackgroundBlockID());
             }
         }
 
@@ -241,21 +248,18 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             PlayerState = VideoPlayerState.Ended;
         }
 
-        public void Pause()
+        public void Pauseing()
         {
             PlayerState = VideoPlayerState.Pause;
         }
 
-        public void Resume()
+        public void Resumeing()
         {
             PlayerState = VideoPlayerState.Playing;
         }
 
         private void NextFrame()
         {
-            if (!AllowGetApplication())
-                return;
-
             if (_decoder is not null)
             {
                 VideoFrame? frame;
@@ -280,7 +284,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 }
 
                 CurrentVideoFrame = frame;
-                OnVideoFrameUpdate.Invoke(CurrentVideoFrame);
+                VideoFrameChanged.Invoke(this, new(CurrentVideoFrame));
             }
         }
 

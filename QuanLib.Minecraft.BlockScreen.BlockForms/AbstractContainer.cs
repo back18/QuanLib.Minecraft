@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections;
@@ -13,47 +14,35 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         protected AbstractContainer()
         {
-            OnAddedSubControl += ContainerControl_OnAddSubControl;
-            OnLayoutAll += LayoutAll;
-
-            OnResize += ControlContainer_OnResize;
+            AddedSubControl += OnAddedSubControl;
+            RemovedSubControl += OnRemovedSubControl;
         }
 
         public Type SubControlType => typeof(TControl);
 
         public bool IsSubControlType<T>() => typeof(T) == SubControlType;
 
-        public abstract event Action<TControl> OnAddedSubControl;
+        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> AddedSubControl;
 
-        public abstract event Action<TControl> OnRemovedSubControl;
+        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> RemovedSubControl;
 
-        public event Action<Size, Size> OnLayoutAll;
+        protected virtual void OnAddedSubControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
+        {
+            IControlInitializeHandling handling = e.Control;
+            if (InitializeCompleted && !handling.InitializeCompleted)
+                handling.HandleAllInitialize();
+        }
+
+        protected virtual void OnRemovedSubControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
+        {
+
+        }
 
         public abstract IReadOnlyControlCollection<TControl> GetSubControls();
 
         IReadOnlyControlCollection<IControl> IContainerControl.GetSubControls()
         {
             return GetSubControls();
-        }
-
-        private void ContainerControl_OnAddSubControl(IControl control)
-        {
-            IControlInitializeHandling handling = control;
-            if (InitializeCompleted && !handling.InitializeCompleted)
-                handling.HandleAllInitialize();
-        }
-
-        private void ControlContainer_OnResize(Size oldSize, Size newSize)
-        {
-            OnLayoutAll.Invoke(oldSize, newSize);
-        }
-
-        public virtual void LayoutAll(Size oldSize, Size newSize)
-        {
-            foreach (var control in GetSubControls())
-            {
-                control.Layout(oldSize, newSize);
-            }
         }
 
         public override void HandleInitialize()
@@ -66,90 +55,100 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        public override void HandleOnInitCompleted1()
+        public override void HandleInitCompleted1()
         {
-            base.HandleOnInitCompleted1();
+            base.HandleInitCompleted1();
 
             foreach (var control in GetSubControls())
             {
-                control.HandleOnInitCompleted1();
+                control.HandleInitCompleted1();
             }
         }
 
-        public override void HandleOnInitCompleted2()
+        public override void HandleInitCompleted2()
         {
-            base.HandleOnInitCompleted2();
+            base.HandleInitCompleted2();
 
             foreach (var control in GetSubControls())
             {
-                control.HandleOnInitCompleted2();
+                control.HandleInitCompleted2();
             }
         }
 
-        public override void HandleOnInitCompleted3()
+        public override void HandleInitCompleted3()
         {
-            base.HandleOnInitCompleted3();
+            base.HandleInitCompleted3();
 
             foreach (var control in GetSubControls())
             {
-                control.HandleOnInitCompleted3();
+                control.HandleInitCompleted3();
             }
         }
 
-        public override void HandleCursorMove(Point position)
+        public override void HandleCursorMove(CursorEventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.HandleCursorMove(control.ParentPos2SubPos(position));
+                control.HandleCursorMove(new(control.ParentPos2SubPos(e.Position)));
             }
 
-            base.HandleCursorMove(position);
+            base.HandleCursorMove(e);
         }
 
-        public override bool HandleRightClick(Point position)
+        public override bool HandleRightClick(CursorEventArgs e)
         {
             TControl? control = GetSubControls().FirstHover;
-            control?.HandleRightClick(control.ParentPos2SubPos(position));
+            control?.HandleRightClick(new(control.ParentPos2SubPos(e.Position)));
 
-            return base.HandleRightClick(position);
+            return base.HandleRightClick(e);
         }
 
-        public override bool HandleLeftClick(Point position)
+        public override bool HandleLeftClick(CursorEventArgs e)
         {
             TControl? control = GetSubControls().FirstHover;
-            control?.HandleLeftClick(control.ParentPos2SubPos(position));
+            control?.HandleLeftClick(new(control.ParentPos2SubPos(e.Position)));
 
-            return base.HandleLeftClick(position);
+            return base.HandleLeftClick(e);
         }
 
-        public override void HandleTextEditorUpdate(Point position, string text)
+        public override void HandleCursorItemChanged(CursorItemEventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.HandleTextEditorUpdate(control.ParentPos2SubPos(position), text);
+                control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
             }
 
-            base.HandleTextEditorUpdate(position, text);
+            base.HandleCursorItemChanged(e);
         }
 
-        public override void HandleBeforeFrame()
+        public override void HandleTextEditorChanged(CursorTextEventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.HandleBeforeFrame();
+                control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
             }
 
-            base.HandleBeforeFrame();
+            base.HandleTextEditorChanged(e);
         }
 
-        public override void HandleAfterFrame()
+        public override void HandleBeforeFrame(EventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.HandleAfterFrame();
+                control.HandleBeforeFrame(e);
             }
 
-            base.HandleAfterFrame();
+            base.HandleBeforeFrame(e);
+        }
+
+        public override void HandleAfterFrame(EventArgs e)
+        {
+            foreach (var control in GetSubControls().ToArray())
+            {
+                control.HandleAfterFrame(e);
+            }
+
+            base.HandleAfterFrame(e);
         }
     }
 }

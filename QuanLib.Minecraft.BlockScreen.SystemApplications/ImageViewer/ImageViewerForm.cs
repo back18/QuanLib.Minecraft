@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
@@ -47,7 +48,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
 
             Skin.BackgroundBlockID = ConcretePixel.ToBlockID(MinecraftColor.Lime);
 
-            Client_Panel.OnResize += Client_FormPanel_OnResize;
+            Client_Panel.Resize += Client_FormPanel_Resize;
 
             Client_Panel.SubControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
@@ -55,8 +56,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
             Setting_Switch.Skin.BackgroundBlockID = Setting_Switch.Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Lime);
             Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Yellow);
             Setting_Switch.ClientLocation = Client_Panel.RightLayout(null, 2, 2);
-            Setting_Switch.OnSelected += Setting_Switch_OnSelected;
-            Setting_Switch.OnDeselected += Setting_Switch_OnDeselected;
+            Setting_Switch.ControlSelected += Setting_Switch_ControlSelected;
+            Setting_Switch.ControlDeselected += Setting_Switch_ControlDeselected;
 
             Client_Panel.SubControls.Add(Generate_Button);
             Generate_Button.Text = "生成";
@@ -68,7 +69,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
             Path_TextBox.ClientLocation = Client_Panel.RightLayout(Setting_Switch, 2);
             Path_TextBox.Width = Client_Panel.ClientSize.Width - Setting_Switch.Width - Generate_Button.Width - 8;
             Path_TextBox.Stretch = Direction.Right;
-            Path_TextBox.TextEditorUpdate += Path_TextBox_TextEditorUpdate;
+            Path_TextBox.TextEditorChanged += Path_TextBox_TextEditorChanged;
 
             Client_Panel.SubControls.Add(Picture_PictureBox);
             Picture_PictureBox.ClientLocation = Client_Panel.BottomLayout(Setting_Switch, 2);
@@ -148,11 +149,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
             Resampler_ComboButton.Items.SelectedItem = PictureBox.DefaultResizeOptions.Sampler;
         }
 
-        private void Client_FormPanel_OnResize(Size oldSize, Size newSize)
+        private void Client_FormPanel_Resize(Control sender, SizeChangedEventArgs e)
         {
             if (Picture_PictureBox.Image is null)
             {
-                Picture_PictureBox.ResizeOptions.Size = newSize;
+                Picture_PictureBox.ResizeOptions.Size = e.NewSize;
             }
             else
             {
@@ -161,12 +162,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
             }
         }
 
-        private void Setting_Switch_OnSelected()
+        private void Setting_Switch_ControlSelected(Control sender, EventArgs e)
         {
             Client_Panel.SubControls.Add(Setting_Panel);
         }
 
-        private void Setting_Switch_OnDeselected()
+        private void Setting_Switch_ControlDeselected(Control sender, EventArgs e)
         {
             ResizeOptions options;
             if (Picture_PictureBox.Image is null)
@@ -180,15 +181,15 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
             Client_Panel.SubControls.Remove(Setting_Panel);
         }
 
-        private void Path_TextBox_TextEditorUpdate(Point position, string text)
+        private void Path_TextBox_TextEditorChanged(Control sender, CursorTextEventArgs e)
         {
-            if (MCOS.DefaultFont.GetTotalSize(text).Width > Path_TextBox.ClientSize.Width)
+            if (MCOS.DefaultFont.GetTotalSize(e.Text).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
-        private void Generate_Button_RightClick(Point position)
+        private void Generate_Button_RightClick(Control sender, CursorEventArgs e)
         {
             if (!Picture_PictureBox.TryReadImageFile(Path_TextBox.Text))
             {

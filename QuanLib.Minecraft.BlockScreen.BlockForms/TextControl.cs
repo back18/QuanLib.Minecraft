@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Frame;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
     public abstract class TextControl : Control
     {
-        protected TextControl()
+        protected override void OnTextChangedNow(Control sender, TextChangedEventArgs e)
         {
-            OnTextUpdateNow += TextControl_OnTextUpdateNow;
+            base.OnTextChangedNow(sender, e);
+
+            if (AutoSize)
+                AutoSetSize();
         }
 
         public override IFrame RenderingFrame()
@@ -70,12 +74,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public override void AutoSetSize()
         {
             ClientSize = MCOS.DefaultFont.GetTotalSize(Text);
-        }
-
-        private void TextControl_OnTextUpdateNow(string oldText, string newText)
-        {
-            if (AutoSize)
-                AutoSetSize();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -54,22 +55,19 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.Initialize();
 
-            OnSelected += Form_OnSelected;
-            OnDeselected += Form_OnDeselected;
-
             SubControls.Add(TitleBar);
 
             SubControls.Add(Client_Panel);
             Client_Panel.BorderWidth = 0;
             Client_Panel.LayoutSyncer = new(this,
-            (oldPosition, newPosition) =>
+            (sender, e) =>
             {
                 if (ShowTitleBar)
                     Client_Panel.ClientLocation = new(0, 16);
                 else
                     Client_Panel.ClientLocation = new(0, 0);
             },
-            (oldSize, newSize) =>
+            (sender, e) =>
             {
                 if (ShowTitleBar)
                     Client_Panel.ClientSize = new(ClientSize.Width, ClientSize.Height - 16);
@@ -83,7 +81,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTitleBar_Button.InvokeExternalCursorMove = true;
             ShowTitleBar_Button.Text = "↓";
             ShowTitleBar_Button.ClientSize = new(16, 16);
-            ShowTitleBar_Button.LayoutSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) => ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0));
+            ShowTitleBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
+            ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0));
             ShowTitleBar_Button.Anchor = Direction.Top | Direction.Right;
             ShowTitleBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
@@ -98,41 +97,45 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0);
         }
 
-        protected override void Form_OnMove(Point oldPosition, Point newPosition)
+        protected override void OnMove(Control sender, PositionChangedEventArgs e)
         {
-            base.Form_OnMove(oldPosition, newPosition);
+            base.OnMove(sender, e);
 
             TitleBar.UpdateMaximizeOrRestore();
         }
 
-        protected override void Form_OnResize(Size oldSize, Size newSize)
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
-            base.Form_OnResize(oldSize, newSize);
+            base.OnResize(sender, e);
 
             TitleBar.UpdateMaximizeOrRestore();
         }
 
-        private void Form_OnSelected()
+        protected override void OnControlSelected(Control sender, EventArgs e)
         {
+            base.OnControlSelected(sender, e);
+
             TitleBar.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Black));
         }
 
-        private void Form_OnDeselected()
+        protected override void OnControlDeselected(Control sender, EventArgs e)
         {
+            base.OnControlDeselected(sender, e);
+
             TitleBar.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightGray));
         }
 
-        private void ShowTitleBar_Button_CursorEnter(Point position)
+        private void ShowTitleBar_Button_CursorEnter(Control sender, CursorEventArgs e)
         {
             ShowTitleBar_Button.Visible = true;
         }
 
-        private void ShowTitleBar_Button_CursorLeave(Point position)
+        private void ShowTitleBar_Button_CursorLeave(Control sender, CursorEventArgs e)
         {
             ShowTitleBar_Button.Visible = false;
         }
 
-        private void ShowTitleBar_Button_RightClick(Point position)
+        private void ShowTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
         {
             ShowTitleBar = true;
         }

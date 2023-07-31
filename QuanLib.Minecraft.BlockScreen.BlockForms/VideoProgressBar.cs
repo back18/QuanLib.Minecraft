@@ -1,4 +1,5 @@
 ﻿using FFMediaToolkit.Decoding;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
 using System;
@@ -19,12 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
 
-            CursorEnter += VideoProgressBar_CursorEnter;
-            CursorLeave += VideoProgressBar_CursorLeave;
-            CursorMove += VideoProgressBar_CursorMove;
-            RightClick += VideoProgressBar_RightClick;
-
-            _owner.VideoBox.OnVideoFrameUpdate += VideoPlayer_OnVideoFrameUpdate;
+            _owner.VideoBox.VideoFrameChanged += VideoPlayer_VideoFrameChanged;
         }
 
         protected readonly VideoPlayer _owner;
@@ -39,37 +35,43 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 throw new InvalidOperationException();
         }
 
-        private void VideoPlayer_OnVideoFrameUpdate(VideoFrame frame)
+        private void VideoPlayer_VideoFrameChanged(VideoBox sender, VideoFrameChangedEventArgs e)
         {
             RequestUpdateFrame();
         }
 
-        private void VideoProgressBar_CursorEnter(Point position)
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
-            _owner.SubControls.TryAdd(Time_Label);
-        }
+            base.OnCursorMove(sender, e);
 
-        private void VideoProgressBar_CursorLeave(Point position)
-        {
-            _owner.SubControls.Remove(Time_Label);
-        }
-
-        private void VideoProgressBar_CursorMove(Point position)
-        {
             if (_owner.SubControls.Contains(Time_Label))
             {
-                Time_Label.Text = VideoPlayer.FromTimeSpan(GetProgressBarPosition(position.X));
+                Time_Label.Text = VideoPlayer.FromTimeSpan(GetProgressBarPosition(e.Position.X));
                 Time_Label.AutoSetSize();
-                int x = position.X - Time_Label.Width / 2;
-                //if (x < 0)
-                //    x = 0;
+                int x = e.Position.X - Time_Label.Width / 2;
                 Time_Label.ClientLocation = new(x, TopLocation - Time_Label.Height - 2);
             }
         }
 
-        private void VideoProgressBar_RightClick(Point position)
+        protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
-            _owner.VideoBox.CurrentPosition = GetProgressBarPosition(position.X);
+            base.OnCursorEnter(sender, e);
+
+            _owner.SubControls.TryAdd(Time_Label);
+        }
+
+        protected override void OnCursorLeave(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorLeave(sender, e);
+
+            _owner.SubControls.Remove(Time_Label);
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
+            _owner.VideoBox.CurrentPosition = GetProgressBarPosition(e.Position.X);
         }
 
         public override IFrame RenderingFrame()

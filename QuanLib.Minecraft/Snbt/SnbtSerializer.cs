@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.Datas;
+using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Snbt.Parsers;
 using QuanLib.Minecraft.Snbt.Tags;
 using QuanLib.Minecraft.Vectors;

@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 {
     public class Test03App : Application
     {
-        public Test03App()
+        public Test03App(string arguments) : base(arguments)
         {
             MainForm = new Test03Form();
             _exit = new(false);
@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
         public override IForm MainForm { get; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
             _exit.WaitOne();
             return null;

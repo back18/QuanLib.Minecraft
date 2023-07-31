@@ -8,7 +8,7 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public enum CursorMode
     {
-        Mouse,
+        Cursor,
 
         TextEditor
     }

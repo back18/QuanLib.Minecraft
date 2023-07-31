@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager
 {
     public class TaskManagerApp : Application
     {
-        public TaskManagerApp()
+        public TaskManagerApp(string arguments) : base(arguments)
         {
             MainForm = new TaskManagerForm();
             _exit = new(false);
@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager
 
         public override IForm MainForm { get; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
             _exit.WaitOne();
             return null;

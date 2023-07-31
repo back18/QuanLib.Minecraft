@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Datas;
+﻿using QuanLib.Minecraft.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;

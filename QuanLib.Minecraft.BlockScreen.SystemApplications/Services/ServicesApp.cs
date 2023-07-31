@@ -9,9 +9,9 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
 {
     public class ServicesApp : ServicesApplication
     {
-        public ServicesApp()
+        public ServicesApp(string arguments) : base(arguments)
         {
-            RootForm = new RootForm();
+            RootForm = new ServicesForm();
             MainForm = RootForm;
         }
 
@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
 
         public override IRootForm RootForm { get; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
             while (true)
             {

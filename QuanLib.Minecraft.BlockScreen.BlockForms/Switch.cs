@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,26 +18,45 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Skin.BackgroundBlockID = Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Red);
             Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
             ContentAnchor = AnchorPosition.Centered;
-            RightClick += Switch_RightClick;
-            OnSelected += Switch_OnSelected;
-            OnDeselected += Switch_OnDeselected;
         }
 
-        private void Switch_RightClick(Point position)
+        public override void Initialize()
         {
+            base.Initialize();
+
+            if (IsSelected)
+            {
+                if (!string.IsNullOrEmpty(OnText))
+                    Text = OnText;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(OffText))
+                    Text = OffText;
+            }
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
             IsSelected = !IsSelected;
         }
 
-        private void Switch_OnDeselected()
+        protected override void OnControlSelected(Control sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(OffText))
-                Text = OffText;
-        }
+            base.OnControlSelected(sender, e);
 
-        private void Switch_OnSelected()
-        {
             if (!string.IsNullOrEmpty(OnText))
                 Text = OnText;
+        }
+
+        protected override void OnControlDeselected(Control sender, EventArgs e)
+        {
+            base.OnControlDeselected(sender, e);
+
+            if (!string.IsNullOrEmpty(OffText))
+                Text = OffText;
         }
 
         public string OnText
@@ -62,21 +82,5 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
         private string _OffText;
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            if (IsSelected)
-            {
-                if (!string.IsNullOrEmpty(OnText))
-                    Text = OnText;
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(OffText))
-                    Text = OffText;
-            }
-        }
     }
 }

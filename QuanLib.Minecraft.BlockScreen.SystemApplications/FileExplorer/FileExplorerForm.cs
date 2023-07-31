@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
@@ -97,7 +98,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Path_TextBox.ClientLocation = Client_Panel.RightLayout(Forward_Button, spacing);
             Path_TextBox.Width = Client_Panel.ClientSize.Width - Backward_Button.Width - Forward_Button.Width - 8;
             Path_TextBox.Stretch = Direction.Right;
-            Path_TextBox.OnTextUpdate += Path_TextBox_TextUpdate;
+            Path_TextBox.TextChanged += Path_TextBox_TextChanged;
 
             Client_Panel.SubControls.Add(PreviousPage_Button);
             PreviousPage_Button.Text = "上一页";
@@ -143,7 +144,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             PageTurning(1);
         }
 
-        private void OK_Button_RightClick(Point position)
+        private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
             List<string> paths = new();
             foreach (var page in _pages.Values)
@@ -157,36 +158,36 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             //FileExplorerApp app = (FileExplorerApp)GetApplication();
             //app.ReturnValue = paths.ToArray();
             //app.Exit();
-            GetMCOS().RunApp(VideoPlayerApp.ID, paths.ToArray());
+            //MCOS.GetMCOS().ProcessManager.Process.Add(MCOS.GetMCOS().ApplicationList[VideoPlayerApp.ID], paths.ToArray());
         }
 
-        private void Cancel_Button_RightClick(Point position)
+        private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            GetApplication().Exit();
+
         }
 
-        private void Backward_Button_RightClick(Point position)
+        private void Backward_Button_RightClick(Control sender, CursorEventArgs e)
         {
             Path_TextBox.Text = Path.GetDirectoryName(Path_TextBox.Text) ?? string.Empty;
         }
 
-        private void Path_TextBox_TextUpdate(string oldText, string newText)
+        private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
         {
             UpdatePathList();
             PageTurning(1);
 
-            if (MCOS.DefaultFont.GetTotalSize(newText).Width > Path_TextBox.ClientSize.Width)
+            if (MCOS.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
-        private void PreviousPage_Button_RightClick(Point position)
+        private void PreviousPage_Button_RightClick(Control sender, CursorEventArgs e)
         {
             PageNumber--;
         }
 
-        private void NextPage_Button_RightClick(Point position)
+        private void NextPage_Button_RightClick(Control sender, CursorEventArgs e)
         {
             PageNumber++;
         }
@@ -230,7 +231,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             foreach (var icon in paths)
             {
                 icon.AutoSetSize();
-                icon.DoubleRightClick += (position) =>
+                icon.DoubleRightClick += (sender, e) =>
                 {
                     Path_TextBox.Text = Path.Combine(Path_TextBox.Text, icon.Text);
                 };

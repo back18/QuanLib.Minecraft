@@ -11,26 +11,26 @@ namespace QuanLib.Minecraft.BlockScreen
         public SystemTimer()
         {
             ProcessScheduling = new();
-            CursorEvent = new();
+            ScreenInput = new();
             HandleBeforeFrame = new();
             HandleAfterFrame = new();
-            RenderingFrame = new();
-            UpdateScreen = new();
+            UIRendering = new();
+            ScreenOutput = new();
             SystemInterrupt = new();
             TotalTime = new();
         }
 
         public Timer ProcessScheduling { get; }
 
-        public Timer CursorEvent { get; }
+        public Timer ScreenInput { get; }
 
         public Timer HandleBeforeFrame { get; }
 
         public Timer HandleAfterFrame { get; }
 
-        public Timer RenderingFrame { get; }
+        public Timer UIRendering { get; }
 
-        public Timer UpdateScreen { get; }
+        public Timer ScreenOutput { get; }
 
         public Timer SystemInterrupt { get; }
 
@@ -39,11 +39,11 @@ namespace QuanLib.Minecraft.BlockScreen
         public string ToString(Timer.Duration duration)
         {
             return @$"进程调度: {Timer.FromTime(ProcessScheduling.GetTime(duration))}
-光标事件: {Timer.FromTime(CursorEvent.GetTime(duration))}
+屏幕输入: {Timer.FromTime(ScreenInput.GetTime(duration))}
 帧前处理: {Timer.FromTime(HandleBeforeFrame.GetTime(duration))}
 帧后处理: {Timer.FromTime(HandleAfterFrame.GetTime(duration))}
-帧渲染器: {Timer.FromTime(RenderingFrame.GetTime(duration))}
-更新屏幕: {Timer.FromTime(UpdateScreen.GetTime(duration))}
+界面渲染: {Timer.FromTime(UIRendering.GetTime(duration))}
+屏幕输出: {Timer.FromTime(ScreenOutput.GetTime(duration))}
 系统中断: {Timer.FromTime(SystemInterrupt.GetTime(duration))}
 共计时间: {Timer.FromTime(TotalTime.GetTime(duration))}";
         }

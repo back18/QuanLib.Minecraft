@@ -17,5 +17,33 @@ namespace QuanLib.Minecraft.BlockScreen.UI
             }
             return -1;
         }
+
+        public static IForm? GetForm(this IControl source)
+        {
+            IControl? result = source;
+            while (true)
+            {
+                if (result is null)
+                    return null;
+                else if (result is IForm form)
+                    return form;
+                else
+                    result = result.GenericParentContainer;
+            }
+        }
+
+        public static IRootForm? GetRootForm(this IControl source)
+        {
+            IControl? result = source;
+            while (true)
+            {
+                if (result is null)
+                    return null;
+                else if (result is IRootForm form)
+                    return form;
+                else
+                    result = result.GenericParentContainer;
+            }
+        }
     }
 }

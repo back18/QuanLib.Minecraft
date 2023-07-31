@@ -1,5 +1,5 @@
 ﻿using CoreRCON;
-using QuanLib.Minecraft.Datas;
+using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
 using QuanLib.Minecraft.Vectors;

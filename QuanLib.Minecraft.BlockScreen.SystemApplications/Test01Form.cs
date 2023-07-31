@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -38,8 +39,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             base.Initialize();
 
             ClientLocation = new(3, 3);
-            Width = Application.MCOS.FormsPanelSize.Width - 7;
-            Height = Application.MCOS.FormsPanelSize.Height - 10;
+
+
+            Width = GetFormContainerSize().Width - 7;
+            Height = GetFormContainerSize().Height - 10;
 
             Client_Panel.SubControls.Add(TextBox1);
             Client_Panel.SubControls.Add(TextBox2);
@@ -85,17 +88,17 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             Button3.RightClick += Button3_RightClick;
         }
 
-        private void Button3_RightClick(Point obj)
+        private void Button3_RightClick(Control sender, CursorEventArgs e)
         {
             TextBox3.Text = string.Empty;
         }
 
-        private void Button2_RightClick(Point obj)
+        private void Button2_RightClick(Control sender, CursorEventArgs e)
         {
             TextBox2.Text = string.Empty;
         }
 
-        private void Button1_RightClick(Point obj)
+        private void Button1_RightClick(Control sender, CursorEventArgs e)
         {
             TextBox1.Text = string.Empty;
         }

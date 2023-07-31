@@ -1,5 +1,6 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
-using QuanLib.Minecraft.Datas;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
+using QuanLib.Minecraft.Data;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -24,9 +25,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
             ContentAnchor = AnchorPosition.Centered;
 
-            RightClick += ComboButton_RightClick;
-            BeforeFrame += ComboButton_BeforeFrame;
-            Items.SelectedItemChanged += Items_SelectedItemChanged;
+            Items.SelectedItemChanged += Items_SelectedItemChanged; ;
         }
 
         public ItemCollection<T> Items { get; }
@@ -57,8 +56,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             SetText(Items.SelectedItem);
         }
 
-        private void ComboButton_RightClick(Point position)
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
+            base.OnRightClick(sender, e);
+
             if (!IsSelected)
             {
                 ReboundCountdown = ReboundTime;
@@ -74,8 +75,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 Items.SelectedItemIndex++;
         }
 
-        private void ComboButton_BeforeFrame()
+        protected override void OnBeforeFrame(Control sender, EventArgs e)
         {
+            base.OnBeforeFrame(sender, e);
+
             if (IsSelected)
             {
                 ReboundCountdown--;
@@ -84,9 +87,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void Items_SelectedItemChanged(T? oldItem, T? newItem)
+        private void Items_SelectedItemChanged(ItemCollection<T> sender, ObjectChangedEventArgs<T?> e)
         {
-            SetText(newItem);
+            SetText(e.NewItem);
         }
 
         private void SetText(T? item)

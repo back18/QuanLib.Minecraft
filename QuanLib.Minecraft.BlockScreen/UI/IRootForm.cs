@@ -9,13 +9,15 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public interface IRootForm : IForm
     {
-        public Size FormsPanelClientSize { get; }
+        public Size FormContainerSize { get; }
 
         public void AddForm(IForm form);
 
         public bool RemoveForm(IForm form);
 
         public bool ContainsForm(IForm form);
+
+        public IEnumerable<IForm> GetAllForm();
 
         public bool TrySwitchSelectedForm(IForm form);
 

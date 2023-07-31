@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,18 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public interface IControlEventHandling
     {
-        public void HandleCursorMove(Point position);
+        public void HandleCursorMove(CursorEventArgs e);
 
-        public bool HandleRightClick(Point position);
+        public bool HandleRightClick(CursorEventArgs e);
 
-        public bool HandleLeftClick(Point position);
+        public bool HandleLeftClick(CursorEventArgs e);
 
-        public void HandleTextEditorUpdate(Point position, string text);
+        public void HandleCursorItemChanged(CursorItemEventArgs e);
 
-        public void HandleBeforeFrame();
+        public void HandleTextEditorChanged(CursorTextEventArgs e);
 
-        public void HandleAfterFrame();
+        public void HandleBeforeFrame(EventArgs e);
+
+        public void HandleAfterFrame(EventArgs e);
     }
 }

@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections;
@@ -44,38 +45,48 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         protected ContainerControl()
         {
-            OnAddedSubControl += (obj) => { };
-            OnRemovedSubControl += (obj) => { };
+            AddedSubControl += (sender, e) => { };
+            RemovedSubControl += (sender, e) => { };
+            LayoutAll += OnLayoutAll;
         }
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : Control;
 
-        public override event Action<Control> OnAddedSubControl;
+        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> AddedSubControl;
 
-        public override event Action<Control> OnRemovedSubControl;
+        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> RemovedSubControl;
+
+        public event EventHandler<AbstractContainer<Control>, SizeChangedEventArgs> LayoutAll;
+
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        {
+            base.OnResize(sender, e);
+
+            LayoutAll.Invoke(this, e);
+        }
 
         public virtual void ActiveLayoutAll()
         {
 
         }
 
-        public override void LayoutAll(Size oldSize, Size newSize)
+        protected virtual void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
         {
             foreach (var control in GetSubControls())
             {
                 if (control.LayoutMode == LayoutMode.Auto)
-                    control.Layout(oldSize, newSize);
+                    control.HandleLayout(e);
             }
         }
 
-        public override void UpdateAllHoverState(Point position)
+        public override void UpdateAllHoverState(CursorEventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.UpdateAllHoverState(control.ParentPos2SubPos(position));
+                control.UpdateAllHoverState(new(control.ParentPos2SubPos(e.Position)));
             }
 
-            base.UpdateAllHoverState(position);
+            base.UpdateAllHoverState(e);
         }
 
         public class ControlCollection<T> : AbstractControlCollection<T> where T : Control
@@ -107,7 +118,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 ((IControl)item).SetGenericContainerControl(_owner);
                 RecentlyAddedControl = item;
-                _owner.OnAddedSubControl.Invoke(item);
+                _owner.AddedSubControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
             }
 
@@ -121,7 +132,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 ((IControl)item).SetGenericContainerControl(null);
                 RecentlyRemovedControl = item;
-                _owner.OnAddedSubControl.Invoke(item);
+                _owner.AddedSubControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
                 return true;
             }

@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
 {
     public class DialogBoxApp : Application
     {
-        public DialogBoxApp()
+        public DialogBoxApp(string arguments) : base(arguments)
         {
             MainForm = new MessageDialogBoxForm();
             ReturnValue = DialogBoxReturnValue.None;
@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
 
         internal DialogBoxReturnValue ReturnValue { get; set; }
 
-        public override object? Main(string[] args)
+        public override object? Main()
         {
             _exit.WaitOne();
             return ReturnValue;

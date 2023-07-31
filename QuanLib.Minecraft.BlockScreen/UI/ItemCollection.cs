@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Datas;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,8 +29,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                     return item.ToString() ?? string.Empty;
             };
 
-            SelectedItemIndexChanged += (arg1, arg2) => { };
-            SelectedItemChanged += (arg1, arg2) => { };
+            SelectedItemIndexChanged += OnSelectedItemIndexChanged;
+            SelectedItemChanged += OnSelectedItemChanged;
         }
 
         private readonly List<T> _items;
@@ -57,10 +58,10 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                     else if (value > _items.Count - 1)
                         value = _items.Count - 1;
                     _SelectedItemIndex = value;
-                    SelectedItemIndexChanged.Invoke(temp, _SelectedItemIndex);
+                    SelectedItemIndexChanged.Invoke(this, new(temp, _SelectedItemIndex));
                     if (!Equals(SelectedItem, SelectedItem_Old))
                     {
-                        SelectedItemChanged.Invoke(SelectedItem_Old, SelectedItem);
+                        SelectedItemChanged.Invoke(this, new(SelectedItem_Old, SelectedItem));
                         SelectedItem_Old = SelectedItem;
                     }
                 }
@@ -76,9 +77,13 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public Func<T?, string> ItemToStringFunc { get; set; }
 
-        public event Action<int, int> SelectedItemIndexChanged;
+        public event EventHandler<ItemCollection<T>, IndexChangedEventArgs> SelectedItemIndexChanged;
 
-        public event Action<T?, T?> SelectedItemChanged;
+        public event EventHandler<ItemCollection<T>, ObjectChangedEventArgs<T?>> SelectedItemChanged;
+
+        protected virtual void OnSelectedItemIndexChanged(ItemCollection<T> sender, IndexChangedEventArgs e) { }
+
+        protected virtual void OnSelectedItemChanged(ItemCollection<T> sender, ObjectChangedEventArgs<T?> e) { }
 
         public void Add(T item)
         {

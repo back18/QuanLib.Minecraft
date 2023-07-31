@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.Datas;
+using QuanLib.Minecraft.BlockScreen.Config;
+using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Vectors;
 using SixLabors.ImageSharp;
 using System;
@@ -10,20 +11,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen
+namespace QuanLib.Minecraft.BlockScreen.Screens
 {
-    public class ScreenConstructor : IMCOSComponent
+    public class ScreenConstructor
     {
-        public ScreenConstructor(string objective)
+        public ScreenConstructor()
         {
-            if (string.IsNullOrEmpty(objective))
-                throw new ArgumentException($"“{nameof(objective)}”不能为 null 或空。", nameof(objective));
-
             State = ScreenConstructorState.ReadStartPosition;
             StartPosition = new(0, 0, 0);
             EndPosition = new(0, 0, 0);
 
-            _objective = objective;
+            _objective = ConfigManager.ScreenConfig.RightClickObjective;
             _screen = null;
         }
 
@@ -32,18 +30,6 @@ namespace QuanLib.Minecraft.BlockScreen
         private readonly string _objective;
 
         private Screen? _screen;
-
-        public MCOS MCOS
-        {
-            get
-            {
-                if (_MCOS is null)
-                    throw new InvalidOperationException();
-                return _MCOS;
-            }
-            internal set => _MCOS = value;
-        }
-        private MCOS? _MCOS;
 
         public Facing NormalFacing { get; private set; }
 
@@ -57,7 +43,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Handle()
         {
-            ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
+            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
 
             Dictionary<string, Item> players = command.GetAllPlayerSelectedItem();
             if (players.Count == 0)
@@ -91,7 +77,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 if (text is null || text != "创建屏幕")
                     return;
 
-                ServerCommandHelper command = MCOS.MinecraftServer.CommandHelper;
+                ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
 
                 if (!command.TryGetEntityPosition(player, out var position) || !command.TryGetEntityRotation(player, out var rotation))
                     return;
@@ -131,12 +117,14 @@ namespace QuanLib.Minecraft.BlockScreen
                     if (targetBlock != EndPosition)
                     {
                         EndPosition = targetBlock;
-                        _screen?.Clear();
+                        Screen? screen = _screen;
                         _screen = Screen.CreateScreen(StartPosition, EndPosition);
-                        _screen.MCOS = MCOS;
                         if (_screen.Width <= 256 && _screen.Height <= 256)
                         {
-                            _screen.Fill();
+                            if (screen is null)
+                                _screen.Fill();
+                            else
+                                Screen.Replace(screen, _screen);
                         }
                     }
                 }
@@ -151,6 +139,11 @@ namespace QuanLib.Minecraft.BlockScreen
                             break;
                         case ScreenConstructorState.ReadEndPosition:
                             State = ScreenConstructorState.ReadStartPosition;
+                            if (_screen is not null)
+                            {
+                                MCOS.GetMCOS().ScreenManager.ScreenContexts.Add(_screen);
+                                _screen = null;
+                            }
                             break;
                         default:
                             throw new InvalidOperationException();
@@ -158,6 +151,13 @@ namespace QuanLib.Minecraft.BlockScreen
                     command.SetPlayerScoreboard(player, _objective, 0);
                 }
             }
+        }
+
+        public enum ScreenConstructorState
+        {
+            ReadStartPosition,
+
+            ReadEndPosition,
         }
     }
 }

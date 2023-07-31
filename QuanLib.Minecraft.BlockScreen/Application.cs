@@ -1,212 +1,113 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Screens;
+using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public abstract class Application : IMCOSComponent
+    public abstract class Application
     {
-        protected Application()
+        protected Application(string arguments)
         {
-            ActiveForms = new(this);
+            Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            FormManager = new();
 
-            OnAddedForm += Application_OnAddedForm;
-            OnRemovedForm += Application_OnRemovedForm;
+            FormManager.AddedForm += FormManager_AddedForm;
+            FormManager.RemovedForm += FormManager_RemovedForm;
         }
 
-        public MCOS MCOS
-        {
-            get
-            {
-                if (_MCOS is null)
-                    throw new InvalidOperationException();
-                return _MCOS;
-            }
-            internal set => _MCOS = value;
-        }
-        private MCOS? _MCOS;
-
-        public Process Process
-        {
-            get
-            {
-                if (_Process is null)
-                    throw new InvalidOperationException();
-                return _Process;
-            }
-            internal set => _Process = value;
-        }
-        private Process? _Process;
-
-        public ApplicationInfo ApplicationInfo
-        {
-            get
-            {
-                if (_ApplicationInfo is null)
-                    throw new InvalidOperationException();
-                return _ApplicationInfo;
-            }
-            internal set => _ApplicationInfo = value;
-        }
-        private ApplicationInfo? _ApplicationInfo;
+        public string Arguments { get; }
 
         public abstract IForm MainForm { get; }
 
-        public FormCollection ActiveForms { get; }
+        public FormManager FormManager { get; }
 
-        public event Action<IForm> OnAddedForm;
-
-        public event Action<IForm> OnRemovedForm;
-
-        private void Application_OnAddedForm(IForm form)
-        {
-            form.SetApplication(this);
-            IControlInitializeHandling handling = form;
-            if (!handling.InitializeCompleted)
-                handling.HandleAllInitialize();
-
-            form.OnFormClose += Form_OnFormConse;
-        }
-
-        private void Application_OnRemovedForm(IForm form)
-        {
-            form.OnFormClose -= Form_OnFormConse;
-        }
-
-        private void Form_OnFormConse(IForm form)
-        {
-            ActiveForms.Remove(form);
-            if (MCOS.RootForm.ContainsForm(form))
-            {
-                MCOS.RootForm.RemoveForm(form);
-            }
-
-            if (ActiveForms.Count == 0)
-                Exit();
-        }
-
-        public abstract object? Main(string[] args);
+        public abstract object? Main();
 
         public virtual void Initialize()
         {
-            ActiveForms.Add(MainForm);
+            FormManager.Forms.Add(MainForm);
+        }
+
+        private void Form_OnFormConse(IForm sender, EventArgs e)
+        {
+            FormManager.Forms.Remove(sender);
+            ScreenContext? context = MCOS.GetMCOS().ScreenContextOf(sender);
+            context?.RootForm.RemoveForm(sender);
+
+            if (FormManager.Forms.Count == 0)
+                Exit();
+        }
+
+        private void FormManager_AddedForm(FormManager sender, FormEventArgs e)
+        {
+            IControlInitializeHandling handling = e.Form;
+            if (!handling.InitializeCompleted)
+                handling.HandleAllInitialize();
+
+            if (e.Form is IRootForm)
+                return;
+
+            MCOS os = MCOS.GetMCOS();
+            IForm? initiator = os.ProcessOf(this)?.Initiator;
+            if (initiator is IRootForm rootForm)
+            {
+                rootForm.AddForm(e.Form);
+            }
+            else
+            {
+                ScreenContext? context = null;
+                if (initiator is not null)
+                    context = os.ScreenContextOf(initiator);
+
+                if (context is not null)
+                {
+                    context.RootForm.AddForm(e.Form);
+                }
+                else if (os.ScreenManager.ScreenContexts.Any())
+                {
+                    os.ScreenManager.ScreenContexts.FirstOrDefault().Value.RootForm.AddForm(e.Form);
+                }
+            }
+
+            e.Form.FormClose += Form_OnFormConse;
+        }
+
+        private void FormManager_RemovedForm(FormManager sender, FormEventArgs e)
+        {
+            e.Form.FormClose -= Form_OnFormConse;
         }
 
         public virtual void Exit()
         {
-            foreach (var form in ActiveForms)
+            foreach (var form in FormManager.Forms.ToArray())
                 form.CloseForm();
         }
 
-        public static Application CreateApplication(Type appType)
+        public static Application CreateApplication(Type appType, string arguments)
         {
             if (appType is null)
                 throw new ArgumentNullException(nameof(appType));
+            if (arguments is null)
+                throw new ArgumentNullException(nameof(arguments));
+
             if (!appType.IsSubclassOf(typeof(Application)))
                 throw new ArgumentException("Type对象不是Application", nameof(appType));
 
-            return (Application)(Activator.CreateInstance(appType) ?? throw new ArgumentException("无法构建Application对象", nameof(appType)));
+            return appType.GetConstructor(new Type[] { typeof(string) })?.Invoke(new string[] { arguments }) as Application ??
+                throw new ArgumentException("无法构建Application对象", nameof(appType));
         }
 
-        public static Application CreateApplication<T>() where T : Application
+        public static Application CreateApplication<T>(string arguments) where T : Application
         {
-            return CreateApplication(typeof(T));
-        }
-
-        public class FormCollection : IList<IForm>, IReadOnlyList<IForm>
-        {
-            public FormCollection(Application owner)
-            {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
-                _forms = new();
-            }
-
-            private readonly Application _owner;
-
-            private readonly List<IForm> _forms;
-
-            public IForm this[int index] => _forms[index];
-
-            IForm IList<IForm>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
-
-            public int Count => _forms.Count;
-
-            public bool IsReadOnly => false;
-
-            public void Add(IForm item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                _forms.Add(item);
-                _owner.OnAddedForm.Invoke(item);
-            }
-
-            public bool TryAdd(IForm item)
-            {
-                if (_forms.Contains(item))
-                    return false;
-
-                Add(item);
-                return true;
-            }
-
-            public bool Remove(IForm item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                if (!_forms.Remove(item))
-                    return false;
-
-                _owner.OnRemovedForm.Invoke(item);
-                return true;
-            }
-
-            public void RemoveAt(int index)
-            {
-                _forms.RemoveAt(index);
-            }
-
-            public void Clear()
-            {
-                _forms.Clear();
-            }
-
-            public bool Contains(IForm item)
-            {
-                return _forms.Contains(item);
-            }
-
-            public int IndexOf(IForm item)
-            {
-                return _forms.IndexOf(item);
-            }
-
-            public void CopyTo(IForm[] array, int arrayIndex)
-            {
-                _forms.CopyTo(array, arrayIndex);
-            }
-
-            public IEnumerator<IForm> GetEnumerator()
-            {
-                return _forms.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable)_forms).GetEnumerator();
-            }
-
-            void IList<IForm>.Insert(int index, IForm item)
-            {
-                throw new NotSupportedException();
-            }
+            return CreateApplication(typeof(T), arguments);
         }
     }
 }

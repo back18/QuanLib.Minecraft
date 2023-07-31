@@ -1,5 +1,4 @@
 ﻿using QuanLib.Minecraft.BlockScreen.UI;
-using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using SixLabors.ImageSharp;
 using System;
@@ -7,25 +6,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
+namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
-    public class RootForm : Form, IRootForm
+    public abstract class RootForm : Form, IRootForm
     {
         public RootForm()
         {
             TaskBar = new(this);
-            FormsPanel = new(this);
+            FormContainer = new(this);
             ShowTaskBar_Button = new();
         }
 
         private readonly TaskBar TaskBar;
 
-        private readonly FormsPanel FormsPanel;
+        private readonly FormContainer FormContainer;
 
         private readonly Button ShowTaskBar_Button;
 
-        public Size FormsPanelClientSize => FormsPanel.ClientSize;
+        public Size FormContainerSize => FormContainer.ClientSize;
 
         public bool ShowTitleBar
         {
@@ -38,7 +38,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
                     {
                         SubControls.TryAdd(TaskBar);
                         SubControls.Remove(ShowTaskBar_Button);
-                        FormsPanel?.LayoutSyncer?.Sync();
+                        FormContainer?.LayoutSyncer?.Sync();
                     }
                 }
                 else
@@ -47,7 +47,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
                     {
                         SubControls.Remove(TaskBar);
                         SubControls.TryAdd(ShowTaskBar_Button);
-                        FormsPanel?.LayoutSyncer?.Sync();
+                        FormContainer?.LayoutSyncer?.Sync();
                     }
                 }
             }
@@ -57,27 +57,25 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
         {
             base.Initialize();
 
-            MCOS os = GetMCOS();
+            MCOS os = MCOS.GetMCOS();
 
             AllowResize = false;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
-            ClientSize = new(os.Screen.Width, os.Screen.Height);
-            Location = new(0, 0);
             Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
 
             SubControls.Add(TaskBar);
-            TaskBar.ClientLocation = new(0, ClientSize.Height - 16);
 
-            SubControls.Add(FormsPanel);
-            FormsPanel.LayoutSyncer?.Sync();
+            SubControls.Add(FormContainer);
+            FormContainer.LayoutSyncer?.Sync();
 
             ShowTaskBar_Button.Visible = false;
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
             ShowTaskBar_Button.Text = "↑";
             ShowTaskBar_Button.ClientSize = new(16, 16);
-            ShowTaskBar_Button.LayoutSyncer = new(this, (oldPosition, newPosition) => { }, (oldSize, newSize) => ShowTaskBar_Button.ClientLocation = this.LifeLayout(null, ShowTaskBar_Button, 0, newSize.Height - ShowTaskBar_Button.Height));
+            ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
+            ShowTaskBar_Button.ClientLocation = this.LifeLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
             ShowTaskBar_Button.Anchor = Direction.Top | Direction.Right;
             ShowTaskBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
@@ -85,30 +83,32 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
         }
 
-        private void ShowTaskBar_Button_CursorEnter(Point position)
+        private void ShowTaskBar_Button_CursorEnter(Control sender, CursorEventArgs e)
         {
             ShowTaskBar_Button.Visible = true;
         }
 
-        private void ShowTaskBar_Button_CursorLeave(Point position)
+        private void ShowTaskBar_Button_CursorLeave(Control sender, CursorEventArgs e)
         {
             ShowTaskBar_Button.Visible = false;
         }
 
-        private void ShowTaskBar_Button_RightClick(Point position)
+        private void ShowTaskBar_Button_RightClick(Control sender, CursorEventArgs e)
         {
             ShowTitleBar = true;
         }
 
         public void AddForm(IForm form)
         {
-            FormsPanel.SubControls.Add(form);
+            if (form == this)
+                return;
+            FormContainer.SubControls.Add(form);
             TrySwitchSelectedForm(form);
         }
 
         public bool RemoveForm(IForm form)
         {
-            if (!FormsPanel.SubControls.Remove(form))
+            if (!FormContainer.SubControls.Remove(form))
                 return false;
 
             form.IsSelected = false;
@@ -118,7 +118,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
 
         public bool ContainsForm(IForm form)
         {
-            return FormsPanel.SubControls.Contains(form);
+            return FormContainer.SubControls.Contains(form);
+        }
+
+        public IEnumerable<IForm> GetAllForm()
+        {
+            return FormContainer.SubControls;
         }
 
         public bool TrySwitchSelectedForm(IForm form)
@@ -126,12 +131,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            if (!FormsPanel.SubControls.Contains(form))
+            if (!FormContainer.SubControls.Contains(form))
                 return false;
             if (!form.AllowSelected)
                 return false;
 
-            var selecteds = FormsPanel.SubControls.GetSelecteds();
+            var selecteds = FormContainer.SubControls.GetSelecteds();
             foreach (var selected in selecteds)
             {
                 if (!selected.AllowDeselected)
@@ -149,13 +154,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Services
 
         public void SelectedMaxDisplayPriority()
         {
-            if (FormsPanel.SubControls.Count > 0)
+            if (FormContainer.SubControls.Count > 0)
             {
-                for (int i = FormsPanel.SubControls.Count - 1; i >= 0; i--)
+                for (int i = FormContainer.SubControls.Count - 1; i >= 0; i--)
                 {
-                    if (FormsPanel.SubControls[i].AllowSelected)
+                    if (FormContainer.SubControls[i].AllowSelected)
                     {
-                        FormsPanel.SubControls[i].IsSelected = true;
+                        FormContainer.SubControls[i].IsSelected = true;
                         break;
                     }
                 }
