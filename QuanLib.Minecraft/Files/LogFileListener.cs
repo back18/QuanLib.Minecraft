@@ -13,7 +13,7 @@ namespace QuanLib.Minecraft.Files
 {
     public class LogFileListener : TextFileListener, ILogListener
     {
-        public LogFileListener(string path, Encoding encoding) : base(path, encoding)
+        public LogFileListener(string path) : base(path, GetEncoding())
         {
             _temp = new();
             WriteLog += OnWriteLog;
@@ -31,36 +31,19 @@ namespace QuanLib.Minecraft.Files
 
             if (e.Text.StartsWith('['))
             {
-                if (_temp.Length > 0)
-                {
-                    _temp.Remove(_temp.Length - 1, 1);
-                    if (MinecraftLog.TryParse(_temp.ToString(), out var result1))
-                        WriteLog.Invoke(this, new(result1));
-                    _temp.Clear();
-                }
+                WriteLog.Invoke(this, new(new(e.Text)));
+            }
+        }
 
-                if (MinecraftLog.TryParse(e.Text, out var result2))
-                {
-                    if (result2.Level != Level.ERROR)
-                    {
-                        WriteLog.Invoke(this, new(result2));
-                    }
-                    else
-                    {
-                        _temp.Append(e.Text);
-                        _temp.Append('\n');
-                    }
-                }
-            }
-            else if (_temp.Length > 0 && _temp[0] == '[')
+        private static Encoding GetEncoding()
+        {
+            Encoding encoding = Encoding.UTF8;
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                _temp.Append(e.Text);
-                _temp.Append('\n');
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                encoding = Encoding.GetEncoding("GBK");
             }
-            else
-            {
-
-            }
+            return encoding;
         }
     }
 }

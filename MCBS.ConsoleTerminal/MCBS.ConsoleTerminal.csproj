@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="QuanLib.ExceptionHelper">
-      <HintPath>..\..\QuanLib\release\QuanLib.ExceptionHelper\QuanLib.ExceptionHelper.dll</HintPath>
+    <Reference Include="QuanLib">
+      <HintPath>..\..\QuanLib\release\QuanLib\QuanLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 

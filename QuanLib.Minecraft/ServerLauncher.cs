@@ -81,35 +81,7 @@ namespace QuanLib.Minecraft
 
                     if (line.StartsWith('['))
                     {
-                        if (_temp.Length > 0)
-                        {
-                            _temp.Remove(_temp.Length - 1, 1);
-                            if (MinecraftLog.TryParse(_temp.ToString(), out var result1))
-                                WriteLog.Invoke(this, new(result1));
-                            _temp.Clear();
-                        }
-
-                        if (MinecraftLog.TryParse(line, out var result2))
-                        {
-                            if (result2.Level != Level.ERROR)
-                            {
-                                WriteLog.Invoke(this, new(result2));
-                            }
-                            else
-                            {
-                                _temp.Append(line);
-                                _temp.Append('\n');
-                            }
-                        }
-                    }
-                    else if (_temp.Length > 0 && _temp[0] == '[')
-                    {
-                        _temp.Append(line);
-                        _temp.Append('\n');
-                    }
-                    else
-                    {
-
+                        WriteLog.Invoke(this, new(new(line)));
                     }
                 }
             });

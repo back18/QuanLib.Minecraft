@@ -11,38 +11,38 @@ namespace QuanLib.Minecraft.Files
 {
     public class MinecraftLog
     {
-        static MinecraftLog()
+        public MinecraftLog(string log)
         {
-            _map = new()
+            if (log is null)
+                throw new ArgumentNullException(nameof(log));
+
+            string separator = ": ";
+            int index = log.IndexOf(separator);
+
+            if (index == -1)
             {
-                { "DEBUG", Level.DEBUG },
-                { "INFO", Level.INFO },
-                { "WARN", Level.WARN },
-                { "ERROR", Level.ERROR },
-                { "FATAL", Level.FATAL }
-            };
+                Info = string.Empty;
+                Message = log;
+            }
+            else
+            {
+                Info = log[..index];
+                Message = log[(index + separator.Length)..];
+            }
+
+            if (Info.Contains("DEBUG"))
+                Level = Level.DEBUG;
+            else if (Info.Contains("INFO"))
+                Level = Level.INFO;
+            else if (Info.Contains("WARN"))
+                Level = Level.WARN;
+            else if (Info.Contains("ERROR"))
+                Level = Level.ERROR;
+            else if (Info.Contains("FATAL"))
+                Level = Level.FATAL;
+            else
+                Level = Level.DEBUG;
         }
-
-        public MinecraftLog(DateTime dateTime, string thread, Level level, string type, string message)
-        {
-            DateTime = dateTime;
-            Thread = thread;
-            Level = level;
-            Type = type;
-            Message = message;
-        }
-
-        private static readonly Dictionary<string, Level> _map;
-
-        /// <summary>
-        /// 时间
-        /// </summary>
-        public DateTime DateTime { get; }
-
-        /// <summary>
-        /// 线程
-        /// </summary>
-        public string Thread { get; }
 
         /// <summary>
         /// 级别
@@ -50,69 +50,69 @@ namespace QuanLib.Minecraft.Files
         public Level Level { get; }
 
         /// <summary>
-        /// 类型
+        /// 日志信息
         /// </summary>
-        public string Type { get; }
+        public string Info { get; }
 
         /// <summary>
         /// 消息/正文
         /// </summary>
         public string Message { get; }
 
-        public static bool TryParse(string? s, [MaybeNullWhen(false)] out MinecraftLog result)
-        {
-            if (s is null)
-                goto err;
+        //public static bool TryParse(string? s, [MaybeNullWhen(false)] out MinecraftLog result)
+        //{
+        //    if (s is null)
+        //        goto err;
 
-            string separator = ": ";
-            int index = s.IndexOf(separator);
-            string items, message;
+        //    string separator = ": ";
+        //    int index = s.IndexOf(separator);
+        //    string items, message;
 
-            if (index == -1)
-            {
-                items = s;
-                message = string.Empty;
-            }
-            else
-            {
-                items = s[..index];
-                message = s[(index + separator.Length)..];
-            }
+        //    if (index == -1)
+        //    {
+        //        items = s;
+        //        message = string.Empty;
+        //    }
+        //    else
+        //    {
+        //        items = s[..index];
+        //        message = s[(index + separator.Length)..];
+        //    }
 
-            string pattern = @"\[(.*?)\]";
-            MatchCollection matches = Regex.Matches(items, pattern);
+        //    string pattern = @"\[(.*?)\]";
+        //    MatchCollection matches = Regex.Matches(items, pattern);
 
-            if (matches.Count < 2)
-                goto err;
+        //    if (matches.Count < 2)
+        //        goto err;
 
-            _ = DateTime.TryParse(matches[0].Groups[1].Value, out var dateTime);
+        //    _ = DateTime.TryParse(matches[0].Groups[1].Value, out var dateTime);
 
-            string[] item2 = matches[1].Groups[1].Value.Split('/');
-            if (item2.Length != 2)
-                goto err;
+        //    string[] item2 = matches[1].Groups[1].Value.Split('/');
+        //    if (item2.Length != 2)
+        //        goto err;
 
-            string thread = item2[0];
+        //    string thread = item2[0];
 
-            if (!_map.TryGetValue(item2[1], out var level))
-                goto err;
+        //    if (!_level.TryGetValue(item2[1], out var level))
+        //        goto err;
 
-            string type;
-            if (matches.Count > 2)
-                type = matches[2].Groups[1].Value;
-            else
-                type = string.Empty;
+        //    string type;
+        //    if (matches.Count > 2)
+        //        type = matches[2].Groups[1].Value;
+        //    else
+        //        type = string.Empty;
 
-            result = new(dateTime, thread, level, type, message);
-            return true;
+        //    result = new(dateTime, thread, level, type, message);
+        //    return true;
 
-            err:
-            result = null;
-            return false;
-        }
+        //    err:
+        //    result = null;
+        //    return false;
+        //}
 
         public override string ToString()
         {
-            return $"[{DateTime:hh:mm:ss.fff}] [{Thread}/{Level}] [{Type}]: {Message}";
+            return $"{Info}: {Message}";
         }
     }
 }

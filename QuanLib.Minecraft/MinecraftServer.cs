@@ -18,9 +18,10 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
 {
-    public abstract class MinecraftServer
+    //TODO 应该为抽象类，派生监听器模式和托管进程模式
+    public class MinecraftServer
     {
-        protected MinecraftServer(string serverPath, string serverAddress)
+        public MinecraftServer(string serverPath, string serverAddress)
         {
             if (string.IsNullOrEmpty(serverPath))
                 throw new ArgumentException($"“{nameof(serverPath)}”不能为 null 或空。", nameof(serverPath));
@@ -51,12 +52,7 @@ namespace QuanLib.Minecraft
             CommandSender = _rconMax;
             ManagerMode = ServerManagerMode.NotConnected;
 
-            OnWriteLog += (obj) => { };
-            OnPlayerJoined += MinecraftServer_OnPlayerJoined;
-            OnPlayerLeft += MinecraftServer_OnPlayerLeft;
-            OnRconRunning += MinecraftServer_OnRconRunning;
-
-            _loginInfos = new();
+            LogParser.RconRunning += LogParser_RconRunning; //TODO
         }
 
         private TcpClient _ping;
@@ -67,13 +63,11 @@ namespace QuanLib.Minecraft
 
         private ILogListener? _logListener;
 
-        private readonly Dictionary<string, PlayerLoginInfo> _loginInfos;
-
-        public IReadOnlyDictionary<string, PlayerLoginInfo> LoginInfos => _loginInfos;
-
         public ServerPathManager PathManager { get; }
 
         public ServerFileHelper FileHelper { get; }
+
+        public ServerLogParser LogParser { get; }
 
         public ServerCommandHelper CommandHelper { get; }
 
@@ -89,86 +83,7 @@ namespace QuanLib.Minecraft
 
         public ushort RconPort { get; }
 
-        /// <summary>
-        /// 当服务器写入日志时调用，并携带日志信息
-        /// </summary>
-        public event Action<MinecraftLog> OnWriteLog;
-
-        /// <summary>
-        /// 当服务器开始启动时调用
-        /// </summary>
-        public abstract event Action OnServerStarting;
-
-        /// <summary>
-        /// 当开始加载存档时调用，并携带存档名称
-        /// </summary>
-        public abstract event Action<string> OnPreparingLeveling;
-
-        /// <summary>
-        /// 当存档加载完成时调用，并携带加载耗时
-        /// </summary>
-        public abstract event Action<TimeSpan> OnPreparingLevelDone;
-
-        /// <summary>
-        /// 当服务器启动失败时调用，并携带错误信息
-        /// </summary>
-        public abstract event Action<string> OnServerStartFail;
-
-        /// <summary>
-        /// 当服务器崩溃时调用，并携带崩溃报告的UUID
-        /// </summary>
-        public abstract event Action<Guid> OnServerCrash;
-
-        /// <summary>
-        /// 当服务器开始终止时调用
-        /// </summary>
-        public abstract event Action OnServerStoping;
-
-        /// <summary>
-        /// 当服务器完成终止时调用
-        /// </summary>
-        public abstract event Action OnServerStopped;
-
-        /// <summary>
-        /// 当玩家登录服务器时调用，并携带玩家登录信息
-        /// </summary>
-        public abstract event Action<PlayerLoginInfo> OnPlayerJoined;
-
-        /// <summary>
-        /// 当玩家离开服务器时调用，并携带玩家登录信息与断开连接的原因
-        /// </summary>
-        public abstract event Action<PlayerLoginInfo?, string> OnPlayerLeft;
-
-        /// <summary>
-        /// 当玩家发送聊天消息时调用，并携带消息内容
-        /// </summary>
-        public abstract event Action<ChatMessage> OnPlayerSendChatMessage;
-
-        /// <summary>
-        /// 当RCON服务端开始运行时调用，并携带IP端口
-        /// </summary>
-        public abstract event Action<IPEndPoint> OnRconRunning;
-
-        /// <summary>
-        /// 当RCON服务端终止时调用
-        /// </summary>
-        public abstract event Action OnRconStopped;
-
-        private void MinecraftServer_OnPlayerJoined(PlayerLoginInfo loginInfo)
-        {
-            _loginInfos.TryAdd(loginInfo.Name, loginInfo);
-        }
-
-        private void MinecraftServer_OnPlayerLeft(PlayerLoginInfo? loginInfo, string reason)
-        {
-            if (loginInfo is null)
-                return;
-
-            if (_loginInfos.ContainsKey(loginInfo.Name))
-                _loginInfos.Remove(loginInfo.Name);
-        }
-
-        private void MinecraftServer_OnRconRunning(IPEndPoint obj)
+        private void LogParser_RconRunning(ServerLogParser sender, QuanLib.Event.IPEndPointEventArgs e)
         {
             _rcon.ConnectAsync().Wait();
             if (ManagerMode == ServerManagerMode.Listener)
@@ -213,7 +128,6 @@ namespace QuanLib.Minecraft
         {
             Launcher = new(PathManager.MainDir, arguments);
             _logListener = Launcher;
-            _logListener.WriteLog += (sender, e) => OnWriteLog.Invoke(e.MinecraftLog);
             CommandSender = Launcher;
             ManagerMode = ServerManagerMode.ManagedProcess;
             return Launcher;
@@ -221,16 +135,9 @@ namespace QuanLib.Minecraft
 
         public void ConnectExistingServer()
         {
-            Encoding logEncoding = Encoding.UTF8;
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                logEncoding = Encoding.GetEncoding("GBK");
-            }
-            LogFileListener logFileListener = new(PathManager.LatestLogFile, logEncoding);
+            LogFileListener logFileListener = new(PathManager.LatestLogFile);
             Task.Run(() => logFileListener.Start());
             _logListener = logFileListener;
-            _logListener.WriteLog += (sender, e) => OnWriteLog.Invoke(e.MinecraftLog);
             try
             {
                 _rcon.ConnectAsync().Wait();
