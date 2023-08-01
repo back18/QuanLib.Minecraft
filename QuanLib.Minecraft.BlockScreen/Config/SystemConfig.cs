@@ -14,9 +14,13 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             if (json is null)
                 throw new ArgumentNullException(nameof(json));
 ;
+            EnableAccelerationEngine = json.EnableAccelerationEngine;
             ServicesAppID = json.ServicesAppID;
             StartupChecklist = json.StartupChecklist;
         }
+
+        public bool EnableAccelerationEngine { get; }
+
         public string ServicesAppID { get; }
 
         public IReadOnlyList<string> StartupChecklist { get; }
@@ -29,6 +33,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         public class Json
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public bool EnableAccelerationEngine;
+
             public string ServicesAppID;
 
             public string[] StartupChecklist;

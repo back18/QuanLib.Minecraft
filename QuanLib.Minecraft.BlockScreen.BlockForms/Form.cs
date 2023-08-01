@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
@@ -120,14 +121,18 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                             ResizeBorder |= Direction.Right;
                     }
 
-                    MCOS.GetMCOS().CursorType = ResizeBorder switch
+                    ScreenContext? context = MCOS.GetMCOS().ScreenContextOf(this);
+                    if (context is not null)
                     {
-                        Direction.Top or Direction.Bottom => CursorType.VerticalResize,
-                        Direction.Left or Direction.Right => CursorType.HorizontalResize,
-                        Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorType.LeftObliqueResize,
-                        Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorType.RightObliqueResize,
-                        _ => CursorType.Default,
-                    };
+                        context.CursorType = ResizeBorder switch
+                        {
+                            Direction.Top or Direction.Bottom => CursorType.VerticalResize,
+                            Direction.Left or Direction.Right => CursorType.HorizontalResize,
+                            Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorType.LeftObliqueResize,
+                            Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorType.RightObliqueResize,
+                            _ => CursorType.Default,
+                        };
+                    }
                 }
             }
         }

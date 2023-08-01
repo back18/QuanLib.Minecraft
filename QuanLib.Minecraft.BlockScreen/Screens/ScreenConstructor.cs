@@ -141,7 +141,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                             State = ScreenConstructorState.ReadStartPosition;
                             if (_screen is not null)
                             {
-                                MCOS.GetMCOS().ScreenManager.ScreenContexts.Add(_screen);
+                                MCOS.GetMCOS().ScreenManager.ScreenList.Add(_screen);
                                 _screen = null;
                             }
                             break;

@@ -76,7 +76,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
         {
             base.OnCursorEnter(sender, e);
 
-            ParentContainer?.AsControlCollection<Control>()?.Remove(Name_Label);
+            ParentContainer?.AsControlCollection<Control>()?.TryAdd(Name_Label);
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
@@ -97,8 +97,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
         {
             base.OnDoubleRightClick(sender, e);
 
-            MCOS.GetMCOS().ProcessManager.Process.Add(_appInfo, GetForm());
-            ParentContainer?.AsControlCollection<Control>()?.ClearSelected();
+            MCOS.GetMCOS().ProcessManager.ProcessList.Add(_appInfo, GetForm());
+            ParentContainer?.AsControlCollection<Control>()?.ClearSelecteds();
         }
     }
 }

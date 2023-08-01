@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 return _task.Result.ToArrayFrame();
 
             List<(IControlRendering rendering, Task<ArrayFrame?> task)> tasks = new();
-            foreach (var subControl in subControls.ToArray())   //TODO: 未知的并发修改异常？
+            foreach (var subControl in subControls)
                 tasks.Add((subControl, Task.Run(() => Rendering(subControl))));
             Task.WaitAll(tasks.Select(i => i.task).ToArray());
             ArrayFrame frame = _task.Result;

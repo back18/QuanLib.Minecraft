@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Files;
+﻿using QuanLib.Minecraft.Event;
+using QuanLib.Minecraft.Files;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
 {
-    public class ServeLauncher : IStandardInputCommandSender, ILogListener
+    public class ServerLauncher : IStandardInputCommandSender, ILogListener
     {
-        public ServeLauncher(string serverPath, ServerLaunchArguments launchArguments)
+        public ServerLauncher(string serverPath, ServerLaunchArguments launchArguments)
         {
             LaunchArguments = launchArguments ?? throw new ArgumentNullException(nameof(launchArguments));
 
@@ -30,69 +31,15 @@ namespace QuanLib.Minecraft
                 }
             };
 
-            OnWriteLog += (obj) => { };
-            OnServerProcessStart += ServeLauncher_OnServerProcessStart;
-            OnServerProcessRestart += () => { };
-            OnServerProcessExit += () => { };
+            WriteLog += OnWriteLog;
+            ServerProcessStarted += OnServerProcessStarted;
+            ServerProcessRestart += OnServerProcessRestart;
+            ServerProcessExit += OnServerProcessExit;
 
             _temp = new();
         }
 
         private readonly StringBuilder _temp;
-
-        public event Action<MinecraftLog> OnWriteLog;
-
-        public event Action OnServerProcessStart;
-
-        public event Action OnServerProcessRestart;
-
-        public event Action OnServerProcessExit;
-
-        private void ServeLauncher_OnServerProcessStart()
-        {
-            Task.Run(() =>
-            {
-                while (!Process.StandardOutput.EndOfStream)
-                {
-                    string? line = Process.StandardOutput.ReadLine();
-                    if (line is null)
-                        continue;
-
-                    if (line.StartsWith('['))
-                    {
-                        if (_temp.Length > 0)
-                        {
-                            _temp.Remove(_temp.Length - 1, 1);
-                            if (MinecraftLog.TryParse(_temp.ToString(), out var result1))
-                                OnWriteLog.Invoke(result1);
-                            _temp.Clear();
-                        }
-
-                        if (MinecraftLog.TryParse(line, out var result2))
-                        {
-                            if (result2.Level != Level.ERROR)
-                            {
-                                OnWriteLog.Invoke(result2);
-                            }
-                            else
-                            {
-                                _temp.Append(line);
-                                _temp.Append('\n');
-                            }
-                        }
-                    }
-                    else if (_temp.Length > 0 && _temp[0] == '[')
-                    {
-                        _temp.Append(line);
-                        _temp.Append('\n');
-                    }
-                    else
-                    {
-
-                    }
-                }
-            });
-        }
 
         public ServerLaunchArguments LaunchArguments { get; }
 
@@ -114,6 +61,66 @@ namespace QuanLib.Minecraft
         }
         private int _MaxStartCount;
 
+        public event EventHandler<ILogListener, MinecraftLogEventArgs> WriteLog;
+
+        public event EventHandler<ServerLauncher, EventArgs> ServerProcessStarted;
+
+        public event EventHandler<ServerLauncher, EventArgs> ServerProcessRestart;
+
+        public event EventHandler<ServerLauncher, EventArgs> ServerProcessExit;
+
+        protected virtual void OnServerProcessStarted(ServerLauncher sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                while (!Process.StandardOutput.EndOfStream)
+                {
+                    string? line = Process.StandardOutput.ReadLine();
+                    if (line is null)
+                        continue;
+
+                    if (line.StartsWith('['))
+                    {
+                        if (_temp.Length > 0)
+                        {
+                            _temp.Remove(_temp.Length - 1, 1);
+                            if (MinecraftLog.TryParse(_temp.ToString(), out var result1))
+                                WriteLog.Invoke(this, new(result1));
+                            _temp.Clear();
+                        }
+
+                        if (MinecraftLog.TryParse(line, out var result2))
+                        {
+                            if (result2.Level != Level.ERROR)
+                            {
+                                WriteLog.Invoke(this, new(result2));
+                            }
+                            else
+                            {
+                                _temp.Append(line);
+                                _temp.Append('\n');
+                            }
+                        }
+                    }
+                    else if (_temp.Length > 0 && _temp[0] == '[')
+                    {
+                        _temp.Append(line);
+                        _temp.Append('\n');
+                    }
+                    else
+                    {
+
+                    }
+                }
+            });
+        }
+
+        protected virtual void OnServerProcessRestart(ServerLauncher sender, EventArgs e) { }
+
+        protected virtual void OnServerProcessExit(ServerLauncher sender, EventArgs e) { }
+
+        protected virtual void OnWriteLog(ILogListener sender, MinecraftLogEventArgs e) { }
+
         public void Start()
         {
             StartCount = 0;
@@ -122,13 +129,13 @@ namespace QuanLib.Minecraft
                 StartCount++;
 
                 Process.Start();
-                OnServerProcessStart.Invoke();
+                ServerProcessStarted.Invoke(this, EventArgs.Empty);
 
                 Process.WaitForExit();
-                OnServerProcessExit.Invoke();
+                ServerProcessExit.Invoke(this, EventArgs.Empty);
 
                 if (AutoRestart && StartCount < MaxStartCount)
-                    OnServerProcessRestart.Invoke();
+                    ServerProcessRestart.Invoke(this, EventArgs.Empty);
                 else
                     break;
             }

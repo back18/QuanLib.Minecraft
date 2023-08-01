@@ -137,7 +137,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return true;
             }
 
-            public void ClearSelected()
+            public void ClearSelecteds()
             {
                 foreach (T control in _items.ToArray())
                     control.IsSelected = false;

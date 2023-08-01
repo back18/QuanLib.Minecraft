@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Minecraft.Event;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace QuanLib.Minecraft.Files
 {
     public interface ILogListener
     {
-        public event Action<MinecraftLog> OnWriteLog;
+        public event EventHandler<ILogListener, MinecraftLogEventArgs> WriteLog;
     }
 }

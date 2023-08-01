@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Screens;
+using QuanLib.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -33,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             _Text = string.Empty;
             _Visible = true;
             _ClientLocation = new(0, 0);
-            _ClientSize = new(MCOS.DefaultFont.HalfWidth * 4, MCOS.DefaultFont.Height);
+            _ClientSize = new(SystemResourcesManager.DefaultFont.HalfWidth * 4, SystemResourcesManager.DefaultFont.Height);
             _AutoSize = false;
             _BorderWidth = 1;
             Skin = new(this);

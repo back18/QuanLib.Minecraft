@@ -24,9 +24,6 @@
     <Reference Include="QuanLib.BDF">
       <HintPath>..\..\QuanLib\release\QuanLib.BDF\QuanLib.BDF.dll</HintPath>
     </Reference>
-    <Reference Include="QuanLib.ExceptionHelper">
-      <HintPath>..\..\QuanLib\release\QuanLib.ExceptionHelper\QuanLib.ExceptionHelper.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

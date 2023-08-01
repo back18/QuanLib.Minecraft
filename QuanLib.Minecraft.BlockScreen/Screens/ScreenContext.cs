@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ID = -1;
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
-            CursorType = CursorType.Default;
+            CursorType = BlockScreen.CursorType.Default;
             _bind = false;
             BindEvents();
         }
@@ -34,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public IRootForm RootForm { get; set; }
 
-        public CursorType CursorType { get; set; }
+        public string CursorType { get; set; }
 
         internal void BindEvents()
         {

@@ -43,11 +43,11 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         }
         private static ScreenConfig? _ScreenConfig;
 
-        public static void Load()
+        public static void LoadAll()
         {
-            _MinecraftConfig = MinecraftConfig.Load(PathManager.MinecraftConfig_File);
-            _SystemConfig = SystemConfig.Load(PathManager.SystemConfig_File);
-            _ScreenConfig = ScreenConfig.Load(PathManager.ScreenConfig_File);
+            _MinecraftConfig = MinecraftConfig.Load(PathManager.Configs_Minecraft_File);
+            _SystemConfig = SystemConfig.Load(PathManager.Configs_System_File);
+            _ScreenConfig = ScreenConfig.Load(PathManager.Configs_Screen_File);
         }
     }
 }

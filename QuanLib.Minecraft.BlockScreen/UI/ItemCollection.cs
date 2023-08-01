@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Event;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.Data;
 using System;
 using System.Collections;

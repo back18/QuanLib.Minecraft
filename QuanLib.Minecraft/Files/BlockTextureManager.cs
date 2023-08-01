@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Files
 {
-    public class BlockTextureCollection : IReadOnlyDictionary<string, BlockTexture>
+    public class BlockTextureManager : IReadOnlyDictionary<string, BlockTexture>
     {
-        private BlockTextureCollection(Dictionary<string, BlockTexture> textures)
+        private BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
-            _textures = textures ?? throw new ArgumentNullException(nameof(textures));
+            _items = items ?? throw new ArgumentNullException(nameof(items));
 
             _map = new()
             {
@@ -28,7 +28,7 @@ namespace QuanLib.Minecraft.Files
                 { Facing.Zp, new() },
                 { Facing.Zm, new() }
             };
-            foreach (var texture in _textures.Values)
+            foreach (var texture in _items.Values)
             {
                 if (texture.TextureType == BlockTextureType.CubeAll)
                 {
@@ -51,17 +51,17 @@ namespace QuanLib.Minecraft.Files
             }
         }
 
-        private readonly Dictionary<string, BlockTexture> _textures;
+        private readonly Dictionary<string, BlockTexture> _items;
 
         private readonly Dictionary<Facing, Dictionary<Rgba32, BlockTexture>> _map;
 
-        public BlockTexture this[string index] => _textures[index];
+        public BlockTexture this[string index] => _items[index];
 
-        public IEnumerable<string> Keys => _textures.Keys;
+        public IEnumerable<string> Keys => _items.Keys;
 
-        public IEnumerable<BlockTexture> Values => _textures.Values;
+        public IEnumerable<BlockTexture> Values => _items.Values;
 
-        public int Count => _textures.Count;
+        public int Count => _items.Count;
 
         public BlockTexture? MatchBlockTexture(Facing facing, Rgba32 rgba32)
         {
@@ -69,7 +69,7 @@ namespace QuanLib.Minecraft.Files
                 return result;
             Vector4 vector4 = rgba32.ToVector4();
             float distance = float.MaxValue;
-            foreach (var texture in _textures.Values)
+            foreach (var texture in _items.Values)
             {
                 float newDistance = Vector4.DistanceSquared(vector4, texture.AverageColors[facing].ToVector4());
                 if (newDistance < distance)
@@ -94,7 +94,7 @@ namespace QuanLib.Minecraft.Files
             return MatchBlockTexture(facing, rgba32);
         }
 
-        public static BlockTextureCollection Load(string path)
+        public static BlockTextureManager LoadDirectory(string path)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
@@ -267,7 +267,7 @@ namespace QuanLib.Minecraft.Files
                     BlockTexture? temp = null;
                     Vector4 vector4 = next.ToVector4();
                     float distance = float.MaxValue;
-                    foreach (var texture in _textures.Values)
+                    foreach (var texture in _items.Values)
                     {
                         float newDistance = Vector4.DistanceSquared(vector4, texture.AverageColors[facing].ToVector4());
                         if (newDistance < distance)
@@ -323,22 +323,22 @@ namespace QuanLib.Minecraft.Files
 
         public bool ContainsKey(string key)
         {
-            return _textures.ContainsKey(key);
+            return _items.ContainsKey(key);
         }
 
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out BlockTexture value)
         {
-            return _textures.TryGetValue(key, out value);
+            return _items.TryGetValue(key, out value);
         }
 
         public IEnumerator<KeyValuePair<string, BlockTexture>> GetEnumerator()
         {
-            return _textures.GetEnumerator();
+            return _items.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)_textures).GetEnumerator();
+            return ((IEnumerable)_items).GetEnumerator();
         }
     }
 }

@@ -51,6 +51,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             Client_Panel.SubControls.Add(button1);
             button1.ClientLocation = new(5, 5);
             button1.Text = "Open";
+            button1.RightClick += Button1_RightClick;
 
             Client_Panel.SubControls.Add(textBox1);
             textBox1.ClientLocation = new(5, 25);
@@ -86,6 +87,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), GetScreenPlaneSize().NormalFacing, new Size(16, 16));
             iconTextBox1.Text = "hello";
             iconTextBox1.ClientLocation = Client_Panel.RightLayout(textBox1, 2);
+        }
+
+        private void Button1_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            Console.WriteLine("点击");
         }
     }
 }

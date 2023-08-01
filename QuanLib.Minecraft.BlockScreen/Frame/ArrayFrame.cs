@@ -383,7 +383,7 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             string[,] ids = new string[image.Width, image.Height];
             for (int x = 0; x < image.Width; x++)
                 for (int y = 0; y < image.Height; y++)
-                    ids[x, y] = MCOS.BlockTextureCollection.MatchBlockTexture(facing, image[x, y])?.BlockID ?? "minecraft:air";
+                    ids[x, y] = MinecraftResourcesManager.BlockTextureManager.MatchBlockTexture(facing, image[x, y])?.BlockID ?? "minecraft:air";
             return new(ids);
         }
 

@@ -17,7 +17,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public ScreenManager()
         {
             ScreenConstructor = new();
-            ScreenContexts = new(this);
+            ScreenList = new(this);
 
             AddedScreen += OnAddedScreen;
             RemovedScreen += OnRemovedScreen;
@@ -25,55 +25,63 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public ScreenConstructor ScreenConstructor { get; }
 
-        public ScreenCollection ScreenContexts { get; }
+        public ScreenCollection ScreenList { get; }
 
         public event EventHandler<ScreenManager, ScreenContextEventArgs> AddedScreen;
 
         public event EventHandler<ScreenManager, ScreenContextEventArgs> RemovedScreen;
 
-        protected virtual void OnAddedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
+        protected virtual void OnAddedScreen(ScreenManager sender, ScreenContextEventArgs e)
+        {
+            e.ScreenContext.Screen.Start();
+        }
 
-        protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
+        protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e)
+        {
+            e.ScreenContext.Screen.Stop();
+        }
 
         public void HandleAllScreenInput()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenContexts.Values)
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(Task.Run(() => screen.Screen.InputHandler.HandleInput()));
-            Task.WhenAll(tasks.ToArray());
+            Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllBeforeFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenContexts.Values)
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(Task.Run(() => screen.RootForm.HandleBeforeFrame(EventArgs.Empty)));
-            Task.WhenAll(tasks.ToArray());
+            Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllAfterFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenContexts.Values)
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(Task.Run(() => screen.RootForm.HandleAfterFrame(EventArgs.Empty)));
-            Task.WhenAll(tasks.ToArray());
+            Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllUIRendering(out Dictionary<int, ArrayFrame> frames)
         {
             frames = new();
             List<(int id, Task<ArrayFrame> task)> tasks = new();
-            foreach (var context in ScreenContexts)
+            foreach (var context in ScreenList)
                 tasks.Add((context.Key, Task.Run(() =>
                 {
                     ArrayFrame frame = ArrayFrame.BuildFrame(context.Value.Screen.Width, context.Value.Screen.Height, context.Value.Screen.DefaultBackgroundBlcokID);
                     ArrayFrame? formFrame = UIRenderer.Rendering(context.Value.RootForm);
                     if (formFrame is not null)
                         frame.Overwrite(formFrame, context.Value.RootForm.RenderingLocation);
-                    frame.Overwrite(MCOS._cursors[context.Value.CursorType].Frame, context.Value.Screen.InputHandler.CurrentPosition, MCOS._cursors[context.Value.CursorType].Offset);
+                    if (!SystemResourcesManager.CursorManager.TryGetValue(context.Value.CursorType, out var cursor))
+                        cursor = SystemResourcesManager.CursorManager[CursorType.Default];
+                    frame.Overwrite(cursor.Frame, context.Value.Screen.InputHandler.CurrentPosition, cursor.Offset);
                     return frame;
                 })));
-            Task.WhenAll(tasks.Select(i => i.task).ToArray());
+            Task.WaitAll(tasks.Select(i => i.task).ToArray());
             foreach (var (id, task) in tasks)
                 frames.Add(id, task.Result);
         }
@@ -86,7 +94,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             List<Task> tasks = new();
             foreach (var frame in frames)
             {
-                if (ScreenContexts.TryGetValue(frame.Key, out var context))
+                if (ScreenList.TryGetValue(frame.Key, out var context))
                     tasks.Add(context.Screen.OutputHandler.HandleOutputAsync(frame.Value));
             }
             await Task.WhenAll(tasks);
@@ -95,7 +103,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void WaitAllScreenPrevious()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenContexts.Values)
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(screen.Screen.OutputHandler.WaitPreviousAsync());
             Task.WaitAll(tasks.ToArray());
         }
@@ -136,7 +144,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 ScreenContext context = MCOS.GetMCOS().CreateScreenContext(screen);
                 context.ID = id;
                 _items.Add(id, context);
-                context.Screen.Start();
                 _owner.AddedScreen.Invoke(_owner, new(context));
                 _id++;
                 return context;
@@ -148,7 +155,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     return false;
 
                 context.ID = -1;
-                context.Screen.Stop();
                 _owner.RemovedScreen.Invoke(_owner, new(context));
                 return true;
             }

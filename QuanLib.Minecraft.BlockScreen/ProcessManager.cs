@@ -15,18 +15,23 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         public ProcessManager()
         {
-            Process = new(this);
+            ProcessList = new(this);
             AddedProcess += OnAddedProcess;
             RemovedProcess += OnRemovedProcess;
         }
 
-        public ProcessCollection Process { get; }
+        public ProcessCollection ProcessList { get; }
 
         public event EventHandler<ProcessManager, ProcessEventArgs> AddedProcess;
 
         public event EventHandler<ProcessManager, ProcessEventArgs> RemovedProcess;
 
-        protected virtual void OnAddedProcess(ProcessManager sender, ProcessEventArgs e) { }
+        protected virtual void OnAddedProcess(ProcessManager sender, ProcessEventArgs e)
+        {
+            e.Process.Stopped += (sender, e) => ProcessList.Remove(sender.ID);
+            e.Process.Application.Initialize();
+            e.Process.MainThread.Start();
+        }
 
         protected virtual void OnRemovedProcess(ProcessManager sender, ProcessEventArgs e) { }
 
@@ -72,12 +77,9 @@ namespace QuanLib.Minecraft.BlockScreen
                 int id = _id;
                 Process process = new(applicationInfo, arguments, initiator);
                 process.ID = id;
-                process.OnStopped += (process) => Remove(process.ID);
-                _items.Add(id, process);
-                process.Application.Initialize();
-                process.MainThread.Start();
-                _owner.AddedProcess(_owner, new(process));
                 _id++;
+                _items.Add(id, process);
+                _owner.AddedProcess(_owner, new(process));
                 return process;
             }
 

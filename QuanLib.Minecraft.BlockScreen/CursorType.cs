@@ -6,46 +6,46 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public enum CursorType
+    public static class CursorType
     {
         /// <summary>
         /// 默认
         /// </summary>
-        Default,
+        public const string Default = "Default";
 
         /// <summary>
         /// 编辑
         /// </summary>
-        Edit,
+        public const string Edit = "Edit";
 
         /// <summary>
         /// 按
         /// </summary>
-        Press,
+        public const string Press = "Press";
 
         /// <summary>
         /// 等待
         /// </summary>
-        Wait,
+        public const string Wait = "Wait";
 
         /// <summary>
         /// 水平调整尺寸
         /// </summary>
-        HorizontalResize,
+        public const string HorizontalResize = "HorizontalResize";
 
         /// <summary>
         /// 垂直调整尺寸
         /// </summary>
-        VerticalResize,
+        public const string VerticalResize = "VerticalResize";
 
         /// <summary>
         /// 左斜调整尺寸
         /// </summary>
-        LeftObliqueResize,
+        public const string LeftObliqueResize = "LeftObliqueResize";
 
         /// <summary>
         /// 右斜调整尺寸
         /// </summary>
-        RightObliqueResize,
+        public const string RightObliqueResize = "RightObliqueResize";
     }
 }

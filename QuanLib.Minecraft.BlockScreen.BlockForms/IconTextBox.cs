@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
+﻿using QuanLib.Event;
+using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using System;
@@ -16,7 +17,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Image_PictureBox = new();
             Text_Label = new();
 
-            ClientSize = new(MCOS.DefaultFont.HalfWidth * 6, MCOS.DefaultFont.Height);
+            ClientSize = new(SystemResourcesManager.DefaultFont.HalfWidth * 6, SystemResourcesManager.DefaultFont.Height);
         }
 
         private readonly PictureBox Image_PictureBox;
@@ -64,7 +65,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override void AutoSetSize()
         {
-            Size size = MCOS.DefaultFont.GetTotalSize(Text);
+            Size size = SystemResourcesManager.DefaultFont.GetTotalSize(Text);
             if (Icon is not null)
             {
                 size.Width += Icon.FrameSize.Width;

@@ -71,9 +71,9 @@ namespace QuanLib.Minecraft.BlockScreen
                 {
                     context.RootForm.AddForm(e.Form);
                 }
-                else if (os.ScreenManager.ScreenContexts.Any())
+                else if (os.ScreenManager.ScreenList.Any())
                 {
-                    os.ScreenManager.ScreenContexts.FirstOrDefault().Value.RootForm.AddForm(e.Form);
+                    os.ScreenManager.ScreenList.FirstOrDefault().Value.RootForm.AddForm(e.Form);
                 }
             }
 

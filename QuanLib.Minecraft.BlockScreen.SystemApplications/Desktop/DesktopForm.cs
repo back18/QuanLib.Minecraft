@@ -34,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
         {
             MCOS os = MCOS.GetMCOS();
             SubControls.Clear();
-            foreach (var app in os.ApplicationList.Values)
+            foreach (var app in os.ApplicationManager.ApplicationList.Values)
                 if (app.AppendToDesktop)
                     SubControls.Add(new DesktopIcon(app));
             this.FillLayout(0, SubControls, 0);

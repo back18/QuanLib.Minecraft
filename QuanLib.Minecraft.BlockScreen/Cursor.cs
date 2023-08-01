@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen
             Frame = ArrayFrame.FromJson(json.Frame);
         }
 
-        public CursorType CursorType { get; }
+        public string CursorType { get; }
 
         public Point Offset { get; }
 
@@ -30,7 +30,7 @@ namespace QuanLib.Minecraft.BlockScreen
         public class Json
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-            public CursorType CursorType { get; set; }
+            public string CursorType { get; set; }
 
             public int XOffset { get; set; }
 

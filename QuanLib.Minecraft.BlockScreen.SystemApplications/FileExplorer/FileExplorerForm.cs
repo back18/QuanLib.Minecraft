@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
@@ -176,7 +177,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             UpdatePathList();
             PageTurning(1);
 
-            if (MCOS.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
+            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;

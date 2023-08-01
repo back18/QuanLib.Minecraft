@@ -22,45 +22,13 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class MCOS : ISwitchable
     {
-        static MCOS()
-        {
-            Task<BlockTextureCollection> task2 = Task.Run(() => BlockTextureCollection.Load(Path.Combine(PathManager.MinecraftResources_Dir, "assets", "minecraft")));
-            Task<BdfFont> task3 = Task.Run(() => BdfFont.Load(Path.Combine(PathManager.SystemResources_Fonts_Dir, "DefaultFont.bdf")));
-            Task<Dictionary<CursorType, Cursor>> task4 = Task.Run(() =>
-            {
-                Dictionary<CursorType, Cursor> result = new();
-                string[] files = Directory.GetFiles(PathManager.SystemResources_Textures_Cursor_Dir);
-                foreach (string file in files)
-                {
-                    Cursor cursor = new(JsonConvert.DeserializeObject<Cursor.Json>(File.ReadAllText(file)) ?? throw new FormatException());
-                    result.Add(cursor.CursorType, cursor);
-                }
-                return result;
-            });
-            Task task5 = Task.Run(() =>
-            {
-                FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
-                FFmpegLoader.LoadFFmpeg();
-            });
-
-            BlockTextureCollection = task2.Result;
-            DefaultFont = task3.Result;
-            _cursors = task4.Result;
-            task5.Wait();
-
-            _fonts = new();
-            RegisterFont("DefaultFont", DefaultFont);
-        }
-
-        public MCOS(
-            MinecraftServer minecraftServer,
-            AccelerationEngine accelerationEngine)
+        public MCOS(MinecraftServer minecraftServer)
         {
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
-            AccelerationEngine = accelerationEngine ?? throw new ArgumentNullException(nameof(accelerationEngine));
-            ScreenManager = new();
+            AccelerationEngine = new(ConfigManager.MinecraftConfig.ServerAddress, ConfigManager.MinecraftConfig.AccelerationEngineEventPort, ConfigManager.MinecraftConfig.AccelerationEngineDataPort);
+            ApplicationManager = new();
             ProcessManager = new();
-            FormManager = new();
+            ScreenManager = new();
 
             EnableAccelerationEngine = true;
             FrameCount = 0;
@@ -68,12 +36,9 @@ namespace QuanLib.Minecraft.BlockScreen
             PreviousFrameTime = TimeSpan.Zero;
             NextFrameTime = PreviousFrameTime + FrameMinTime;
             Timer = new();
-            Operator = string.Empty;
-            CursorType = CursorType.Default;
             ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
             StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
-            _apps = new();
             _callbacks = new();
             _stopwatch = new();
 
@@ -82,12 +47,6 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private static MCOS? _mcos;
 
-        private static readonly Dictionary<string, BdfFont> _fonts;
-
-        public static readonly Dictionary<CursorType, Cursor> _cursors;
-
-        private readonly Dictionary<string, ApplicationInfo> _apps;
-
         internal readonly ConcurrentQueue<Action> _callbacks;
 
         private readonly Stopwatch _stopwatch;
@@ -95,12 +54,6 @@ namespace QuanLib.Minecraft.BlockScreen
         private Task? _screen;
 
         private bool _runing;
-
-        public static BlockTextureCollection BlockTextureCollection { get; private set; }
-
-        public static BdfFont DefaultFont { get; private set; }
-
-        public static IReadOnlyDictionary<string, BdfFont> FontList => _fonts;
 
         public bool Runing => _runing;
 
@@ -118,23 +71,15 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public SystemTimer Timer { get; }
 
-        public string Operator { get; set; }
-
-        public Point CurrentPosition { get; private set; }
-
-        public CursorType CursorType { get; set; }
-
         public MinecraftServer MinecraftServer { get; }
 
         public AccelerationEngine AccelerationEngine { get; }
 
-        public ScreenManager ScreenManager { get; }
+        public ApplicationManager ApplicationManager { get; }
 
         public ProcessManager ProcessManager { get; }
 
-        public FormManager FormManager { get; }
-
-        public IReadOnlyDictionary<string, ApplicationInfo> ApplicationList => _apps;
+        public ScreenManager ScreenManager { get; }
 
         public string ServicesAppID { get; }
 
@@ -144,8 +89,9 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             _runing = true;
 
-            AccelerationEngine.Start();
-            ScreenManager.ScreenContexts.Add(new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144));
+            if (EnableAccelerationEngine)
+                AccelerationEngine.Start();
+            ScreenManager.ScreenList.Add(new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144));
 
 #if DebugTimer
             Console.CursorVisible = false;
@@ -203,6 +149,8 @@ namespace QuanLib.Minecraft.BlockScreen
         private TimeSpan HandleProcessScheduling()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
+
+            //TODO
 
             stopwatch.Stop();
             Timer.ProcessScheduling.Add(stopwatch.Elapsed);
@@ -285,7 +233,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (application is null)
                 throw new ArgumentNullException(nameof(application));
 
-            foreach (var process in ProcessManager.Process.Values)
+            foreach (var process in ProcessManager.ProcessList.Values)
                 if (application == process.Application)
                     return process;
 
@@ -297,7 +245,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var process in ProcessManager.Process.Values)
+            foreach (var process in ProcessManager.ProcessList.Values)
                 foreach (var activeForm in process.Application.FormManager.Forms)
                     if (activeForm == form)
                         return process;
@@ -310,7 +258,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var context in ScreenManager.ScreenContexts.Values)
+            foreach (var context in ScreenManager.ScreenList.Values)
                 if (context.RootForm == form || context.RootForm.ContainsForm(form))
                     return context;
 
@@ -339,38 +287,16 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private Process RunServicesApp()
         {
-            if (!_apps[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
+            if (!ApplicationManager.ApplicationList[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
-            return ProcessManager.Process.Add(_apps[ServicesAppID]);
+            return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[ServicesAppID]);
         }
 
         private void RunStartupChecklist(IForm? initiator = null)
         {
             foreach (var id in StartupChecklist)
-                ProcessManager.Process.Add(_apps[id], initiator);
-        }
-
-        public void RegisterApp(ApplicationInfo appInfo)
-        {
-            if (appInfo is null)
-                throw new ArgumentNullException(nameof(appInfo));
-
-            string dir = Path.Combine(PathManager.Applications_Dir, appInfo.ID);
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            _apps.Add(appInfo.ID, appInfo);
-        }
-
-        public static void RegisterFont(string id, BdfFont font)
-        {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException($"“{nameof(id)}”不能为 null 或空。", nameof(id));
-            if (font is null)
-                throw new ArgumentNullException(nameof(font));
-
-            _fonts.Add(id, font);
+                ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[id], initiator);
         }
 
         public static MCOS GetMCOS()

@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Event;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
@@ -50,7 +51,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     case AnchorPosition.Centered:
                         foreach (var c in Text)
                         {
-                            result.AddRight(ArrayFrame.BuildFrame(MCOS.DefaultFont[c].GetBitMap(), foreground, background));
+                            result.AddRight(ArrayFrame.BuildFrame(SystemResourcesManager.DefaultFont[c].GetBitMap(), foreground, background));
                             if (result.Width >= Width)
                                 break;
                         }
@@ -59,7 +60,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     case AnchorPosition.LowerRight:
                         for (int i = Text.Length - 1; i >= 0; i--)
                         {
-                            result.AddLeft(ArrayFrame.BuildFrame(MCOS.DefaultFont[Text[i]].GetBitMap(), foreground, background));
+                            result.AddLeft(ArrayFrame.BuildFrame(SystemResourcesManager.DefaultFont[Text[i]].GetBitMap(), foreground, background));
                             if (result.Width >= Width)
                                 break;
                         }
@@ -73,7 +74,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override void AutoSetSize()
         {
-            ClientSize = MCOS.DefaultFont.GetTotalSize(Text);
+            ClientSize = SystemResourcesManager.DefaultFont.GetTotalSize(Text);
         }
     }
 }

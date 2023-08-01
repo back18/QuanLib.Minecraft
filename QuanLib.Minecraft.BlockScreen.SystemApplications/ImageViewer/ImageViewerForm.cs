@@ -183,7 +183,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
 
         private void Path_TextBox_TextEditorChanged(Control sender, CursorTextEventArgs e)
         {
-            if (MCOS.DefaultFont.GetTotalSize(e.Text).Width > Path_TextBox.ClientSize.Width)
+            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.Text).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;

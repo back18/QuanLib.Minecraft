@@ -15,7 +15,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace QuanLib.Minecraft
 {
@@ -82,7 +81,7 @@ namespace QuanLib.Minecraft
 
         public ICommandSender CommandSender { get; private set; }
 
-        public ServeLauncher? Launcher { get; private set; }
+        public ServerLauncher? Launcher { get; private set; }
 
         public string ServerAddress { get; }
 
@@ -210,11 +209,11 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public ServeLauncher CreatNewServerProcess(ServerLaunchArguments arguments)
+        public ServerLauncher CreatNewServerProcess(ServerLaunchArguments arguments)
         {
             Launcher = new(PathManager.MainDir, arguments);
             _logListener = Launcher;
-            _logListener.OnWriteLog += (log) => OnWriteLog.Invoke(log);
+            _logListener.WriteLog += (sender, e) => OnWriteLog.Invoke(e.MinecraftLog);
             CommandSender = Launcher;
             ManagerMode = ServerManagerMode.ManagedProcess;
             return Launcher;
@@ -231,7 +230,7 @@ namespace QuanLib.Minecraft
             LogFileListener logFileListener = new(PathManager.LatestLogFile, logEncoding);
             Task.Run(() => logFileListener.Start());
             _logListener = logFileListener;
-            _logListener.OnWriteLog += (log) => OnWriteLog.Invoke(log);
+            _logListener.WriteLog += (sender, e) => OnWriteLog.Invoke(e.MinecraftLog);
             try
             {
                 _rcon.ConnectAsync().Wait();

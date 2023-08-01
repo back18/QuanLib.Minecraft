@@ -24,9 +24,9 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
         public string ServerAddress { get; }
 
-        public int AccelerationEngineEventPort { get; }
+        public ushort AccelerationEngineEventPort { get; }
 
-        public int AccelerationEngineDataPort { get; }
+        public ushort AccelerationEngineDataPort { get; }
 
         public static MinecraftConfig Load(string path)
         {
@@ -40,9 +40,9 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
             public string ServerAddress;
 
-            public int AccelerationEngineEventPort;
+            public ushort AccelerationEngineEventPort;
 
-            public int AccelerationEngineDataPort;
+            public ushort AccelerationEngineDataPort;
         }
     }
 }

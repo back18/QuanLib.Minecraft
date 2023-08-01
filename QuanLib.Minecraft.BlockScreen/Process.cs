@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +14,16 @@ namespace QuanLib.Minecraft.BlockScreen
         public Process(ApplicationInfo appInfo, string arguments, IForm? initiator = null)
         {
             ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
-            OnStart += (obj) => { };
-            OnStopped += (obj) => { };
+            Started += OnStarted;
+            Stopped += OnStopped;
             Application = Application.CreateApplication(ApplicationInfo.TypeObject, arguments);
             Initiator = initiator;
             SubprocessCallbackQueue = new();
             MainThread = new(() =>
             {
-                OnStart.Invoke(this);
+                Started.Invoke(this, EventArgs.Empty);
                 object? @return = Application.Main();
-                OnStopped.Invoke(this);
+                Stopped.Invoke(this, EventArgs.Empty);
                 //if (InitiatorPID?.InitiatorPID?.SubprocessCallbackQueue?.TryDequeue(out var callback) ?? false)
                 //    callback.Invoke(@return);
             })
@@ -63,9 +64,13 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public event Action<Process> OnStart;
+        public event EventHandler<Process, EventArgs> Started;
 
-        public event Action<Process> OnStopped;
+        public event EventHandler<Process, EventArgs> Stopped;
+
+        protected virtual void OnStarted(Process sender, EventArgs e) { }
+
+        protected virtual void OnStopped(Process sender, EventArgs e) { }
 
         public void Pending()
         {
