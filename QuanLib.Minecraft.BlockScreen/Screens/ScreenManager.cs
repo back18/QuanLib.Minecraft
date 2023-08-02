@@ -75,7 +75,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     ArrayFrame frame = ArrayFrame.BuildFrame(context.Value.Screen.Width, context.Value.Screen.Height, context.Value.Screen.DefaultBackgroundBlcokID);
                     ArrayFrame? formFrame = UIRenderer.Rendering(context.Value.RootForm);
                     if (formFrame is not null)
-                        frame.Overwrite(formFrame, context.Value.RootForm.RenderingLocation);
+                        frame.Overwrite(formFrame, context.Value.RootForm.ClientLocation);
                     if (!SystemResourcesManager.CursorManager.TryGetValue(context.Value.CursorType, out var cursor))
                         cursor = SystemResourcesManager.CursorManager[CursorType.Default];
                     frame.Overwrite(cursor.Frame, context.Value.Screen.InputHandler.CurrentPosition, cursor.Offset);

@@ -1,4 +1,4 @@
-﻿#define DebugTimer
+﻿//#define DebugTimer
 
 using Newtonsoft.Json;
 using System;
@@ -272,7 +272,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             Process process = RunServicesApp();
             IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
-            rootForm.RenderingSize = screen.Size;
+            rootForm.ClientSize = screen.Size;
             RunStartupChecklist(rootForm);
             return new(screen, rootForm);
         }

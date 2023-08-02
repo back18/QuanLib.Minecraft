@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.Event;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             base.Initialize();
 
             Client_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+        }
+
+        protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
+        {
+            base.OnCursorSlotChanged(sender, e);
+
+            Console.WriteLine(e.Delta);
         }
     }
 }

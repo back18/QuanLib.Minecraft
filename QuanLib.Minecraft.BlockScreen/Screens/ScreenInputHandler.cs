@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using QuanLib.Event;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.Data;
@@ -27,6 +28,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             CurrentPlayer = string.Empty;
             CurrenMode = CursorMode.Cursor;
             CurrentPosition = new(0, 0);
+            CurrentSlot = 0;
             CurrentItem = null;
             InitialText = string.Empty;
             CurrentText = string.Empty;
@@ -34,6 +36,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             CursorMove += OnCursorMove;
             RightClick += OnRightClick;
             LeftClick += OnLeftClick;
+            CursorSlotChanged += OnCursorSlotChanged;
             CursorItemChanged += OnCursorItemChanged;
             TextEditorChanged += OnTextEditorChanged;
         }
@@ -56,6 +59,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public Point CurrentPosition { get; private set; }
 
+        public int CurrentSlot { get; private set; }
+
         public Item? CurrentItem { get; private set; }
 
         public string InitialText { get; set; }
@@ -68,9 +73,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public event EventHandler<ICursorReader, CursorEventArgs> LeftClick;
 
+        public event EventHandler<ICursorReader, CursorSlotEventArgs> CursorSlotChanged;
+
         public event EventHandler<ICursorReader, CursorItemEventArgs> CursorItemChanged;
 
-        public event EventHandler<ICursorReader, CursorTextEventArgs> TextEditorChanged;
+        public event EventHandler<ITextEditor, CursorTextEventArgs> TextEditorChanged;
 
         protected virtual void OnCursorMove(ICursorReader sender, CursorEventArgs e) { }
 
@@ -78,9 +85,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         protected virtual void OnLeftClick(ICursorReader sender, CursorEventArgs e) { }
 
+        protected virtual void OnCursorSlotChanged(ICursorReader sender, CursorSlotEventArgs e) { }
+
         protected virtual void OnCursorItemChanged(ICursorReader sender, CursorItemEventArgs e) { }
 
-        protected virtual void OnTextEditorChanged(ICursorReader sender, CursorTextEventArgs e) { }
+        protected virtual void OnTextEditorChanged(ITextEditor sender, CursorTextEventArgs e) { }
 
         public void ResetText()
         {
@@ -126,9 +135,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             Screen screen = _owner;
             ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
 
-            if (!command.TryGetPlayerSelectedItem(player, out var selectedItem) & !command.TryGetPlayerDualWieldItem(player, out var dualWieldItem))
+            if (!command.TryGetPlayerSelectedItemSlot(player, out var slot))
                 return false;
 
+            command.TryGetPlayerItem(player, slot, out Item? selectedItem);
+            command.TryGetPlayerDualWieldItem(player, out Item? dualWieldItem);
+
+            bool swap = false;
             if (selectedItem is not null && (selectedItem.ID == MOUSE_ITEM || selectedItem.ID == TEXTEDITOR_ITEM))
             {
 
@@ -138,6 +151,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 Item? temp = selectedItem;
                 selectedItem = dualWieldItem;
                 dualWieldItem = temp;
+                swap = true;
             }
             else
             {
@@ -156,8 +170,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (!screen.IncludedOnScreen(targetPosition))
                 return false;
 
+            List<Action> actions = new();
+
             CurrentPlayer = player;
-            CurrentItem = dualWieldItem;
 
             switch (selectedItem.ID)
             {
@@ -172,7 +187,20 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (targetPosition != CurrentPosition)
             {
                 CurrentPosition = targetPosition;
-                CursorMove.Invoke(this, new(CurrentPosition));
+                actions.Add(() => CursorMove.Invoke(this, new(CurrentPosition)));
+            }
+
+            if (swap && slot != CurrentSlot)
+            {
+                int temp = CurrentSlot;
+                CurrentSlot = slot;
+                actions.Add(() => CursorSlotChanged.Invoke(this, new(CurrentPosition, temp, CurrentSlot)));
+            }
+
+            if (Item.EqualsID(dualWieldItem, CurrentItem))
+            {
+                CurrentItem = dualWieldItem;
+                actions.Add(() => CursorItemChanged.Invoke(this, new(CurrentPosition, CurrentItem)));
             }
 
             switch (selectedItem.ID)
@@ -208,19 +236,22 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         if (texts[0] != CurrentText)
                         {
                             CurrentText = texts[0];
-                            TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText));
+                            actions.Add(() => TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText)));
                         }
                     }
                     else if (!string.IsNullOrEmpty(CurrentText))
                     {
                         CurrentText = string.Empty;
-                        TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText));
+                        actions.Add(() => TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText)));
                     }
                     break;
             }
 
             //position.Y -= 0.5;
             //command.TelePortAsync(_batuuid, position + direction * 0.625).Wait();
+
+            foreach (var action in actions)
+                action.Invoke();
 
             return true;
         }

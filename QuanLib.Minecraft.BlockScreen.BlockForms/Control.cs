@@ -59,6 +59,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             LeftClick += OnLeftClick;
             DoubleRightClick += OnDoubleRightClick;
             DoubleLeftClick += OnDoubleLeftClick;
+            CursorSlotChanged += OnCursorSlotChanged;
             CursorItemChanged += OnCursorItemChanged;
             TextEditorChanged += OnTextEditorChanged;
             BeforeFrame += OnBeforeFrame;
@@ -126,15 +127,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         #region 位置与尺寸
 
-        public Point Location
-        {
-            get => new(ClientLocation.X + ParentBorderWidth, ClientLocation.Y + ParentBorderWidth);
-            set
-            {
-                ClientLocation = new(value.X - ParentBorderWidth, value.Y - ParentBorderWidth);
-            }
-        }
-
         public Point ClientLocation
         {
             get => _ClientLocation;
@@ -169,16 +161,40 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         }
         private Size _ClientSize;
 
-        Point IControlRendering.RenderingLocation
+        public Point Location
         {
-            get => new(ClientLocation.X + BorderWidth, ClientLocation.Y + BorderWidth);
-            set => ClientLocation = new(value.X - BorderWidth, value.Y - BorderWidth);
+            get => new(ClientLocation.X + ParentBorderWidth, ClientLocation.Y + ParentBorderWidth);
+            set
+            {
+                ClientLocation = new(value.X - ParentBorderWidth, value.Y - ParentBorderWidth);
+            }
         }
 
-        Size IControlRendering.RenderingSize
+        public Size Size
         {
-            get => ClientSize;
-            set => ClientSize = value;
+            get => new(ClientSize.Width + BorderWidth * 2, ClientSize.Height * BorderWidth * 2);
+            set
+            {
+                ClientSize = new(value.Width - BorderWidth * 2, value.Height - BorderWidth * 2);
+            }
+        }
+
+        public int X
+        {
+            get => ClientLocation.X + ParentBorderWidth;
+            set
+            {
+                ClientLocation = new(value -  ParentBorderWidth, ClientLocation.Y);
+            }
+        }
+
+        public int Y
+        {
+            get => ClientLocation.Y + ParentBorderWidth;
+            set
+            {
+                ClientLocation = new(ClientLocation.X, value - ParentBorderWidth);
+            }
         }
 
         public int Width
@@ -490,6 +506,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public event EventHandler<Control, CursorEventArgs> DoubleLeftClick;
 
+        public event EventHandler<Control, CursorSlotEventArgs> CursorSlotChanged;
+
         public event EventHandler<Control, CursorItemEventArgs> CursorItemChanged;
 
         public event EventHandler<Control, CursorTextEventArgs> TextEditorChanged;
@@ -535,6 +553,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         protected virtual void OnDoubleRightClick(Control sender, CursorEventArgs e) { }
 
         protected virtual void OnDoubleLeftClick(Control sender, CursorEventArgs e) { }
+
+        protected virtual void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e) { }
 
         protected virtual void OnCursorItemChanged(Control sender, CursorItemEventArgs e) { }
 
@@ -681,9 +701,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return false;
         }
 
+        public virtual void HandleCursorSlotChanged(CursorSlotEventArgs e)
+        {
+            if (Visible)
+            {
+                if (IncludedOnControl(e.Position))
+                {
+                    CursorSlotChanged.Invoke(this, e);
+                }
+            }
+        }
+
         public virtual void HandleCursorItemChanged(CursorItemEventArgs e)
         {
-            CursorItemChanged.Invoke(this, e);
+            if (Visible)
+            {
+                if (IncludedOnControl(e.Position))
+                    CursorItemChanged.Invoke(this, e);
+            }
         }
 
         public virtual void HandleTextEditorChanged(CursorTextEventArgs e)

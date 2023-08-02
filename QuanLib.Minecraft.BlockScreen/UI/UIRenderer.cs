@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.BlockScreen.Frame;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +19,13 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 if (!rendering.Visible)
                     return null;
 
-                if (rendering.RenderingSize.Width < 0 || rendering.RenderingSize.Height < 0)
+                if (rendering.ClientSize.Width < 0 || rendering.ClientSize.Height < 0)
                     return null;
 
                 _task = Task.Run(() =>
                 {
                     IFrame frame = rendering.RenderingFrame();
-                    frame.CorrectSize(rendering.RenderingSize, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
+                    frame.CorrectSize(rendering.ClientSize, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
                     return frame.ToArrayFrame();
                 });
                 _task.ContinueWith((t) => rendering.OnRenderingCompleted(t.Result.ToArrayFrame()));
@@ -49,7 +50,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 if (task.Result is null)
                     continue;
 
-                frame.Overwrite(task.Result, subControl.RenderingLocation);
+                frame.Overwrite(task.Result, subControl.GetRenderingLocation());
                 DrawBorder(frame, subControl);
             }
 
@@ -60,16 +61,19 @@ namespace QuanLib.Minecraft.BlockScreen.UI
         {
             if (rendering.BorderWidth > 0)
             {
-                int width = rendering.RenderingSize.Width + rendering.BorderWidth * 2;
-                int heigth = rendering.RenderingSize.Height + rendering.BorderWidth * 2;
-                int startTop = rendering.RenderingLocation.Y - 1;
-                int startBottom = rendering.RenderingLocation.Y + rendering.RenderingSize.Height;
-                int startLeft = rendering.RenderingLocation.X - 1;
-                int startRigth = rendering.RenderingLocation.X + rendering.RenderingSize.Width;
-                int endTop = rendering.RenderingLocation.Y - rendering.BorderWidth;
-                int endBottom = rendering.RenderingLocation.Y + rendering.RenderingSize.Height + rendering.BorderWidth - 1;
-                int endLeft = rendering.RenderingLocation.X - rendering.BorderWidth;
-                int endRight = rendering.RenderingLocation.X + rendering.RenderingSize.Width + rendering.BorderWidth - 1;
+                int width = rendering.ClientSize.Width + rendering.BorderWidth * 2;
+                int heigth = rendering.ClientSize.Height + rendering.BorderWidth * 2;
+
+                Point location = rendering.GetRenderingLocation();
+                int startTop = location.Y - 1;
+                int startBottom = location.Y + rendering.ClientSize.Height;
+                int startLeft = location.X - 1;
+                int startRigth = location.X + rendering.ClientSize.Width;
+                int endTop = location.Y - rendering.BorderWidth;
+                int endBottom = location.Y + rendering.ClientSize.Height + rendering.BorderWidth - 1;
+                int endLeft = location.X - rendering.BorderWidth;
+                int endRight = location.X + rendering.ClientSize.Width + rendering.BorderWidth - 1;
+
                 string blockID = rendering.Skin.GetBorderBlockID();
 
                 for (int y = startTop; y >= endTop; y--)

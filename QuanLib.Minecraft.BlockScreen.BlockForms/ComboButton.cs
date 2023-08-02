@@ -88,9 +88,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        private void Items_SelectedItemChanged(ItemCollection<T> sender, ObjectChangedEventArgs<T?> e)
+        private void Items_SelectedItemChanged(ItemCollection<T> sender, ValueChangedEventArgs<T?> e)
         {
-            SetText(e.NewItem);
+            SetText(e.NewValue);
         }
 
         private void SetText(T? item)

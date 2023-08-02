@@ -16,6 +16,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public bool HandleLeftClick(CursorEventArgs e);
 
+        public void HandleCursorSlotChanged(CursorSlotEventArgs e);
+
         public void HandleCursorItemChanged(CursorItemEventArgs e);
 
         public void HandleTextEditorChanged(CursorTextEventArgs e);

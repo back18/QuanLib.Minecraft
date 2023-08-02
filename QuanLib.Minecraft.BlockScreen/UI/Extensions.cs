@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,11 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 else
                     result = result.GenericParentContainer;
             }
+        }
+
+        public static Point GetRenderingLocation(this IControlRendering source)
+        {
+            return new(source.ClientLocation.X + source.BorderWidth, source.ClientLocation.Y + source.BorderWidth);
         }
     }
 }

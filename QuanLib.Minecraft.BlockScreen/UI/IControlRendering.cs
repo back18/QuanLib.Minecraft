@@ -12,9 +12,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI
     {
         public bool Visible { get; set; }
 
-        public Point RenderingLocation { get; set; }
+        public Point ClientLocation { get; set; }
 
-        public Size RenderingSize { get; set; }
+        public Size ClientSize { get; set; }
 
         public int BorderWidth { get; set; }
 

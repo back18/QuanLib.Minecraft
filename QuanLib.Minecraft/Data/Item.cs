@@ -27,6 +27,16 @@ namespace QuanLib.Minecraft.Data
 
         public Dictionary<string, object>? Tag { get; }
 
+        public override string ToString()
+        {
+            return ID;
+        }
+
+        public static bool EqualsID(Item? item1, Item? item2)
+        {
+            return string.Equals(item1?.ID, item2?.ID);
+        }
+
         public class Nbt
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。

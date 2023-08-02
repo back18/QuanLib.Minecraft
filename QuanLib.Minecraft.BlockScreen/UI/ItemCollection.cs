@@ -80,11 +80,11 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public event EventHandler<ItemCollection<T>, IndexChangedEventArgs> SelectedItemIndexChanged;
 
-        public event EventHandler<ItemCollection<T>, ObjectChangedEventArgs<T?>> SelectedItemChanged;
+        public event EventHandler<ItemCollection<T>, ValueChangedEventArgs<T?>> SelectedItemChanged;
 
         protected virtual void OnSelectedItemIndexChanged(ItemCollection<T> sender, IndexChangedEventArgs e) { }
 
-        protected virtual void OnSelectedItemChanged(ItemCollection<T> sender, ObjectChangedEventArgs<T?> e) { }
+        protected virtual void OnSelectedItemChanged(ItemCollection<T> sender, ValueChangedEventArgs<T?> e) { }
 
         public void Add(T item)
         {

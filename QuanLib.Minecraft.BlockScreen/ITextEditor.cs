@@ -28,6 +28,6 @@ namespace QuanLib.Minecraft.BlockScreen
         /// <summary>
         /// 当文本编辑器更新时
         /// </summary>
-        public event EventHandler<ICursorReader, CursorTextEventArgs> TextEditorChanged;
+        public event EventHandler<ITextEditor, CursorTextEventArgs> TextEditorChanged;
     }
 }

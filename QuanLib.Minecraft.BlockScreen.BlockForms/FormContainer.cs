@@ -25,13 +25,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 {
                     ClientSize = new(e.NewSize.Width, e.NewSize.Height - 16);
                     foreach (var form in SubControls)
-                        form.RenderingSize = new(form.RenderingSize.Width, form.RenderingSize.Height - 16);
+                        form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height - 16);
                 }
                 else
                 {
                     ClientSize = new(e.NewSize.Width, e.NewSize.Height);
                     foreach (var form in SubControls)
-                        form.RenderingSize = new(form.RenderingSize.Width, form.RenderingSize.Height + 16);
+                        form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height + 16);
                 }
             });
         }
@@ -105,6 +105,17 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
 
             return result;
+        }
+
+        public override void HandleCursorSlotChanged(CursorSlotEventArgs e)
+        {
+            foreach (var control in SubControls.Reverse())
+            {
+                if (control.IsSelected)
+                {
+                    control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
+                }
+            }
         }
 
         public override void HandleCursorItemChanged(CursorItemEventArgs e)
