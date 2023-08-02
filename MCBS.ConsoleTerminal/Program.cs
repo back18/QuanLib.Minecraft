@@ -3,7 +3,6 @@ using QuanLib.Minecraft;
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
-using QuanLib.Minecraft.Fabric;
 using QuanLib.Minecraft.Files;
 using QuanLib.Minecraft.Vectors;
 using System.Text;
@@ -31,26 +30,21 @@ namespace MCBS.ConsoleTerminal
             //logHelper.PlayerSendChatMessage += (sender, e) => Console.WriteLine("玩家消息：" + e.ChatMessage);
             //listener.Start();
 
-            FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
-            FFmpegLoader.LoadFFmpeg();
+            //FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
+            //FFmpegLoader.LoadFFmpeg();
             ConfigManager.LoadAll();
             SystemResourcesManager.LoadAll();
             MinecraftResourcesManager.LoadAll();
 
-            MinecraftServer server = new("D:\\程序\\HMCL\\fabric-server-mc.1.20.1-loader.0.14.21-launcher.0.11.2", "127.0.0.1");
-
-            //ServeLauncher launcher = server.CreatNewServerProcess(new("java", "D:\\程序\\HMCL\\forge-1.19.2-43.2.8", "@libraries/net/minecraftforge/forge/1.19.2-43.2.8/win_args.txt", addonArgs: new string[] { "%*" }));
-            //launcher.OnServerProcessStart += () => Console.WriteLine("进程启动");
-            //launcher.OnServerProcessExit += () => Console.WriteLine("进程终止");
-            //launcher.OnServerProcessRestart += () => Console.WriteLine("进程重启");
-            //Task.Run(() =>
-            //{
-            //    launcher.Start();
-            //});
-
-            server.ConnectExistingServer();
-
-            var outs = server.CommandHelper.GetPlayersSbnt("@a", "XpSeed");
+            MinecraftConfig config = ConfigManager.MinecraftConfig;
+            MinecraftServer server = config.MinecraftServerMode switch
+            {
+                MinecraftServerMode.RconConnect => new RconConnectServer(config.ServerPath, config.ServerAddress),
+                MinecraftServerMode.ManagedProcess => new ManagedProcessServer(config.ServerPath, config.ServerAddress, new CustomServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                _ => throw new InvalidOperationException(),
+            };
+            Task.Run(() => server.Start());
+            server.WaitForConnected();
 
             MCOS os = new(server);
             os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
@@ -73,14 +67,14 @@ namespace MCBS.ConsoleTerminal
 
             os.Start();
 
-            while (true)
-            {
-                string? read = Console.ReadLine();
-                if (read is null)
-                    continue;
-                string output = server.CommandHelper.SendCommandAsync(read).Result;
-                Console.WriteLine(output);
-            }
+            //while (true)
+            //{
+            //    string? read = Console.ReadLine();
+            //    if (read is null)
+            //        continue;
+            //    string output = server.CommandHelper.SendCommand(read);
+            //    Console.WriteLine(output);
+            //}
         }
     }
 }

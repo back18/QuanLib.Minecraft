@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace QuanLib.Minecraft
 {
-    public class RconMax : IBytesCommandSender
+    public class RconMax : IDisposable, IBytesCommandSender
     {
         public RconMax(string ip, ushort port, string password, int clientCount = 6)
         {
@@ -66,6 +66,12 @@ namespace QuanLib.Minecraft
             _clients.Clear();
             _events.Clear();
             _connected = false;
+        }
+
+        public void Dispose()
+        {
+            Close();
+            GC.SuppressFinalize(this);
         }
 
         public void SendCommand(string command)

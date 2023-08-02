@@ -18,10 +18,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
 {
-    //TODO 应该为抽象类，派生监听器模式和托管进程模式
-    public class MinecraftServer
+    public abstract class MinecraftServer : ISwitchable
     {
-        public MinecraftServer(string serverPath, string serverAddress)
+        protected MinecraftServer(string serverPath, string serverAddress)
         {
             if (string.IsNullOrEmpty(serverPath))
                 throw new ArgumentException($"“{nameof(serverPath)}”不能为 null 或空。", nameof(serverPath));
@@ -44,38 +43,12 @@ namespace QuanLib.Minecraft
             ServerAddress = serverAddress;
             ServerPort = serverPort;
             RconPort = rconPort;
+            RconPassword = properties["rcon.password"];
 
             _ping = new();
-            _rcon = new(IPAddress.Parse(serverAddress), rconPort, properties["rcon.password"]);
-            _rconMax = new(serverAddress, rconPort, properties["rcon.password"]);
-            CommandHelper = new(_rcon);
-            CommandSender = _rconMax;
-            ManagerMode = ServerManagerMode.NotConnected;
-
-            LogParser.RconRunning += LogParser_RconRunning; //TODO
         }
 
         private TcpClient _ping;
-
-        public readonly RCON _rcon;
-
-        private readonly RconMax _rconMax;
-
-        private ILogListener? _logListener;
-
-        public ServerPathManager PathManager { get; }
-
-        public ServerFileHelper FileHelper { get; }
-
-        public ServerLogParser LogParser { get; }
-
-        public ServerCommandHelper CommandHelper { get; }
-
-        public ServerManagerMode ManagerMode { get; private set; }
-
-        public ICommandSender CommandSender { get; private set; }
-
-        public ServerLauncher? Launcher { get; private set; }
 
         public string ServerAddress { get; }
 
@@ -83,21 +56,42 @@ namespace QuanLib.Minecraft
 
         public ushort RconPort { get; }
 
-        private void LogParser_RconRunning(ServerLogParser sender, QuanLib.Event.IPEndPointEventArgs e)
+        public string RconPassword { get; }
+
+        public ServerPathManager PathManager { get; }
+
+        public ServerFileHelper FileHelper { get; }
+
+        public abstract ServerLogParser LogParser { get; }
+
+        public abstract ServerCommandHelper CommandHelper { get; }
+
+        public abstract ICommandSender CommandSender { get; }
+
+        public abstract MinecraftServerMode Mode { get; }
+
+        public abstract bool Connected { get; }
+
+        public abstract bool Runing { get; }
+
+        public bool PingServer(out TimeSpan time)
         {
-            _rcon.ConnectAsync().Wait();
-            if (ManagerMode == ServerManagerMode.Listener)
-                _rconMax.Connect();
+            return Ping(ServerAddress, ServerPort, out time);
         }
 
-        public bool Ping(out TimeSpan time)
+        public bool PingRcon(out TimeSpan time)
+        {
+            return Ping(ServerAddress, RconPort, out time);
+        }
+
+        private bool Ping(string hostname, int port, out TimeSpan time)
         {
             lock (_ping)
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 try
                 {
-                    _ping.Connect(ServerAddress, ServerPort);
+                    _ping.Connect(hostname, port);
                 }
                 catch
                 {
@@ -124,28 +118,26 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public ServerLauncher CreatNewServerProcess(ServerLaunchArguments arguments)
+        public virtual void WaitForServerStartup()
         {
-            Launcher = new(PathManager.MainDir, arguments);
-            _logListener = Launcher;
-            CommandSender = Launcher;
-            ManagerMode = ServerManagerMode.ManagedProcess;
-            return Launcher;
+            while (!PingServer(out var _))
+            {
+                Thread.Sleep(1000);
+            }
         }
 
-        public void ConnectExistingServer()
+        public virtual void WaitForRconStartup()
         {
-            LogFileListener logFileListener = new(PathManager.LatestLogFile);
-            Task.Run(() => logFileListener.Start());
-            _logListener = logFileListener;
-            try
+            while (!PingRcon(out var _))
             {
-                _rcon.ConnectAsync().Wait();
-                _rconMax.Connect();
+                Thread.Sleep(1000);
             }
-            catch { }
-            CommandSender = _rconMax;
-            ManagerMode = ServerManagerMode.Listener;
         }
+
+        public abstract void WaitForConnected();
+
+        public abstract void Start();
+
+        public abstract void Stop();
     }
 }

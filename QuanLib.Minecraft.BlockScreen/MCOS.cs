@@ -30,7 +30,7 @@ namespace QuanLib.Minecraft.BlockScreen
             ProcessManager = new();
             ScreenManager = new();
 
-            EnableAccelerationEngine = true;
+            EnableAccelerationEngine = ConfigManager.SystemConfig.EnableAccelerationEngine;
             FrameCount = 0;
             FrameMinTime = TimeSpan.FromMilliseconds(50);
             PreviousFrameTime = TimeSpan.Zero;

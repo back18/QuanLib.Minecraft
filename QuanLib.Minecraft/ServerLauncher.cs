@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
 {
-    public class ServerLauncher : IStandardInputCommandSender, ILogListener
+    public class ServerLauncher : ISwitchable, IStandardInputCommandSender, ILogListener
     {
         public ServerLauncher(string serverPath, ServerLaunchArguments launchArguments)
         {
@@ -36,10 +36,12 @@ namespace QuanLib.Minecraft
             ServerProcessRestart += OnServerProcessRestart;
             ServerProcessExit += OnServerProcessExit;
 
-            _temp = new();
+            _runing = false;
         }
 
-        private readonly StringBuilder _temp;
+        private bool _runing;
+
+        public bool Runing => _runing;
 
         public ServerLaunchArguments LaunchArguments { get; }
 
@@ -95,8 +97,12 @@ namespace QuanLib.Minecraft
 
         public void Start()
         {
+            if (_runing)
+                return;
+            _runing = true;
+
             StartCount = 0;
-            while (true)
+            while (_runing)
             {
                 StartCount++;
 
@@ -111,6 +117,12 @@ namespace QuanLib.Minecraft
                 else
                     break;
             }
+        }
+
+        public void Stop()
+        {
+            _runing = false;
+            Process.Kill();
         }
 
         public void SendCommand(string command)
