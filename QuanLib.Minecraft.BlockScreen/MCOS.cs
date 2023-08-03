@@ -1,4 +1,4 @@
-﻿//#define DebugTimer
+﻿#define DebugTimer
 
 using Newtonsoft.Json;
 using System;

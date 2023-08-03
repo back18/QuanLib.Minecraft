@@ -269,7 +269,7 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             return new(this);
         }
 
-        public void CorrectSize(Size size, AnchorPosition anchor, string id)
+        public void CorrectSize(Size size, Point offset, AnchorPosition anchor, string id)
         {
             if (Width == size.Width && Height == size.Height)
                 return;
@@ -279,19 +279,19 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             switch (anchor)
             {
                 case AnchorPosition.UpperLeft:
-                    newFrame.Overwrite(this, new(0, 0));
+                    newFrame.Overwrite(this, new(0, 0), offset);
                     break;
                 case AnchorPosition.UpperRight:
-                    newFrame.Overwrite(this, new(newFrame.Width - Width, 0));
+                    newFrame.Overwrite(this, new(newFrame.Width - Width, 0), offset);
                     break;
                 case AnchorPosition.LowerLeft:
                     newFrame.Overwrite(this, new(0, newFrame.Height - Height));
                     break;
                 case AnchorPosition.LowerRight:
-                    newFrame.Overwrite(this, new(newFrame.Width - Width, newFrame.Height - Height));
+                    newFrame.Overwrite(this, new(newFrame.Width - Width, newFrame.Height - Height), offset);
                     break;
                 case AnchorPosition.Centered:
-                    newFrame.Overwrite(this, new(newFrame.Width / 2 - Width / 2, newFrame.Width / 2 - Width / 2));
+                    newFrame.Overwrite(this, new(newFrame.Width / 2 - Width / 2, newFrame.Width / 2 - Width / 2), offset);
                     break;
                 default:
                     throw new InvalidOperationException();

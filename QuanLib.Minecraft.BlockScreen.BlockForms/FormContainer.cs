@@ -107,15 +107,18 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return result;
         }
 
-        public override void HandleCursorSlotChanged(CursorSlotEventArgs e)
+        public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
         {
+            bool result = false;
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
+                    result = control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
                 }
             }
+
+            return result;
         }
 
         public override void HandleCursorItemChanged(CursorItemEventArgs e)

@@ -16,6 +16,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public Size ClientSize { get; set; }
 
+        public Point OffsetPosition { get; set; }
+
         public int BorderWidth { get; set; }
 
         public AnchorPosition ContentAnchor { get; set; }

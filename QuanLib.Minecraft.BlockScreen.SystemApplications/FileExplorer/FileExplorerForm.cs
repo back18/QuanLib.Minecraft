@@ -49,7 +49,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         private readonly TextBox Path_TextBox;
 
-        private readonly Panel<PathIcon> PathList_Panel;
+        private readonly ScrollablePanel PathList_Panel;
 
         private readonly Dictionary<int, PathIcon[]> _pages;
 
@@ -69,7 +69,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
                     if (value == _PageNumber)
                         return;
                     _PageNumber = value;
-                    PageTurning(_PageNumber);
                     RequestUpdateFrame();
                 }
             }
@@ -79,6 +78,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
         public override void Initialize()
         {
             base.Initialize();
+
+            Client_Panel.PageSize = new(128, 72);
 
             int spacing = 2;
             int start1 = 2;
@@ -142,7 +143,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             PathList_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
 
             UpdatePathList();
-            PageTurning(1);
         }
 
         private void OK_Button_RightClick(Control sender, CursorEventArgs e)
@@ -155,11 +155,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
                         paths.Add(path.Path);
                         path.IsSelected = false;
                     }
-
-            //FileExplorerApp app = (FileExplorerApp)GetApplication();
-            //app.ReturnValue = paths.ToArray();
-            //app.Exit();
-            //MCOS.GetMCOS().ProcessManager.Process.Add(MCOS.GetMCOS().ApplicationList[VideoPlayerApp.ID], paths.ToArray());
         }
 
         private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
@@ -175,7 +170,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
         private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
         {
             UpdatePathList();
-            PageTurning(1);
 
             if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
@@ -229,6 +223,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
                 }
             }
 
+            PathList_Panel.SubControls.Clear();
             foreach (var icon in paths)
             {
                 icon.AutoSetSize();
@@ -236,20 +231,26 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
                 {
                     Path_TextBox.Text = Path.Combine(Path_TextBox.Text, icon.Text);
                 };
+                PathList_Panel.SubControls.Add(icon);
             }
 
-            _pages.Clear();
-            int pageNumber = 1;
-            var pages = PathList_Panel.FillLayouPagingt(1, paths);
-            if (pages.Length == 0)
-            {
-                _pages.Add(pageNumber, Array.Empty<PathIcon>());
-            }
-            else
-            {
-                foreach (var page in pages)
-                    _pages.Add(pageNumber++, page);
-            }
+            PathList_Panel.ForceFillLayout(1, paths);
+            PathList_Panel.PageSize = new(PathList_Panel.ClientSize.Width, paths[^1].BottomLocation + 2);
+            PathList_Panel.OffsetPosition = new(0, 0);
+            PathList_Panel.RefreshVerticalScrollBar();
+
+            //_pages.Clear();
+            //int pageNumber = 1;
+            //var pages = PathList_Panel.FillLayouPagingt(1, paths);
+            //if (pages.Length == 0)
+            //{
+            //    _pages.Add(pageNumber, Array.Empty<PathIcon>());
+            //}
+            //else
+            //{
+            //    foreach (var page in pages)
+            //        _pages.Add(pageNumber++, page);
+            //}
             PageNumber = 1;
         }
 

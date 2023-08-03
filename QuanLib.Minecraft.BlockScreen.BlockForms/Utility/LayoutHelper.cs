@@ -9,26 +9,26 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
 {
     public static class LayoutHelper
     {
-        public static Point TopLayout(this Control control, Control? previous, Control next, int spacing, int start)
+        public static Point TopLayout(this Control source, Control? previous, Control next, int spacing, int start)
         {
             if (next is null)
                 throw new ArgumentNullException(nameof(next));
 
             if (previous is null)
-                return new(start, control.ClientSize.Height - next.Height - spacing);
+                return new(start, source.ClientSize.Height - next.Height - spacing);
             else
                 return new(previous.LeftLocation, previous.TopLocation - next.Height - spacing);
         }
 
-        public static Point TopLayout(this Control control, Control previous, Control next, int spacing)
+        public static Point TopLayout(this Control source, Control previous, Control next, int spacing)
         {
             if (previous is null)
                 throw new ArgumentNullException(nameof(previous));
 
-            return TopLayout(control, previous, next, spacing, previous.LeftLocation);
+            return TopLayout(source, previous, next, spacing, previous.LeftLocation);
         }
 
-        public static Point BottomLayout(this Control control, Control? previous, int spacing, int start)
+        public static Point BottomLayout(this Control source, Control? previous, int spacing, int start)
         {
             if (previous is null)
                 return new(spacing, start);
@@ -36,34 +36,34 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
                 return new(previous.LeftLocation, previous.BottomLocation + 1 + spacing);
         }
 
-        public static Point BottomLayout(this Control control, Control previous, int spacing)
+        public static Point BottomLayout(this Control source, Control previous, int spacing)
         {
             if (previous is null)
                 throw new ArgumentNullException(nameof(previous));
 
-            return control.BottomLayout(previous, spacing, previous.LeftLocation);
+            return source.BottomLayout(previous, spacing, previous.LeftLocation);
         }
 
-        public static Point LifeLayout(this Control control, Control? previous, Control next, int spacing, int start)
+        public static Point LifeLayout(this Control source, Control? previous, Control next, int spacing, int start)
         {
             if (next is null)
                 throw new ArgumentNullException(nameof(next));
 
             if (previous is null)
-                return new(control.ClientSize.Width - next.Width - spacing, start);
+                return new(source.ClientSize.Width - next.Width - spacing, start);
             else
                 return new(previous.LeftLocation - next.Width - spacing, previous.TopLocation);
         }
 
-        public static Point LifeLayout(this Control control, Control previous, Control next, int spacing)
+        public static Point LifeLayout(this Control source, Control previous, Control next, int spacing)
         {
             if (previous is null)
                 throw new ArgumentNullException(nameof(previous));
 
-            return control.LifeLayout(previous, next, spacing, previous.TopLocation);
+            return source.LifeLayout(previous, next, spacing, previous.TopLocation);
         }
 
-        public static Point RightLayout(this Control control, Control? previous, int spacing, int start)
+        public static Point RightLayout(this Control source, Control? previous, int spacing, int start)
         {
             if (previous is null)
                 return new(spacing, start);
@@ -71,39 +71,55 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
                 return new(previous.RightLocation + 1 + spacing, previous.TopLocation);
         }
 
-        public static Point RightLayout(this Control control, Control previous, int spacing)
+        public static Point RightLayout(this Control source, Control previous, int spacing)
         {
             if (previous is null)
                 throw new ArgumentNullException(nameof(previous));
 
-            return control.RightLayout(previous, spacing, previous.TopLocation);
+            return source.RightLayout(previous, spacing, previous.TopLocation);
         }
 
-        public static Point VerticalCenterLayout(this Control control, Control subControl, int start)
+        public static Point VerticalCenterLayout(this Control source, Control subControl, int start)
         {
             if (subControl is null)
                 throw new ArgumentNullException(nameof(subControl));
 
-            return new(start, control.ClientSize.Height / 2 - subControl.Height / 2);
+            return new(start, source.ClientSize.Height / 2 - subControl.Height / 2);
         }
 
-        public static Point HorizontalCenterLayout(this Control control, Control subControl, int start)
+        public static Point HorizontalCenterLayout(this Control source, Control subControl, int start)
         {
             if (subControl is null)
                 throw new ArgumentNullException(nameof(subControl));
 
-            return new(control.ClientSize.Width / 2 - subControl.Width / 2, start);
+            return new(source.ClientSize.Width / 2 - subControl.Width / 2, start);
         }
 
-        public static Point CenterLayout(this Control control, Control subControl)
+        public static Point CenterLayout(this Control source, Control subControl)
         {
             if (subControl is null)
                 throw new ArgumentNullException(nameof(subControl));
 
-            return new(control.Width / 2 - subControl.Width / 2, control.Height / 2 - subControl.Height / 2);
+            return new(source.Width / 2 - subControl.Width / 2, source.Height / 2 - subControl.Height / 2);
         }
 
-        public static T[] FillLayout<T>(this Control control, int spacing, IReadOnlyList<T> controls, int startIndex = 0) where T : Control
+        public static void ForceFillLayout<T>(this Control source, int spacing, IEnumerable<T> controls) where T : Control
+        {
+            if (controls is null)
+                throw new ArgumentNullException(nameof(controls));
+
+            T? previous = null;
+            foreach (var control in controls)
+            {
+                if (previous is null || previous.RightLocation + spacing + control.Width <= source.Width - source.BorderWidth)
+                    control.ClientLocation = source.RightLayout(previous, spacing, spacing);
+                else control.ClientLocation = source.BottomLayout(null, spacing, previous.BottomLocation + 1 + spacing);
+
+                previous = control;
+            }
+        }
+
+        public static T[] FillLayout<T>(this Control source, int spacing, IReadOnlyList<T> controls, int startIndex = 0) where T : Control
         {
             if (controls is null)
                 throw new ArgumentNullException(nameof(controls));
@@ -112,10 +128,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
             T? previous = null;
             for (int i = startIndex; i < controls.Count; i++)
             {
-                if (previous is null || previous.RightLocation + spacing + controls[i].Width <= control.Width - control.BorderWidth)
-                    controls[i].ClientLocation = control.RightLayout(previous, spacing, spacing);
-                else if (previous.BottomLocation + 1 + spacing + controls[i].Height <= control.Height - control.BorderWidth)
-                    controls[i].ClientLocation = control.BottomLayout(null, spacing, previous.BottomLocation + 1 + spacing);
+                if (previous is null || previous.RightLocation + spacing + controls[i].Width <= source.Width - source.BorderWidth)
+                    controls[i].ClientLocation = source.RightLayout(previous, spacing, spacing);
+                else if (previous.BottomLocation + 1 + spacing + controls[i].Height <= source.Height - source.BorderWidth)
+                    controls[i].ClientLocation = source.BottomLayout(null, spacing, previous.BottomLocation + 1 + spacing);
                 else
                     break;
                 result.Add(controls[i]);

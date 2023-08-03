@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -53,7 +54,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 
             if (ParentContainer?.AsControlCollection<Control>()?.Contains(Name_Label) ?? false)
             {
-                Point parent = SubPos2ParentPos(e.Position);
+                Point parent = this.SubPos2ParentPos(e.Position);
                 parent.Y += 5;
                 Name_Label.ClientLocation = parent;
                 if (Name_Label.BottomToBorder < 0)

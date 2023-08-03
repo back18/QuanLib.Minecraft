@@ -17,10 +17,6 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public int DisplayPriority { get; set; }
 
-        public Point ParentPos2SubPos(Point position);
-
-        public Point SubPos2ParentPos(Point position);
-
         public void SetGenericContainerControl(IContainerControl? container);
     }
 }

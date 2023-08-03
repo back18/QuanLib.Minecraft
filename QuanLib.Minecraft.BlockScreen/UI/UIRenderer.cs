@@ -25,7 +25,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 _task = Task.Run(() =>
                 {
                     IFrame frame = rendering.RenderingFrame();
-                    frame.CorrectSize(rendering.ClientSize, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
+
+                    frame.CorrectSize(rendering.ClientSize, rendering.OffsetPosition, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
                     return frame.ToArrayFrame();
                 });
                 _task.ContinueWith((t) => rendering.OnRenderingCompleted(t.Result.ToArrayFrame()));
@@ -50,14 +51,14 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 if (task.Result is null)
                     continue;
 
-                frame.Overwrite(task.Result, subControl.GetRenderingLocation());
-                DrawBorder(frame, subControl);
+                frame.Overwrite(task.Result, subControl.GetRenderingLocation(), rendering.OffsetPosition);
+                DrawBorder(frame, subControl, rendering.OffsetPosition);
             }
 
             return frame;
         }
 
-        private static void DrawBorder(ArrayFrame frame, IControlRendering rendering)
+        private static void DrawBorder(ArrayFrame frame, IControlRendering rendering, Point offset)
         {
             if (rendering.BorderWidth > 0)
             {
@@ -65,6 +66,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 int heigth = rendering.ClientSize.Height + rendering.BorderWidth * 2;
 
                 Point location = rendering.GetRenderingLocation();
+                location = new(location.X - offset.X, location.Y - offset.Y);
                 int startTop = location.Y - 1;
                 int startBottom = location.Y + rendering.ClientSize.Height;
                 int startLeft = location.X - 1;

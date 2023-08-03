@@ -93,7 +93,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
             Remove(_items[index]);
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             foreach (var item in _items.ToArray())
                 Remove(item);

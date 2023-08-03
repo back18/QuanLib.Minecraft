@@ -85,7 +85,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 item.SetGenericContainerControl(null);
                 RecentlyRemovedControl = item;
-                _owner.AddedSubControl.Invoke(_owner, new(item));
+                _owner.RemovedSubControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
                 return true;
             }

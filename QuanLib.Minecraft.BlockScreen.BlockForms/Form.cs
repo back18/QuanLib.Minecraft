@@ -89,7 +89,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            Point parent = SubPos2ParentPos(e.Position);
+            Point parent = this.SubPos2ParentPos(e.Position);
             if (AllowResize && IsSelected && !IsMaximize)
             {
                 if (Resizeing)

@@ -17,6 +17,6 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
 
         public LinkedFrame ToLinkedFrame();
 
-        public void CorrectSize(Size size, AnchorPosition anchor, string background);
+        public void CorrectSize(Size size, Point offset, AnchorPosition anchor, string background);
     }
 }

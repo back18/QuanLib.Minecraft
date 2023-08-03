@@ -44,8 +44,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             SubControls.Add(VideoBox);
             VideoBox.BorderWidth = 0;
-            VideoBox.DisplayPriority = -16;
-            VideoBox.MaxDisplayPriority = -15;
+            VideoBox.DisplayPriority = -32;
+            VideoBox.MaxDisplayPriority = -16;
             VideoBox.Resume += VideoBox_Resume;
             VideoBox.Pause += VideoBox_Pause;
             VideoBox.EndedPlay += VideoBox_EndedPlay;

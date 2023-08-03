@@ -42,8 +42,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 
         public override void OnLayout(Control sender, SizeChangedEventArgs e)
         {
-            base.OnLayout(sender, e);
-
             ActiveLayoutAll();
         }
     }

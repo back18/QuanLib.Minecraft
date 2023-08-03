@@ -336,7 +336,7 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             return this;
         }
 
-        public void CorrectSize(Size size, AnchorPosition anchor, string background)
+        public void CorrectSize(Size size, Point offset, AnchorPosition anchor, string background)  //TODO: offset未处理
         {
             if (Width == size.Width && Height == size.Height)
                 return;

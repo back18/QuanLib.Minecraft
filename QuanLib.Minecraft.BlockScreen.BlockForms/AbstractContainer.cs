@@ -111,14 +111,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return base.HandleLeftClick(e);
         }
 
-        public override void HandleCursorSlotChanged(CursorSlotEventArgs e)
+        public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
-            {
-                control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
-            }
-
-            base.HandleCursorSlotChanged(e);
+            TControl? control = GetSubControls().FirstHover;
+            if (control is not null && control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot)) && control is ScrollablePanel)
+                return true;
+            return base.HandleCursorSlotChanged(e);
         }
 
         public override void HandleCursorItemChanged(CursorItemEventArgs e)
