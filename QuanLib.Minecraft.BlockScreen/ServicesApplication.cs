@@ -9,11 +9,6 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public abstract class ServicesApplication : Application
     {
-        protected ServicesApplication(string arguments) : base(arguments)
-        {
-
-        }
-
         public abstract IRootForm RootForm { get; }
     }
 }

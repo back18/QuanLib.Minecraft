@@ -197,7 +197,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 actions.Add(() => CursorSlotChanged.Invoke(this, new(CurrentPosition, temp, CurrentSlot)));
             }
 
-            if (Item.EqualsID(dualWieldItem, CurrentItem))
+            if (!Item.EqualsID(dualWieldItem, CurrentItem))
             {
                 CurrentItem = dualWieldItem;
                 actions.Add(() => CursorItemChanged.Invoke(this, new(CurrentPosition, CurrentItem)));

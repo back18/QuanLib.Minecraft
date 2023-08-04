@@ -25,9 +25,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             IsMinimize = false;
             Stretch = Direction.Bottom | Direction.Right;
 
+            FormLoad += OnFormLoad;
+            FormClose += OnFormClose;
             FormMinimize += OnFormMinimize;
             FormUnminimize += OnFormUnminimize;
-            FormClose += OnFormClose;
         }
 
         public virtual bool AllowSelected { get; set; }
@@ -42,9 +43,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual bool Resizeing { get; set; }
 
-        public virtual Direction ResizeBorder { get; private set; }
+        public virtual Direction ResizeBorder { get; protected set; }
 
-        public virtual bool IsMinimize { get; private set; }
+        public virtual bool IsMinimize { get; protected set; }
 
         public virtual bool IsMaximize
         {
@@ -55,25 +56,54 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
+        public object? ReturnValue { get; }
+
         public virtual Point MaximizeLocation => new(0, 0);
 
         public virtual Size MaximizeSize => GetFormContainerSize();
 
-        public virtual Point RestoreLocation { get; private set; }
+        public virtual Point RestoreLocation { get; protected set; }
 
-        public virtual Size RestoreSize { get; private set; }
+        public virtual Size RestoreSize { get; protected set; }
+
+        public event EventHandler<IForm, EventArgs> FormLoad;
+
+        public event EventHandler<IForm, EventArgs> FormClose;
 
         public event EventHandler<IForm, EventArgs> FormMinimize;
 
         public event EventHandler<IForm, EventArgs> FormUnminimize;
 
-        public event EventHandler<IForm, EventArgs> FormClose;
+        protected virtual void OnFormLoad(IForm sender, EventArgs e) { }
+
+        protected virtual void OnFormClose(IForm sender, EventArgs e)
+        {
+            ClearAllLayoutSyncer();
+        }
 
         protected virtual void OnFormMinimize(IForm sender, EventArgs e) { }
 
         protected virtual void OnFormUnminimize(IForm sender, EventArgs e) { }
 
-        protected virtual void OnFormClose(IForm sender, EventArgs e) { }
+        public void HandleFormLoad(EventArgs e)
+        {
+            FormLoad.Invoke(this, e);
+        }
+
+        public void HandleFormClose(EventArgs e)
+        {
+            FormClose.Invoke(this, e);
+        }
+
+        public void HandleFormMinimize(EventArgs e)
+        {
+            FormMinimize.Invoke(this, e);
+        }
+
+        public void HandleFormUnminimize(EventArgs e)
+        {
+            FormUnminimize.Invoke(this, e);
+        }
 
         public override void Initialize()
         {
@@ -83,6 +113,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Width = maximizeSize.Width;
             Height = maximizeSize.Height;
             InvokeExternalCursorMove = true;
+        }
+
+        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        {
+            base.OnInitializeCallback(sender, e);
+
+            if (IsMaximize)
+            {
+                RestoreSize = ClientSize * 2 / 3;
+                RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
+            }
+            else
+            {
+                RestoreSize = ClientSize;
+                RestoreLocation = ClientLocation;
+            }
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -159,22 +205,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
-        protected override void OnInitializeCallback(Control sender, EventArgs e)
-        {
-            base.OnInitializeCallback(sender, e);
-
-            if (IsMaximize)
-            {
-                RestoreSize = ClientSize * 2 / 3;
-                RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
-            }
-            else
-            {
-                RestoreSize = ClientSize;
-                RestoreLocation = ClientLocation;
-            }
-        }
-
         public virtual void MaximizeForm()
         {
             Size maximize = MaximizeSize;
@@ -188,22 +218,20 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ClientLocation = RestoreLocation;
             ClientSize = RestoreSize;
         }
+
         public virtual void MinimizeForm()
         {
-            IsMinimize = true;
-            FormMinimize.Invoke(this, EventArgs.Empty);
-        }
-
-        public virtual void UnminimizeForm()
-        {
-            IsMinimize = false;
-            FormUnminimize.Invoke(this, EventArgs.Empty);
+            GetFormContext()?.MinimizeForm();
         }
 
         public virtual void CloseForm()
         {
-            ClearAllLayoutSyncer();
-            FormClose.Invoke(this, EventArgs.Empty);
+            GetFormContext()?.CloseForm();
+        }
+
+        public FormContext? GetFormContext()
+        {
+            return MCOS.GetMCOS().FormContextOf(this);
         }
     }
 }

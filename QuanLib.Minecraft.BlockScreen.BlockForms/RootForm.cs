@@ -14,6 +14,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         public RootForm()
         {
+            AllowMove = false;
+            AllowResize = false;
+            DisplayPriority = int.MinValue;
+            MaxDisplayPriority = int.MinValue + 1;
+
             TaskBar = new(this);
             FormContainer = new(this);
             ShowTaskBar_Button = new();

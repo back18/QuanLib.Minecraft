@@ -48,24 +48,24 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             Width = GetFormContainerSize().Width - 7;
             Height = GetFormContainerSize().Height - 10;
 
-            Client_Panel.SubControls.Add(button1);
+            ClientPanel.SubControls.Add(button1);
             button1.ClientLocation = new(5, 5);
             button1.Text = "Open";
             button1.RightClick += Button1_RightClick;
             button1.CursorMove += Button1_CursorMove;
 
-            Client_Panel.SubControls.Add(textBox1);
+            ClientPanel.SubControls.Add(textBox1);
             textBox1.ClientLocation = new(5, 25);
             textBox1.Text = "Text";
 
-            Client_Panel.SubControls.Add(label1);
+            ClientPanel.SubControls.Add(label1);
             label1.ClientLocation = new(5, 45);
             label1.Text = "lab";
 
-            Client_Panel.SubControls.Add(switch1);
+            ClientPanel.SubControls.Add(switch1);
             switch1.ClientLocation = new(5, 65);
 
-            Client_Panel.SubControls.Add(switch2);
+            ClientPanel.SubControls.Add(switch2);
             switch2.ClientLocation = new(5, 85);
             switch2.OnText = string.Empty;
             switch2.OffText = string.Empty;
@@ -74,9 +74,9 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             switch2.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "OFF过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
             switch2.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "ON过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
 
-            Client_Panel.SubControls.Add(comboButton1);
+            ClientPanel.SubControls.Add(comboButton1);
             comboButton1.ClientSize = new(110, 16);
-            comboButton1.ClientLocation = Client_Panel.RightLayout(button1, 2, 3);
+            comboButton1.ClientLocation = ClientPanel.RightLayout(button1, 2, 3);
             comboButton1.Title = "方向";
             comboButton1.Items.Add(Direction.None);
             comboButton1.Items.Add(Direction.Top);
@@ -84,10 +84,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             comboButton1.Items.Add(Direction.Right);
             comboButton1.Items.Add(Direction.Left);
 
-            Client_Panel.SubControls.Add(iconTextBox1);
+            ClientPanel.SubControls.Add(iconTextBox1);
             iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), GetScreenPlaneSize().NormalFacing, new Size(16, 16));
             iconTextBox1.Text = "hello";
-            iconTextBox1.ClientLocation = Client_Panel.RightLayout(textBox1, 2);
+            iconTextBox1.ClientLocation = ClientPanel.RightLayout(textBox1, 2);
         }
 
         private void Button1_CursorMove(Control sender, Event.CursorEventArgs e)

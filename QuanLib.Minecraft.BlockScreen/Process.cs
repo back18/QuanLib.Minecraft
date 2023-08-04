@@ -11,21 +11,22 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class Process
     {
-        public Process(ApplicationInfo appInfo, string arguments, IForm? initiator = null)
+        public Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
         {
+            if (args is null)
+                throw new ArgumentNullException(nameof(args));
+
             ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
             Started += OnStarted;
             Stopped += OnStopped;
-            Application = Application.CreateApplication(ApplicationInfo.TypeObject, arguments);
+            Application = Application.CreateApplication(ApplicationInfo.TypeObject);
             Initiator = initiator;
             SubprocessCallbackQueue = new();
             MainThread = new(() =>
             {
                 Started.Invoke(this, EventArgs.Empty);
-                object? @return = Application.Main();
+                object? @return = Application.Main(args);
                 Stopped.Invoke(this, EventArgs.Empty);
-                //if (InitiatorPID?.InitiatorPID?.SubprocessCallbackQueue?.TryDequeue(out var callback) ?? false)
-                //    callback.Invoke(@return);
             })
             {
                 Name = ApplicationInfo.Name,

@@ -27,8 +27,9 @@ namespace QuanLib.Minecraft.BlockScreen
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
             AccelerationEngine = new(ConfigManager.MinecraftConfig.ServerAddress, ConfigManager.MinecraftConfig.AccelerationEngineEventPort, ConfigManager.MinecraftConfig.AccelerationEngineDataPort);
             ApplicationManager = new();
-            ProcessManager = new();
             ScreenManager = new();
+            ProcessManager = new();
+            FormManager = new();
 
             EnableAccelerationEngine = ConfigManager.SystemConfig.EnableAccelerationEngine;
             FrameCount = 0;
@@ -77,9 +78,11 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public ApplicationManager ApplicationManager { get; }
 
+        public ScreenManager ScreenManager { get; }
+
         public ProcessManager ProcessManager { get; }
 
-        public ScreenManager ScreenManager { get; }
+        public FormManager FormManager { get; }
 
         public string ServicesAppID { get; }
 
@@ -228,6 +231,18 @@ namespace QuanLib.Minecraft.BlockScreen
             return stopwatch.Elapsed;
         }
 
+        public ScreenContext? ScreenContextOf(IForm form)
+        {
+            if (form is null)
+                throw new ArgumentNullException(nameof(form));
+
+            foreach (var context in ScreenManager.ScreenList.Values)
+                if (context.RootForm == form || context.RootForm.ContainsForm(form))
+                    return context;
+
+            return null;
+        }
+
         public Process? ProcessOf(Application application)
         {
             if (application is null)
@@ -245,21 +260,20 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var process in ProcessManager.ProcessList.Values)
-                foreach (var activeForm in process.Application.FormManager.Forms)
-                    if (activeForm == form)
-                        return process;
+            FormContext? context = FormContextOf(form);
+            if (context is null)
+                return null;
 
-            return null;
+            return ProcessOf(context.Application);
         }
 
-        public ScreenContext? ScreenContextOf(IForm form)
+        public FormContext? FormContextOf(IForm form)
         {
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var context in ScreenManager.ScreenList.Values)
-                if (context.RootForm == form || context.RootForm.ContainsForm(form))
+            foreach (var context in FormManager.FormList)
+                if (form == context.Form)
                     return context;
 
             return null;
@@ -272,6 +286,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             Process process = RunServicesApp();
             IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
+            rootForm.HandleAllInitialize();
             rootForm.ClientSize = screen.Size;
             RunStartupChecklist(rootForm);
             return new(screen, rootForm);

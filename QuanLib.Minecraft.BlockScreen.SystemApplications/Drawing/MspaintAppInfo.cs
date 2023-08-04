@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Mspaint
+namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 {
-    public class MspaintAppInfo : ApplicationInfo<MspaintApp>
+    public class DrawingAppInfo : ApplicationInfo<DrawingApp>
     {
-        public MspaintAppInfo()
+        public DrawingAppInfo()
         {
             Platforms = new PlatformID[]
             {
@@ -18,8 +18,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Mspaint
                 PlatformID.Unix,
                 PlatformID.MacOSX
             };
-            ID = MspaintApp.ID;
-            Name = MspaintApp.Name;
+            ID = DrawingApp.ID;
+            Name = DrawingApp.Name;
             Version = Version.Parse("1.0");
             try
             {

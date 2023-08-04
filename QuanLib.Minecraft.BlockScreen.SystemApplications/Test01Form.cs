@@ -44,12 +44,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             Width = GetFormContainerSize().Width - 7;
             Height = GetFormContainerSize().Height - 10;
 
-            Client_Panel.SubControls.Add(TextBox1);
-            Client_Panel.SubControls.Add(TextBox2);
-            Client_Panel.SubControls.Add(TextBox3);
-            Client_Panel.SubControls.Add(Button1);
-            Client_Panel.SubControls.Add(Button2);
-            Client_Panel.SubControls.Add(Button3);
+            ClientPanel.SubControls.Add(TextBox1);
+            ClientPanel.SubControls.Add(TextBox2);
+            ClientPanel.SubControls.Add(TextBox3);
+            ClientPanel.SubControls.Add(Button1);
+            ClientPanel.SubControls.Add(Button2);
+            ClientPanel.SubControls.Add(Button3);
 
             TextBox1.ClientLocation = new(2, 2);
             TextBox1.ClientSize = new(88, 16);

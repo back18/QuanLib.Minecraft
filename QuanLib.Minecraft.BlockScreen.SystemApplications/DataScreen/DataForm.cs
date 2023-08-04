@@ -37,14 +37,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
             base.Initialize();
 
             Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
-            Client_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
+            ClientPanel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
             OnBeforeFrame(this, EventArgs.Empty);
 
-            Client_Panel.SubControls.Add(DayTime_Label);
+            ClientPanel.SubControls.Add(DayTime_Label);
             DayTime_Label.ClientLocation = new(2, 2);
             DayTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
 
-            Client_Panel.SubControls.Add(GameTime_Label);
+            ClientPanel.SubControls.Add(GameTime_Label);
             GameTime_Label.ClientLocation = new(2, 20);
             GameTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
         }

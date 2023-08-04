@@ -9,30 +9,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 {
     public class Test02App : Application
     {
-        public Test02App(string arguments) : base(arguments)
-        {
-            MainForm = new Test02Form();
-            _exit = new(false);
-        }
-
-        private readonly AutoResetEvent _exit;
-
         public const string ID = "Test02";
 
         public const string Name = "测试02";
 
-        public override IForm MainForm { get; }
-
-        public override object? Main()
+        public override object? Main(string[] args)
         {
-            _exit.WaitOne();
+            RunForm(new Test02Form());
             return null;
-        }
-
-        public override void Exit()
-        {
-            _exit.Set();
-            base.Exit();
         }
     }
 }

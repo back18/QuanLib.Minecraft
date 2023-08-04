@@ -16,10 +16,15 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             DefaultResizeOptions = new()
             {
-                Size = new(64, 64),
-                Mode = ResizeMode.Pad,
+                Mode = ResizeMode.Crop,
                 Position = AnchorPositionMode.Center,
-                Sampler = KnownResamplers.Bicubic
+                CenterCoordinates = null,
+                Size = new(64, 64),
+                Sampler = KnownResamplers.Bicubic,
+                Compand = false,
+                TargetRectangle = null,
+                PremultiplyAlpha = true,
+                PadColor = default
             };
         }
 
@@ -31,15 +36,16 @@ namespace QuanLib.Minecraft.BlockScreen
             this(Image.Load<Rgba32>(File.ReadAllBytes(path)), facing, size)
         { }
 
-        public ImageFrame(Image<Rgba32> image, Facing facing, Size size) :
-            this(image, facing, new ResizeOptions()
-            {
-                Size = size,
-                Mode = DefaultResizeOptions.Mode,
-                Position = DefaultResizeOptions.Position,
-                Sampler = DefaultResizeOptions.Sampler
-            })
-        { }
+        public ImageFrame(Image<Rgba32> image, Facing facing, Size size)
+        {
+            _original = image ?? throw new ArgumentNullException(nameof(image));
+            _facing = facing;
+            _frame = null;
+            _get = false;
+
+            ResizeOptions = DefaultResizeOptions.Copy();
+            ResizeOptions.Size = size;
+        }
 
         public ImageFrame(Image<Rgba32> image, Facing facing, ResizeOptions? resizeOptions = null)
         {
@@ -48,13 +54,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _frame = null;
             _get = false;
 
-            ResizeOptions = resizeOptions ?? new()
-            {
-                Size = DefaultResizeOptions.Size,
-                Mode = DefaultResizeOptions.Mode,
-                Position = DefaultResizeOptions.Position,
-                Sampler = DefaultResizeOptions.Sampler
-            };
+            ResizeOptions = resizeOptions ?? DefaultResizeOptions.Copy();
         }
 
         public static ResizeOptions DefaultResizeOptions { get; }

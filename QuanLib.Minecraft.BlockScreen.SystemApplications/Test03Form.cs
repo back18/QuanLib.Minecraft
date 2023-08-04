@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
         {
             base.Initialize();
 
-            Client_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+            ClientPanel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
         }
 
         protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)

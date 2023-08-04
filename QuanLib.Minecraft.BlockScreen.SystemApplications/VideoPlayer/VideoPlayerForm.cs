@@ -30,24 +30,31 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
         {
             base.Initialize();
 
-            Client_Panel.Resize += Client_Panel_OnResize;
+            ClientPanel.Resize += Client_Panel_OnResize;
 
-            Client_Panel.SubControls.Add(Video_VideoPlayer);
+            ClientPanel.SubControls.Add(Video_VideoPlayer);
             Video_VideoPlayer.Visible = false;
-            Video_VideoPlayer.VideoBox.ResizeOptions.Size = Client_Panel.ClientSize;
+            Video_VideoPlayer.VideoBox.ResizeOptions.Size = ClientPanel.ClientSize;
             Video_VideoPlayer.Stretch = Direction.Bottom | Direction.Right;
 
-            Client_Panel.SubControls.Add(Read_Button);
+            ClientPanel.SubControls.Add(Read_Button);
             Read_Button.Text = "读取";
-            Read_Button.ClientLocation = Client_Panel.LifeLayout(null, Read_Button, 2, 2);
+            Read_Button.ClientLocation = ClientPanel.LifeLayout(null, Read_Button, 2, 2);
             Read_Button.Anchor = Direction.Top | Direction.Right;
             Read_Button.RightClick += Read_Button_RightClick;
 
-            Client_Panel.SubControls.Add(Path_TextBox);
+            ClientPanel.SubControls.Add(Path_TextBox);
             Path_TextBox.ClientLocation = new(2, 2);
-            Path_TextBox.Width = Client_Panel.ClientSize.Width - Read_Button.Width - 6;
+            Path_TextBox.Width = ClientPanel.ClientSize.Width - Read_Button.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.TextEditorChanged += Path_TextBox_TextEditorChanged;
+        }
+
+        protected override void OnFormClose(IForm sender, EventArgs e)
+        {
+            base.OnFormClose(sender, e);
+
+            Video_VideoPlayer.VideoBox.Dispose();
         }
 
         private void Read_Button_RightClick(Control sender, CursorEventArgs e)
@@ -76,12 +83,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
         private void Client_Panel_OnResize(Control sender, SizeChangedEventArgs e)
         {
             Video_VideoPlayer.VideoBox.ResizeOptions.Size = e.NewSize;
-        }
-
-        public override void CloseForm()
-        {
-            Video_VideoPlayer.VideoBox.Dispose();
-            base.CloseForm();
         }
     }
 }

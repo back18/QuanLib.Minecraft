@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using QuanLib.Minecraft.BlockScreen.Event;
+using System.Diagnostics;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 {
@@ -15,29 +16,51 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
     {
         public DesktopForm()
         {
+            AllowMove = false;
             AllowResize = false;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
-            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
-            //Skin.SetAllBackgroundBlockID("minecraft:air");
+
+            ClientPanel = new();
         }
+
+        public readonly ClientPanel ClientPanel;
 
         public override void Initialize()
         {
             base.Initialize();
 
+            SubControls.Add(ClientPanel);
+            ClientPanel.ClientSize = ClientSize;
+            ClientPanel.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
+            ClientPanel.ClientSize = ClientSize);
+
+            ActiveLayoutAll();
+
+            ClientPanel.Skin.SetAllBackgroundImage(new("C:\\Users\\Administrator\\Desktop\\1.jpg", GetScreenPlaneSize().NormalFacing, ClientPanel.GetRenderingSize()));
+        }
+
+        protected override void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
+        {
             ActiveLayoutAll();
         }
 
         public override void ActiveLayoutAll()
         {
             MCOS os = MCOS.GetMCOS();
-            SubControls.Clear();
+            ClientPanel.SubControls.Clear();
             foreach (var app in os.ApplicationManager.ApplicationList.Values)
                 if (app.AppendToDesktop)
-                    SubControls.Add(new DesktopIcon(app));
-            this.FillLayout(0, SubControls, 0);
+                    ClientPanel.SubControls.Add(new DesktopIcon(app));
+
+            if (ClientPanel.SubControls.Count == 0)
+                return;
+
+            ClientPanel.ForceFillRightLayout(0, ClientPanel.SubControls);
+            ClientPanel.PageSize = new((ClientPanel.SubControls.RecentlyAddedControl ?? ClientPanel.SubControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
+            ClientPanel.OffsetPosition = new(0, 0);
+            ClientPanel.RefreshHorizontalScrollBar();
         }
 
         public override void OnLayout(Control sender, SizeChangedEventArgs e)

@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
         {
             base.Initialize();
 
-            Client_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+            ClientPanel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
         }
 
         public override void OnInitCompleted3()
@@ -51,55 +51,51 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
 
         private void RefreshButtons()
         {
-            Client_Panel.SubControls.Clear();
+            ClientPanel.SubControls.Clear();
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.Yes))
             {
                 Button button = new();
                 button.Text = "是";
                 button.ClientSize = ButtonSize;
-                button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
+                button.ClientLocation = ClientPanel.RightLayout(ClientPanel.SubControls.RecentlyAddedControl, 2, 18);
                 button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.Yes);
-                Client_Panel.SubControls.Add(button);
+                ClientPanel.SubControls.Add(button);
             }
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.No))
             {
                 Button button = new();
                 button.Text = "否";
                 button.ClientSize = ButtonSize;
-                button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
+                button.ClientLocation = ClientPanel.RightLayout(ClientPanel.SubControls.RecentlyAddedControl, 2, 18);
                 button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.No);
-                Client_Panel.SubControls.Add(button);
+                ClientPanel.SubControls.Add(button);
             }
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.OK))
             {
                 Button button = new();
                 button.Text = "确认";
                 button.ClientSize = ButtonSize;
-                button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
+                button.ClientLocation = ClientPanel.RightLayout(ClientPanel.SubControls.RecentlyAddedControl, 2, 18);
                 button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.OK);
-                Client_Panel.SubControls.Add(button);
+                ClientPanel.SubControls.Add(button);
             }
             if (ButtonsToShow.HasFlag(DialogBoxReturnValue.Cancel))
             {
                 Button button = new();
                 button.Text = "取消";
                 button.ClientSize = ButtonSize;
-                button.ClientLocation = Client_Panel.RightLayout(Client_Panel.SubControls.RecentlyAddedControl, 2, 18);
+                button.ClientLocation = ClientPanel.RightLayout(ClientPanel.SubControls.RecentlyAddedControl, 2, 18);
                 button.RightClick += (sender, e) => Complete(DialogBoxReturnValue.Cancel);
-                Client_Panel.SubControls.Add(button);
+                ClientPanel.SubControls.Add(button);
             }
 
-            int width = (Client_Panel.SubControls.RecentlyAddedControl?.RightLocation ?? 64) + 3;
+            int width = (ClientPanel.SubControls.RecentlyAddedControl?.RightLocation ?? 64) + 3;
             int height = 54;
             ClientSize = new(width, height);
         }
 
         private void Complete(DialogBoxReturnValue returnValue)
         {
-            DialogBoxApp? app = GetProcess()?.Application as DialogBoxApp;
-            if (app is not null)
-                app.ReturnValue = returnValue;
-
             CloseForm();
         }
     }

@@ -13,23 +13,23 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         public FormManager()
         {
-            Forms = new(this);
+            FormList = new(this);
 
             AddedForm += OnAddedForm;
             RemovedForm += OnAddedForm;
         }
 
-        public FormCollection Forms { get; }
+        public FormCollection FormList { get; }
 
-        public event EventHandler<FormManager, FormEventArgs> AddedForm;
+        public event EventHandler<FormManager, FormContextEventArgs> AddedForm;
 
-        public event EventHandler<FormManager, FormEventArgs> RemovedForm;
+        public event EventHandler<FormManager, FormContextEventArgs> RemovedForm;
 
-        protected virtual void OnAddedForm(FormManager sender, FormEventArgs e) { }
+        protected virtual void OnAddedForm(FormManager sender, FormContextEventArgs e) { }
 
-        protected virtual void OnRemovedForm(FormManager sender, FormEventArgs e) { }
+        protected virtual void OnRemovedForm(FormManager sender, FormContextEventArgs e) { }
 
-        public class FormCollection : IList<IForm>, IReadOnlyList<IForm>
+        public class FormCollection : IList<FormContext>, IReadOnlyList<FormContext>
         {
             public FormCollection(FormManager owner)
             {
@@ -39,17 +39,17 @@ namespace QuanLib.Minecraft.BlockScreen
 
             private readonly FormManager _owner;
 
-            private readonly List<IForm> _items;
+            private readonly List<FormContext> _items;
 
-            public IForm this[int index] => _items[index];
+            public FormContext this[int index] => _items[index];
 
-            IForm IList<IForm>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+            FormContext IList<FormContext>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
             public int Count => _items.Count;
 
             public bool IsReadOnly => false;
 
-            public void Add(IForm item)
+            public void Add(FormContext item)
             {
                 if (item is null)
                     throw new ArgumentNullException(nameof(item));
@@ -58,7 +58,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 _owner.AddedForm.Invoke(_owner, new(item));
             }
 
-            public bool TryAdd(IForm item)
+            public bool TryAdd(FormContext item)
             {
                 if (_items.Contains(item))
                     return false;
@@ -67,7 +67,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 return true;
             }
 
-            public bool Remove(IForm item)
+            public bool Remove(FormContext item)
             {
                 if (item is null)
                     throw new ArgumentNullException(nameof(item));
@@ -90,27 +90,27 @@ namespace QuanLib.Minecraft.BlockScreen
                     Remove(item);
             }
 
-            public bool Contains(IForm item)
+            public bool Contains(FormContext item)
             {
                 return _items.Contains(item);
             }
 
-            public int IndexOf(IForm item)
+            public int IndexOf(FormContext item)
             {
                 return _items.IndexOf(item);
             }
 
-            public void CopyTo(IForm[] array, int arrayIndex)
+            public void CopyTo(FormContext[] array, int arrayIndex)
             {
                 _items.CopyTo(array, arrayIndex);
             }
 
-            public IForm[] ToArray()
+            public FormContext[] ToArray()
             {
                 return _items.ToArray();
             }
 
-            public IEnumerator<IForm> GetEnumerator()
+            public IEnumerator<FormContext> GetEnumerator()
             {
                 return _items.GetEnumerator();
             }
@@ -120,7 +120,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 return ((IEnumerable)_items).GetEnumerator();
             }
 
-            void IList<IForm>.Insert(int index, IForm item)
+            void IList<FormContext>.Insert(int index, FormContext item)
             {
                 throw new NotSupportedException();
             }

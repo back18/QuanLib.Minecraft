@@ -33,14 +33,15 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
 
         public int Height => _ids.GetLength(1);
 
-        public string GetBlockID(int x, int y)
-            => _ids[x, y];
+        public string GetBlockID(int x, int y) => _ids[x, y];
 
-        public void SetBlockID(int x, int y, string id)
-            => _ids[x, y] = id;
+        public void SetBlockID(int x, int y, string id) => _ids[x, y] = id;
 
-        public string[,] GetAllBlockID()
-            => _ids;
+        public string GetBlockID(Point position) => _ids[position.X, position.Y];
+
+        public void SetBlockID(Point position, string id) => _ids[position.X, position.Y] = id;
+
+        public string[,] GetAllBlockID() => _ids;
 
         public ArrayFrame Copy()
         {
@@ -274,7 +275,7 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             if (Width == size.Width && Height == size.Height)
                 return;
 
-            ArrayFrame newFrame = BuildFrame(size.Width, size.Height, id);
+            ArrayFrame newFrame = BuildFrame(size, id);
 
             switch (anchor)
             {
@@ -321,6 +322,11 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
                 }
 
             return result;
+        }
+
+        public static ArrayFrame BuildFrame(Size size, string id)
+        {
+            return BuildFrame(size.Width, size.Height, id);
         }
 
         public static ArrayFrame BuildFrame(int width, int height, string id)

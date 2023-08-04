@@ -12,26 +12,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
     public class PictureBox : Control
     {
-        static PictureBox()
-        {
-            DefaultResizeOptions = new()
-            {
-                Size = new(64, 36),
-                Mode = ResizeMode.Pad,
-                Position = AnchorPositionMode.Center,
-                Sampler = KnownResamplers.Bicubic
-            };
-        }
-
         public PictureBox()
         {
-            ResizeOptions = DefaultResizeOptions.Copy();
+            ResizeOptions = ImageFrame.DefaultResizeOptions.Copy();
 
             AutoSize = true;
             ContentAnchor = AnchorPosition.Centered;
         }
-
-        public static ResizeOptions DefaultResizeOptions { get; }
 
         public ImageFrame? Image
         {
@@ -55,10 +42,17 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override IFrame RenderingFrame()
         {
-            ArrayFrame? frame = Skin.GetBackgroundImage()?.GetFrame();
-            if (frame is null)
+            ImageFrame? image = Skin.GetBackgroundImage();
+            if (image is null)
                 return base.RenderingFrame();
-            return frame;
+
+            if (image.FrameSize != ClientSize)
+            {
+                image.ResizeOptions.Size = ClientSize;
+                image.Update();
+            }
+
+            return image.GetFrameCopy();
         }
 
         public override void AutoSetSize()

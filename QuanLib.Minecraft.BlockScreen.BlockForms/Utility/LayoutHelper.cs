@@ -103,7 +103,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
             return new(source.Width / 2 - subControl.Width / 2, source.Height / 2 - subControl.Height / 2);
         }
 
-        public static void ForceFillLayout<T>(this Control source, int spacing, IEnumerable<T> controls) where T : Control
+        public static void ForceFillRightLayout<T>(this Control source, int spacing, IEnumerable<T> controls) where T : Control
+        {
+            if (controls is null)
+                throw new ArgumentNullException(nameof(controls));
+
+            T? previous = null;
+            foreach (var control in controls)
+            {
+                if (previous is null || previous.BottomLocation + 1 + spacing + control.Height <= source.Height - source.BorderWidth)
+                    control.ClientLocation = source.BottomLayout(previous, spacing, spacing);
+                else
+                    control.ClientLocation = source.RightLayout(null, previous.RightLocation + 1 + spacing, spacing);
+
+                previous = control;
+            }
+        }
+
+        public static void ForceFillDownLayout<T>(this Control source, int spacing, IEnumerable<T> controls) where T : Control
         {
             if (controls is null)
                 throw new ArgumentNullException(nameof(controls));
@@ -113,13 +130,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
             {
                 if (previous is null || previous.RightLocation + spacing + control.Width <= source.Width - source.BorderWidth)
                     control.ClientLocation = source.RightLayout(previous, spacing, spacing);
-                else control.ClientLocation = source.BottomLayout(null, spacing, previous.BottomLocation + 1 + spacing);
+                else
+                    control.ClientLocation = source.BottomLayout(null, spacing, previous.BottomLocation + 1 + spacing);
 
                 previous = control;
             }
         }
 
-        public static T[] FillLayout<T>(this Control source, int spacing, IReadOnlyList<T> controls, int startIndex = 0) where T : Control
+        public static T[] FillDownLayout<T>(this Control source, int spacing, IReadOnlyList<T> controls, int startIndex = 0) where T : Control
         {
             if (controls is null)
                 throw new ArgumentNullException(nameof(controls));
@@ -140,7 +158,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
             return result.ToArray();
         }
 
-        public static T[][] FillLayouPagingt<T>(this Control control, int spacing, IReadOnlyList<T> controls) where T : Control
+        public static T[][] FillLayouDownPagingt<T>(this Control control, int spacing, IReadOnlyList<T> controls) where T : Control
         {
             if (controls is null)
                 throw new ArgumentNullException(nameof(controls));
@@ -149,7 +167,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
             int count = 0;
             while (count < controls.Count)
             {
-                T[] page = control.FillLayout(spacing, controls, count);
+                T[] page = control.FillDownLayout(spacing, controls, count);
                 result.Add(page);
                 count += page.Length;
             }

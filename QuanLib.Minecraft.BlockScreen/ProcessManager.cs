@@ -29,7 +29,6 @@ namespace QuanLib.Minecraft.BlockScreen
         protected virtual void OnAddedProcess(ProcessManager sender, ProcessEventArgs e)
         {
             e.Process.Stopped += (sender, e) => ProcessList.Remove(sender.ID);
-            e.Process.Application.Initialize();
             e.Process.MainThread.Start();
         }
 
@@ -64,18 +63,18 @@ namespace QuanLib.Minecraft.BlockScreen
 
             public Process Add(ApplicationInfo applicationInfo, IForm? initiator = null)
             {
-                return Add(applicationInfo, string.Empty, initiator);
+                return Add(applicationInfo, Array.Empty<string>(), initiator);
             }
 
-            public Process Add(ApplicationInfo applicationInfo, string arguments, IForm? initiator = null)
+            public Process Add(ApplicationInfo applicationInfo, string[] args, IForm? initiator = null)
             {
                 if (applicationInfo is null)
                     throw new ArgumentNullException(nameof(applicationInfo));
-                if (arguments is null)
-                    throw new ArgumentNullException(nameof(arguments));
+                if (args is null)
+                    throw new ArgumentNullException(nameof(args));
 
                 int id = _id;
-                Process process = new(applicationInfo, arguments, initiator);
+                Process process = new(applicationInfo, args, initiator);
                 process.ID = id;
                 _id++;
                 _items.Add(id, process);

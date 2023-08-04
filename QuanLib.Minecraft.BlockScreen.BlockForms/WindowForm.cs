@@ -15,13 +15,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         protected WindowForm()
         {
             TitleBar = new(this);
-            Client_Panel = new();
+            ClientPanel = new();
             ShowTitleBar_Button = new();
         }
 
         public readonly TitleBar TitleBar;
 
-        public readonly ScrollablePanel Client_Panel;
+        public readonly ClientPanel ClientPanel;
 
         public readonly Button ShowTitleBar_Button;
 
@@ -36,7 +36,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     {
                         SubControls.TryAdd(TitleBar);
                         SubControls.Remove(ShowTitleBar_Button);
-                        Client_Panel?.LayoutSyncer?.Sync();
+                        ClientPanel?.LayoutSyncer?.Sync();
                     }
                 }
                 else
@@ -45,7 +45,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     {
                         SubControls.Remove(TitleBar);
                         SubControls.TryAdd(ShowTitleBar_Button);
-                        Client_Panel?.LayoutSyncer?.Sync();
+                        ClientPanel?.LayoutSyncer?.Sync();
                     }
                 }
             }
@@ -57,25 +57,23 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             SubControls.Add(TitleBar);
 
-            SubControls.Add(Client_Panel);
-            Client_Panel.BorderWidth = 0;
-            Client_Panel.LayoutSyncer = new(this,
+            SubControls.Add(ClientPanel);
+            ClientPanel.BorderWidth = 0;
+            ClientPanel.LayoutSyncer = new(this,
+            (sender, e) => { },
             (sender, e) =>
             {
                 if (ShowTitleBar)
-                    Client_Panel.ClientLocation = new(0, 16);
+                {
+                    ClientPanel.ClientSize = new(ClientSize.Width, ClientSize.Height - 16);
+                    ClientPanel.ClientLocation = new(0, 16);
+                }
                 else
-                    Client_Panel.ClientLocation = new(0, 0);
-            },
-            (sender, e) =>
-            {
-                if (ShowTitleBar)
-                    Client_Panel.ClientSize = new(ClientSize.Width, ClientSize.Height - 16);
-                else
-                    Client_Panel.ClientSize = new(ClientSize.Width, ClientSize.Height);
+                {
+                    ClientPanel.ClientLocation = new(0, 0);
+                    ClientPanel.ClientSize = ClientSize;
+                }
             });
-
-            Client_Panel?.LayoutSyncer?.Sync();
 
             ShowTitleBar_Button.Visible = false;
             ShowTitleBar_Button.InvokeExternalCursorMove = true;
@@ -88,6 +86,19 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
             ShowTitleBar_Button.CursorLeave += ShowTitleBar_Button_CursorLeave;
             ShowTitleBar_Button.RightClick += ShowTitleBar_Button_RightClick;
+        }
+
+        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        {
+            if (ClientPanel.PageSize != new Size(0, 0))
+            {
+                RestoreSize = new(ClientPanel.PageSize.Width, ClientPanel.PageSize.Height + TitleBar.Height);
+                RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
+            }
+            else
+            {
+                base.OnInitializeCallback(sender, e);
+            }
         }
 
         public override void OnInitCompleted1()

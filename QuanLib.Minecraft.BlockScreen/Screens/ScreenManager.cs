@@ -76,9 +76,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     ArrayFrame? formFrame = UIRenderer.Rendering(context.Value.RootForm);
                     if (formFrame is not null)
                         frame.Overwrite(formFrame, context.Value.RootForm.ClientLocation);
-                    if (!SystemResourcesManager.CursorManager.TryGetValue(context.Value.CursorType, out var cursor))
+                    if (context.Value.IsShowCursor && SystemResourcesManager.CursorManager.TryGetValue(context.Value.CursorType, out var cursor))
+                    {
                         cursor = SystemResourcesManager.CursorManager[CursorType.Default];
-                    frame.Overwrite(cursor.Frame, context.Value.Screen.InputHandler.CurrentPosition, cursor.Offset);
+                        frame.Overwrite(cursor.Frame, context.Value.Screen.InputHandler.CurrentPosition, cursor.Offset);
+                    }
                     return frame;
                 })));
             Task.WaitAll(tasks.Select(i => i.task).ToArray());

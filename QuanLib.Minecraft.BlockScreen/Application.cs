@@ -14,100 +14,40 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public abstract class Application
     {
-        protected Application(string arguments)
-        {
-            Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
-            FormManager = new();
+        public abstract object? Main(string[] args);
 
-            FormManager.AddedForm += FormManager_AddedForm;
-            FormManager.RemovedForm += FormManager_RemovedForm;
+        public object? RunForm(IForm form)
+        {
+            FormContext context = new(this, form);
+            MCOS.GetMCOS().FormManager.FormList.Add(context);
+            context.LoadForm();
+            context.WaitForFormClose();
+            return form.ReturnValue;
         }
 
-        public string Arguments { get; }
-
-        public abstract IForm MainForm { get; }
-
-        public FormManager FormManager { get; }
-
-        public abstract object? Main();
-
-        public virtual void Initialize()
+        public FormContext[] GetForms()
         {
-            FormManager.Forms.Add(MainForm);
+            List<FormContext> result = new();
+            foreach (var context in MCOS.GetMCOS().FormManager.FormList)
+                if (context.Application == this)
+                    result.Add(context);
+
+            return result.ToArray();
         }
 
-        private void Form_OnFormConse(IForm sender, EventArgs e)
-        {
-            FormManager.Forms.Remove(sender);
-            ScreenContext? context = MCOS.GetMCOS().ScreenContextOf(sender);
-            context?.RootForm.RemoveForm(sender);
-
-            if (FormManager.Forms.Count == 0)
-                Exit();
-        }
-
-        private void FormManager_AddedForm(FormManager sender, FormEventArgs e)
-        {
-            IControlInitializeHandling handling = e.Form;
-            if (!handling.InitializeCompleted)
-                handling.HandleAllInitialize();
-
-            if (e.Form is IRootForm)
-                return;
-
-            MCOS os = MCOS.GetMCOS();
-            IForm? initiator = os.ProcessOf(this)?.Initiator;
-            if (initiator is IRootForm rootForm)
-            {
-                rootForm.AddForm(e.Form);
-            }
-            else
-            {
-                ScreenContext? context = null;
-                if (initiator is not null)
-                    context = os.ScreenContextOf(initiator);
-
-                if (context is not null)
-                {
-                    context.RootForm.AddForm(e.Form);
-                }
-                else if (os.ScreenManager.ScreenList.Any())
-                {
-                    os.ScreenManager.ScreenList.FirstOrDefault().Value.RootForm.AddForm(e.Form);
-                }
-            }
-
-            e.Form.FormClose += Form_OnFormConse;
-        }
-
-        private void FormManager_RemovedForm(FormManager sender, FormEventArgs e)
-        {
-            e.Form.FormClose -= Form_OnFormConse;
-        }
-
-        public virtual void Exit()
-        {
-            foreach (var form in FormManager.Forms.ToArray())
-                form.CloseForm();
-        }
-
-        public static Application CreateApplication(Type appType, string arguments)
+        public static Application CreateApplication(Type appType)
         {
             if (appType is null)
                 throw new ArgumentNullException(nameof(appType));
-            if (arguments is null)
-                throw new ArgumentNullException(nameof(arguments));
-
             if (!appType.IsSubclassOf(typeof(Application)))
                 throw new ArgumentException("Type对象不是Application", nameof(appType));
 
-            return appType.GetConstructor(new Type[] { typeof(string) })?.Invoke(new string[] { arguments }) as Application ??
-                throw new ArgumentException("无法构建Application对象", nameof(appType));
+            return Activator.CreateInstance(appType) as Application ?? throw new ArgumentException("无法构建Application对象", nameof(appType));
         }
 
-        public static Application CreateApplication<T>(string arguments) where T : Application
+        public static Application CreateApplication<T>() where T : Application
         {
-            return CreateApplication(typeof(T), arguments);
+            return CreateApplication(typeof(T));
         }
     }
 }

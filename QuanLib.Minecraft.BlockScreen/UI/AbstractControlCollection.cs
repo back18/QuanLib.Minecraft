@@ -97,6 +97,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
         {
             foreach (var item in _items.ToArray())
                 Remove(item);
+            RecentlyAddedControl = null;
         }
 
         public bool Contains(T item)

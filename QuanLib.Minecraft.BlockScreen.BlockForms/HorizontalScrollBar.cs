@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             int slider = (int)Math.Round(ClientSize.Width * SliderSize);
             int position = (int)Math.Round(ClientSize.Width * SliderPosition);
 
-            ArrayFrame frame = ArrayFrame.BuildFrame(ClientSize.Width, ClientSize.Height, Skin.GetBackgroundBlockID());
+            ArrayFrame frame = ArrayFrame.BuildFrame(ClientSize, Skin.GetBackgroundBlockID());
             frame.Overwrite(ArrayFrame.BuildFrame(slider, ClientSize.Height, Skin.GetForegroundBlockID()), new(position, 0));
 
             return frame;

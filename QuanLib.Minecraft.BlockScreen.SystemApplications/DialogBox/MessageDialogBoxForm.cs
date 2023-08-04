@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
     {
         public MessageDialogBoxForm()
         {
-            Client_Panel.Text = "你好呀呜呜呜呜呜";
+            ClientPanel.Text = "你好呀呜呜呜呜呜";
         }
     }
 }

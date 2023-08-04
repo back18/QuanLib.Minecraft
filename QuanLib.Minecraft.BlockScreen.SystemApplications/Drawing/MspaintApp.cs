@@ -5,17 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications
+namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 {
-    public class Test01App : Application
+    public class DrawingApp : Application
     {
-        public const string ID = "Test01";
+        public const string ID = "Drawing";
 
-        public const string Name = "测试01";
+        public const string Name = "绘画";
 
         public override object? Main(string[] args)
         {
-            RunForm(new Test01Form());
+            RunForm(new DrawingForm());
             return null;
         }
     }

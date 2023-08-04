@@ -142,6 +142,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 foreach (var item in _items.ToArray())
                     if (!item.KeepWhenClear)
                         Remove(item);
+                RecentlyAddedControl = null;
             }
 
             public void ClearSelecteds()

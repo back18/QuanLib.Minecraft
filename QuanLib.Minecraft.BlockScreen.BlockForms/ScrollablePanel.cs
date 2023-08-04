@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public ScrollablePanel()
         {
             ScrollDelta = 16;
-            _PageSize = ClientSize;
+            _PageSize = new(0, 0);
             ScrollBarShowTime = 20;
             ScrollBarCountdown = 0;
 
@@ -84,7 +84,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override IFrame RenderingFrame()
         {
-            return ArrayFrame.BuildFrame(Math.Max(ClientSize.Width, PageSize.Width), Math.Max(ClientSize.Height, PageSize.Height), Skin.GetBackgroundBlockID());
+            Size size = GetRenderingSize();
+            return ArrayFrame.BuildFrame(size.Width, size.Height, Skin.GetBackgroundBlockID());
         }
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
@@ -263,6 +264,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 ShowScrollBar();
             }
+        }
+
+        public Size GetRenderingSize()
+        {
+            return new(Math.Max(ClientSize.Width, PageSize.Width), Math.Max(ClientSize.Height, PageSize.Height));
         }
     }
 }
