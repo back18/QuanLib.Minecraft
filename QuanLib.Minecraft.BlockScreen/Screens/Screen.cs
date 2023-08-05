@@ -1,6 +1,6 @@
 ﻿using QuanLib.ExceptionHelpe;
 using QuanLib.Minecraft.BlockScreen.Frame;
-using QuanLib.Minecraft.Vectors;
+using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -435,7 +435,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     for (int y = 0; y < newScreen.Height; y++)
                         world.Add(newScreen.ToWorldPosition(new(x, y)));
 
-                ArrayFrame frame = oldScreen.OutputHandler.LastFrame.Copy();
+                ArrayFrame frame = oldScreen.OutputHandler.LastFrame.Clone();
                 for (int x = 0; x < oldScreen.Width; x++)
                     for (int y = 0; y < oldScreen.Height; y++)
                     {

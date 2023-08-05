@@ -14,21 +14,26 @@ using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Event;
+using QuanLib.Minecraft.Block;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
     /// <summary>
-    /// 控件
+    /// 控件基类
     /// </summary>
     public abstract class Control : IControl
     {
         protected Control()
         {
+            FirstHandleRightClick = false;
+            FirstHandleLeftClick = false;
+            FirstHandleCursorSlotChanged = false;
+            FirstHandleCursorItemChanged = false;
+            FirstHandleTextEditorChanged = false;
             InvokeExternalCursorMove = false;
             InitializeCompleted = false;
             KeepWhenClear = false;
-            _LayoutSyncer = null;
-            ParentContainer = null;
             LastRightClickTime = DateTime.MinValue;
             LastLeftClickTime = DateTime.MinValue;
             _DisplayPriority = 0;
@@ -45,17 +50,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Stretch = Direction.None;
             _ContentAnchor = AnchorPosition.UpperLeft;
             _ControlState = ControlState.None;
+            _LayoutSyncer = null;
 
             Frame_Update = true;
             Frame_Old = null;
-            Text_Update = false;
-            Text_Old = Text;
-            ClientLocation_Update = false;
-            ClientLocation_Old = ClientLocation;
-            ClientSize_Update = false;
-            ClientSize_Old = ClientSize;
-            OffsetPosition_Update = false;
-            OffsetPosition_Old = OffsetPosition;
 
             CursorMove += OnCursorMove;
             CursorEnter += OnCursorEnter;
@@ -76,10 +74,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Move += OnMove;
             Resize += OnResize;
             OffsetPositionChanged += OnOffsetPositionChanged;
-            TextChangedNow += OnTextChangedNow;
-            MoveNow += OnMoveNow;
-            ResizeNow += OnResizeNow;
-            OffsetPositionChangedNow = OnOffsetPositionChangedNow;
             Layout += OnLayout;
         }
 
@@ -87,39 +81,31 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         private ArrayFrame? Frame_Old;
 
-        private bool Text_Update;
-
-        private string Text_Old;
-
-        private bool ClientLocation_Update;
-
-        private Point ClientLocation_Old;
-
-        private bool ClientSize_Update;
-
-        private Size ClientSize_Old;
-
-        private bool OffsetPosition_Update;
-
-        private Point OffsetPosition_Old;
-
         public IContainerControl? GenericParentContainer { get; private set; }
 
         public ContainerControl? ParentContainer { get; private set; }
 
-        public int ParentBorderWidth => ParentContainer?.BorderWidth ?? 0;
-
         public int Index => ParentContainer?.GetSubControls().IndexOf(this) ?? -1;
 
-        public DateTime LastRightClickTime { get; private set; }
+        public bool FirstHandleRightClick { get; set; }
 
-        public DateTime LastLeftClickTime { get; private set; }
+        public bool FirstHandleLeftClick { get; set; }
+
+        public bool FirstHandleCursorSlotChanged { get; set; }
+
+        public bool FirstHandleCursorItemChanged { get; set; }
+
+        public bool FirstHandleTextEditorChanged { get; set; }
 
         public bool InvokeExternalCursorMove { get; set; }
 
         public bool InitializeCompleted { get; private set; }
 
         public bool KeepWhenClear { get; set; }
+
+        public DateTime LastRightClickTime { get; private set; }
+
+        public DateTime LastLeftClickTime { get; private set; }
 
         public string Text
         {
@@ -130,8 +116,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 {
                     string temp = _Text;
                     _Text = value;
-                    Text_Update = true;
-                    TextChangedNow.Invoke(this, new(temp, _Text));
+                    TextChanged.Invoke(this, new(temp, _Text));
                     RequestUpdateFrame();
                 }
             }
@@ -149,8 +134,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 {
                     Point temp = _ClientLocation;
                     _ClientLocation = value;
-                    ClientLocation_Update = true;
-                    MoveNow.Invoke(this, new(temp, _ClientLocation));
+                    Move.Invoke(this, new(temp, _ClientLocation));
                     RequestUpdateFrame();
                 }
             }
@@ -166,8 +150,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 {
                     Size temp = _ClientSize;
                     _ClientSize = value;
-                    ClientSize_Update = true;
-                    ResizeNow.Invoke(this, new(temp, _ClientSize));
+                    Resize.Invoke(this, new(temp, _ClientSize));
                     RequestUpdateFrame();
                 }
             }
@@ -183,8 +166,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 {
                     Point temp = _OffsetPosition;
                     _OffsetPosition = value;
-                    OffsetPosition_Update = true;
-                    OffsetPositionChangedNow.Invoke(this, new(temp, _OffsetPosition));
+                    OffsetPositionChanged.Invoke(this, new(temp, _OffsetPosition));
                     RequestUpdateFrame();
                 }
             }
@@ -214,7 +196,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             get => ClientLocation.X + ParentBorderWidth;
             set
             {
-                ClientLocation = new(value -  ParentBorderWidth, ClientLocation.Y);
+                ClientLocation = new(value - ParentBorderWidth, ClientLocation.Y);
             }
         }
 
@@ -258,6 +240,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
         private int _BorderWidth;
+
+        public int ParentBorderWidth => ParentContainer?.BorderWidth ?? 0;
 
         public int TopLocation
         {
@@ -552,21 +536,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public event EventHandler<Control, EventArgs> ControlDeselected;
 
-        public event EventHandler<Control, TextChangedEventArgs> TextChanged;
-
         public event EventHandler<Control, PositionChangedEventArgs> Move;
 
         public event EventHandler<Control, SizeChangedEventArgs> Resize;
 
         public event EventHandler<Control, PositionChangedEventArgs> OffsetPositionChanged;
 
-        public event EventHandler<Control, TextChangedEventArgs> TextChangedNow;
-
-        public event EventHandler<Control, PositionChangedEventArgs> MoveNow;
-
-        public event EventHandler<Control, SizeChangedEventArgs> ResizeNow;
-
-        public event EventHandler<Control, PositionChangedEventArgs> OffsetPositionChangedNow;
+        public event EventHandler<Control, TextChangedEventArgs> TextChanged;
 
         public event EventHandler<Control, SizeChangedEventArgs> Layout;
 
@@ -594,44 +570,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         protected virtual void OnTextEditorChanged(Control sender, CursorTextEventArgs e) { }
 
-        protected virtual void OnBeforeFrame(Control sender, EventArgs e)
-        {
-            if (Text_Update)
-            {
-                if (Text != Text_Old)
-                    TextChanged.Invoke(this, new(Text_Old, Text));
-                Text_Update = false;
-                Text_Old = Text;
-            }
-
-            if (ClientLocation_Update)
-            {
-                if (ClientLocation != ClientLocation_Old)
-                    Move.Invoke(this, new(ClientLocation_Old, ClientLocation));
-                ClientLocation_Update = false;
-                ClientLocation_Old = ClientLocation;
-            }
-
-            if (ClientSize_Update)
-            {
-                if (ClientSize != ClientSize_Old)
-                {
-                    Resize.Invoke(this, new(ClientSize_Old, ClientSize));
-                }
-                ClientSize_Update = false;
-                ClientSize_Old = ClientSize;
-            }
-
-            if (OffsetPosition_Update)
-            {
-                if (OffsetPosition != OffsetPosition_Old)
-                {
-                    OffsetPositionChanged.Invoke(this, new(OffsetPosition_Old, OffsetPosition));
-                }
-                OffsetPosition_Update = false;
-                OffsetPosition_Old = OffsetPosition;
-            }
-        }
+        protected virtual void OnBeforeFrame(Control sender, EventArgs e) { }
 
         protected virtual void OnAfterFrame(Control sender, EventArgs e) { }
 
@@ -648,14 +587,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         protected virtual void OnResize(Control sender, SizeChangedEventArgs e) { }
 
         protected virtual void OnOffsetPositionChanged(Control sender, PositionChangedEventArgs e) { }
-
-        protected virtual void OnTextChangedNow(Control sender, TextChangedEventArgs e) { }
-
-        protected virtual void OnMoveNow(Control sender, PositionChangedEventArgs e) { }
-
-        protected virtual void OnResizeNow(Control sender, SizeChangedEventArgs e) { }
-
-        protected virtual void OnOffsetPositionChangedNow(Control sender, PositionChangedEventArgs e) { }
 
         public virtual void OnLayout(Control sender, SizeChangedEventArgs e)
         {
@@ -705,70 +636,27 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual bool HandleRightClick(CursorEventArgs e)
         {
-            if (Visible && IsHover)
-            {
-                RightClick.Invoke(this, e);
-                DateTime now = DateTime.Now;
-                if (LastRightClickTime == DateTime.MinValue || (DateTime.Now - LastRightClickTime).TotalMilliseconds > 500)
-                {
-                    LastRightClickTime = now;
-                }
-                else
-                {
-                    DoubleRightClick.Invoke(this, e);
-                    LastRightClickTime = DateTime.MinValue;
-                }
-                return true;
-            }
-            return false;
+            return TryHandleRightClick(e);
         }
 
         public virtual bool HandleLeftClick(CursorEventArgs e)
         {
-            if (Visible && IsHover)
-            {
-                LeftClick.Invoke(this, e);
-                DateTime now = DateTime.Now;
-                if (LastLeftClickTime == DateTime.MinValue || (DateTime.Now - LastLeftClickTime).TotalMilliseconds > 500)
-                {
-                    LastLeftClickTime = now;
-                }
-                else
-                {
-                    DoubleLeftClick.Invoke(this, e);
-                    LastLeftClickTime = DateTime.MinValue;
-                }
-                return true;
-            }
-            return false;
+            return TryHandleLeftClick(e);
         }
 
         public virtual bool HandleCursorSlotChanged(CursorSlotEventArgs e)
         {
-            if (Visible && IsHover)
-            {
-                CursorSlotChanged.Invoke(this, e);
-                return true;
-            }
-            return false;
+            return TryHandleCursorSlotChanged(e);
         }
 
-        public virtual void HandleCursorItemChanged(CursorItemEventArgs e)
+        public virtual bool HandleCursorItemChanged(CursorItemEventArgs e)
         {
-            if (Visible)
-            {
-                if (IncludedOnControl(e.Position))
-                    CursorItemChanged.Invoke(this, e);
-            }
+            return TryHandleCursorItemChanged(e);
         }
 
-        public virtual void HandleTextEditorChanged(CursorTextEventArgs e)
+        public virtual bool HandleTextEditorChanged(CursorTextEventArgs e)
         {
-            if (Visible)
-            {
-                if (IncludedOnControl(e.Position))
-                    TextEditorChanged.Invoke(this, e);
-            }
+            return TryHandleTextEditorChanged(e);
         }
 
         public virtual void HandleBeforeFrame(EventArgs e)
@@ -789,6 +677,76 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public virtual void UpdateAllHoverState(CursorEventArgs e)
         {
             UpdateHoverState(e);
+        }
+
+        protected bool TryHandleRightClick(CursorEventArgs e)
+        {
+            if (Visible && IsHover)
+            {
+                RightClick.Invoke(this, e);
+                DateTime now = DateTime.Now;
+                if (LastRightClickTime == DateTime.MinValue || (DateTime.Now - LastRightClickTime).TotalMilliseconds > 500)
+                {
+                    LastRightClickTime = now;
+                }
+                else
+                {
+                    DoubleRightClick.Invoke(this, e);
+                    LastRightClickTime = DateTime.MinValue;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TryHandleLeftClick(CursorEventArgs e)
+        {
+            if (Visible && IsHover)
+            {
+                LeftClick.Invoke(this, e);
+                DateTime now = DateTime.Now;
+                if (LastLeftClickTime == DateTime.MinValue || (DateTime.Now - LastLeftClickTime).TotalMilliseconds > 500)
+                {
+                    LastLeftClickTime = now;
+                }
+                else
+                {
+                    DoubleLeftClick.Invoke(this, e);
+                    LastLeftClickTime = DateTime.MinValue;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TryHandleCursorSlotChanged(CursorSlotEventArgs e)
+        {
+            if (Visible && IsHover)
+            {
+                CursorSlotChanged.Invoke(this, e);
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TryHandleCursorItemChanged(CursorItemEventArgs e)
+        {
+            if (Visible && IsHover)
+            {
+                CursorItemChanged.Invoke(this, e);
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TryHandleTextEditorChanged(CursorTextEventArgs e)
+        {
+            if (Visible && IsHover)
+            {
+                TextEditorChanged.Invoke(this, e);
+                return true;
+            }
+            return false;
         }
 
         public void UpdateHoverState(CursorEventArgs e)
@@ -845,15 +803,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual void OnInitCompleted3()
         {
-            Text_Update = false;
-            Text_Old = Text;
-            ClientLocation_Update = false;
-            ClientLocation_Old = ClientLocation;
-            ClientSize_Update = false;
-            ClientSize_Old = ClientSize;
-            OffsetPosition_Update = false;
-            OffsetPosition_Old = OffsetPosition;
-
             InitializeCompleted = true;
         }
 
@@ -1037,27 +986,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return MCOS.GetMCOS().ScreenContextOf(form);
         }
 
-        public IPlaneSize GetScreenPlaneSize()
-        {
-            Form? form = GetForm();
-            if (form is not null)
-            {
-                Screen? screen = MCOS.GetMCOS().ScreenContextOf(form)?.Screen;
-                if (screen is not null)
-                    return screen;
-
-                IForm? initiator = MCOS.GetMCOS().ProcessOf(form)?.Initiator;
-                if (initiator is not null)
-                {
-                    screen = MCOS.GetMCOS().ScreenContextOf(initiator)?.Screen;
-                    if (screen is not null)
-                        return screen;
-                }
-            }
-           
-            return new PlaneSize(128, 72, Facing.Zp);
-        }
-
         public Size GetFormContainerSize()
         {
             IRootForm? rootForm1 = GetRootForm();
@@ -1078,8 +1006,36 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                         return rootForm3.FormContainerSize;
                 }
             }
-           
-            return new Size(128, 56);
+
+            return new Size(256, 128);
+        }
+
+        public IPlaneSize GetScreenPlaneSize()
+        {
+            Form? form = GetForm();
+            if (form is not null)
+            {
+                Screen? screen = MCOS.GetMCOS().ScreenContextOf(form)?.Screen;
+                if (screen is not null)
+                    return screen;
+
+                IForm? initiator = MCOS.GetMCOS().ProcessOf(form)?.Initiator;
+                if (initiator is not null)
+                {
+                    screen = MCOS.GetMCOS().ScreenContextOf(initiator)?.Screen;
+                    if (screen is not null)
+                        return screen;
+                }
+            }
+
+            return new PlaneSize(256, 144, Facing.Zp);
+        }
+
+        public Rgba32 GetBlockAverageColor(string id)
+        {
+            if (!MinecraftResourcesManager.BlockTextureManager.TryGetValue(id, out var texture))
+                texture = MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White];
+            return texture.AverageColors[GetScreenPlaneSize().NormalFacing];
         }
 
         #endregion
@@ -1113,16 +1069,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return position.X >= 0 && position.Y >= 0 && position.X < ClientSize.Width && position.Y < ClientSize.Height;
         }
 
-        //public Point ParentPos2SubPos(Point position)
-        //{
-        //    return new(position.X - Location.X, position.Y - Location.Y);
-        //}
-
-        //public Point SubPos2ParentPos(Point position)
-        //{
-        //    return new(position.X + Location.X, position.Y + Location.Y);
-        //}
-
         public override string ToString()
         {
             return $"Type:{GetType().Name}|Text:{Text}|Pos:{ClientLocation.X},{ClientLocation.Y}|Size:{ClientSize.Width},{ClientSize.Height}";
@@ -1148,9 +1094,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-                string black = ConcretePixel.ToBlockID(MinecraftColor.Black);
-                string white = ConcretePixel.ToBlockID(MinecraftColor.White);
-                string gray = ConcretePixel.ToBlockID(MinecraftColor.Gray);
+                string black = BlockManager.Concrete.Black;
+                string white = BlockManager.Concrete.White;
+                string gray = BlockManager.Concrete.Gray;
 
                 _ForegroundBlockID = black;
                 _BackgroundBlockID = white;

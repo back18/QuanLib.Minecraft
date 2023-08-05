@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             base.Initialize();
 
             ClientPanel.SubControls.Add(DrawingBox);
-            DrawingBox.ClientLocation = new(16, 16);
+            DrawingBox.ClientLocation = new(8, 8);
         }
     }
 }

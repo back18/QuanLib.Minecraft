@@ -1,4 +1,5 @@
 ﻿using FFMediaToolkit.Decoding;
+using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
@@ -18,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             Time_Label = new();
 
-            Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
+            Skin.SetAllForegroundBlockID(BlockManager.Concrete.LightBlue);
 
             _owner.VideoBox.VideoFrameChanged += VideoPlayer_VideoFrameChanged;
         }

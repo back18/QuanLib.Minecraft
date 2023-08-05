@@ -12,9 +12,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
     public abstract class TextControl : Control
     {
-        protected override void OnTextChangedNow(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
         {
-            base.OnTextChangedNow(sender, e);
+            base.OnTextChanged(sender, e);
 
             if (AutoSize)
                 AutoSetSize();

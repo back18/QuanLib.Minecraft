@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.BlockScreen.Event;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 {
@@ -21,6 +22,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             switch1 = new();
             switch2 = new();
             iconTextBox1 = new();
+            numberBox1 = new();
         }
 
         private readonly Button button1;
@@ -36,6 +38,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
         private readonly Switch switch2;
 
         private readonly IconTextBox iconTextBox1;
+
+        private readonly NumberBox numberBox1;
 
         public override void Initialize()
         {
@@ -88,6 +92,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), GetScreenPlaneSize().NormalFacing, new Size(16, 16));
             iconTextBox1.Text = "hello";
             iconTextBox1.ClientLocation = ClientPanel.RightLayout(textBox1, 2);
+
+            ClientPanel.SubControls.Add(numberBox1);
+            numberBox1.ClientSize = new(48, 16);
+            numberBox1.ClientLocation = ClientPanel.RightLayout(label1, 2);
         }
 
         private void Button1_CursorMove(Control sender, Event.CursorEventArgs e)
@@ -98,6 +106,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
         private void Button1_RightClick(Control sender, Event.CursorEventArgs e)
         {
             Console.WriteLine("点击");
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
+            Console.WriteLine("Form点击");
+
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Event;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
@@ -117,7 +118,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             PathList_Panel.Height = ClientPanel.ClientSize.Height - Backward_Button.Height - PreviousPage_Button.Height - 8;
             PathList_Panel.ClientLocation = ClientPanel.BottomLayout(Backward_Button, spacing);
             PathList_Panel.Stretch = Direction.Bottom | Direction.Right;
-            PathList_Panel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+            PathList_Panel.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
 
             ClientPanel.ClientSize = size2;
 

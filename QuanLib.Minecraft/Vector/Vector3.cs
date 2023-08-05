@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Vectors
+namespace QuanLib.Minecraft.Vector
 {
     public struct Vector3<T> : IVector3<T>
     {

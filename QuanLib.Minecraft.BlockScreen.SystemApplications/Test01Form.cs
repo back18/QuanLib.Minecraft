@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
@@ -65,25 +66,25 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
             Button1.ClientLocation = new(93, 2);
             Button1.ClientSize = new(16, 16);
-            Button1.Skin.BackgroundBlockID = ConcretePixel.ToBlockID(MinecraftColor.Pink);
-            Button1.Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Yellow);
-            Button1.Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Red);
+            Button1.Skin.BackgroundBlockID = BlockManager.Concrete.Pink;
+            Button1.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
+            Button1.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Red;
             Button1.Text = "X";
             Button1.RightClick += Button1_RightClick;
 
             Button2.ClientLocation = new(93, 25);
             Button2.ClientSize = new(16, 16);
-            Button2.Skin.BackgroundBlockID = ConcretePixel.ToBlockID(MinecraftColor.Pink);
-            Button2.Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Yellow);
-            Button2.Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Red);
+            Button2.Skin.BackgroundBlockID = BlockManager.Concrete.Pink;
+            Button2.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
+            Button2.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Red;
             Button2.Text = "X";
             Button2.RightClick += Button2_RightClick;
 
             Button3.ClientLocation = new(93, 48);
             Button3.ClientSize = new(16, 16);
-            Button3.Skin.BackgroundBlockID = ConcretePixel.ToBlockID(MinecraftColor.Pink);
-            Button3.Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Yellow);
-            Button3.Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Red);
+            Button3.Skin.BackgroundBlockID = BlockManager.Concrete.Pink;
+            Button3.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
+            Button3.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Red;
             Button3.Text = "X";
             Button3.RightClick += Button3_RightClick;
         }

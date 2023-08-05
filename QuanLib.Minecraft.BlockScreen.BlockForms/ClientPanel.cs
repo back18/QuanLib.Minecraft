@@ -29,7 +29,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 image.Update();
             }
 
-            return image.GetFrameCopy();
+            return image.GetFrameClone();
         }
     }
 }

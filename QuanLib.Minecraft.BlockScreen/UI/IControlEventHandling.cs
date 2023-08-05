@@ -18,9 +18,9 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public bool HandleCursorSlotChanged(CursorSlotEventArgs e);
 
-        public void HandleCursorItemChanged(CursorItemEventArgs e);
+        public bool HandleCursorItemChanged(CursorItemEventArgs e);
 
-        public void HandleTextEditorChanged(CursorTextEventArgs e);
+        public bool HandleTextEditorChanged(CursorTextEventArgs e);
 
         public void HandleBeforeFrame(EventArgs e);
 

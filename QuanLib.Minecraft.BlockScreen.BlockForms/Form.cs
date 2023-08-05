@@ -25,11 +25,15 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             IsMinimize = false;
             Stretch = Direction.Bottom | Direction.Right;
 
+            _restoreing = false;
+
             FormLoad += OnFormLoad;
             FormClose += OnFormClose;
             FormMinimize += OnFormMinimize;
             FormUnminimize += OnFormUnminimize;
         }
+
+        private bool _restoreing;
 
         public virtual bool AllowSelected { get; set; }
 
@@ -187,7 +191,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnMove(sender, e);
 
-            if (!IsMaximize)
+            if (!_restoreing && !IsMaximize)
             {
                 RestoreLocation = ClientLocation;
                 RestoreSize = ClientSize;
@@ -198,7 +202,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnResize(sender, e);
 
-            if (!IsMaximize)
+            if (!_restoreing && !IsMaximize)
             {
                 RestoreLocation = ClientLocation;
                 RestoreSize = ClientSize;
@@ -207,16 +211,16 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual void MaximizeForm()
         {
-            Size maximize = MaximizeSize;
-            Width = maximize.Width;
-            Height = maximize.Height;
+            Size = MaximizeSize;
             Location = new(0, 0);
         }
 
         public virtual void RestoreForm()
         {
+            _restoreing = true;
             ClientLocation = RestoreLocation;
             ClientSize = RestoreSize;
+            _restoreing = false;
         }
 
         public virtual void MinimizeForm()

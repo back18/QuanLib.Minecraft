@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             _OnText = string.Empty;
             _OffText = string.Empty;
 
-            Skin.BackgroundBlockID = Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Red);
-            Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
+            Skin.BackgroundBlockID = Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
+            Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Lime;
             ContentAnchor = AnchorPosition.Centered;
         }
 
@@ -64,9 +65,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             get => _OnText;
             set
             {
-                _OnText = value;
-                if (IsSelected)
-                    RequestUpdateFrame();
+                if (_OnText != value)
+                {
+                    _OnText = value;
+                    if (!string.IsNullOrEmpty(_OnText) && IsSelected)
+                        Text = OnText;
+                }
             }
         }
         private string _OnText;
@@ -76,9 +80,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             get => _OffText;
             set
             {
-                _OffText = value;
-                if (!IsSelected)
-                    RequestUpdateFrame();
+                if (_OffText != value)
+                {
+                    _OffText = value;
+                    if (!string.IsNullOrEmpty(_OffText) && !IsSelected)
+                        RequestUpdateFrame();
+                    Text = OffText;
+                }
             }
         }
         private string _OffText;

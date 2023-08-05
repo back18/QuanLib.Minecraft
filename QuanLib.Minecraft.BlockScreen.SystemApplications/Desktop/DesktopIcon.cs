@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.BlockForms;
+﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
@@ -23,9 +24,9 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             BorderWidth = 0;
             ClientSize = new(26, 26);
             Skin.BackgroundBlockID = string.Empty;
-            Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.White);
-            Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
-            Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Blue);
+            Skin.BackgroundBlockID_Hover = BlockManager.Concrete.White;
+            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
+            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Blue;
         }
 
         private readonly PictureBox Icon_PictureBox;
@@ -41,7 +42,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             SubControls.Add(Icon_PictureBox);
             Icon_PictureBox.ClientLocation = new(4, 4);
             Icon_PictureBox.ClientSize = new(16, 16);
-            Icon_PictureBox.ResizeOptions.Size = Icon_PictureBox.ClientSize;
+            Icon_PictureBox.DefaultResizeOptions.Size = Icon_PictureBox.ClientSize;
             Icon_PictureBox.SetImage(_appInfo.Icon);
 
             Name_Label.BorderWidth = 1;

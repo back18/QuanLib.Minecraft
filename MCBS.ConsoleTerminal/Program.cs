@@ -4,7 +4,7 @@ using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Files;
-using QuanLib.Minecraft.Vectors;
+using QuanLib.Minecraft.Vector;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal

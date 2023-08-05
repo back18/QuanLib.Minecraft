@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
@@ -16,10 +17,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ReboundTime = 10;
             ReboundCountdown = 0;
 
-            Skin.BackgroundBlockID = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
-            Skin.BackgroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.Yellow);
-            Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
-            Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Lime);
+            Skin.BackgroundBlockID = BlockManager.Concrete.LightBlue;
+            Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
+            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Lime;
+            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Lime;
             ContentAnchor = AnchorPosition.Centered;
         }
 

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.Data;
-using QuanLib.Minecraft.Vectors;
+using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections;

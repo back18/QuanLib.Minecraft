@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Vectors;
+﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;

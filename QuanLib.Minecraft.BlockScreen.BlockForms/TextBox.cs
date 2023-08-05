@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public TextBox()
         {
             ClientSize = new(64, 16);
-            Skin.BackgroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
-            Skin.BackgroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
-            Skin.BorderBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.Blue);
-            Skin.BorderBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Blue);
+            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
+            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightBlue;
+            Skin.BorderBlockID_Selected = BlockManager.Concrete.Blue;
+            Skin.BorderBlockID_Hover_Selected = BlockManager.Concrete.Blue;
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)

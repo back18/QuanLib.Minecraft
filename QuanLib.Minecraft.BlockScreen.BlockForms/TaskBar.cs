@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -22,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 Width = e.NewSize.Width;
                 ClientLocation = new(0, e.NewSize.Height - 16);
             });
-            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
 
             StartMenu_Switch = new();
             TeskItems_Panel = new();
@@ -46,7 +47,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             MCOS os = MCOS.GetMCOS();
             string dir = PathManager.SystemResources_Textures_Control_Dir;
-            string green = ConcretePixel.ToBlockID(MinecraftColor.Green);
+            string green = BlockManager.Concrete.Green;
 
             SubControls.Add(FullScreen_Button);
             FullScreen_Button.BorderWidth = 0;
@@ -75,7 +76,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         private void HideTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            _owner.ShowTitleBar = false;
+            _owner.ShowTaskBar = false;
         }
     }
 }

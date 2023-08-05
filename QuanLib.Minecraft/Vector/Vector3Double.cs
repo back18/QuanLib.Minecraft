@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Vectors
+namespace QuanLib.Minecraft.Vector
 {
     public struct Vector3Double : IVector3<double>
     {

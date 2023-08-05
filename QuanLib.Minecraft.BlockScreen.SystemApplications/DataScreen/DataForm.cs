@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.BlockForms;
+﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.BlockForms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +37,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen
         {
             base.Initialize();
 
-            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
-            ClientPanel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
+            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
+            ClientPanel.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
             OnBeforeFrame(this, EventArgs.Empty);
 
             ClientPanel.SubControls.Add(DayTime_Label);

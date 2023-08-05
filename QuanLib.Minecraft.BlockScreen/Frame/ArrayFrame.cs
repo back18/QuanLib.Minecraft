@@ -43,7 +43,7 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
 
         public string[,] GetAllBlockID() => _ids;
 
-        public ArrayFrame Copy()
+        public ArrayFrame Clone()
         {
             string[,] copy = ArrayUtil.Copy(_ids);
             return new(copy);

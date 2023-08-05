@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
 {
@@ -39,7 +40,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
         {
             base.Initialize();
 
-            ClientPanel.Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Lime));
+            ClientPanel.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
         }
 
         public override void OnInitCompleted3()

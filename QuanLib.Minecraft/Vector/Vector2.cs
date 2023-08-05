@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Vectors
+namespace QuanLib.Minecraft.Vector
 {
     public struct Vector2<T> : IVector2<T>
     {

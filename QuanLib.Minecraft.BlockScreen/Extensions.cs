@@ -35,7 +35,7 @@ namespace QuanLib.Minecraft.BlockScreen
             };
         }
 
-        public static ResizeOptions Copy(this ResizeOptions source)
+        public static ResizeOptions Clone(this ResizeOptions source)
         {
             return new()
             {

@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             (sender, e) => { },
             (sender, e) =>
             {
-                if (_owner.ShowTitleBar)
+                if (_owner.ShowTaskBar)
                 {
                     ClientSize = new(e.NewSize.Width, e.NewSize.Height - 16);
                     foreach (var form in SubControls)
@@ -121,26 +121,32 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return result;
         }
 
-        public override void HandleCursorItemChanged(CursorItemEventArgs e)
+        public override bool HandleCursorItemChanged(CursorItemEventArgs e)
         {
+            bool result = false;
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
+                    result = control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
                 }
             }
+
+            return result;
         }
 
-        public override void HandleTextEditorChanged(CursorTextEventArgs e)
+        public override bool HandleTextEditorChanged(CursorTextEventArgs e)
         {
+            bool result = false;
             foreach (var control in SubControls.Reverse())
             {
                 if (control.IsSelected)
                 {
-                    control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
+                   result = control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
                 }
             }
+
+            return result;
         }
     }
 }

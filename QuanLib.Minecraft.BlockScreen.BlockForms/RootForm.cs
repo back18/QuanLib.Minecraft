@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -32,14 +33,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public Size FormContainerSize => FormContainer.ClientSize;
 
-        public bool ShowTitleBar
+        public bool ShowTaskBar
         {
             get => SubControls.Contains(TaskBar);
             set
             {
                 if (value)
                 {
-                    if (!ShowTitleBar)
+                    if (!ShowTaskBar)
                     {
                         SubControls.TryAdd(TaskBar);
                         SubControls.Remove(ShowTaskBar_Button);
@@ -48,7 +49,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 }
                 else
                 {
-                    if (ShowTitleBar)
+                    if (ShowTaskBar)
                     {
                         SubControls.Remove(TaskBar);
                         SubControls.TryAdd(ShowTaskBar_Button);
@@ -68,7 +69,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
-            Skin.SetAllBackgroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightBlue));
+            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
 
             SubControls.Add(TaskBar);
 
@@ -100,7 +101,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         private void ShowTaskBar_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            ShowTitleBar = true;
+            ShowTaskBar = true;
         }
 
         public void AddForm(IForm form)

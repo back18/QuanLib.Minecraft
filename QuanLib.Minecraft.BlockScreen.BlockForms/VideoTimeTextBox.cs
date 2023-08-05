@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -41,12 +42,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             SubControls.Add(CurrentTime_TextBox);
             CurrentTime_TextBox.BorderWidth = 0;
-            CurrentTime_TextBox.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Orange));
+            CurrentTime_TextBox.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Orange);
             CurrentTime_TextBox.Skin.SetAllBackgroundBlockID(string.Empty);
 
             SubControls.Add(TotalTime_Label);
             TotalTime_Label.BorderWidth = 0;
-            TotalTime_Label.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Orange));
+            TotalTime_Label.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Orange);
             TotalTime_Label.Skin.SetAllBackgroundBlockID(string.Empty);
         }
 

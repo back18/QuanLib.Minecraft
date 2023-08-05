@@ -26,12 +26,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public ImageFrame? Icon
         {
-            get => Image_PictureBox.Image;
+            get => Image_PictureBox.ImageFrame;
             set
             {
                 if (Icon != value)
                 {
-                    Image_PictureBox.Image = value;
+                    Image_PictureBox.ImageFrame = value;
                     RequestUpdateFrame();
                 }
             }
@@ -43,16 +43,16 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             SubControls.Add(Image_PictureBox);
             Image_PictureBox.BorderWidth = 0;
-            Image_PictureBox.ResizeOptions.Size = new(16, 16);
+            Image_PictureBox.DefaultResizeOptions.Size = new(16, 16);
 
             SubControls.Add(Text_Label);
 
             ActiveLayoutAll();
         }
 
-        protected override void OnTextChangedNow(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
         {
-            base.OnTextChangedNow(sender, e);
+            base.OnTextChanged(sender, e);
 
             Text_Label.Text = e.NewText;
         }

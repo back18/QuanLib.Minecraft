@@ -31,8 +31,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
         /// </summary>
         public void Binding()
         {
-            Target.MoveNow += Move;
-            Target.ResizeNow += Resize;
+            Target.Move += Move;
+            Target.Resize += Resize;
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
         /// </summary>
         public void Unbinding()
         {
-            Target.MoveNow -= Move;
-            Target.ResizeNow -= Resize;
+            Target.Move -= Move;
+            Target.Resize -= Resize;
         }
 
         /// <summary>

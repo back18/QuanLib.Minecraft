@@ -29,45 +29,47 @@ namespace QuanLib.Minecraft.BlockScreen
         }
 
         public ImageFrame(string path, Facing facing, ResizeOptions? resizeOptions = null) :
-            this(Image.Load<Rgba32>(File.ReadAllBytes(path)), facing, resizeOptions)
+            this(SixLabors.ImageSharp.Image.Load<Rgba32>(File.ReadAllBytes(path)), facing, resizeOptions)
         { }
 
         public ImageFrame(string path, Facing facing, Size size) :
-            this(Image.Load<Rgba32>(File.ReadAllBytes(path)), facing, size)
+            this(SixLabors.ImageSharp.Image.Load<Rgba32>(File.ReadAllBytes(path)), facing, size)
         { }
 
         public ImageFrame(Image<Rgba32> image, Facing facing, Size size)
         {
-            _original = image ?? throw new ArgumentNullException(nameof(image));
+            Image = image ?? throw new ArgumentNullException(nameof(image));
+            _output = Image.Clone();
             _facing = facing;
             _frame = null;
             _get = false;
 
-            ResizeOptions = DefaultResizeOptions.Copy();
+            ResizeOptions = DefaultResizeOptions.Clone();
             ResizeOptions.Size = size;
         }
 
         public ImageFrame(Image<Rgba32> image, Facing facing, ResizeOptions? resizeOptions = null)
         {
-            _original = image ?? throw new ArgumentNullException(nameof(image));
+            Image = image ?? throw new ArgumentNullException(nameof(image));
+            _output = Image.Clone();
             _facing = facing;
             _frame = null;
             _get = false;
 
-            ResizeOptions = resizeOptions ?? DefaultResizeOptions.Copy();
+            ResizeOptions = resizeOptions ?? DefaultResizeOptions.Clone();
         }
 
         public static ResizeOptions DefaultResizeOptions { get; }
 
         private readonly Facing _facing;
 
-        private readonly Image<Rgba32> _original;
-
-        private Image<Rgba32>? _result;
-
         private ArrayFrame? _frame;
 
         private bool _get;
+
+        private Image<Rgba32> _output;
+
+        public Image<Rgba32> Image { get; }
 
         public ResizeOptions ResizeOptions { get; }
 
@@ -75,50 +77,56 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             get
             {
-                ArrayFrame frame = _frame ?? Update();
-                return new(frame.Width, frame.Height);
+                if (_frame is null)
+                    Update();
+                return new(_frame!.Width, _frame!.Height);
             }
         }
 
         public ArrayFrame GetFrame()
         {
             _get = true;
-            return _frame ?? Update();
+            if (_frame is null)
+                Update();
+            return _frame!;
         }
 
-        public ArrayFrame GetFrameCopy()
+        public ArrayFrame GetFrameClone()
         {
             if (_get)
-                return GetFrame().Copy();
+                return GetFrame().Clone();
             else
                 return GetFrame();
         }
 
-        public ArrayFrame Update()
+        public void Update(Rectangle? rectangle = null)
         {
-            _result?.Dispose();
-            _result = _original.Clone();
-            _result.Mutate(x => x.Resize(ResizeOptions));
-            _frame = ArrayFrame.FromImage(_facing, _result);
-            return _frame;
+            _output.Dispose();
+            if (rectangle is not null)
+                _output = Image.Clone(x => x.Crop(rectangle.Value));
+            else
+                _output = Image.Clone();
+            _output.Mutate(x => x.Resize(ResizeOptions));
+            _frame = ArrayFrame.FromImage(_facing, _output);
+            _get = false;
         }
 
         public void Dispose()
         {
-            _original.Dispose();
-            _result?.Dispose();
+            Image.Dispose();
+            _output.Dispose();
 
             GC.SuppressFinalize(this);
         }
 
-        public static bool operator ==(ImageFrame image1, ImageFrame image2)
+        public static bool operator ==(ImageFrame? image1, ImageFrame? image2)
         {
-            return image1?._original == image2?._original;
+            return image1?.Image == image2?.Image;
         }
 
-        public static bool operator !=(ImageFrame image1, ImageFrame image2)
+        public static bool operator !=(ImageFrame? image1, ImageFrame? image2)
         {
-            return image1?._original != image2?._original;
+            return image1?.Image != image2?.Image;
         }
     }
 }

@@ -79,6 +79,51 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
+        public override bool HandleRightClick(CursorEventArgs e)
+        {
+            Control? control = GetSubControls().FirstHover;
+            if (control is not null && control.HandleRightClick(new(control.ParentPos2SubPos(e.Position))) && control.FirstHandleRightClick)
+                return true;
+
+            return TryHandleRightClick(e);
+        }
+
+        public override bool HandleLeftClick(CursorEventArgs e)
+        {
+            Control? control = GetSubControls().FirstHover;
+            if (control is not null && control.HandleLeftClick(new(control.ParentPos2SubPos(e.Position))) && control.FirstHandleLeftClick)
+                return true;
+
+            return TryHandleLeftClick(e);
+        }
+
+        public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
+        {
+            Control? control = GetSubControls().FirstHover;
+            if (control is not null && control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot)) && control.FirstHandleCursorSlotChanged)
+                return true;
+
+            return TryHandleCursorSlotChanged(e);
+        }
+
+        public override bool HandleCursorItemChanged(CursorItemEventArgs e)
+        {
+            Control? control = GetSubControls().FirstHover;
+            if (control is not null && control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item)) && control.FirstHandleCursorItemChanged)
+                return true;
+
+            return TryHandleCursorItemChanged(e);
+        }
+
+        public override bool HandleTextEditorChanged(CursorTextEventArgs e)
+        {
+            Control? control = GetSubControls().FirstHover;
+            if (control is not null && control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text)) && control.FirstHandleTextEditorChanged)
+                return true;
+
+            return TryHandleTextEditorChanged(e);
+        }
+
         public override void UpdateAllHoverState(CursorEventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
@@ -147,13 +192,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             public void ClearSelecteds()
             {
-                foreach (T control in _items.ToArray())
+                foreach (var control in _items.ToArray())
                     control.IsSelected = false;
             }
 
             public void ClearSyncers()
             {
-                foreach (T control in _items)
+                foreach (var control in _items)
                     control.LayoutSyncer = null;
             }
         }

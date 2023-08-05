@@ -4,7 +4,7 @@ using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Files;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
-using QuanLib.Minecraft.Vectors;
+using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,4 +1,5 @@
 ﻿using QuanLib.IO;
+using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
@@ -18,8 +19,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             PathType = pathType;
 
             AutoSize = true;
-            Skin.BorderBlockID__Hover = ConcretePixel.ToBlockID(MinecraftColor.Pink);
-            Skin.BorderBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.Pink);
+            Skin.BorderBlockID__Hover = BlockManager.Concrete.Pink;
+            Skin.BorderBlockID_Hover_Selected = BlockManager.Concrete.Pink;
         }
 
         public PathType PathType { get; }

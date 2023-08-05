@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -126,14 +127,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnControlSelected(sender, e);
 
-            TitleBar.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.Black));
+            TitleBar.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Black);
         }
 
         protected override void OnControlDeselected(Control sender, EventArgs e)
         {
             base.OnControlDeselected(sender, e);
 
-            TitleBar.Skin.SetAllForegroundBlockID(ConcretePixel.ToBlockID(MinecraftColor.LightGray));
+            TitleBar.Skin.SetAllForegroundBlockID(BlockManager.Concrete.LightGray);
         }
 
         private void ShowTitleBar_Button_CursorEnter(Control sender, CursorEventArgs e)

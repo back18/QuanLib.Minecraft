@@ -35,13 +35,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             ClientPanel.ClientSize = ClientSize;
             ClientPanel.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ClientPanel.ClientSize = ClientSize);
+            ClientPanel.LayoutAll += ClientPanel_LayoutAll;
 
             ActiveLayoutAll();
 
             ClientPanel.Skin.SetAllBackgroundImage(new("C:\\Users\\Administrator\\Desktop\\1.jpg", GetScreenPlaneSize().NormalFacing, ClientPanel.GetRenderingSize()));
         }
 
-        protected override void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
+        private void ClientPanel_LayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
         {
             ActiveLayoutAll();
         }
@@ -61,11 +62,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             ClientPanel.PageSize = new((ClientPanel.SubControls.RecentlyAddedControl ?? ClientPanel.SubControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
             ClientPanel.OffsetPosition = new(0, 0);
             ClientPanel.RefreshHorizontalScrollBar();
-        }
-
-        public override void OnLayout(Control sender, SizeChangedEventArgs e)
-        {
-            ActiveLayoutAll();
         }
     }
 }

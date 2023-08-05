@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Minecraft.Block;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,10 +14,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             _SliderSize = 1;
             _SliderPosition = 0;
 
-            Skin.ForegroundBlockID = ConcretePixel.ToBlockID(MinecraftColor.LightGray);
-            Skin.ForegroundBlockID_Selected = ConcretePixel.ToBlockID(MinecraftColor.LightGray);
-            Skin.ForegroundBlockID_Hover = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
-            Skin.ForegroundBlockID_Hover_Selected = ConcretePixel.ToBlockID(MinecraftColor.LightBlue);
+            Skin.ForegroundBlockID = BlockManager.Concrete.LightGray;
+            Skin.ForegroundBlockID_Selected = BlockManager.Concrete.LightGray;
+            Skin.ForegroundBlockID_Hover = BlockManager.Concrete.LightBlue;
+            Skin.ForegroundBlockID_Hover_Selected = BlockManager.Concrete.LightBlue;
         }
 
         public double SliderSize

@@ -2,7 +2,7 @@
 using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Snbt.Parsers;
 using QuanLib.Minecraft.Snbt.Tags;
-using QuanLib.Minecraft.Vectors;
+using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;

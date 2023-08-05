@@ -33,7 +33,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             PlayerState = VideoPlayerState.Unstarted;
             MediaOptions = DefaultMediaOptions.Copy();
-            ResizeOptions = DefaultResizeOptions.Copy();
+            ResizeOptions = DefaultResizeOptions.Clone();
 
             AutoSize = true;
             ContentAnchor = AnchorPosition.Centered;

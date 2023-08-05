@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -20,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             Text = _owner.Text;
             LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
-            _owner.TextChangedNow += (sender, e) => Text = _owner.Text;
+            _owner.TextChanged += (sender, e) => Text = _owner.Text;
             _owner.InitializeCallback += Owner_InitializeCallback;
 
             MoveAnchorPoint = new(0, 0);
@@ -67,8 +68,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             MCOS os = MCOS.GetMCOS();
             string dir = PathManager.SystemResources_Textures_Control_Dir;
-            string lghtGray = ConcretePixel.ToBlockID(MinecraftColor.LightGray);
-            string red = ConcretePixel.ToBlockID(MinecraftColor.Red);
+            string lghtGray = BlockManager.Concrete.LightGray;
+            string red = BlockManager.Concrete.Red;
 
             Close_Button.BorderWidth = 0;
             Close_Button.Text = "X";

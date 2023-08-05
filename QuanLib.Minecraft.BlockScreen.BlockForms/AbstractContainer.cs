@@ -100,7 +100,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             TControl? control = GetSubControls().FirstHover;
             control?.HandleRightClick(new(control.ParentPos2SubPos(e.Position)));
 
-            return base.HandleRightClick(e);
+            return TryHandleRightClick(e);
         }
 
         public override bool HandleLeftClick(CursorEventArgs e)
@@ -108,35 +108,31 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             TControl? control = GetSubControls().FirstHover;
             control?.HandleLeftClick(new(control.ParentPos2SubPos(e.Position)));
 
-            return base.HandleLeftClick(e);
+            return TryHandleLeftClick(e);
         }
 
         public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
         {
             TControl? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot)) && control is ScrollablePanel)
-                return true;
-            return base.HandleCursorSlotChanged(e);
+            control?.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
+
+            return TryHandleCursorSlotChanged(e);
         }
 
-        public override void HandleCursorItemChanged(CursorItemEventArgs e)
+        public override bool HandleCursorItemChanged(CursorItemEventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
-            {
-                control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
-            }
+            TControl? control = GetSubControls().FirstHover;
+            control?.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
 
-            base.HandleCursorItemChanged(e);
+            return TryHandleCursorItemChanged(e);
         }
 
-        public override void HandleTextEditorChanged(CursorTextEventArgs e)
+        public override bool HandleTextEditorChanged(CursorTextEventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
-            {
-                control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
-            }
+            TControl? control = GetSubControls().FirstHover;
+            control?.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
 
-            base.HandleTextEditorChanged(e);
+            return TryHandleTextEditorChanged(e);
         }
 
         public override void HandleBeforeFrame(EventArgs e)
