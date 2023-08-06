@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             Name_Label = new();
 
             BorderWidth = 0;
-            ClientSize = new(26, 26);
+            ClientSize = new(24, 24);
             Skin.BackgroundBlockID = string.Empty;
             Skin.BackgroundBlockID_Hover = BlockManager.Concrete.White;
             Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
@@ -40,7 +40,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             base.Initialize();
 
             SubControls.Add(Icon_PictureBox);
-            Icon_PictureBox.ClientLocation = new(4, 4);
+            Icon_PictureBox.ClientLocation = new(3, 3);
             Icon_PictureBox.ClientSize = new(16, 16);
             Icon_PictureBox.DefaultResizeOptions.Size = Icon_PictureBox.ClientSize;
             Icon_PictureBox.SetImage(_appInfo.Icon);

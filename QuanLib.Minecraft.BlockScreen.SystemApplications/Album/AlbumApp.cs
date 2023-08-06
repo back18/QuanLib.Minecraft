@@ -5,17 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
+namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 {
-    public class ImageViewerApp : Application
+    public class AlbumApp : Application
     {
-        public const string ID = "ImageViewer";
+        public const string ID = "Album";
 
-        public const string Name = "图片浏览器";
+        public const string Name = "相册";
 
         public override object? Main(string[] args)
         {
-            RunForm(new ImageViewerForm());
+            RunForm(new AlbumForm());
             return null;
         }
     }

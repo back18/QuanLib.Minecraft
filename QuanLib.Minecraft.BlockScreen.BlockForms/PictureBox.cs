@@ -17,14 +17,19 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public PictureBox()
         {
             DefaultResizeOptions = ImageFrame.DefaultResizeOptions.Clone();
-            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockAverageColor(BlockManager.Concrete.White)), GetScreenPlaneSize().NormalFacing);
-            ClientSize = DefaultResizeOptions.Size;
+            DefaultResizeOptions.Size = ClientSize;
+            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockAverageColor(BlockManager.Concrete.White)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
+            ClientSize = new(64, 64);
 
             AutoSize = true;
             ContentAnchor = AnchorPosition.Centered;
 
             ImageFrameChanged += OnImageFrameChanged;
+
+            _autosetsizeing = false;
         }
+
+        protected bool _autosetsizeing;
 
         public ResizeOptions DefaultResizeOptions { get; }
 
@@ -46,13 +51,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public event EventHandler<PictureBox, ImageFrameChangedEventArgs> ImageFrameChanged;
 
-        protected virtual void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
-        {
-            e.OldImageFrame.Dispose();
-            if (AutoSize)
-                AutoSetSize();
-        }
-
         public override IFrame RenderingFrame()
         {
             if (ImageFrame.FrameSize != ClientSize)
@@ -64,14 +62,37 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return ImageFrame.GetFrameClone();
         }
 
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        {
+            base.OnResize(sender, e);
+
+            if (_autosetsizeing)
+                return;
+
+            Size offset = e.NewSize - e.OldSize;
+            ImageFrame.ResizeOptions.Size += offset;
+            DefaultResizeOptions.Size += offset;
+            ImageFrame.Update();
+            AutoSetSize();
+        }
+
+        protected virtual void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        {
+            e.OldImageFrame.Dispose();
+            if (AutoSize)
+                AutoSetSize();
+        }
+
         public override void AutoSetSize()
         {
+            _autosetsizeing = true;
             ClientSize = ImageFrame.FrameSize;
+            _autosetsizeing = false;
         }
 
         public void SetImage(Image<Rgba32> image)
         {
-            ImageFrame = new(image, GetScreenPlaneSize().NormalFacing, DefaultResizeOptions);
+            ImageFrame = new(image, GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
         }
 
         public bool TryReadImageFile(string path)
@@ -81,7 +102,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             try
             {
-                ImageFrame = new(Image.Load<Rgba32>(File.ReadAllBytes(path)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions);
+                ImageFrame = new(Image.Load<Rgba32>(File.ReadAllBytes(path)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
                 return true;
             }
             catch

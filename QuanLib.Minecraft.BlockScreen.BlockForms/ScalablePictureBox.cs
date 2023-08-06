@@ -16,13 +16,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             FirstHandleCursorSlotChanged = true;
             DefaultResizeOptions.Mode = ResizeMode.Max;
-            AutoSize = true;
             Rectangle = new(0, 0, ImageFrame.ResizeOptions.Size.Width, ImageFrame.ResizeOptions.Size.Height);
+            ScalingRatio = 0.2;
 
-            _setsizeing = false;
+            _cursorpos = new(0, 0);
         }
 
-        private bool _setsizeing;
+        private Point _cursorpos;
 
         public Rectangle Rectangle
         {
@@ -31,20 +31,17 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 if (value.Width < 1)
                     value.Width = 1;
-                else if (value.X + value.Width > ImageFrame.Image.Width - 1)
-                {
-                    if (value.Width > ImageFrame.Image.Width)
-                        value.Width = ImageFrame.Image.Width;
-                    value.X = ImageFrame.Image.Width - value.Width;
-                }
+                else if (value.Width > ImageFrame.Image.Width)
+                    value.Width = ImageFrame.Image.Width;
                 if (value.Height < 1)
                     value.Height = 1;
-                else if (value.Y + value.Height > ImageFrame.Image.Height - 1)
-                {
-                    if (value.Height > ImageFrame.Image.Height)
-                        value.Height = ImageFrame.Image.Height;
+                else if (value.Height > ImageFrame.Image.Height)
+                    value.Height = ImageFrame.Image.Height;
+
+                if (value.X + value.Width > ImageFrame.Image.Width - 1)
+                    value.X = ImageFrame.Image.Width - value.Width;
+                if (value.Y + value.Height > ImageFrame.Image.Height - 1)
                     value.Y = ImageFrame.Image.Height - value.Height;
-                }
 
                 if (value.X < 0)
                     value.X = 0;
@@ -57,7 +54,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 if (_Rectangle != value)
                 {
+                    //Console.WriteLine(value);
                     _Rectangle = value;
+                    if (_Rectangle.Width > ClientSize.Width)
+                        ImageFrame.ResizeOptions.Sampler = KnownResamplers.Bicubic;
+                    else
+                        ImageFrame.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
                     ImageFrame.Update(_Rectangle);
                     AutoSetSize();
                     RequestUpdateFrame();
@@ -66,22 +68,50 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         }
         private Rectangle _Rectangle;
 
+        public double ScalingRatio { get; set; }
+
+        public bool IsDragging { get; private set; }
+
         public override IFrame RenderingFrame()
         {
             return ImageFrame.GetFrameClone();
         }
 
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorMove(sender, e);
+
+            Point position1 = ClientPos2ImagePos(Rectangle, e.Position);
+            Point position2 = ClientPos2ImagePos(Rectangle, _cursorpos);
+            Point offset = new(position1.X - position2.X, position1.Y - position2.Y);
+            if (IsDragging)
+            {
+                Rectangle rectangle = Rectangle;
+                rectangle.X -= offset.X;
+                rectangle.Y -= offset.Y;
+                Rectangle = rectangle;
+            }
+            _cursorpos = e.Position;
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            base.OnRightClick(sender, e);
+
+            IsDragging = !IsDragging;
+        }
+
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
-            base.OnResize(sender, e);
-
-            if (_setsizeing)
+            if (_autosetsizeing)
                 return;
 
             Size offset = e.NewSize - e.OldSize;
             ImageFrame.ResizeOptions.Size += offset;
-            ImageFrame.Update();
+            DefaultResizeOptions.Size += offset;
             Rectangle = new(0, 0, ImageFrame.Image.Size.Width, ImageFrame.Image.Size.Height);
+            ImageFrame.Update(Rectangle);
+            AutoSetSize();
         }
 
         protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
@@ -96,20 +126,35 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             base.OnCursorSlotChanged(sender, e);
 
             Rectangle rectangle = Rectangle;
-            double pixels = rectangle.Width / ClientSize.Width;
-            rectangle.Width += e.Delta * (rectangle.Width / 10);
-            rectangle.Height += e.Delta * (rectangle.Height / 10);
-            rectangle.X = (int)Math.Round(e.Position.X * pixels - rectangle.Width / pixels / 2);
-            rectangle.Y = (int)Math.Round(e.Position.Y * pixels - rectangle.Height / pixels / 2);
+
+            Point position1 = ClientPos2ImagePos(rectangle, e.Position);
+            Point center1 = GetImageCenter(rectangle);
+            Point offset1 = new(position1.X - center1.X, position1.Y - center1.Y);
+
+            rectangle.Width += (int)Math.Round(e.Delta * rectangle.Width * ScalingRatio);
+            rectangle.Height += (int)Math.Round(e.Delta * rectangle.Height * ScalingRatio);
+            rectangle.X = center1.X - (int)Math.Round(rectangle.Width / 2.0);
+            rectangle.Y = center1.Y - (int)Math.Round(rectangle.Height / 2.0);
+
+            Point position2 = ClientPos2ImagePos(rectangle, e.Position);
+            Point center2 = GetImageCenter(rectangle);
+            Point offset2 = new(position2.X - center2.X, position2.Y - center2.Y);
+
+            rectangle.X += offset1.X - offset2.X;
+            rectangle.Y += offset1.Y - offset2.Y;
+
             Rectangle = rectangle;
-            Console.WriteLine(Rectangle.ToString());
         }
 
-        public override void AutoSetSize()
+        public Point GetImageCenter(Rectangle rectangle)
         {
-            _setsizeing = true;
-            ClientSize = ImageFrame.FrameSize;
-            _setsizeing = false;
+            return new(rectangle.X + (int)Math.Round(rectangle.Width / 2.0), rectangle.Y + rectangle.Height / 2);
+        }
+
+        public Point ClientPos2ImagePos(Rectangle rectangle, Point position)
+        {
+            double pixels = (double)rectangle.Width / ClientSize.Width;
+            return new(rectangle.X + (int)Math.Round(position.X * pixels), rectangle.Y + (int)Math.Round(position.Y * pixels));
         }
     }
 }

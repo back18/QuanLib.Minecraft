@@ -1,16 +1,16 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+﻿using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
+namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad
 {
-    public class ImageViewerAppInfo : ApplicationInfo<ImageViewerApp>
+    public class NotepadAppInfo : ApplicationInfo<NotepadApp>
     {
-        public ImageViewerAppInfo()
+        public NotepadAppInfo()
         {
             Platforms = new PlatformID[]
             {
@@ -18,8 +18,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.ImageViewer
                 PlatformID.Unix,
                 PlatformID.MacOSX
             };
-            ID = ImageViewerApp.ID;
-            Name = ImageViewerApp.Name;
+            ID = NotepadApp.ID;
+            Name = NotepadApp.Name;
             Version = Version.Parse("1.0");
             try
             {
