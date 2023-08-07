@@ -1,12 +1,12 @@
-﻿using FFmpeg.AutoGen;
-using QuanLib.Minecraft.Block;
+﻿using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.Event;
-using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,83 +14,95 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
-    public class DrawingBox : Control
+    public class DrawingBox : ScalablePictureBox
     {
         public DrawingBox()
         {
-            EnablePen = false;
-            ClientSize = new(240, 110);
+            EnableDrag = false;
+            Drawing = false;
+            _PenWidth = 1;
 
-            _lastpos = InvalidPosition;
-            _image = new(ClientSize.Width, ClientSize.Height, MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White].AverageColors[GetScreenPlaneSize().NormalFacing]);
-            _frame = new(_image, GetScreenPlaneSize().NormalFacing, ClientSize);
-            Skin.SetAllBackgroundImage(_frame);
+            _undos = new();
+            _redos = new();
+
+            LastCursorPosition = new(0, 0);
         }
 
         private static readonly Point InvalidPosition = new(-1, -1);
 
-        private Point _lastpos;
+        private readonly Stack<Image<Rgba32>> _undos;
 
-        private readonly Image<Rgba32> _image;
+        private readonly Stack<Image<Rgba32>> _redos;
 
-        private readonly ImageFrame _frame;
+        private Point LastCursorPosition;
 
-        public bool EnablePen { get; set; }
+        public bool EnableDraw { get; set; }
 
-        public Size DrawingSize => _image.Size;
+        public bool Drawing { get; private set; }
 
-        public override IFrame RenderingFrame()
+        public int PenWidth
         {
-            ImageFrame? image = Skin.GetBackgroundImage();
-            if (image is null)
-                return base.RenderingFrame();
-
-            if (image.FrameSize != ClientSize)
+            get => _PenWidth;
+            set
             {
-                image.ResizeOptions.Size = ClientSize;
-                image.Update();
+                if (value < 1)
+                    value = 1;
+                _PenWidth = value;
             }
-
-            return image.GetFrameClone();
         }
+        private int _PenWidth;
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
             base.OnRightClick(sender, e);
 
-            EnablePen = !EnablePen;
+            if (EnableDraw)
+            {
+                if (Drawing)
+                {
+                    Drawing = false;
+                }
+                else
+                {
+                    Drawing = true;
+                    _undos.Push(ImageFrame.Image.Clone());
+                    ClearRedoStack();
+                }
+            }
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
             base.OnCursorMove(sender, e);
 
-            if (!EnablePen)
+            if (!Drawing)
             {
-                _lastpos = InvalidPosition;
+                LastCursorPosition = InvalidPosition;
                 return;
             }
-
-            if (_lastpos == InvalidPosition)
+            else if (LastCursorPosition == InvalidPosition)
             {
-                _lastpos = e.Position;
+                LastCursorPosition = e.Position;
                 return;
             }
 
             var item = GetScreenContext()?.Screen.InputHandler.CurrentItem;
             if (item is not null && MinecraftResourcesManager.BlockTextureManager.TryGetValue(item.ID, out var texture))
             {
-                _image.Mutate(ctx =>
+                ImageFrame.Image.Mutate(ctx =>
                 {
-                    var pen = new Pen(texture.AverageColors[GetScreenPlaneSize().NormalFacing], 5);
-                    ctx.DrawLines(pen, new PointF[] { new(_lastpos.X, _lastpos.Y), new(e.Position.X, e.Position.Y) });
+                    var pen = new Pen(texture.AverageColors[GetScreenPlaneSize().NormalFacing], PenWidth);
+                    pen.JointStyle = JointStyle.Round;
+                    pen.EndCapStyle = EndCapStyle.Round;
+                    Point position1 = ClientPos2ImagePos(Rectangle, LastCursorPosition);
+                    Point position2 = ClientPos2ImagePos(Rectangle, e.Position);
+                    ctx.DrawLines(pen, new PointF[] { position1, position2 });
                 });
-                _image[e.Position.X, e.Position.Y] = texture.AverageColors[GetScreenPlaneSize().NormalFacing];
-                _frame.Update();
+                ImageFrame.Update(Rectangle);
                 RequestUpdateFrame();
             }
 
-            _lastpos = e.Position;
+            LastCursorPosition = e.Position;
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
@@ -109,6 +121,63 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             var context = GetScreenContext();
             if (context is not null)
                 context.IsShowCursor = true;
+        }
+
+        protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        {
+            base.OnImageFrameChanged(sender, e);
+
+            ClearUndoStack();
+            ClearRedoStack();
+        }
+
+        public void Clear()
+        {
+            _undos.Push(ImageFrame.Image.Clone());
+            ClearRedoStack();
+
+            Rgba32 color = GetBlockAverageColor(BlockManager.Concrete.White);
+            ImageFrame.Image.Mutate(ctx => ctx.BackgroundColor(color).Fill(color));
+            ImageFrame.Update(Rectangle);
+            RequestUpdateFrame();
+        }
+
+        public void Undo()
+        {
+            if (_undos.Count > 0)
+            {
+                _redos.Push(ImageFrame.Image);
+                ImageFrame.Image = _undos.Pop();
+                ImageFrame.Update(Rectangle);
+                RequestUpdateFrame();
+            }
+        }
+
+        public void Redo()
+        {
+            if (_redos.Count > 0)
+            {
+                _undos.Push(ImageFrame.Image);
+                ImageFrame.Image = _redos.Pop();
+                ImageFrame.Update(Rectangle);
+                RequestUpdateFrame();
+            }
+        }
+
+        private void ClearUndoStack()
+        {
+            while (_undos.Count > 0)
+            {
+                _undos.Pop().Dispose();
+            }
+        }
+
+        private void ClearRedoStack()
+        {
+            while (_redos.Count > 0)
+            {
+                _redos.Pop().Dispose();
+            }
         }
     }
 }

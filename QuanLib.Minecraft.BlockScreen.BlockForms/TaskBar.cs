@@ -53,7 +53,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             FullScreen_Button.BorderWidth = 0;
             FullScreen_Button.Text = "↓";
             FullScreen_Button.ClientSize = new(16, 16);
-            FullScreen_Button.ClientLocation = this.LifeLayout(null, FullScreen_Button, 0, 0);
+            FullScreen_Button.ClientLocation = this.LeftLayout(null, FullScreen_Button, 0, 0);
             FullScreen_Button.Anchor = Direction.Bottom | Direction.Right;
             FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             FullScreen_Button.Skin.BackgroundBlockID_Hover = green;

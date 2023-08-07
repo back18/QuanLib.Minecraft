@@ -81,7 +81,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTitleBar_Button.Text = "↓";
             ShowTitleBar_Button.ClientSize = new(16, 16);
             ShowTitleBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
-            ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0));
+            ShowTitleBar_Button.ClientLocation = this.LeftLayout(null, ShowTitleBar_Button, 0, 0));
             ShowTitleBar_Button.Anchor = Direction.Top | Direction.Right;
             ShowTitleBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
@@ -106,7 +106,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnInitCompleted1();
 
-            ShowTitleBar_Button.ClientLocation = this.LifeLayout(null, ShowTitleBar_Button, 0, 0);
+            ShowTitleBar_Button.ClientLocation = this.LeftLayout(null, ShowTitleBar_Button, 0, 0);
         }
 
         protected override void OnMove(Control sender, PositionChangedEventArgs e)

@@ -52,15 +52,15 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             ClientPanel.SubControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
-            Setting_Switch.Skin.BackgroundBlockID = Setting_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Lime;
-            Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Yellow;
+            Setting_Switch.Skin.BackgroundBlockID = Setting_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
+            Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
             Setting_Switch.ClientLocation = ClientPanel.RightLayout(null, 2, 2);
             Setting_Switch.ControlSelected += Setting_Switch_ControlSelected;
             Setting_Switch.ControlDeselected += Setting_Switch_ControlDeselected;
 
             ClientPanel.SubControls.Add(Generate_Button);
             Generate_Button.Text = "生成";
-            Generate_Button.ClientLocation = ClientPanel.LifeLayout(null, Generate_Button, 2, 2);
+            Generate_Button.ClientLocation = ClientPanel.LeftLayout(null, Generate_Button, 2, 2);
             Generate_Button.Anchor = Direction.Top | Direction.Right;
             Generate_Button.RightClick += Generate_Button_RightClick;
 
@@ -71,6 +71,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             Path_TextBox.TextEditorChanged += Path_TextBox_TextEditorChanged;
 
             ClientPanel.SubControls.Add(ScalablePictureBox);
+            ScalablePictureBox.EnableZoom = true;
+            ScalablePictureBox.EnableDrag = true;
             ScalablePictureBox.ClientLocation = ClientPanel.BottomLayout(Setting_Switch, 2);
             ScalablePictureBox.DefaultResizeOptions.Size = new(ClientPanel.ClientSize.Width - ScalablePictureBox.BorderWidth * 2 - 4, ClientPanel.ClientSize.Height - ScalablePictureBox.BorderWidth * 2 - Generate_Button.Height - 6);
             ScalablePictureBox.Stretch = Direction.Bottom | Direction.Right;

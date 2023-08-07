@@ -183,22 +183,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             SubControls.Clear();
             if (ButtonsToShow.HasFlag(FormButton.Close))
             {
-                Close_Button.ClientLocation = this.LifeLayout(SubControls.RecentlyAddedControl, Close_Button, 0, 0);
+                Close_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Close_Button, 0, 0);
                 SubControls.Add(Close_Button);
             }
             if (ButtonsToShow.HasFlag(FormButton.MaximizeOrRestore))
             {
-                MaximizeOrRestore_Switch.ClientLocation = this.LifeLayout(SubControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
+                MaximizeOrRestore_Switch.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
                 SubControls.Add(MaximizeOrRestore_Switch);
             }
             if (ButtonsToShow.HasFlag(FormButton.Minimize))
             {
-                Minimize_Button.ClientLocation = this.LifeLayout(SubControls.RecentlyAddedControl, Minimize_Button, 0, 0);
+                Minimize_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Minimize_Button, 0, 0);
                 SubControls.Add(Minimize_Button);
             }
             if (ButtonsToShow.HasFlag(FormButton.FullScreen))
             {
-                FullScreen_Button.ClientLocation = this.LifeLayout(SubControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
+                FullScreen_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
                 SubControls.Add(FullScreen_Button);
             }
         }

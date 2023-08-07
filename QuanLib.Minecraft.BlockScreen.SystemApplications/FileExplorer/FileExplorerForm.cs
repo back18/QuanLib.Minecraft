@@ -102,14 +102,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             ClientPanel.SubControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
-            Cancel_Button.ClientLocation = ClientPanel.LifeLayout(null, Cancel_Button, spacing, start2);
+            Cancel_Button.ClientLocation = ClientPanel.LeftLayout(null, Cancel_Button, spacing, start2);
             Cancel_Button.Anchor = Direction.Bottom | Direction.Right;
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
             ClientPanel.SubControls.Add(OK_Button);
             OK_Button.Text = "确定";
             OK_Button.ClientSize = new(32, 16);
-            OK_Button.ClientLocation = ClientPanel.LifeLayout(Cancel_Button, OK_Button, spacing);
+            OK_Button.ClientLocation = ClientPanel.LeftLayout(Cancel_Button, OK_Button, spacing);
             OK_Button.Anchor = Direction.Bottom | Direction.Right;
             OK_Button.RightClick += OK_Button_RightClick;
 

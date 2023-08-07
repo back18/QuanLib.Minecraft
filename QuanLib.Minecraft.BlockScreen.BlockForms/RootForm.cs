@@ -81,7 +81,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTaskBar_Button.Text = "↑";
             ShowTaskBar_Button.ClientSize = new(16, 16);
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
-            ShowTaskBar_Button.ClientLocation = this.LifeLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
+            ShowTaskBar_Button.ClientLocation = this.LeftLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
             ShowTaskBar_Button.Anchor = Direction.Top | Direction.Right;
             ShowTaskBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;

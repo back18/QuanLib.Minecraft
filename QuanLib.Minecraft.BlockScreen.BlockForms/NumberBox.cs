@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Event;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using System;
 using System.Collections.Generic;
@@ -15,42 +16,59 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             FirstHandleCursorSlotChanged = true;
             ContentAnchor = AnchorPosition.Centered;
 
-            _Value = 0;
-            MinValue = int.MinValue;
-            MaxValue = int.MaxValue;
+            _NumberValue = 0;
+            MinNumberValue = int.MinValue;
+            MaxNumberValue = int.MaxValue;
             ScrollDelta = 1;
+
+            NumberValueChanged += OnNumberValueChanged;
         }
 
-        public int Value
+        public int NumberValue
         {
-            get => _Value;
+            get => _NumberValue;
             set
             {
-                if (value < MinValue)
-                    value = MinValue;
-                else if (value > MaxValue)
-                    value = MaxValue;
+                if (value < MinNumberValue)
+                    value = MinNumberValue;
+                else if (value > MaxNumberValue)
+                    value = MaxNumberValue;
 
-                if (_Value != value)
+                if (_NumberValue != value)
                 {
-                    _Value = value;
-                    Text = _Value.ToString();
+                    int temp = _NumberValue;
+                    _NumberValue = value;
+                    NumberValueChanged.Invoke(this, new(temp, _NumberValue));
                 }
             }
         }
-        private int _Value;
+        private int _NumberValue;
 
-        public int MinValue { get; set; }
+        public int MinNumberValue { get; set; }
 
-        public int MaxValue { get; set; }
+        public int MaxNumberValue { get; set; }
 
         public int ScrollDelta { get; set; }
+
+        public event EventHandler<NumberBox, ValueChangedEventArgs<int>> NumberValueChanged;
+
+        protected virtual void OnNumberValueChanged(NumberBox sender, ValueChangedEventArgs<int> e)
+        {
+            Text = _NumberValue.ToString();
+        }
+
+        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        {
+            base.OnInitializeCallback(sender, e);
+
+            Text = NumberValue.ToString();
+        }
 
         protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
         {
             base.OnCursorSlotChanged(sender, e);
 
-            Value += e.Delta * ScrollDelta;
+            NumberValue += e.Delta * ScrollDelta;
         }
     }
 }

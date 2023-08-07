@@ -16,13 +16,19 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             FirstHandleCursorSlotChanged = true;
             DefaultResizeOptions.Mode = ResizeMode.Max;
+            DefaultResizeOptions.Mode = ResizeMode.Max;
             Rectangle = new(0, 0, ImageFrame.ResizeOptions.Size.Width, ImageFrame.ResizeOptions.Size.Height);
             ScalingRatio = 0.2;
+            EnableZoom = false;
+            EnableDrag = false;
+            Dragging = false;
 
-            _cursorpos = new(0, 0);
+            LastCursorPosition = new(0, 0);
         }
 
-        private Point _cursorpos;
+        private static readonly Point InvalidPosition = new(-1, -1);
+
+        private Point LastCursorPosition;
 
         public Rectangle Rectangle
         {
@@ -54,7 +60,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 if (_Rectangle != value)
                 {
-                    //Console.WriteLine(value);
                     _Rectangle = value;
                     if (_Rectangle.Width > ClientSize.Width)
                         ImageFrame.ResizeOptions.Sampler = KnownResamplers.Bicubic;
@@ -70,7 +75,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public double ScalingRatio { get; set; }
 
-        public bool IsDragging { get; private set; }
+        public bool EnableZoom { get; set; }
+
+        public bool EnableDrag { get; set; }
+
+        public bool Dragging { get; private set; }
 
         public override IFrame RenderingFrame()
         {
@@ -81,24 +90,33 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            Point position1 = ClientPos2ImagePos(Rectangle, e.Position);
-            Point position2 = ClientPos2ImagePos(Rectangle, _cursorpos);
-            Point offset = new(position1.X - position2.X, position1.Y - position2.Y);
-            if (IsDragging)
+            if (!Dragging)
             {
-                Rectangle rectangle = Rectangle;
-                rectangle.X -= offset.X;
-                rectangle.Y -= offset.Y;
-                Rectangle = rectangle;
+                LastCursorPosition = InvalidPosition;
+                return;
             }
-            _cursorpos = e.Position;
+            else if (LastCursorPosition == InvalidPosition)
+            {
+                LastCursorPosition = e.Position;
+                return;
+            }
+
+            Point position1 = ClientPos2ImagePos(Rectangle, LastCursorPosition);
+            Point position2 = ClientPos2ImagePos(Rectangle, e.Position);
+            Point offset = new(position2.X - position1.X, position2.Y - position1.Y);
+            Rectangle rectangle = Rectangle;
+            rectangle.X -= offset.X;
+            rectangle.Y -= offset.Y;
+            Rectangle = rectangle;
+            LastCursorPosition = e.Position;
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
             base.OnRightClick(sender, e);
 
-            IsDragging = !IsDragging;
+            if (EnableDrag)
+                Dragging = !Dragging;
         }
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
@@ -111,19 +129,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             DefaultResizeOptions.Size += offset;
             Rectangle = new(0, 0, ImageFrame.Image.Size.Width, ImageFrame.Image.Size.Height);
             ImageFrame.Update(Rectangle);
-            AutoSetSize();
+            if (AutoSize)
+                AutoSetSize();
         }
 
         protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
         {
             base.OnImageFrameChanged(sender, e);
 
-            Rectangle = new(0, 0, e.NewImageFrame.Image.Size.Width, e.NewImageFrame.Image.Size.Height);
+            if (e.OldImageFrame.Image.Size != e.NewImageFrame.Image.Size)
+                Rectangle = new(0, 0, e.NewImageFrame.Image.Size.Width, e.NewImageFrame.Image.Size.Height);
         }
 
         protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
         {
             base.OnCursorSlotChanged(sender, e);
+
+            if (!EnableZoom)
+                return;
 
             Rectangle rectangle = Rectangle;
 
@@ -155,6 +178,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             double pixels = (double)rectangle.Width / ClientSize.Width;
             return new(rectangle.X + (int)Math.Round(position.X * pixels), rectangle.Y + (int)Math.Round(position.Y * pixels));
+        }
+
+        public Point ImagePos2ClientPos(Rectangle rectangle, Point position)
+        {
+            double pixels = (double)rectangle.Width / ClientSize.Width;
+            return new((int)Math.Round((position.X - rectangle.X) / pixels), (int)Math.Round((position.Y - rectangle.Y) / pixels));
         }
     }
 }

@@ -60,13 +60,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager
             ClientPanel.SubControls.Add(Close_Button);
             Close_Button.Text = "关闭";
             Close_Button.ClientSize = new(32, 16);
-            Close_Button.ClientLocation = ClientPanel.LifeLayout(null, Close_Button, spacing, start);
+            Close_Button.ClientLocation = ClientPanel.LeftLayout(null, Close_Button, spacing, start);
             Close_Button.Anchor = Direction.Bottom | Direction.Right;
 
             ClientPanel.SubControls.Add(Open_Button);
             Open_Button.Text = "打开";
             Open_Button.ClientSize = new(32, 16);
-            Open_Button.ClientLocation = ClientPanel.LifeLayout(Close_Button, Open_Button, spacing);
+            Open_Button.ClientLocation = ClientPanel.LeftLayout(Close_Button, Open_Button, spacing);
             Open_Button.Anchor = Direction.Bottom | Direction.Right;
 
             ClientPanel.SubControls.Add(TaskList_Panel);

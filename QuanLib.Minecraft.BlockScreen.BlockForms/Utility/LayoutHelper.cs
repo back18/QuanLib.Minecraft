@@ -44,7 +44,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
             return source.BottomLayout(previous, spacing, previous.LeftLocation);
         }
 
-        public static Point LifeLayout(this Control source, Control? previous, Control next, int spacing, int start)
+        public static Point LeftLayout(this Control source, Control? previous, Control next, int spacing, int start)
         {
             if (next is null)
                 throw new ArgumentNullException(nameof(next));
@@ -55,12 +55,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.Utility
                 return new(previous.LeftLocation - next.Width - spacing, previous.TopLocation);
         }
 
-        public static Point LifeLayout(this Control source, Control previous, Control next, int spacing)
+        public static Point LeftLayout(this Control source, Control previous, Control next, int spacing)
         {
             if (previous is null)
                 throw new ArgumentNullException(nameof(previous));
 
-            return source.LifeLayout(previous, next, spacing, previous.TopLocation);
+            return source.LeftLayout(previous, next, spacing, previous.TopLocation);
         }
 
         public static Point RightLayout(this Control source, Control? previous, int spacing, int start)

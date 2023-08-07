@@ -69,7 +69,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private Image<Rgba32> _output;
 
-        public Image<Rgba32> Image { get; }
+        public Image<Rgba32> Image { get; set; }
 
         public ResizeOptions ResizeOptions { get; }
 

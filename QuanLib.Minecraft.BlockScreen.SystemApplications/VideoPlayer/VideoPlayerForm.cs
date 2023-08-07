@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
 
             ClientPanel.SubControls.Add(Read_Button);
             Read_Button.Text = "读取";
-            Read_Button.ClientLocation = ClientPanel.LifeLayout(null, Read_Button, 2, 2);
+            Read_Button.ClientLocation = ClientPanel.LeftLayout(null, Read_Button, 2, 2);
             Read_Button.Anchor = Direction.Top | Direction.Right;
             Read_Button.RightClick += Read_Button_RightClick;
 

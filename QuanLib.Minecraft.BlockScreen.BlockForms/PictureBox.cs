@@ -73,7 +73,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ImageFrame.ResizeOptions.Size += offset;
             DefaultResizeOptions.Size += offset;
             ImageFrame.Update();
-            AutoSetSize();
+            if (AutoSize)
+                AutoSetSize();
         }
 
         protected virtual void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
@@ -88,6 +89,27 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             _autosetsizeing = true;
             ClientSize = ImageFrame.FrameSize;
             _autosetsizeing = false;
+        }
+
+        public Image<Rgba32> CreateSolidColorImage(Size size, string blockID)
+        {
+            return CreateSolidColorImage(size, GetBlockAverageColor(blockID));
+        }
+
+        public Image<Rgba32> CreateSolidColorImage(int width, int height, string blockID)
+        {
+
+            return CreateSolidColorImage(width, height, GetBlockAverageColor(blockID));
+        }
+
+        public Image<Rgba32> CreateSolidColorImage(Size size, Rgba32 color)
+        {
+            return CreateSolidColorImage(size.Width, size.Height, color);
+        }
+
+        public Image<Rgba32> CreateSolidColorImage(int width, int height, Rgba32 color)
+        {
+            return new Image<Rgba32>(width, height, GetBlockAverageColor(BlockManager.Concrete.White));
         }
 
         public void SetImage(Image<Rgba32> image)
