@@ -124,14 +124,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return TryHandleTextEditorChanged(e);
         }
 
-        public override void UpdateAllHoverState(CursorEventArgs e)
+        public override void UpdateHoverState(CursorEventArgs e)
         {
             foreach (var control in GetSubControls().ToArray())
             {
-                control.UpdateAllHoverState(new(control.ParentPos2SubPos(e.Position)));
+                control.UpdateHoverState(new(control.ParentPos2SubPos(e.Position)));
             }
 
-            base.UpdateAllHoverState(e);
+            base.UpdateHoverState(e);
         }
 
         public class ControlCollection<T> : AbstractControlCollection<T> where T : Control

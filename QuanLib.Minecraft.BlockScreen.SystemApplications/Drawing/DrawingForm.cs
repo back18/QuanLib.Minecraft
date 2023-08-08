@@ -1,6 +1,7 @@
 ﻿using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             More_MenuBox = new();
             Undo_Button = new();
             Redo_Button = new();
-            Clear_Button = new();
+            FillButton = new();
             Create_Button = new();
             Open_Button = new();
             Save_Button = new();
@@ -44,7 +45,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
         private readonly Button Redo_Button;
 
-        private readonly Button Clear_Button;
+        private readonly Button FillButton;
 
         private readonly Button Create_Button;
 
@@ -100,6 +101,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
             More_MenuBox.Size = new(45, MoreMenu_Switch.BottomLocation);
             More_MenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
+            More_MenuBox.Anchor = Direction.Top | Direction.Right;
 
             More_MenuBox.AddedSubControlAndLayout(Undo_Button);
             Undo_Button.Text = "撤销";
@@ -111,43 +113,31 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             Redo_Button.Skin.BackgroundBlockID = string.Empty;
             Redo_Button.RightClick += Redo_Button_RightClick;
 
-            More_MenuBox.AddedSubControlAndLayout(Clear_Button);
-            Clear_Button.Text = "清空";
-            Clear_Button.Skin.BackgroundBlockID = string.Empty;
-            Clear_Button.RightClick += Clear_Button_RightClick;
+            More_MenuBox.AddedSubControlAndLayout(FillButton);
+            FillButton.Text = "填充";
+            FillButton.Skin.BackgroundBlockID = string.Empty;
+            FillButton.RightClick += Fill_Button_RightClick;
 
             More_MenuBox.AddedSubControlAndLayout(Create_Button);
             Create_Button.Text = "新建";
             Create_Button.Skin.BackgroundBlockID = string.Empty;
+            Create_Button.RightClick += Create_Button_RightClick;
 
             More_MenuBox.AddedSubControlAndLayout(Open_Button);
             Open_Button.Text = "打开";
             Open_Button.Skin.BackgroundBlockID = string.Empty;
+            Open_Button.RightClick += Open_Button_RightClick;
 
             More_MenuBox.AddedSubControlAndLayout(Save_Button);
             Save_Button.Text = "保存";
             Save_Button.Skin.BackgroundBlockID = string.Empty;
+            Save_Button.RightClick += Save_Button_RightClick;
 
             ClientPanel.SubControls.Add(DrawingBox);
             DrawingBox.ClientLocation = new(1, 1);
             DrawingBox.Size = new(ClientPanel.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel.ClientSize.Height - 2);
             DrawingBox.Stretch = Direction.Bottom | Direction.Right;
-            DrawingBox.SetImage(DrawingBox.CreateSolidColorImage(DrawingBox.ClientSize, BlockManager.Concrete.White));
-        }
-
-        private void Undo_Button_RightClick(Control sender, Event.CursorEventArgs e)
-        {
-            DrawingBox.Undo();
-        }
-
-        private void Redo_Button_RightClick(Control sender, Event.CursorEventArgs e)
-        {
-            DrawingBox.Redo();
-        }
-
-        private void Clear_Button_RightClick(Control sender, Event.CursorEventArgs e)
-        {
-            DrawingBox.Clear();
+            DrawingBox.SetImage(DrawingBox.CreateImage(DrawingBox.ClientSize, BlockManager.Concrete.White));
         }
 
         private void Draw_Switch_ControlSelected(Control sender, EventArgs e)
@@ -194,6 +184,36 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
         private void MoreMenu_Switch_ControlDeselected(Control sender, EventArgs e)
         {
             ClientPanel.SubControls.Remove(More_MenuBox);
+        }
+
+        private void Undo_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            DrawingBox.Undo();
+        }
+
+        private void Redo_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            DrawingBox.Redo();
+        }
+
+        private void Fill_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            DrawingBox.Fill();
+        }
+
+        private void Create_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            DrawingBox.SetImage(DrawingBox.CreateImage(16, 16, string.Empty));
+        }
+
+        private void Open_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            DrawingBox.TryReadImageFile("new.png");
+        }
+
+        private void Save_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        {
+            DrawingBox.ImageFrame.Image.Save("new.png");
         }
     }
 }

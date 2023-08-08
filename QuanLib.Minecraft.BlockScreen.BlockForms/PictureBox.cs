@@ -18,7 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             DefaultResizeOptions = ImageFrame.DefaultResizeOptions.Clone();
             DefaultResizeOptions.Size = ClientSize;
-            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockAverageColor(BlockManager.Concrete.White)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
+            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockColor(BlockManager.Concrete.White)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
             ClientSize = new(64, 64);
 
             AutoSize = true;
@@ -91,25 +91,25 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             _autosetsizeing = false;
         }
 
-        public Image<Rgba32> CreateSolidColorImage(Size size, string blockID)
+        public Image<Rgba32> CreateImage(Size size, string blockID)
         {
-            return CreateSolidColorImage(size, GetBlockAverageColor(blockID));
+            return CreateImage(size, GetBlockColor(blockID));
         }
 
-        public Image<Rgba32> CreateSolidColorImage(int width, int height, string blockID)
+        public Image<Rgba32> CreateImage(int width, int height, string blockID)
         {
 
-            return CreateSolidColorImage(width, height, GetBlockAverageColor(blockID));
+            return CreateImage(width, height, GetBlockColor(blockID));
         }
 
-        public Image<Rgba32> CreateSolidColorImage(Size size, Rgba32 color)
+        public Image<Rgba32> CreateImage(Size size, Rgba32 color)
         {
-            return CreateSolidColorImage(size.Width, size.Height, color);
+            return CreateImage(size.Width, size.Height, color);
         }
 
-        public Image<Rgba32> CreateSolidColorImage(int width, int height, Rgba32 color)
+        public Image<Rgba32> CreateImage(int width, int height, Rgba32 color)
         {
-            return new Image<Rgba32>(width, height, GetBlockAverageColor(BlockManager.Concrete.White));
+            return new Image<Rgba32>(width, height, color);
         }
 
         public void SetImage(Image<Rgba32> image)

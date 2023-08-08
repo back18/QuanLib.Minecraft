@@ -86,21 +86,29 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return;
             }
 
-            var item = GetScreenContext()?.Screen.InputHandler.CurrentItem;
-            if (item is not null && MinecraftResourcesManager.BlockTextureManager.TryGetValue(item.ID, out var texture))
+            Rgba32 color = GetCurrentColorOrDefault(BlockManager.Concrete.Black);
+            Point position1 = ClientPos2ImagePos(LastCursorPosition);
+            Point position2 = ClientPos2ImagePos(e.Position);
+            
+            if (PixelMode && PenWidth == 1)
             {
+                ImageFrame.Image[position2.X, position2.Y] = color;
+            }
+            else
+            {
+                var pen = new Pen(color, PenWidth)
+                {
+                    JointStyle = JointStyle.Round,
+                    EndCapStyle = EndCapStyle.Round
+                };
                 ImageFrame.Image.Mutate(ctx =>
                 {
-                    var pen = new Pen(texture.AverageColors[GetScreenPlaneSize().NormalFacing], PenWidth);
-                    pen.JointStyle = JointStyle.Round;
-                    pen.EndCapStyle = EndCapStyle.Round;
-                    Point position1 = ClientPos2ImagePos(Rectangle, LastCursorPosition);
-                    Point position2 = ClientPos2ImagePos(Rectangle, e.Position);
                     ctx.DrawLines(pen, new PointF[] { position1, position2 });
                 });
-                ImageFrame.Update(Rectangle);
-                RequestUpdateFrame();
             }
+
+            ImageFrame.Update(Rectangle);
+            RequestUpdateFrame();
 
             LastCursorPosition = e.Position;
         }
@@ -133,10 +141,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public void Clear()
         {
+            Fill(BlockManager.Concrete.White);
+        }
+
+        public void Fill()
+        {
+            Fill(GetCurrentColorOrDefault(BlockManager.Concrete.White));
+        }
+
+        public void Fill(string blockID)
+        {
+            Fill(GetBlockColor(blockID));
+        }
+
+        public void Fill(Rgba32 color)
+        {
             _undos.Push(ImageFrame.Image.Clone());
             ClearRedoStack();
 
-            Rgba32 color = GetBlockAverageColor(BlockManager.Concrete.White);
             ImageFrame.Image.Mutate(ctx => ctx.BackgroundColor(color).Fill(color));
             ImageFrame.Update(Rectangle);
             RequestUpdateFrame();
@@ -178,6 +200,17 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 _redos.Pop().Dispose();
             }
+        }
+
+        private Rgba32 GetCurrentColorOrDefault(string def)
+        {
+            return GetCurrentColorOrDefault(GetBlockColor(def));
+        }
+
+        private Rgba32 GetCurrentColorOrDefault(Rgba32 def)
+        {
+            var id = GetScreenContext()?.Screen.InputHandler.CurrentItem?.ID;
+            return GetBlockColorOrDefault(id, def);
         }
     }
 }

@@ -386,6 +386,9 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
 
         public static ArrayFrame FromImage<T>(Facing facing, Image<T> image) where T : unmanaged, IPixel<T>
         {
+            if (image is null)
+                throw new ArgumentNullException(nameof(image));
+
             string[,] ids = new string[image.Width, image.Height];
             for (int x = 0; x < image.Width; x++)
                 for (int y = 0; y < image.Height; y++)
@@ -393,10 +396,22 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             return new(ids);
         }
 
-        public static ArrayFrame FromImage(Facing facing, string path)
+        public static ArrayFrame FromImage(Facing facing, Image<Rgba32> image, string transparentBlockID = "")
         {
-            using var image = Image.Load<Rgba32>(File.ReadAllBytes(path));
-            return FromImage(facing, image);
+            if (image is null)
+                throw new ArgumentNullException(nameof(image));
+
+            string[,] ids = new string[image.Width, image.Height];
+            for (int x = 0; x < image.Width; x++)
+                for (int y = 0; y < image.Height; y++)
+                {
+                    Rgba32 color = image[x, y];
+                    if (color.A == 0)
+                        ids[x, y] = transparentBlockID;
+                    else
+                        ids[x, y] = MinecraftResourcesManager.BlockTextureManager.MatchBlockTexture(facing, color)?.BlockID ?? "minecraft:air";
+                }
+            return new(ids);
         }
     }
 }

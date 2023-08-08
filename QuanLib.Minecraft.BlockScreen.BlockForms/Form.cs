@@ -119,9 +119,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             InvokeExternalCursorMove = true;
         }
 
-        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        protected override void OnInitializeCompleted(Control sender, EventArgs e)
         {
-            base.OnInitializeCallback(sender, e);
+            base.OnInitializeCompleted(sender, e);
 
             if (IsMaximize)
             {

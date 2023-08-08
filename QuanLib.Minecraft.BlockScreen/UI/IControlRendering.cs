@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.BlockScreen.Frame;
+﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,6 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 
         public ArrayFrame? GetFrameCache();
 
-        public void OnRenderingCompleted(ArrayFrame frame);
+        public void HandleRenderingCompleted(ArrayFrameEventArgs e);
     }
 }

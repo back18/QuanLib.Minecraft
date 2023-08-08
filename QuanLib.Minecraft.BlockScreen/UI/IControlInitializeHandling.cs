@@ -8,7 +8,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
 {
     public interface IControlInitializeHandling
     {
-        public bool InitializeCompleted { get; }
+        public bool IsInitializeCompleted { get; }
 
         public void HandleInitialize();
 

@@ -29,7 +29,7 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                     frame.CorrectSize(rendering.ClientSize, rendering.OffsetPosition, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
                     return frame.ToArrayFrame();
                 });
-                _task.ContinueWith((t) => rendering.OnRenderingCompleted(t.Result.ToArrayFrame()));
+                _task.ContinueWith((t) => rendering.HandleRenderingCompleted(new(t.Result.ToArrayFrame())));
             }
             else
             {

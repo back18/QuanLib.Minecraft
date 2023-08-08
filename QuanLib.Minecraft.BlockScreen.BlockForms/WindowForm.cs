@@ -89,7 +89,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTitleBar_Button.RightClick += ShowTitleBar_Button_RightClick;
         }
 
-        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        protected override void OnInitializeCompleted(Control sender, EventArgs e)
         {
             if (ClientPanel.PageSize != new Size(0, 0))
             {
@@ -98,7 +98,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
             else
             {
-                base.OnInitializeCallback(sender, e);
+                base.OnInitializeCompleted(sender, e);
             }
         }
 

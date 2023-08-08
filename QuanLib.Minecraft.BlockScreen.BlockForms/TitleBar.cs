@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Text = _owner.Text;
             LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
             _owner.TextChanged += (sender, e) => Text = _owner.Text;
-            _owner.InitializeCallback += Owner_InitializeCallback;
+            _owner.InitializeCompleted += Owner_InitializeCallback;
 
             MoveAnchorPoint = new(0, 0);
             _ButtonsToShow = FormButton.Close | FormButton.MaximizeOrRestore | FormButton.Minimize | FormButton.FullScreen;

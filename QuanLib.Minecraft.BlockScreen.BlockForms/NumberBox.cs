@@ -57,9 +57,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Text = _NumberValue.ToString();
         }
 
-        protected override void OnInitializeCallback(Control sender, EventArgs e)
+        protected override void OnInitializeCompleted(Control sender, EventArgs e)
         {
-            base.OnInitializeCallback(sender, e);
+            base.OnInitializeCompleted(sender, e);
 
             Text = NumberValue.ToString();
         }

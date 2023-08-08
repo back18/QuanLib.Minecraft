@@ -46,6 +46,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             ResizeOptions = DefaultResizeOptions.Clone();
             ResizeOptions.Size = size;
+            TransparentBlockID = string.Empty;
         }
 
         public ImageFrame(Image<Rgba32> image, Facing facing, ResizeOptions? resizeOptions = null)
@@ -57,6 +58,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _get = false;
 
             ResizeOptions = resizeOptions ?? DefaultResizeOptions.Clone();
+            TransparentBlockID = string.Empty;
         }
 
         public static ResizeOptions DefaultResizeOptions { get; }
@@ -72,6 +74,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public Image<Rgba32> Image { get; set; }
 
         public ResizeOptions ResizeOptions { get; }
+
+        public string TransparentBlockID { get; set; }
 
         public Size FrameSize
         {
@@ -107,8 +111,17 @@ namespace QuanLib.Minecraft.BlockScreen
             else
                 _output = Image.Clone();
             _output.Mutate(x => x.Resize(ResizeOptions));
-            _frame = ArrayFrame.FromImage(_facing, _output);
+            _frame = ArrayFrame.FromImage(_facing, _output, TransparentBlockID);
             _get = false;
+        }
+
+        public ImageFrame Clone()
+        {
+            var result = new ImageFrame(Image.Clone(), _facing, ResizeOptions.Clone())
+            {
+                TransparentBlockID = TransparentBlockID
+            };
+            return result;
         }
 
         public void Dispose()

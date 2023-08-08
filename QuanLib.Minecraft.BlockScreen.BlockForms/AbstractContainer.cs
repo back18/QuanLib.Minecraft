@@ -29,7 +29,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         protected virtual void OnAddedSubControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
             IControlInitializeHandling handling = e.Control;
-            if (InitializeCompleted && !handling.InitializeCompleted)
+            if (IsInitializeCompleted && !handling.IsInitializeCompleted)
                 handling.HandleAllInitialize();
         }
 

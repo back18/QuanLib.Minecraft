@@ -32,7 +32,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             FirstHandleCursorItemChanged = false;
             FirstHandleTextEditorChanged = false;
             InvokeExternalCursorMove = false;
-            InitializeCompleted = false;
+            IsInitializeCompleted = false;
             KeepWhenClear = false;
             LastRightClickTime = DateTime.MinValue;
             LastLeftClickTime = DateTime.MinValue;
@@ -67,7 +67,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             TextEditorChanged += OnTextEditorChanged;
             BeforeFrame += OnBeforeFrame;
             AfterFrame += OnAfterFrame;
-            InitializeCallback += OnInitializeCallback;
+            InitializeCompleted += OnInitializeCompleted;
+            RenderingCompleted += OnRenderingCompleted;
             ControlSelected += OnControlSelected;
             ControlDeselected += OnControlDeselected;
             TextChanged += OnTextChanged;
@@ -99,7 +100,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public bool InvokeExternalCursorMove { get; set; }
 
-        public bool InitializeCompleted { get; private set; }
+        public bool IsInitializeCompleted { get; private set; }
 
         public bool KeepWhenClear { get; set; }
 
@@ -530,7 +531,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public event EventHandler<Control, EventArgs> AfterFrame;
 
-        public event EventHandler<Control, EventArgs> InitializeCallback;
+        public event EventHandler<Control, EventArgs> InitializeCompleted;
+
+        public event EventHandler<Control, ArrayFrameEventArgs> RenderingCompleted;
 
         public event EventHandler<Control, EventArgs> ControlSelected;
 
@@ -574,7 +577,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         protected virtual void OnAfterFrame(Control sender, EventArgs e) { }
 
-        protected virtual void OnInitializeCallback(Control sender, EventArgs e) { }
+        protected virtual void OnInitializeCompleted(Control sender, EventArgs e) { }
+
+        protected virtual void OnRenderingCompleted(Control sender, ArrayFrameEventArgs e) { }
 
         protected virtual void OnControlSelected(Control sender, EventArgs e) { }
 
@@ -674,11 +679,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Layout.Invoke(this, e);
         }
 
-        public virtual void UpdateAllHoverState(CursorEventArgs e)
-        {
-            UpdateHoverState(e);
-        }
-
         protected bool TryHandleRightClick(CursorEventArgs e)
         {
             if (Visible && IsHover)
@@ -749,7 +749,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return false;
         }
 
-        public void UpdateHoverState(CursorEventArgs e)
+        public virtual void HandleRenderingCompleted(ArrayFrameEventArgs e)
+        {
+            Frame_Update = false;
+            Frame_Old = e.ArrayFrame;
+            RenderingCompleted.Invoke(this, e);
+        }
+
+        public virtual void UpdateHoverState(CursorEventArgs e)
         {
             bool included = IncludedOnControl(e.Position);
             if (IsHover)
@@ -803,13 +810,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual void OnInitCompleted3()
         {
-            InitializeCompleted = true;
+            IsInitializeCompleted = true;
         }
 
         public virtual void HandleInitialize()
         {
             Initialize();
-            InitializeCallback.Invoke(this, EventArgs.Empty);
+            InitializeCompleted.Invoke(this, EventArgs.Empty);
         }
 
         public virtual void HandleInitCompleted1()
@@ -898,12 +905,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         ArrayFrame? IControlRendering.GetFrameCache()
         {
             return Frame_Old;
-        }
-
-        void IControlRendering.OnRenderingCompleted(ArrayFrame frame)
-        {
-            Frame_Update = false;
-            Frame_Old = frame;
         }
 
         #endregion
@@ -1031,11 +1032,42 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return new PlaneSize(256, 144, Facing.Zp);
         }
 
-        public Rgba32 GetBlockAverageColor(string id)
+        public Rgba32 GetBlockColor(string blockID)
         {
-            if (!MinecraftResourcesManager.BlockTextureManager.TryGetValue(id, out var texture))
-                texture = MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White];
-            return texture.AverageColors[GetScreenPlaneSize().NormalFacing];
+            if (TryGetBlockColor(blockID, out var color))
+                return color;
+            else
+                return MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White].AverageColors[GetScreenPlaneSize().NormalFacing];
+        }
+
+        public Rgba32 GetBlockColorOrDefault(string? blockID, string def)
+        {
+            return GetBlockColorOrDefault(blockID, GetBlockColor(def));
+        }
+
+        public Rgba32 GetBlockColorOrDefault(string? blockID, Rgba32 def)
+        {
+            if (TryGetBlockColor(blockID, out var color))
+                return color;
+            else
+                return def;
+        }
+
+        public bool TryGetBlockColor(string? blockID, out Rgba32 color)
+        {
+            if (string.IsNullOrEmpty(blockID))
+            {
+                color = Color.Transparent;
+                return true;
+            }
+            else if (MinecraftResourcesManager.BlockTextureManager.TryGetValue(blockID, out var texture))
+            {
+                color = texture.AverageColors[GetScreenPlaneSize().NormalFacing];
+                return true;
+            }
+
+            color = default;
+            return false;
         }
 
         #endregion

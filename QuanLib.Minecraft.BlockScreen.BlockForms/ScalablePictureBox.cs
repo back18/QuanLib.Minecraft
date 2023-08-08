@@ -1,4 +1,6 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using Newtonsoft.Json.Linq;
+using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -14,49 +16,34 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         public ScalablePictureBox()
         {
+            ContentAnchor = AnchorPosition.UpperLeft;
+
             FirstHandleCursorSlotChanged = true;
             DefaultResizeOptions.Mode = ResizeMode.Max;
-            DefaultResizeOptions.Mode = ResizeMode.Max;
-            Rectangle = new(0, 0, ImageFrame.ResizeOptions.Size.Width, ImageFrame.ResizeOptions.Size.Height);
+            _Rectangle = new(0, 0, ImageFrame.ResizeOptions.Size.Width, ImageFrame.ResizeOptions.Size.Height);
             ScalingRatio = 0.2;
             EnableZoom = false;
             EnableDrag = false;
             Dragging = false;
 
             LastCursorPosition = new(0, 0);
+            PixelModeThreshold = 5;
         }
 
         private static readonly Point InvalidPosition = new(-1, -1);
 
         private Point LastCursorPosition;
 
+        public int PixelModeThreshold { get; set; }
+
+        public bool PixelMode => GetPixelSize() >= PixelModeThreshold;
+
         public Rectangle Rectangle
         {
             get => _Rectangle;
             set
             {
-                if (value.Width < 1)
-                    value.Width = 1;
-                else if (value.Width > ImageFrame.Image.Width)
-                    value.Width = ImageFrame.Image.Width;
-                if (value.Height < 1)
-                    value.Height = 1;
-                else if (value.Height > ImageFrame.Image.Height)
-                    value.Height = ImageFrame.Image.Height;
-
-                if (value.X + value.Width > ImageFrame.Image.Width - 1)
-                    value.X = ImageFrame.Image.Width - value.Width;
-                if (value.Y + value.Height > ImageFrame.Image.Height - 1)
-                    value.Y = ImageFrame.Image.Height - value.Height;
-
-                if (value.X < 0)
-                    value.X = 0;
-                else if (value.X > ImageFrame.Image.Width - 1)
-                    value.X = ImageFrame.Image.Width - 1;
-                if (value.Y < 0)
-                    value.Y = 0;
-                else if (value.Y > ImageFrame.Image.Height - 1)
-                    value.Y = ImageFrame.Image.Height - 1;
+                value = CorrectRectangle(value);
 
                 if (_Rectangle != value)
                 {
@@ -66,7 +53,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     else
                         ImageFrame.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
                     ImageFrame.Update(_Rectangle);
-                    AutoSetSize();
+                    if (AutoSize)
+                        AutoSetSize();
                     RequestUpdateFrame();
                 }
             }
@@ -83,7 +71,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override IFrame RenderingFrame()
         {
-            return ImageFrame.GetFrameClone();
+            ArrayFrame frame = ImageFrame.GetFrameClone();
+            int pixel = GetPixelSize();
+            if (pixel >= PixelModeThreshold)
+            {
+                var imageFrame = ImageFrame.Clone();
+                imageFrame.ResizeOptions.Size = new(Rectangle.Width * pixel, Rectangle.Height * pixel);
+                imageFrame.Update(Rectangle);
+                frame = imageFrame.GetFrame();
+                imageFrame.Dispose();
+                for (int x = frame.Width - 1; x >= 0; x -= pixel)
+                    frame.FillColumn(x, BlockManager.Concrete.Gray);
+                for (int y = frame.Height - 1; y >= 0; y -= pixel)
+                    frame.FillRow(y, BlockManager.Concrete.Gray);
+            }
+
+            return frame;
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -101,8 +104,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return;
             }
 
-            Point position1 = ClientPos2ImagePos(Rectangle, LastCursorPosition);
-            Point position2 = ClientPos2ImagePos(Rectangle, e.Position);
+            Point position1 = ClientPos2ImagePos(LastCursorPosition);
+            Point position2 = ClientPos2ImagePos(e.Position);
             Point offset = new(position2.X - position1.X, position2.Y - position1.Y);
             Rectangle rectangle = Rectangle;
             rectangle.X -= offset.X;
@@ -131,6 +134,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ImageFrame.Update(Rectangle);
             if (AutoSize)
                 AutoSetSize();
+
         }
 
         protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
@@ -139,6 +143,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             if (e.OldImageFrame.Image.Size != e.NewImageFrame.Image.Size)
                 Rectangle = new(0, 0, e.NewImageFrame.Image.Size.Width, e.NewImageFrame.Image.Size.Height);
+
+            if (_Rectangle.Width > ClientSize.Width)
+                e.NewImageFrame.ResizeOptions.Sampler = KnownResamplers.Bicubic;
+            else
+                e.NewImageFrame.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
+
+            e.NewImageFrame.TransparentBlockID = "minecraft:glass";
         }
 
         protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
@@ -169,21 +180,76 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Rectangle = rectangle;
         }
 
-        public Point GetImageCenter(Rectangle rectangle)
+        public Point GetImageCenter() => GetImageCenter(Rectangle);
+
+        public Point ClientPos2ImagePos(Point position) => ClientPos2ImagePos(Rectangle, position);
+
+        public int GetPixelSize() => GetPixelSize(Rectangle);
+
+        private Point GetImageCenter(Rectangle rectangle)
         {
             return new(rectangle.X + (int)Math.Round(rectangle.Width / 2.0), rectangle.Y + rectangle.Height / 2);
         }
 
-        public Point ClientPos2ImagePos(Rectangle rectangle, Point position)
+        private Point ClientPos2ImagePos(Rectangle rectangle, Point position)
         {
-            double pixels = (double)rectangle.Width / ClientSize.Width;
-            return new(rectangle.X + (int)Math.Round(position.X * pixels), rectangle.Y + (int)Math.Round(position.Y * pixels));
+            int pixel = GetPixelSize(rectangle);
+            if (pixel >= PixelModeThreshold)
+            {
+                Point pxpos = new(rectangle.X + position.X / pixel, rectangle.Y + position.Y / pixel);
+                pxpos.X = Math.Min(rectangle.X + rectangle.Width - 1, pxpos.X);
+                pxpos.Y = Math.Min(rectangle.Y + rectangle.Height - 1, pxpos.Y);
+                return pxpos;
+            }
+            else
+            {
+                double pixels = (double)rectangle.Width / ClientSize.Width;
+                return new(rectangle.X + (int)Math.Round(position.X * pixels, MidpointRounding.ToNegativeInfinity), rectangle.Y + (int)Math.Round(position.Y * pixels, MidpointRounding.ToNegativeInfinity));
+            }
         }
 
-        public Point ImagePos2ClientPos(Rectangle rectangle, Point position)
+        private int GetPixelSize(Rectangle rectangle)
         {
-            double pixels = (double)rectangle.Width / ClientSize.Width;
-            return new((int)Math.Round((position.X - rectangle.X) / pixels), (int)Math.Round((position.Y - rectangle.Y) / pixels));
+            if (rectangle.Width == ImageFrame.Image.Width && rectangle.Height == ImageFrame.Image.Height)
+            {
+                int xpx = (int)Math.Round((double)ClientSize.Width / rectangle.Width, MidpointRounding.ToNegativeInfinity);
+                int ypx = (int)Math.Round((double)ClientSize.Height / rectangle.Height, MidpointRounding.ToNegativeInfinity);
+                return Math.Min(xpx, ypx);
+            }
+            else
+            {
+                int xpx = (int)Math.Round((double)ClientSize.Width / rectangle.Width, MidpointRounding.ToPositiveInfinity);
+                int ypx = (int)Math.Round((double)ClientSize.Height / rectangle.Height, MidpointRounding.ToPositiveInfinity);
+                return Math.Max(xpx, ypx);
+            }
+        }
+
+        private Rectangle CorrectRectangle(Rectangle rectangle)
+        {
+            if (rectangle.Width < 1)
+                rectangle.Width = 1;
+            else if (rectangle.Width > ImageFrame.Image.Width)
+                rectangle.Width = ImageFrame.Image.Width;
+            if (rectangle.Height < 1)
+                rectangle.Height = 1;
+            else if (rectangle.Height > ImageFrame.Image.Height)
+                rectangle.Height = ImageFrame.Image.Height;
+
+            if (rectangle.X + rectangle.Width > ImageFrame.Image.Width - 1)
+                rectangle.X = ImageFrame.Image.Width - rectangle.Width;
+            if (rectangle.Y + rectangle.Height > ImageFrame.Image.Height - 1)
+                rectangle.Y = ImageFrame.Image.Height - rectangle.Height;
+
+            if (rectangle.X < 0)
+                rectangle.X = 0;
+            else if (rectangle.X > ImageFrame.Image.Width - 1)
+                rectangle.X = ImageFrame.Image.Width - 1;
+            if (rectangle.Y < 0)
+                rectangle.Y = 0;
+            else if (rectangle.Y > ImageFrame.Image.Height - 1)
+                rectangle.Y = ImageFrame.Image.Height - 1;
+
+            return rectangle;
         }
     }
 }
