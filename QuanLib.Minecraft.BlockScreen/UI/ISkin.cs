@@ -15,13 +15,5 @@ namespace QuanLib.Minecraft.BlockScreen.UI
         public string GetBorderBlockID();
 
         public ImageFrame? GetBackgroundImage();
-
-        public void SetAllForegroundBlockID(string blockID);
-
-        public void SetAllBackgroundBlockID(string blockID);
-
-        public void SetAllBorderBlockID(string blockID);
-
-        public void SetAllBackgroundImage(ImageFrame? frame);
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +25,13 @@ namespace QuanLib.Minecraft.BlockScreen.UI
         public Direction ResizeBorder { get; }
 
         public object? ReturnValue { get; }
+
+        public Image<Rgba32> Icon { get; set; }
+
+        public void MinimizeForm();
+
+        public void UnminimizeForm();
+
+        public void CloseForm();
     }
 }

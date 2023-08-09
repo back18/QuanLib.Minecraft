@@ -14,67 +14,66 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         public IconTextBox()
         {
-            Image_PictureBox = new();
+            Icon_PictureBox = new();
+            Icon_PictureBox.BorderWidth = 0;
+            Icon_PictureBox.ClientSize = new(16, 16);
+            Icon_PictureBox.Skin.SetAllBackgroundBlockID(string.Empty);
             Text_Label = new();
+            Text_Label.Skin.SetAllBackgroundBlockID(string.Empty);
+
+            _Spacing = 0;
 
             ClientSize = new(SystemResourcesManager.DefaultFont.HalfWidth * 6, SystemResourcesManager.DefaultFont.Height);
         }
 
-        private readonly PictureBox Image_PictureBox;
+        public readonly PictureBox Icon_PictureBox;
 
-        private readonly Label Text_Label;
+        public readonly Label Text_Label;
 
-        public ImageFrame? Icon
+        public int Spacing
         {
-            get => Image_PictureBox.ImageFrame;
+            get => _Spacing;
             set
             {
-                if (Icon != value)
+                if (value < 0)
+                    value = 0;
+                if (_Spacing != value)
                 {
-                    Image_PictureBox.ImageFrame = value;
+                    _Spacing = value;
                     RequestUpdateFrame();
                 }
             }
         }
+        private int _Spacing;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            SubControls.Add(Image_PictureBox);
-            Image_PictureBox.BorderWidth = 0;
-            Image_PictureBox.DefaultResizeOptions.Size = new(16, 16);
-
+            SubControls.Add(Icon_PictureBox);
             SubControls.Add(Text_Label);
 
             ActiveLayoutAll();
         }
 
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
-        {
-            base.OnTextChanged(sender, e);
-
-            Text_Label.Text = e.NewText;
-        }
-
         public override void ActiveLayoutAll()
         {
-            Image_PictureBox.ClientLocation = this.VerticalCenterLayout(Image_PictureBox, 0);
-            Text_Label.ClientLocation = this.VerticalCenterLayout(Text_Label, Image_PictureBox.RightLocation + 1);
+            Icon_PictureBox.ClientLocation = this.VerticalCenterLayout(Icon_PictureBox, Spacing);
+            Text_Label.ClientLocation = this.VerticalCenterLayout(Text_Label, Icon_PictureBox.RightLocation + 1);
         }
 
         public override void AutoSetSize()
         {
-            Size size = SystemResourcesManager.DefaultFont.GetTotalSize(Text);
-            if (Icon is not null)
+            Size size = SystemResourcesManager.DefaultFont.GetTotalSize(Text_Label.Text);
+            size.Width += Icon_PictureBox.ImageFrame.FrameSize.Width;
+            if (Icon_PictureBox.ImageFrame.FrameSize.Height > size.Height)
             {
-                size.Width += Icon.FrameSize.Width;
-                if (Icon.FrameSize.Height > size.Height)
-                {
-                    size.Height = Icon.FrameSize.Height;
-                }
+                size.Height = Math.Max(size.Height, Icon_PictureBox.ImageFrame.FrameSize.Height);
             }
+            size.Width += Spacing * 2;
+            size.Height += Spacing * 2;
             ClientSize = size;
+            ActiveLayoutAll();
         }
     }
 }

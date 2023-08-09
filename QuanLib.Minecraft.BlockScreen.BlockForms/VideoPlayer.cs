@@ -57,12 +57,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             PauseOrResume_Switch.ClientLocation = this.CenterLayout(PauseOrResume_Switch);
             PauseOrResume_Switch.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             PauseOrResume_Switch.ClientLocation = this.CenterLayout(PauseOrResume_Switch));
-            ImageFrame pause = new(Path.Combine(dir, "暂停.png"), GetScreenPlaneSize().NormalFacing, PauseOrResume_Switch.ClientSize);
-            ImageFrame resume = new(Path.Combine(dir, "播放.png"), GetScreenPlaneSize().NormalFacing, PauseOrResume_Switch.ClientSize);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, resume);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, resume);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, pause);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, pause);
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.GetTexture("Pause"));
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.GetTexture("Pause"));
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.GetTexture("Play"));
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.GetTexture("Play"));
             PauseOrResume_Switch.IsSelected = VideoBox.PlayerState == VideoPlayerState.Playing;
             PauseOrResume_Switch.ControlSelected += PauseOrResume_Switch_OnSelected;
             PauseOrResume_Switch.ControlDeselected += PauseOrResume_Switch_ControlDeselected;

@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 
             ActiveLayoutAll();
 
-            ClientPanel.Skin.SetAllBackgroundImage(new(Path.Combine(PathManager.GetApplicationDir(DesktopApp.ID), "wallpaper.jpg"), GetScreenPlaneSize().NormalFacing, ClientPanel.GetRenderingSize()));
+            ClientPanel.Skin.SetAllBackgroundImage(Path.Combine(PathManager.GetApplicationDir(DesktopApp.ID), "wallpaper.jpg"));
         }
 
         private void ClientPanel_LayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)

@@ -1,6 +1,7 @@
 ﻿using FFMediaToolkit;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.BlockScreen;
+using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Files;
@@ -30,11 +31,12 @@ namespace MCBS.ConsoleTerminal
             //logHelper.PlayerSendChatMessage += (sender, e) => Console.WriteLine("玩家消息：" + e.ChatMessage);
             //listener.Start();
 
-            //FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
-            //FFmpegLoader.LoadFFmpeg();
             ConfigManager.LoadAll();
             SystemResourcesManager.LoadAll();
             MinecraftResourcesManager.LoadAll();
+            TextureManager.Load(PathManager.SystemResources_Textures_Control_Dir);
+            //FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
+            //FFmpegLoader.LoadFFmpeg();
 
             MinecraftConfig config = ConfigManager.MinecraftConfig;
             MinecraftServer server = config.MinecraftServerMode switch

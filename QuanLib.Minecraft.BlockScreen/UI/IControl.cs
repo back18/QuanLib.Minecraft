@@ -11,6 +11,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
     {
         public IContainerControl? GenericParentContainer { get; }
 
+        public string Text { get; set; }
+
         public bool IsHover { get; }
 
         public bool IsSelected { get; set; }

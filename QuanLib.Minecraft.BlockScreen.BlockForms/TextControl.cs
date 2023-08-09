@@ -23,6 +23,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public override IFrame RenderingFrame()
         {
             ArrayFrame? image = Skin.GetBackgroundImage()?.GetFrame();
+            if (image is not null && Skin.IsRenderedImageBackground)
+            {
+                ArrayFrame frame = ArrayFrame.BuildFrame(image!.Width, image.Width, Skin.GetBackgroundBlockID());
+                frame.Overwrite(image, new(0, 0));
+                image = frame;
+            }
 
             switch (ControlContent)
             {

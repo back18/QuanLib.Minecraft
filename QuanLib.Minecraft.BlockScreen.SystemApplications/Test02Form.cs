@@ -69,14 +69,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             ClientPanel.SubControls.Add(switch1);
             switch1.ClientLocation = new(5, 65);
 
-            ClientPanel.SubControls.Add(switch2);
-            switch2.ClientLocation = new(5, 85);
-            switch2.OnText = string.Empty;
-            switch2.OffText = string.Empty;
-            switch2.Skin.BackgroundImage = new(Path.Combine(dir, "OFF.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-            switch2.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "ON.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-            switch2.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "OFF过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-            switch2.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "ON过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            //ClientPanel.SubControls.Add(switch2);
+            //switch2.ClientLocation = new(5, 85);
+            //switch2.OnText = string.Empty;
+            //switch2.OffText = string.Empty;
+            //switch2.Skin.BackgroundImage = new(Path.Combine(dir, "OFF.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            //switch2.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "ON.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            //switch2.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "OFF过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
+            //switch2.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "ON过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
 
             ClientPanel.SubControls.Add(comboButton1);
             comboButton1.ClientSize = new(110, 16);
@@ -89,8 +89,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             comboButton1.Items.Add(Direction.Left);
 
             ClientPanel.SubControls.Add(iconTextBox1);
-            iconTextBox1.Icon = new(Path.Combine(dir, "Start_ON.png"), GetScreenPlaneSize().NormalFacing, new Size(16, 16));
-            iconTextBox1.Text = "hello";
+            iconTextBox1.Icon_PictureBox.SetImage(TextureManager.GetTexture("Start"));
+            iconTextBox1.Text_Label.Text = "Windows";
+            iconTextBox1.Spacing = 5;
+            iconTextBox1.AutoSetSize();
             iconTextBox1.ClientLocation = ClientPanel.RightLayout(textBox1, 2);
 
             ClientPanel.SubControls.Add(numberBox1);

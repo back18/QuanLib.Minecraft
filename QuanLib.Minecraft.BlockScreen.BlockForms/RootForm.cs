@@ -20,14 +20,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
 
-            TaskBar = new(this);
             FormContainer = new(this);
+            TaskBar = new(this);
             ShowTaskBar_Button = new();
         }
 
-        private readonly TaskBar TaskBar;
+        private readonly RootFormFormContainer FormContainer;
 
-        private readonly FormContainer FormContainer;
+        private readonly RootFormTaskBar TaskBar;
 
         private readonly Button ShowTaskBar_Button;
 
@@ -63,8 +63,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.Initialize();
 
-            MCOS os = MCOS.GetMCOS();
-
+            AllowMove = false;
             AllowResize = false;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
@@ -78,12 +77,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             ShowTaskBar_Button.Visible = false;
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
-            ShowTaskBar_Button.Text = "↑";
             ShowTaskBar_Button.ClientSize = new(16, 16);
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTaskBar_Button.ClientLocation = this.LeftLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
             ShowTaskBar_Button.Anchor = Direction.Top | Direction.Right;
-            ShowTaskBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+            ShowTaskBar_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Shrink"));
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
             ShowTaskBar_Button.CursorLeave += ShowTaskBar_Button_CursorLeave;
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
@@ -155,6 +153,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 electeds.IsSelected = false;
             }
 
+            TaskBar.SwitchSelectedForm(form);
             return true;
         }
 
@@ -167,9 +166,256 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     if (FormContainer.SubControls[i].AllowSelected)
                     {
                         FormContainer.SubControls[i].IsSelected = true;
+                        TaskBar.SwitchSelectedForm(FormContainer.SubControls[i]);
                         break;
                     }
                 }
+            }
+        }
+
+        public class RootFormFormContainer : GenericPanel<IForm>
+        {
+            public RootFormFormContainer(RootForm owner)
+            {
+                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+
+                BorderWidth = 0;
+                LayoutSyncer = new(_owner,
+                (sender, e) => { },
+                (sender, e) =>
+                {
+                    if (_owner.ShowTaskBar)
+                    {
+                        ClientSize = new(e.NewSize.Width, e.NewSize.Height - _owner.TaskBar.Height);
+                        foreach (var form in SubControls)
+                            form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height - _owner.TaskBar.Height);
+                    }
+                    else
+                    {
+                        ClientSize = new(e.NewSize.Width, e.NewSize.Height);
+                        foreach (var form in SubControls)
+                            form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height + _owner.TaskBar.Height);
+                    }
+                });
+            }
+
+            private readonly RootForm _owner;
+
+            public override void Initialize()
+            {
+                base.Initialize();
+
+                if (_owner != ParentContainer)
+                    throw new InvalidOperationException();
+            }
+
+            public override void HandleCursorMove(CursorEventArgs e)
+            {
+                foreach (var control in SubControls.Reverse())
+                {
+                    if (control.IsSelected)
+                    {
+                        control.HandleCursorMove(new(control.ParentPos2SubPos(e.Position)));
+                    }
+                }
+
+                UpdateHoverState(e);
+            }
+
+            public override bool HandleRightClick(CursorEventArgs e)
+            {
+                bool result = false;
+                foreach (var control in SubControls.Reverse())
+                {
+                    Point sub = control.ParentPos2SubPos(e.Position);
+                    if (control is Form form)
+                    {
+                        if (form.ResizeBorder != Direction.None)
+                        {
+                            form.Resizeing = !form.Resizeing;
+                            result = true;
+                            break;
+                        }
+                        else if (form.IncludedOnControl(sub))
+                        {
+                            if (form.IsSelected)
+                                form.HandleRightClick(new(sub));
+                            else
+                                _owner.TrySwitchSelectedForm(form);
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (result)
+                    return true;
+                else if (SubControls.FirstHover is null)
+                    return false;
+                else
+                    return SubControls.FirstHover.HandleRightClick(new(SubControls.FirstHover.ParentPos2SubPos(e.Position)));
+            }
+
+            public override bool HandleLeftClick(CursorEventArgs e)
+            {
+                bool result = false;
+                foreach (var control in SubControls.Reverse())
+                {
+                    if (control.IsSelected)
+                    {
+                        result = control.HandleLeftClick(new(control.ParentPos2SubPos(e.Position)));
+                    }
+                }
+
+                return result;
+            }
+
+            public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
+            {
+                bool result = false;
+                foreach (var control in SubControls.Reverse())
+                {
+                    if (control.IsSelected)
+                    {
+                        result = control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
+                    }
+                }
+
+                return result;
+            }
+
+            public override bool HandleCursorItemChanged(CursorItemEventArgs e)
+            {
+                bool result = false;
+                foreach (var control in SubControls.Reverse())
+                {
+                    if (control.IsSelected)
+                    {
+                        result = control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
+                    }
+                }
+
+                return result;
+            }
+
+            public override bool HandleTextEditorChanged(CursorTextEventArgs e)
+            {
+                bool result = false;
+                foreach (var control in SubControls.Reverse())
+                {
+                    if (control.IsSelected)
+                    {
+                        result = control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        public class RootFormTaskBar : ContainerControl<Control>
+        {
+            public RootFormTaskBar(RootForm owner)
+            {
+                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+
+                BorderWidth = 0;
+                Height = 18;
+                LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) =>
+                {
+                    Width = e.NewSize.Width;
+                    ClientLocation = new(0, e.NewSize.Height - Height);
+                });
+                Skin.SetAllBackgroundBlockID(BlockManager.Concrete.White);
+
+                StartMenu_Switch = new();
+                FormsMenu = new();
+                FullScreen_Button = new();
+            }
+
+            private readonly RootForm _owner;
+
+            private readonly Switch StartMenu_Switch;
+
+            private readonly Button FullScreen_Button;
+
+            private readonly TaskBarIconMenu FormsMenu;
+
+            public override void Initialize()
+            {
+                base.Initialize();
+
+                if (_owner != ParentContainer)
+                    throw new InvalidOperationException();
+
+                SubControls.Add(StartMenu_Switch);
+                StartMenu_Switch.BorderWidth = 0;
+                StartMenu_Switch.ClientLocation = new(0, 1);
+                StartMenu_Switch.ClientSize = new(16, 16);
+                StartMenu_Switch.Anchor = Direction.Bottom | Direction.Left;
+                StartMenu_Switch.Skin.IsRenderedImageBackground = true;
+                StartMenu_Switch.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+                StartMenu_Switch.Skin.BackgroundBlockID_Hover = Skin.BackgroundBlockID;
+                StartMenu_Switch.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Orange;
+                StartMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
+                StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Start"));
+
+                SubControls.Add(FullScreen_Button);
+                FullScreen_Button.BorderWidth = 0;
+                FullScreen_Button.ClientSize = new(16, 16);
+                FullScreen_Button.ClientLocation = this.LeftLayout(null, FullScreen_Button, 0, 1);
+                FullScreen_Button.Anchor = Direction.Bottom | Direction.Right;
+                FullScreen_Button.Skin.IsRenderedImageBackground = true;
+                FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+                FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
+                FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
+                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Expand"));
+                FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
+
+                SubControls.Add(FormsMenu);
+                FormsMenu.Spacing = 0;
+                FormsMenu.MinWidth = 18;
+                FormsMenu.BorderWidth = 0;
+                FormsMenu.ClientSize = new(ClientSize.Width - StartMenu_Switch.Width - FullScreen_Button.Width, ClientSize.Height);
+                FormsMenu.ClientLocation = new(StartMenu_Switch.RightLocation + 1, 0);
+                FormsMenu.Stretch = Direction.Right;
+
+                _owner.FormContainer.AddedSubControl += FormContainer_AddedSubControl;
+                _owner.FormContainer.RemovedSubControl += FormContainer_RemovedSubControl;
+            }
+
+            public void SwitchSelectedForm(IForm form)
+            {
+                FormsMenu.SwitchSelectedForm(form);
+            }
+
+            private void FormContainer_AddedSubControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
+            {
+                if (e.Control is IForm form && !FormsMenu.ContainsForm(form) && (MCOS.GetMCOS().ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false))
+                {
+                    FormsMenu.AddedSubControlAndLayout(new TaskBarIcon(form));
+                }
+            }
+
+            private void FormContainer_RemovedSubControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
+            {
+                if (e.Control is IForm form)
+                {
+                    var context = MCOS.GetMCOS().FormContextOf(form);
+                    if (context is null || context.FormState != FormState.Closed)
+                        return;
+
+                    var icon = FormsMenu.TaskBarIconOf(form);
+                    if (icon is null)
+                        return;
+
+                    FormsMenu.RemoveSubControlAndLayout(icon);
+                }
+            }
+
+            private void HideTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
+            {
+                _owner.ShowTaskBar = false;
             }
         }
     }

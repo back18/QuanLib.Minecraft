@@ -45,12 +45,15 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
             }
 
+            FormState = FormState.NotLoaded;
             IsMinimize = false;
             Runing = false;
             _close = new(false);
         }
 
         private readonly AutoResetEvent _close;
+
+        public FormState FormState { get; private set; }
 
         public bool IsMinimize { get; private set; }
 
@@ -66,10 +69,13 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             if (!IsMinimize)
             {
-                if (Form is not IRootForm && RootForm.ContainsForm(Form))
+                if (Form is not IRootForm && RootForm.ContainsForm(Form) && Form.AllowDeselected)
+                {
+                    IsMinimize = true;
+                    FormState = FormState.Minimize;
                     RootForm.RemoveForm(Form);
-                IsMinimize = true;
-                Form.HandleFormMinimize(EventArgs.Empty);
+                    Form.HandleFormMinimize(EventArgs.Empty);
+                }
             }
         }
 
@@ -78,9 +84,12 @@ namespace QuanLib.Minecraft.BlockScreen
             if (IsMinimize)
             {
                 if (Form is not IRootForm && !RootForm.ContainsForm(Form))
+                {
+                    IsMinimize = false;
+                    FormState = FormState.Active;
                     RootForm.AddForm(Form);
-                IsMinimize = false;
-                Form.HandleFormUnminimize(EventArgs.Empty);
+                    Form.HandleFormUnminimize(EventArgs.Empty);
+                }
             }
         }
 
@@ -89,9 +98,12 @@ namespace QuanLib.Minecraft.BlockScreen
             if (!Runing)
             {
                 if (Form is not IRootForm && !RootForm.ContainsForm(Form))
+                {
+                    Runing = true;
+                    FormState = FormState.Active;
                     RootForm.AddForm(Form);
-                Runing = true;
-                Form.HandleFormLoad(EventArgs.Empty);
+                    Form.HandleFormLoad(EventArgs.Empty);
+                }
             }
         }
 
@@ -100,10 +112,13 @@ namespace QuanLib.Minecraft.BlockScreen
             if (Runing)
             {
                 if (Form is not IRootForm && RootForm.ContainsForm(Form))
+                {
+                    Runing = false;
+                    FormState = FormState.Closed;
                     RootForm.RemoveForm(Form);
-                Runing = false;
-                Form.HandleFormClose(EventArgs.Empty);
-                _close.Set();
+                    Form.HandleFormClose(EventArgs.Empty);
+                    _close.Set();
+                }
             }
         }
 

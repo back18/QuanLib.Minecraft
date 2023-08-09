@@ -233,6 +233,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             get => _BorderWidth;
             set
             {
+                if (value < 0)
+                    value = 0;
+
                 if (_BorderWidth != value)
                 {
                     _BorderWidth = value;
@@ -1008,7 +1011,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 }
             }
 
-            return new Size(256, 128);
+            return new Size(256, 126);
         }
 
         public IPlaneSize GetScreenPlaneSize()
@@ -1130,6 +1133,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 string white = BlockManager.Concrete.White;
                 string gray = BlockManager.Concrete.Gray;
 
+
                 _ForegroundBlockID = black;
                 _BackgroundBlockID = white;
                 _BorderBlockID = gray;
@@ -1150,14 +1154,34 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             private readonly Control _owner;
 
+            /// <summary>
+            /// 渲染图片时是否先渲染背景，具体实现根据派生类渲染器
+            /// </summary>
+            public bool IsRenderedImageBackground
+            {
+                get => _IsIsRenderedImageBackground;
+                set
+                {
+                    if (_IsIsRenderedImageBackground != value)
+                    {
+                        _IsIsRenderedImageBackground = value;
+                        _owner.RequestUpdateFrame();
+                    }
+                }
+            }
+            private bool _IsIsRenderedImageBackground;
+
             public string ForegroundBlockID
             {
                 get => _ForegroundBlockID;
                 set
                 {
-                    _ForegroundBlockID = value;
-                    if (_owner.ControlState == ControlState.None)
-                        _owner.RequestUpdateFrame();
+                    if (_ForegroundBlockID != value)
+                    {
+                        _ForegroundBlockID = value;
+                        if (_owner.ControlState == ControlState.None)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _ForegroundBlockID;
@@ -1167,9 +1191,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundBlockID;
                 set
                 {
-                    _BackgroundBlockID = value;
-                    if (_owner.ControlState == ControlState.None)
-                        _owner.RequestUpdateFrame();
+                    if (_BackgroundBlockID != value)
+                    {
+                        _BackgroundBlockID = value;
+                        if (_owner.ControlState == ControlState.None)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BackgroundBlockID;
@@ -1179,9 +1206,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BorderBlockID;
                 set
                 {
-                    _BorderBlockID = value;
-                    if (_owner.ControlState == ControlState.None)
-                        _owner.RequestUpdateFrame();
+                    if (BorderBlockID != value)
+                    {
+                        _BorderBlockID = value;
+                        if (_owner.ControlState == ControlState.None)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BorderBlockID;
@@ -1191,9 +1221,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _ForegroundBlockID_Hover;
                 set
                 {
-                    _ForegroundBlockID_Hover = value;
-                    if (_owner.ControlState == ControlState.Hover)
-                        _owner.RequestUpdateFrame();
+                    if (_ForegroundBlockID_Hover != value)
+                    {
+                        _ForegroundBlockID_Hover = value;
+                        if (_owner.ControlState == ControlState.Hover)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _ForegroundBlockID_Hover;
@@ -1203,9 +1236,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundBlockID_Hover;
                 set
                 {
-                    _BackgroundBlockID_Hover = value;
-                    if (_owner.ControlState == ControlState.Hover)
-                        _owner.RequestUpdateFrame();
+                    if (BackgroundBlockID_Hover != value)
+                    {
+                        _BackgroundBlockID_Hover = value;
+                        if (_owner.ControlState == ControlState.Hover)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BackgroundBlockID_Hover;
@@ -1215,9 +1251,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BorderBlockID__Hover;
                 set
                 {
-                    _BorderBlockID__Hover = value;
-                    if (_owner.ControlState == ControlState.Hover)
-                        _owner.RequestUpdateFrame();
+                    if (_BorderBlockID__Hover != value)
+                    {
+                        _BorderBlockID__Hover = value;
+                        if (_owner.ControlState == ControlState.Hover)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BorderBlockID__Hover;
@@ -1227,9 +1266,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _ForegroundBlockID_Selected;
                 set
                 {
-                    _ForegroundBlockID_Selected = value;
-                    if (_owner.ControlState == ControlState.Selected)
-                        _owner.RequestUpdateFrame();
+                    if (_ForegroundBlockID_Selected != value)
+                    {
+                        _ForegroundBlockID_Selected = value;
+                        if (_owner.ControlState == ControlState.Selected)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _ForegroundBlockID_Selected;
@@ -1239,9 +1281,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundBlockID_Selected;
                 set
                 {
-                    _BackgroundBlockID_Selected = value;
-                    if (_owner.ControlState == ControlState.Selected)
-                        _owner.RequestUpdateFrame();
+                    if (_BorderBlockID_Selected != value)
+                    {
+                        _BackgroundBlockID_Selected = value;
+                        if (_owner.ControlState == ControlState.Selected)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BackgroundBlockID_Selected;
@@ -1251,9 +1296,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BorderBlockID_Selected;
                 set
                 {
-                    _BorderBlockID_Selected = value;
-                    if (_owner.ControlState == ControlState.Selected)
-                        _owner.RequestUpdateFrame();
+                    if (_BorderBlockID_Selected != value)
+                    {
+                        _BorderBlockID_Selected = value;
+                        if (_owner.ControlState == ControlState.Selected)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BorderBlockID_Selected;
@@ -1263,9 +1311,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _ForegroundBlockID_Hover_Selected;
                 set
                 {
-                    _ForegroundBlockID_Hover_Selected = value;
-                    if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                        _owner.RequestUpdateFrame();
+                    if (_ForegroundBlockID_Hover_Selected != value)
+                    {
+                        _ForegroundBlockID_Hover_Selected = value;
+                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _ForegroundBlockID_Hover_Selected;
@@ -1275,9 +1326,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundBlockID_Hover_Selected;
                 set
                 {
-                    _BackgroundBlockID_Hover_Selected = value;
-                    if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                        _owner.RequestUpdateFrame();
+                    if (_BackgroundBlockID_Hover_Selected != value)
+                    {
+                        _BackgroundBlockID_Hover_Selected = value;
+                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BackgroundBlockID_Hover_Selected;
@@ -1287,9 +1341,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BorderBlockID_Hover_Selected;
                 set
                 {
-                    _BorderBlockID_Hover_Selected = value;
-                    if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                        _owner.RequestUpdateFrame();
+                    if (_BorderBlockID_Hover_Selected != value)
+                    {
+                        _BorderBlockID_Hover_Selected = value;
+                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private string _BorderBlockID_Hover_Selected;
@@ -1299,9 +1356,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundImage;
                 set
                 {
-                    _BackgroundImage = value;
-                    if (_owner.ControlState == ControlState.None)
-                        _owner.RequestUpdateFrame();
+                    if (_BackgroundImage != value)
+                    {
+                        _BackgroundImage = value;
+                        if (_owner.ControlState == ControlState.None)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private ImageFrame? _BackgroundImage;
@@ -1311,9 +1371,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundImage_Hover;
                 set
                 {
-                    _BackgroundImage_Hover = value;
-                    if (_owner.ControlState == ControlState.Hover)
-                        _owner.RequestUpdateFrame();
+                    if (_BackgroundImage_Hover != value)
+                    {
+                        _BackgroundImage_Hover = value;
+                        if (_owner.ControlState == ControlState.Hover)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private ImageFrame? _BackgroundImage_Hover;
@@ -1323,9 +1386,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundImage_Selected;
                 set
                 {
-                    _BackgroundImage_Selected = value;
-                    if (_owner.ControlState == ControlState.Selected)
-                        _owner.RequestUpdateFrame();
+                    if (_BackgroundImage_Selected != value)
+                    {
+                        _BackgroundImage_Selected = value;
+                        if (_owner.ControlState == ControlState.Selected)
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             public ImageFrame? _BackgroundImage_Selected;
@@ -1335,9 +1401,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 get => _BackgroundImage_Hover_Selected;
                 set
                 {
-                    _BackgroundImage_Hover_Selected = value;
-                    if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                        _owner.RequestUpdateFrame();
+                    if (_BackgroundImage_Hover_Selected != value)
+                    {
+                        _BackgroundImage_Hover_Selected = value;
+                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
+                            _owner.RequestUpdateFrame();
+                    }
                 }
             }
             private ImageFrame? _BackgroundImage_Hover_Selected;
@@ -1422,6 +1491,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 BackgroundImage_Hover_Selected = frame;
             }
 
+            public void SetAllBackgroundImage(Image<Rgba32> image)
+            {
+                if (image is null)
+                    throw new ArgumentNullException(nameof(image));
+
+                SetAllBackgroundImage(new ImageFrame(image, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+            }
+
+            public void SetAllBackgroundImage(string path)
+            {
+                if (string.IsNullOrEmpty(path))
+                    throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+
+                SetAllBackgroundImage(new ImageFrame(path, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+            }
+
             public void SetForegroundBlockID(ControlState state, string blockID)
             {
                 switch (state)
@@ -1504,6 +1589,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     default:
                         throw new InvalidOperationException();
                 }
+            }
+
+            public void SetBackgroundImage(ControlState state, Image<Rgba32> image)
+            {
+                if (image is null)
+                    throw new ArgumentNullException(nameof(image));
+
+                SetBackgroundImage(state, new ImageFrame(image, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+            }
+
+            public void SetBackgroundImage(ControlState state, string path)
+            {
+                if (string.IsNullOrEmpty(path))
+                    throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+
+                SetBackgroundImage(state, new ImageFrame(path, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
             }
         }
     }

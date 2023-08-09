@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
         private readonly Switch MoreMenu_Switch;
 
-        private readonly MenuBox More_MenuBox;
+        private readonly ListMenuBox<Button> More_MenuBox;
 
         private readonly Button Undo_Button;
 

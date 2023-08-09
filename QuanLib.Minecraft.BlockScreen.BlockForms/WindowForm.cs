@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTitleBar_Button = new();
         }
 
-        public readonly TitleBar TitleBar;
+        public readonly WindowFormTitleBar TitleBar;
 
         public readonly ClientPanel ClientPanel;
 
@@ -66,8 +66,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 if (ShowTitleBar)
                 {
-                    ClientPanel.ClientSize = new(ClientSize.Width, ClientSize.Height - 16);
-                    ClientPanel.ClientLocation = new(0, 16);
+                    ClientPanel.ClientSize = new(ClientSize.Width, ClientSize.Height - TitleBar.Height);
+                    ClientPanel.ClientLocation = new(0, TitleBar.Height);
                 }
                 else
                 {
@@ -78,12 +78,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             ShowTitleBar_Button.Visible = false;
             ShowTitleBar_Button.InvokeExternalCursorMove = true;
-            ShowTitleBar_Button.Text = "↓";
             ShowTitleBar_Button.ClientSize = new(16, 16);
             ShowTitleBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTitleBar_Button.ClientLocation = this.LeftLayout(null, ShowTitleBar_Button, 0, 0));
             ShowTitleBar_Button.Anchor = Direction.Top | Direction.Right;
-            ShowTitleBar_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+            ShowTitleBar_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Shrink"));
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
             ShowTitleBar_Button.CursorLeave += ShowTitleBar_Button_CursorLeave;
             ShowTitleBar_Button.RightClick += ShowTitleBar_Button_RightClick;
@@ -150,6 +149,213 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         private void ShowTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
         {
             ShowTitleBar = true;
+        }
+
+        public class WindowFormTitleBar : ContainerControl<Control>
+        {
+            public WindowFormTitleBar(WindowForm owner)
+            {
+                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+
+                Text = _owner.Text;
+                LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
+                _owner.TextChanged += (sender, e) => Text = _owner.Text;
+                _owner.InitializeCompleted += Owner_InitializeCallback;
+
+                MoveAnchorPoint = new(0, 0);
+                _ButtonsToShow = FormButton.Close | FormButton.MaximizeOrRestore | FormButton.Minimize | FormButton.FullScreen;
+
+                IconAndTitle = new();
+                Close_Button = new();
+                MaximizeOrRestore_Switch = new();
+                Minimize_Button = new();
+                FullScreen_Button = new();
+
+                BorderWidth = 0;
+                InvokeExternalCursorMove = true;
+            }
+
+            private readonly WindowForm _owner;
+
+            private readonly IconTextBox IconAndTitle;
+
+            private readonly Button Close_Button;
+
+            private readonly Switch MaximizeOrRestore_Switch;
+
+            private readonly Button Minimize_Button;
+
+            private readonly Button FullScreen_Button;
+
+            public FormButton ButtonsToShow
+            {
+                get => _ButtonsToShow;
+                set
+                {
+                    _ButtonsToShow = value;
+                    ActiveLayoutAll();
+                }
+            }
+            private FormButton _ButtonsToShow;
+
+            public Point MoveAnchorPoint { get; set; }
+
+            public override void Initialize()
+            {
+                base.Initialize();
+
+                if (_owner != ParentContainer)
+                    throw new InvalidOperationException();
+
+                SubControls.Add(IconAndTitle);
+                IconAndTitle.KeepWhenClear = true;
+                IconAndTitle.Icon_PictureBox.SetImage(_owner.Icon);
+                IconAndTitle.Text_Label.Text = _owner.Text;
+                IconAndTitle.BorderWidth = 0;
+                IconAndTitle.AutoSize = true;
+
+                Close_Button.BorderWidth = 0;
+                Close_Button.ClientSize = new(16, 16);
+                Close_Button.Anchor = Direction.Top | Direction.Right;
+                Close_Button.Skin.IsRenderedImageBackground = true;
+                Close_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+                Close_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
+                Close_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Red;
+                Close_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Close"));
+                Close_Button.RightClick += Exit_Button_RightClick;
+
+                MaximizeOrRestore_Switch.BorderWidth = 0;
+                MaximizeOrRestore_Switch.ClientSize = new(16, 16);
+                MaximizeOrRestore_Switch.Anchor = Direction.Top | Direction.Right;
+                MaximizeOrRestore_Switch.Skin.IsRenderedImageBackground = true;
+                MaximizeOrRestore_Switch.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+                MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID;
+                MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
+                MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.GetTexture("Maximize"));
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.GetTexture("Maximize"));
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.GetTexture("Restore"));
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.GetTexture("Restore"));
+
+                Minimize_Button.BorderWidth = 0;
+                Minimize_Button.ClientSize = new(16, 16);
+                Minimize_Button.Anchor = Direction.Top | Direction.Right;
+                Minimize_Button.Skin.IsRenderedImageBackground = true;
+                Minimize_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+                Minimize_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
+                Minimize_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
+                Minimize_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Minimize"));
+                Minimize_Button.RightClick += Minimize_Button_RightClick;
+
+                FullScreen_Button.BorderWidth = 0;
+                FullScreen_Button.ClientSize = new(16, 16);
+                FullScreen_Button.Anchor = Direction.Top | Direction.Right;
+                FullScreen_Button.Skin.IsRenderedImageBackground = true;
+                FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
+                FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
+                FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
+                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Expand"));
+                FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
+            }
+
+            public override void OnInitCompleted3()
+            {
+                base.OnInitCompleted3();
+
+                ActiveLayoutAll();
+            }
+
+            private void Owner_InitializeCallback(Control sender, EventArgs e)
+            {
+                UpdateMaximizeOrRestore();
+                MaximizeOrRestore_Switch.ControlSelected += MaximizeOrRestore_Switch_ControlSelected;
+                MaximizeOrRestore_Switch.ControlDeselected += MaximizeOrRestore_Switch_ControlDeselected;
+            }
+
+            protected override void OnCursorMove(Control sender, CursorEventArgs e)
+            {
+                base.OnCursorMove(sender, e);
+
+                if (_owner.Moveing)
+                {
+                    Point offset = new(e.Position.X - MoveAnchorPoint.X, e.Position.Y - MoveAnchorPoint.Y);
+                    _owner.ClientLocation = new(_owner.ClientLocation.X + offset.X, _owner.ClientLocation.Y + offset.Y);
+                }
+            }
+
+            protected override void OnRightClick(Control sender, CursorEventArgs e)
+            {
+                base.OnRightClick(sender, e);
+
+                if (_owner.Moveing)
+                    _owner.Moveing = false;
+                else if (_owner.IsSelected && _owner.AllowMove && !GetSubControls().HaveHover)
+                {
+                    _owner.Moveing = true;
+                    MoveAnchorPoint = e.Position;
+                }
+            }
+
+            private void Exit_Button_RightClick(Control sender, CursorEventArgs e)
+            {
+                _owner.CloseForm();
+            }
+
+            private void MaximizeOrRestore_Switch_ControlSelected(Control sender, EventArgs e)
+            {
+                _owner.MaximizeForm();
+            }
+
+            private void MaximizeOrRestore_Switch_ControlDeselected(Control sender, EventArgs e)
+            {
+                _owner.RestoreForm();
+            }
+
+            private void Minimize_Button_RightClick(Control sender, CursorEventArgs e)
+            {
+                _owner.MinimizeForm();
+            }
+
+            private void HideTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
+            {
+                _owner.ShowTitleBar = false;
+            }
+
+            public void UpdateMaximizeOrRestore()
+            {
+                if (!_owner._onresize)
+                {
+                    if (_owner.IsMaximize)
+                        MaximizeOrRestore_Switch.IsSelected = true;
+                    else
+                        MaximizeOrRestore_Switch.IsSelected = false;
+                }
+            }
+
+            public override void ActiveLayoutAll()
+            {
+                SubControls.Clear();
+                if (ButtonsToShow.HasFlag(FormButton.Close))
+                {
+                    Close_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Close_Button, 0, 0);
+                    SubControls.Add(Close_Button);
+                }
+                if (ButtonsToShow.HasFlag(FormButton.MaximizeOrRestore))
+                {
+                    MaximizeOrRestore_Switch.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
+                    SubControls.Add(MaximizeOrRestore_Switch);
+                }
+                if (ButtonsToShow.HasFlag(FormButton.Minimize))
+                {
+                    Minimize_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Minimize_Button, 0, 0);
+                    SubControls.Add(Minimize_Button);
+                }
+                if (ButtonsToShow.HasFlag(FormButton.FullScreen))
+                {
+                    FullScreen_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
+                    SubControls.Add(FullScreen_Button);
+                }
+            }
         }
     }
 }

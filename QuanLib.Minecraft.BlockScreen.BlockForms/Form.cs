@@ -1,7 +1,9 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +27,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             IsMinimize = false;
             Stretch = Direction.Bottom | Direction.Right;
 
-            _restoreing = false;
+            ReturnValue = null;
+            Icon = new(16, 16, GetBlockColor(BlockManager.Concrete.White));
+            Text = string.Empty;
+
+            _onresize = false;
 
             FormLoad += OnFormLoad;
             FormClose += OnFormClose;
@@ -33,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             FormUnminimize += OnFormUnminimize;
         }
 
-        private bool _restoreing;
+        protected bool _onresize;
 
         public virtual bool AllowSelected { get; set; }
 
@@ -43,11 +49,15 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual bool AllowResize { get; set; }
 
-        public virtual bool Moveing { get; set; }
+        public virtual bool Moveing { get; internal set; }
 
-        public virtual bool Resizeing { get; set; }
+        public virtual bool Resizeing { get; internal set; }
 
         public virtual Direction ResizeBorder { get; protected set; }
+
+        public object? ReturnValue { get; }
+
+        public Image<Rgba32> Icon { get; set; }
 
         public virtual bool IsMinimize { get; protected set; }
 
@@ -59,8 +69,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return Location == MaximizeLocation && Width == maximizeSize.Width && Height == maximizeSize.Height;
             }
         }
-
-        public object? ReturnValue { get; }
 
         public virtual Point MaximizeLocation => new(0, 0);
 
@@ -117,6 +125,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Width = maximizeSize.Width;
             Height = maximizeSize.Height;
             InvokeExternalCursorMove = true;
+
+            ApplicationInfo? appInfo = MCOS.GetMCOS().ProcessOf(this)?.ApplicationInfo;
+            if (appInfo is not null)
+            {
+                Icon.Dispose();
+                Icon = appInfo.Icon;
+                Text = appInfo.Name;
+            }
         }
 
         protected override void OnInitializeCompleted(Control sender, EventArgs e)
@@ -171,7 +187,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                             ResizeBorder |= Direction.Right;
                     }
 
-                    ScreenContext? context = MCOS.GetMCOS().ScreenContextOf(this);
+                    ScreenContext? context = GetScreenContext();
                     if (context is not null)
                     {
                         context.CursorType = ResizeBorder switch
@@ -191,7 +207,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnMove(sender, e);
 
-            if (!_restoreing && !IsMaximize)
+            if (!_onresize && !IsMaximize)
             {
                 RestoreLocation = ClientLocation;
                 RestoreSize = ClientSize;
@@ -202,7 +218,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnResize(sender, e);
 
-            if (!_restoreing && !IsMaximize)
+            if (!_onresize && !IsMaximize)
             {
                 RestoreLocation = ClientLocation;
                 RestoreSize = ClientSize;
@@ -211,21 +227,28 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public virtual void MaximizeForm()
         {
+            _onresize = true;
             Size = MaximizeSize;
             Location = new(0, 0);
+            _onresize = false;
         }
 
         public virtual void RestoreForm()
         {
-            _restoreing = true;
+            _onresize = true;
             ClientLocation = RestoreLocation;
             ClientSize = RestoreSize;
-            _restoreing = false;
+            _onresize = false;
         }
 
         public virtual void MinimizeForm()
         {
             GetFormContext()?.MinimizeForm();
+        }
+
+        public virtual void UnminimizeForm()
+        {
+            GetFormContext()?.UnminimizeForm();
         }
 
         public virtual void CloseForm()
