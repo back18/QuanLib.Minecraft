@@ -33,12 +33,14 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         protected virtual void OnAddedScreen(ScreenManager sender, ScreenContextEventArgs e)
         {
-            e.ScreenContext.Screen.Start();
+            if (e.ScreenContext.ScreenState == ScreenState.NotLoaded)
+                e.ScreenContext.LoadScreen();
         }
 
         protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e)
         {
-            e.ScreenContext.Screen.Stop();
+            if (e.ScreenContext.ScreenState != ScreenState.Closed)
+                e.ScreenContext.CloseScreen();
         }
 
         public void HandleAllScreenInput()
@@ -70,6 +72,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             frames = new();
             List<(int id, Task<ArrayFrame> task)> tasks = new();
             foreach (var context in ScreenList)
+            {
+                if (context.Value.ScreenState == ScreenState.Closed)
+                    continue;
                 tasks.Add((context.Key, Task.Run(() =>
                 {
                     ArrayFrame frame = ArrayFrame.BuildFrame(context.Value.Screen.Width, context.Value.Screen.Height, context.Value.Screen.DefaultBackgroundBlcokID);
@@ -84,6 +89,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     }
                     return frame;
                 })));
+            }
             Task.WaitAll(tasks.Select(i => i.task).ToArray());
             foreach (var (id, task) in tasks)
                 frames.Add(id, task.Result);
@@ -144,7 +150,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     throw new ArgumentNullException(nameof(screen));
 
                 int id = _id;
-                ScreenContext context = MCOS.GetMCOS().CreateScreenContext(screen);
+                ScreenContext context = MCOS.Instance.CreateScreenContext(screen);
                 context.ID = id;
                 _items.Add(id, context);
                 _owner.AddedScreen.Invoke(_owner, new(context));

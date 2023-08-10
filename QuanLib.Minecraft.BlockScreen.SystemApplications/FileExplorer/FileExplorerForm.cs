@@ -224,7 +224,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             PathList_Panel.ForceFillDownLayout(1, paths);
             PathList_Panel.PageSize = new(PathList_Panel.ClientSize.Width, paths[^1].BottomLocation + 2);
             PathList_Panel.OffsetPosition = new(0, 0);
-            PathList_Panel.RefreshVerticalScrollBar();
         }
     }
 }

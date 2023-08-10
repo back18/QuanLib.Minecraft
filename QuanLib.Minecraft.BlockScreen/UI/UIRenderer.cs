@@ -25,6 +25,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
                 _task = Task.Run(() =>
                 {
                     IFrame frame = rendering.RenderingFrame();
+                    if (rendering.OffsetPosition != new Point(0, 0))
+                        frame = frame.ToArrayFrame();
 
                     frame.CorrectSize(rendering.ClientSize, rendering.OffsetPosition, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
                     return frame.ToArrayFrame();

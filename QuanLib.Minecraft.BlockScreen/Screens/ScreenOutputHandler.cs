@@ -46,13 +46,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             LastFrame = frame;
             if (pixels.Count > 0)
             {
-                if (MCOS.GetMCOS().EnableAccelerationEngine)
+                if (MCOS.Instance.EnableAccelerationEngine)
                 {
-                    AccelerationEngineSend(MCOS.GetMCOS().AccelerationEngine, pixels);
+                    AccelerationEngineSend(MCOS.Instance.AccelerationEngine, pixels);
                 }
                 else
                 {
-                    ICommandSender sender = MCOS.GetMCOS().MinecraftServer.CommandSender;
+                    ICommandSender sender = MCOS.Instance.MinecraftServer.CommandSender;
                     if (sender is IStandardInputCommandSender standardInput)
                     {
                         StandardInputCommandSend(standardInput, pixels);
@@ -82,13 +82,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             LastFrame = frame;
             if (pixels.Count > 0)
             {
-                if (MCOS.GetMCOS().EnableAccelerationEngine)
+                if (MCOS.Instance.EnableAccelerationEngine)
                 {
-                    await AccelerationEngineSendAsync(MCOS.GetMCOS().AccelerationEngine, pixels);
+                    await AccelerationEngineSendAsync(MCOS.Instance.AccelerationEngine, pixels);
                 }
                 else
                 {
-                    ICommandSender sender = MCOS.GetMCOS().MinecraftServer.CommandSender;
+                    ICommandSender sender = MCOS.Instance.MinecraftServer.CommandSender;
                     if (sender is IStandardInputCommandSender standardInput)
                     {
                         await StandardInputCommandSendAsync(standardInput, pixels);
@@ -124,7 +124,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             string function = ToSetBlockFunction(pixels);
             HandleWaitAndCallbacks();
             sender.SendCommand(function);
-            MCOS.GetMCOS().MinecraftServer.CommandHelper.SendCommand("time query gametime");
+            MCOS.Instance.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
 
         private async Task StandardInputCommandSendAsync(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
@@ -132,7 +132,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             string function = ToSetBlockFunction(pixels);
             HandleWaitAndCallbacks();
             await sender.SendCommandAsync(function);
-            await MCOS.GetMCOS().MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
+            await MCOS.Instance.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
         }
 
         private void BytesCommandSend(IBytesCommandSender sender, List<ScreenPixel> pixels)
@@ -217,15 +217,15 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (previous is not null)
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                MCOS.GetMCOS().ScreenManager.WaitAllScreenPrevious();
+                MCOS.Instance.ScreenManager.WaitAllScreenPrevious();
                 stopwatch.Stop();
                 if (stopwatch.ElapsedMilliseconds > 50)
                 {
-                    MCOS.GetMCOS()._callbacks.Clear();
+                    MCOS.Instance._callbacks.Clear();
                 }
                 else
                 {
-                    while (MCOS.GetMCOS()._callbacks.TryDequeue(out var callback))
+                    while (MCOS.Instance._callbacks.TryDequeue(out var callback))
                         callback.Invoke();
                 }
             }

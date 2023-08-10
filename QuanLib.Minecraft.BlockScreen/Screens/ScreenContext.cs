@@ -18,6 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
     {
         public ScreenContext(Screen screen, IRootForm form)
         {
+            ScreenState = ScreenState.NotLoaded;
             ID = -1;
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
@@ -28,6 +29,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         }
 
         private bool _bind;
+
+        public ScreenState ScreenState { get; private set; }
 
         public int ID { get; internal set; }
 
@@ -67,6 +70,32 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             Screen.InputHandler.TextEditorChanged -= InputHandler_TextEditorChanged;
 
             _bind = false;
+        }
+
+        public void LoadScreen()
+        {
+            Screen.Start();
+            ScreenState = ScreenState.Active;
+        }
+
+        public void CloseScreen()
+        {
+            foreach (var forem in RootForm.GetAllForm().ToArray())
+                MCOS.Instance.FormContextOf(forem)?.CloseForm();
+            MCOS.Instance.FormContextOf(RootForm)?.CloseForm();
+            Screen.Stop();
+
+            ScreenState = ScreenState.Closed;
+        }
+
+        public void StartSleep()
+        {
+            ScreenState = ScreenState.Sleep;
+        }
+
+        public void StopSleep()
+        {
+            ScreenState = ScreenState.Active;
         }
 
         private void InputHandler_CursorMove(ICursorReader sender, CursorEventArgs e)

@@ -82,5 +82,33 @@ namespace QuanLib.Minecraft
                 _ => throw new InvalidOperationException(),
             };
         }
+
+        public static string FacingToChineseString(Facing facing)
+        {
+            return facing switch
+            {
+                Facing.Xp => "东",
+                Facing.Xm => "西",
+                Facing.Yp => "上",
+                Facing.Ym => "下",
+                Facing.Zp => "南",
+                Facing.Zm => "北",
+                _ => throw new InvalidOperationException(),
+            };
+        }
+
+        public static string FacingToEnglishString(Facing facing)
+        {
+            return facing switch
+            {
+                Facing.Xp => "East",
+                Facing.Xm => "West",
+                Facing.Yp => "Up",
+                Facing.Ym => "Down",
+                Facing.Zp => "South",
+                Facing.Zm => "North",
+                _ => throw new InvalidOperationException(),
+            };
+        }
     }
 }

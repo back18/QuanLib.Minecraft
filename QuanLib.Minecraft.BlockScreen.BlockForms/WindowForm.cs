@@ -289,7 +289,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
                 if (_owner.Moveing)
                     _owner.Moveing = false;
-                else if (_owner.IsSelected && _owner.AllowMove && !GetSubControls().HaveHover)
+                else if (_owner.IsSelected && _owner.AllowMove && (GetSubControls().FirstHover is null or IconTextBox))
                 {
                     _owner.Moveing = true;
                     MoveAnchorPoint = e.Position;

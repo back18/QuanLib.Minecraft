@@ -126,7 +126,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Height = maximizeSize.Height;
             InvokeExternalCursorMove = true;
 
-            ApplicationInfo? appInfo = MCOS.GetMCOS().ProcessOf(this)?.ApplicationInfo;
+            ApplicationInfo? appInfo = MCOS.Instance.ProcessOf(this)?.ApplicationInfo;
             if (appInfo is not null)
             {
                 Icon.Dispose();
@@ -258,7 +258,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public FormContext? GetFormContext()
         {
-            return MCOS.GetMCOS().FormContextOf(this);
+            return MCOS.Instance.FormContextOf(this);
         }
     }
 }

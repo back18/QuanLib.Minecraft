@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen
         public object? RunForm(IForm form)
         {
             FormContext context = new(this, form);
-            MCOS.GetMCOS().FormManager.FormList.Add(context);
+            MCOS.Instance.FormManager.FormList.Add(context);
             context.LoadForm();
             context.WaitForFormClose();
             return form.ReturnValue;
@@ -28,7 +28,7 @@ namespace QuanLib.Minecraft.BlockScreen
         public FormContext[] GetForms()
         {
             List<FormContext> result = new();
-            foreach (var context in MCOS.GetMCOS().FormManager.FormList)
+            foreach (var context in MCOS.Instance.FormManager.FormList)
                 if (context.Application == this)
                     result.Add(context);
 

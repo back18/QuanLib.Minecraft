@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             Drag_Switch = new();
             PenWidth_NumberBox = new();
             MoreMenu_Switch = new();
-            More_MenuBox = new();
+            More_ListMenuBox = new();
             Undo_Button = new();
             Redo_Button = new();
             FillButton = new();
@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
         private readonly Switch MoreMenu_Switch;
 
-        private readonly ListMenuBox<Button> More_MenuBox;
+        private readonly ListMenuBox<Button> More_ListMenuBox;
 
         private readonly Button Undo_Button;
 
@@ -99,39 +99,39 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             MoreMenu_Switch.ControlSelected += MoreMenu_Switch_ControlSelected;
             MoreMenu_Switch.ControlDeselected += MoreMenu_Switch_ControlDeselected; ;
 
-            More_MenuBox.Size = new(45, MoreMenu_Switch.BottomLocation);
-            More_MenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
-            More_MenuBox.Anchor = Direction.Top | Direction.Right;
+            More_ListMenuBox.Size = new(45, MoreMenu_Switch.BottomLocation);
+            More_ListMenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
+            More_ListMenuBox.Anchor = Direction.Top | Direction.Right;
 
-            More_MenuBox.AddedSubControlAndLayout(Undo_Button);
             Undo_Button.Text = "撤销";
             Undo_Button.Skin.BackgroundBlockID = string.Empty;
             Undo_Button.RightClick += Undo_Button_RightClick;
+            More_ListMenuBox.AddedSubControlAndLayout(Undo_Button);
 
-            More_MenuBox.AddedSubControlAndLayout(Redo_Button);
             Redo_Button.Text = "重做";
             Redo_Button.Skin.BackgroundBlockID = string.Empty;
             Redo_Button.RightClick += Redo_Button_RightClick;
+            More_ListMenuBox.AddedSubControlAndLayout(Redo_Button);
 
-            More_MenuBox.AddedSubControlAndLayout(FillButton);
             FillButton.Text = "填充";
             FillButton.Skin.BackgroundBlockID = string.Empty;
             FillButton.RightClick += Fill_Button_RightClick;
+            More_ListMenuBox.AddedSubControlAndLayout(FillButton);
 
-            More_MenuBox.AddedSubControlAndLayout(Create_Button);
             Create_Button.Text = "新建";
             Create_Button.Skin.BackgroundBlockID = string.Empty;
             Create_Button.RightClick += Create_Button_RightClick;
+            More_ListMenuBox.AddedSubControlAndLayout(Create_Button);
 
-            More_MenuBox.AddedSubControlAndLayout(Open_Button);
             Open_Button.Text = "打开";
             Open_Button.Skin.BackgroundBlockID = string.Empty;
             Open_Button.RightClick += Open_Button_RightClick;
+            More_ListMenuBox.AddedSubControlAndLayout(Open_Button);
 
-            More_MenuBox.AddedSubControlAndLayout(Save_Button);
             Save_Button.Text = "保存";
             Save_Button.Skin.BackgroundBlockID = string.Empty;
             Save_Button.RightClick += Save_Button_RightClick;
+            More_ListMenuBox.AddedSubControlAndLayout(Save_Button);
 
             ClientPanel.SubControls.Add(DrawingBox);
             DrawingBox.ClientLocation = new(1, 1);
@@ -177,13 +177,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
         private void MoreMenu_Switch_ControlSelected(Control sender, EventArgs e)
         {
-            ClientPanel.SubControls.TryAdd(More_MenuBox);
-            More_MenuBox.ClientLocation = new(sender.LeftLocation - More_MenuBox.Width - 1, sender.BottomLocation - More_MenuBox.Height + 1);
+            ClientPanel.SubControls.TryAdd(More_ListMenuBox);
+            More_ListMenuBox.ClientLocation = new(sender.LeftLocation - More_ListMenuBox.Width - 1, sender.BottomLocation - More_ListMenuBox.Height + 1);
         }
 
         private void MoreMenu_Switch_ControlDeselected(Control sender, EventArgs e)
         {
-            ClientPanel.SubControls.Remove(More_MenuBox);
+            ClientPanel.SubControls.Remove(More_ListMenuBox);
         }
 
         private void Undo_Button_RightClick(Control sender, Event.CursorEventArgs e)

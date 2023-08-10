@@ -71,10 +71,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             RenderingCompleted += OnRenderingCompleted;
             ControlSelected += OnControlSelected;
             ControlDeselected += OnControlDeselected;
-            TextChanged += OnTextChanged;
             Move += OnMove;
             Resize += OnResize;
             OffsetPositionChanged += OnOffsetPositionChanged;
+            TextChanged += OnTextChanged;
             Layout += OnLayout;
         }
 
@@ -108,7 +108,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public DateTime LastLeftClickTime { get; private set; }
 
-        public string Text
+        public virtual string Text
         {
             get => _Text;
             set
@@ -117,7 +117,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 {
                     string temp = _Text;
                     _Text = value;
-                    TextChanged.Invoke(this, new(temp, _Text));
+                    HandleTextChanged(new(temp, _Text));
                     RequestUpdateFrame();
                 }
             }
@@ -588,13 +588,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         protected virtual void OnControlDeselected(Control sender, EventArgs e) { }
 
-        protected virtual void OnTextChanged(Control sender, TextChangedEventArgs e) { }
-
         protected virtual void OnMove(Control sender, PositionChangedEventArgs e) { }
 
         protected virtual void OnResize(Control sender, SizeChangedEventArgs e) { }
 
         protected virtual void OnOffsetPositionChanged(Control sender, PositionChangedEventArgs e) { }
+
+        protected virtual void OnTextChanged(Control sender, TextChangedEventArgs e) { }
 
         public virtual void OnLayout(Control sender, SizeChangedEventArgs e)
         {
@@ -675,6 +675,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public virtual void HandleAfterFrame(EventArgs e)
         {
             AfterFrame.Invoke(this, e);
+        }
+
+        protected virtual void HandleTextChanged(TextChangedEventArgs e)
+        {
+            TextChanged.Invoke(this, e);
         }
 
         public virtual void HandleLayout(SizeChangedEventArgs e)
@@ -978,7 +983,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (form is null)
                 return null;
 
-            return MCOS.GetMCOS().ProcessOf(form);
+            return MCOS.Instance.ProcessOf(form);
         }
 
         public ScreenContext? GetScreenContext()
@@ -987,7 +992,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (form is null)
                 return null;
 
-            return MCOS.GetMCOS().ScreenContextOf(form);
+            return MCOS.Instance.ScreenContextOf(form);
         }
 
         public Size GetFormContainerSize()
@@ -999,7 +1004,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Form? form = GetForm();
             if (form is not null)
             {
-                IForm? initiator = MCOS.GetMCOS().ProcessOf(form)?.Initiator;
+                IForm? initiator = MCOS.Instance.ProcessOf(form)?.Initiator;
                 if (initiator is not null)
                 {
                     if (initiator is IRootForm rootForm2)
@@ -1019,14 +1024,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Form? form = GetForm();
             if (form is not null)
             {
-                Screen? screen = MCOS.GetMCOS().ScreenContextOf(form)?.Screen;
+                Screen? screen = MCOS.Instance.ScreenContextOf(form)?.Screen;
                 if (screen is not null)
                     return screen;
 
-                IForm? initiator = MCOS.GetMCOS().ProcessOf(form)?.Initiator;
+                IForm? initiator = MCOS.Instance.ProcessOf(form)?.Initiator;
                 if (initiator is not null)
                 {
-                    screen = MCOS.GetMCOS().ScreenContextOf(initiator)?.Screen;
+                    screen = MCOS.Instance.ScreenContextOf(initiator)?.Screen;
                     if (screen is not null)
                         return screen;
                 }

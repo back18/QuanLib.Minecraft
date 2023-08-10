@@ -23,6 +23,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             VerticalScrollBar = new();
             HorizontalScrollBar = new();
+
+            PageSizeChanged += OnPageSizeChanged;
         }
 
         private readonly VerticalScrollBar VerticalScrollBar;
@@ -46,12 +48,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 if (_PageSize != value)
                 {
+                    Size temp = _PageSize;
                     _PageSize = value;
+                    PageSizeChanged.Invoke(this, new(temp, _PageSize));
                     RequestUpdateFrame();
                 }
             }
         }
         private Size _PageSize;
+
+        public event EventHandler<ScrollablePanel, SizeChangedEventArgs> PageSizeChanged;
+
+        protected virtual void OnPageSizeChanged(ScrollablePanel sender, SizeChangedEventArgs e)
+        {
+            if (e.OldSize.Height != e.NewSize.Height)
+                RefreshVerticalScrollBar();
+            if (e.OldSize.Width != e.NewSize.Width)
+                RefreshHorizontalScrollBar();
+        }
 
         public override void Initialize()
         {

@@ -49,7 +49,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 
         public override void ActiveLayoutAll()
         {
-            MCOS os = MCOS.GetMCOS();
+            MCOS os = MCOS.Instance;
             ClientPanel.SubControls.Clear();
             foreach (var app in os.ApplicationManager.ApplicationList.Values)
                 if (app.AppendToDesktop)

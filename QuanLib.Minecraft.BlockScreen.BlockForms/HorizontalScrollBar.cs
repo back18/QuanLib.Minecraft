@@ -11,8 +11,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         public override IFrame RenderingFrame()
         {
-            int slider = (int)Math.Round(ClientSize.Width * SliderSize);
             int position = (int)Math.Round(ClientSize.Width * SliderPosition);
+            int slider = (int)Math.Round(ClientSize.Width * SliderSize);
+            if (slider <= 0)
+                slider = 1;
 
             ArrayFrame frame = ArrayFrame.BuildFrame(ClientSize, Skin.GetBackgroundBlockID());
             frame.Overwrite(ArrayFrame.BuildFrame(slider, ClientSize.Height, Skin.GetForegroundBlockID()), new(position, 0));

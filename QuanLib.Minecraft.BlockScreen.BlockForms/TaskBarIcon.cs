@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
             else
             {
-                IRootForm? rootForm = MCOS.GetMCOS()?.FormContextOf(Form)?.RootForm;
+                IRootForm? rootForm = MCOS.Instance?.FormContextOf(Form)?.RootForm;
                 if (rootForm is null)
                     return;
                 if (rootForm.ContainsForm(Form))

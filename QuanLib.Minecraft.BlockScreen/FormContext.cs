@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.BlockScreen
             }
             else
             {
-                MCOS os = MCOS.GetMCOS();
+                MCOS os = MCOS.Instance;
                 IForm? initiator = os.ProcessOf(Application)?.Initiator;
                 if (initiator is IRootForm rootForm2)
                 {

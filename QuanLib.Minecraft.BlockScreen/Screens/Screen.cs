@@ -237,13 +237,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
 
             foreach (var chunk in _chunks)
-                MCOS.GetMCOS().MinecraftServer.CommandHelper.AddForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
+                MCOS.Instance.MinecraftServer.CommandHelper.AddForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
         }
 
         public void UnloadScreenChunks()
         {
             foreach (var chunk in _chunks)
-                MCOS.GetMCOS().MinecraftServer.CommandHelper.RemoveForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
+                MCOS.Instance.MinecraftServer.CommandHelper.RemoveForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
         }
 
         public WorldPixel ToWorldPixel(ScreenPixel pixel)
@@ -357,6 +357,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition)
         {
+            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
+            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, endPosition.Y, "endPosition.Y");
+
             Facing xFacing, yFacing;
             int width, height;
             if (startPosition.X == endPosition.X)
@@ -409,12 +412,16 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return new(startPosition, xFacing, yFacing, width, height);
         }
 
-        public static void Replace(Screen oldScreen, Screen newScreen)
+        public static void Replace(Screen? oldScreen, Screen newScreen)
         {
-            if (oldScreen is null)
-                throw new ArgumentNullException(nameof(oldScreen));
             if (newScreen is null)
                 throw new ArgumentNullException(nameof(newScreen));
+
+            if (oldScreen is null)
+            {
+                newScreen.Fill();
+                return;
+            }
 
             if (newScreen.OutputHandler.LastFrame is null)
             {

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.Data;
+using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using System;
@@ -43,7 +44,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public void Handle()
         {
-            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
+            ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
             Dictionary<string, Item> players = command.GetAllPlayerSelectedItem();
             if (players.Count == 0)
@@ -77,25 +78,26 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 if (text is null || text != "创建屏幕")
                     return;
 
-                ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
+                ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
                 if (!command.TryGetEntityPosition(player, out var position) || !command.TryGetEntityRotation(player, out var rotation))
                     return;
 
                 position.Y += 1.625;
+                Vector3<int> targetPosition = new(0, 0, 0);
                 if (State == ScreenConstructorState.ReadStartPosition)
                 {
                     int distance = 1;
                     if (command.TryGetPlayerDualWieldItem(player, out var dualWieldItem))
                         distance = distance += dualWieldItem.Count * 4;
 
-                    Facing facing;
+                    Facing playerFacing;
                     if (rotation.Pitch <= -60 || rotation.Pitch >= 60)
-                        facing = rotation.PitchFacing;
+                        playerFacing = rotation.PitchFacing;
                     else
-                        facing = rotation.YawFacing;
+                        playerFacing = rotation.YawFacing;
 
-                    var target = facing switch
+                    var target = playerFacing switch
                     {
                         Facing.Yp => position.Y + distance,
                         Facing.Ym => position.Y - distance,
@@ -106,27 +108,42 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         _ => throw new InvalidOperationException(),
                     };
 
-                    NormalFacing = MinecraftUtil.ToReverseFacing(facing);
+                    NormalFacing = MinecraftUtil.ToReverseFacing(playerFacing);
                     PlaneCoordinate = (int)Math.Round(target, MidpointRounding.ToNegativeInfinity);
+                    targetPosition = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), NormalFacing, PlaneCoordinate).ToVector3Int();
+
+                    command.SendTitle(new PlayerSelector(player), 0, 10, 10, "你正在创建屏幕");
+                    command.SendSubTitle(new PlayerSelector(player), 0, 10, 10, $"方向:{MinecraftUtil.FacingToChineseString(playerFacing)} 距离:{distance} 目标位置:{targetPosition}");
                 }
-
-                Vector3<int> targetBlock = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), NormalFacing, PlaneCoordinate).ToVector3Int();
-
-                if (State == ScreenConstructorState.ReadEndPosition)
+                else if (State == ScreenConstructorState.ReadEndPosition)
                 {
-                    if (targetBlock != EndPosition)
+                    targetPosition = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), NormalFacing, PlaneCoordinate).ToVector3Int();
+                    if (targetPosition.Y < -64 || targetPosition.Y > 319)
                     {
-                        EndPosition = targetBlock;
-                        Screen? screen = _screen;
-                        _screen = Screen.CreateScreen(StartPosition, EndPosition);
-                        if (_screen.Width <= 256 && _screen.Height <= 256)
-                        {
-                            if (screen is null)
-                                _screen.Fill();
-                            else
-                                Screen.Replace(screen, _screen);
-                        }
+                        command.SendActionbarTitle(new PlayerSelector(player), "[屏幕创建器] 失败：目标位置的Y轴需要在-64至319之间");
+                        return;
                     }
+
+                    if (targetPosition != EndPosition)
+                    {
+                        EndPosition = targetPosition;
+                        Screen? temp = _screen;
+                        _screen = Screen.CreateScreen(StartPosition, EndPosition);
+                        if (_screen.Width > 256 || _screen.Height > 256)
+                        {
+                            command.SendActionbarTitle(new PlayerSelector(player), "[屏幕创建器] 失败：超过屏幕尺寸上限256×256");
+                            return;
+                        }
+
+                        Screen.Replace(temp, _screen);
+                    }
+
+                    command.SendTitle(new PlayerSelector(player), 0, 10, 10, "正在确定屏幕尺寸");
+                    command.SendSubTitle(new PlayerSelector(player), 0, 10, 10, $"宽度:{_screen?.Width ?? 0} 高度:{_screen?.Height ?? 0}");
+                }
+                else
+                {
+                    throw new InvalidOperationException();
                 }
 
                 if (command.TryGetPlayerScoreboard(player, _objective, out var score) && score > 0)
@@ -134,14 +151,19 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     switch (State)
                     {
                         case ScreenConstructorState.ReadStartPosition:
-                            StartPosition = targetBlock;
+                            if (targetPosition.Y < -64 || targetPosition.Y > 319)
+                            {
+                                command.SendActionbarTitle(new PlayerSelector(player), "[屏幕创建器] 失败：目标位置的Y轴需要在-64至319之间");
+                                break;
+                            }
+                            StartPosition = targetPosition;
                             State = ScreenConstructorState.ReadEndPosition;
                             break;
                         case ScreenConstructorState.ReadEndPosition:
                             State = ScreenConstructorState.ReadStartPosition;
                             if (_screen is not null)
                             {
-                                MCOS.GetMCOS().ScreenManager.ScreenList.Add(_screen);
+                                MCOS.Instance.ScreenManager.ScreenList.Add(_screen);
                                 _screen = null;
                             }
                             break;

@@ -100,7 +100,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleInput()
         {
             Screen screen = _owner;
-            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
+            ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
             Vector3<int> center = screen.WorldCenterPosition;
@@ -133,7 +133,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private bool HandlePlayer(string player)
         {
             Screen screen = _owner;
-            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
+            ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
             if (!command.TryGetPlayerSelectedItemSlot(player, out var slot))
                 return false;

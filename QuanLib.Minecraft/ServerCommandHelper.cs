@@ -201,10 +201,26 @@ namespace QuanLib.Minecraft
             SendCommand($"title {target} title {CommandUtil.ToJson(text, color, bold)}");
         }
 
+        public virtual void SendTitle(Selector target, int fadeIn, int stay, int fadeOut, string text, TextColor color = TextColor.White, bool bold = false)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+            SendCommand($"title {target} times {fadeIn} {stay} {fadeOut}");
+            SendCommand($"title {target} title {CommandUtil.ToJson(text, color, bold)}");
+        }
+
         public virtual void SendSubTitle(Selector target, string text, TextColor color = TextColor.White, bool bold = false)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
+            SendCommand($"title {target} subtitle {CommandUtil.ToJson(text, color, bold)}");
+        }
+
+        public virtual void SendSubTitle(Selector target, int fadeIn, int stay, int fadeOut, string text, TextColor color = TextColor.White, bool bold = false)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+            SendCommand($"title {target} times {fadeIn} {stay} {fadeOut}");
             SendCommand($"title {target} subtitle {CommandUtil.ToJson(text, color, bold)}");
         }
 

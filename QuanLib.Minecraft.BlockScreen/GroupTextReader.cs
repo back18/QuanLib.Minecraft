@@ -41,7 +41,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Start()
         {
-            ServerCommandHelper command = MCOS.GetMCOS().MinecraftServer.CommandHelper;
+            ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
             _runing = true;
             while (_runing)

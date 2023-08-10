@@ -67,13 +67,13 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             _ids = frame._ids;
         }
 
-        public BoundingBox Overwrite(ArrayFrame frame, Point location, Point offset)
+        public BoundingBox Overwrite(ArrayFrame frame, Point position, Point offset)
         {
             if (frame is null)
                 throw new ArgumentNullException(nameof(frame));
 
-            int offsetX = location.X - offset.X;
-            int offsetY = location.Y - offset.Y;
+            int offsetX = position.X - offset.X;
+            int offsetY = position.Y - offset.Y;
 
             int startX1, startY1, startX2, startY2;
             if (offsetX < 0)
@@ -109,9 +109,9 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
             return new(startY1, endY, startX1, endX);
         }
 
-        public BoundingBox Overwrite(ArrayFrame frame, Point location)
+        public BoundingBox Overwrite(ArrayFrame frame, Point position)
         {
-            return Overwrite(frame, location, new(0, 0));
+            return Overwrite(frame, position, new(0, 0));
         }
 
         public bool DrawRow(int row, int start, int length, string id)

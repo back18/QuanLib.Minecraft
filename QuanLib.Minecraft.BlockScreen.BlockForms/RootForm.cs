@@ -19,15 +19,32 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             AllowResize = false;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
+            BorderWidth = 0;
+            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
 
             FormContainer = new(this);
             TaskBar = new(this);
+            StartMenu_ListMenuBox = new();
+            StartMenu_Label = new();
+            StartSleep_Button = new();
+            CloseScreen_Button = new();
+            RestartScreen_Button = new();
             ShowTaskBar_Button = new();
         }
 
         private readonly RootFormFormContainer FormContainer;
 
         private readonly RootFormTaskBar TaskBar;
+
+        private readonly ListMenuBox<Control> StartMenu_ListMenuBox;
+
+        private readonly Label StartMenu_Label;
+
+        private readonly Button StartSleep_Button;
+
+        private readonly Button CloseScreen_Button;
+
+        private readonly Button RestartScreen_Button;
 
         private readonly Button ShowTaskBar_Button;
 
@@ -63,28 +80,51 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.Initialize();
 
-            AllowMove = false;
-            AllowResize = false;
-            DisplayPriority = int.MinValue;
-            MaxDisplayPriority = int.MinValue + 1;
-            BorderWidth = 0;
-            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
-
             SubControls.Add(TaskBar);
 
             SubControls.Add(FormContainer);
             FormContainer.LayoutSyncer?.Sync();
+
+            StartMenu_ListMenuBox.ClientSize = new(70, 20 * 4 + 2);
+            StartMenu_ListMenuBox.MaxDisplayPriority = int.MaxValue;
+            StartMenu_ListMenuBox.DisplayPriority = int.MaxValue - 1;
+            StartMenu_ListMenuBox.Spacing = 2;
+            StartMenu_ListMenuBox.Anchor = Direction.Bottom | Direction.Left;
+            StartMenu_ListMenuBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
+
+            StartMenu_Label.Text = "==开始==";
+            StartMenu_Label.ClientSize = new(64, 16);
+            StartMenu_Label.Skin.SetAllBackgroundBlockID(string.Empty);
+            StartMenu_ListMenuBox.AddedSubControlAndLayout(StartMenu_Label);
+
+            StartSleep_Button.Text = "进入休眠";
+            StartSleep_Button.ClientSize = new(64, 16);
+            StartMenu_ListMenuBox.AddedSubControlAndLayout(StartSleep_Button);
+
+            CloseScreen_Button.Text = "关闭屏幕";
+            CloseScreen_Button.ClientSize = new(64, 16);
+            CloseScreen_Button.RightClick += CloseScreen_Button_RightClick;
+            StartMenu_ListMenuBox.AddedSubControlAndLayout(CloseScreen_Button);
+
+            RestartScreen_Button.Text = "重启屏幕";
+            RestartScreen_Button.ClientSize = new(64, 16);
+            StartMenu_ListMenuBox.AddedSubControlAndLayout(RestartScreen_Button);
 
             ShowTaskBar_Button.Visible = false;
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
             ShowTaskBar_Button.ClientSize = new(16, 16);
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTaskBar_Button.ClientLocation = this.LeftLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
-            ShowTaskBar_Button.Anchor = Direction.Top | Direction.Right;
+            ShowTaskBar_Button.Anchor = Direction.Bottom | Direction.Right;
             ShowTaskBar_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Shrink"));
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
             ShowTaskBar_Button.CursorLeave += ShowTaskBar_Button_CursorLeave;
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
+        }
+
+        private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)
+        {
+            MCOS.Instance.ScreenContextOf(this)?.CloseScreen();
         }
 
         private void ShowTaskBar_Button_CursorEnter(Control sender, CursorEventArgs e)
@@ -359,6 +399,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 StartMenu_Switch.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Orange;
                 StartMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
                 StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Start"));
+                StartMenu_Switch.ControlSelected += StartMenu_Switch_ControlSelected;
+                StartMenu_Switch.ControlDeselected += StartMenu_Switch_ControlDeselected; ;
 
                 SubControls.Add(FullScreen_Button);
                 FullScreen_Button.BorderWidth = 0;
@@ -389,9 +431,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 FormsMenu.SwitchSelectedForm(form);
             }
 
+            private void StartMenu_Switch_ControlSelected(Control sender, EventArgs e)
+            {
+                _owner.SubControls.TryAdd(_owner.StartMenu_ListMenuBox);
+                int y = _owner.ClientSize.Height - _owner.TaskBar.Height - _owner.StartMenu_ListMenuBox.Height;
+                if (y < 0)
+                    y = 0;
+                _owner.StartMenu_ListMenuBox.ClientLocation = new(0, y);
+            }
+
+            private void StartMenu_Switch_ControlDeselected(Control sender, EventArgs e)
+            {
+                _owner.SubControls.Remove(_owner.StartMenu_ListMenuBox);
+            }
+
+
             private void FormContainer_AddedSubControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
             {
-                if (e.Control is IForm form && !FormsMenu.ContainsForm(form) && (MCOS.GetMCOS().ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false))
+                if (e.Control is IForm form && !FormsMenu.ContainsForm(form) && (MCOS.Instance.ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false))
                 {
                     FormsMenu.AddedSubControlAndLayout(new TaskBarIcon(form));
                 }
@@ -401,7 +458,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 if (e.Control is IForm form)
                 {
-                    var context = MCOS.GetMCOS().FormContextOf(form);
+                    var context = MCOS.Instance.FormContextOf(form);
                     if (context is null || context.FormState != FormState.Closed)
                         return;
 

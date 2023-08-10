@@ -1,4 +1,4 @@
-﻿//#define DebugTimer
+﻿#define DebugTimer
 
 using Newtonsoft.Json;
 using System;
@@ -44,6 +44,16 @@ namespace QuanLib.Minecraft.BlockScreen
             _stopwatch = new();
 
             _mcos = this;
+        }
+
+        public static MCOS Instance
+        {
+            get
+            {
+                if (_mcos is null)
+                    throw new InvalidOperationException();
+                return _mcos;
+            }
         }
 
         private static MCOS? _mcos;
@@ -107,6 +117,10 @@ namespace QuanLib.Minecraft.BlockScreen
                 PreviousFrameTime = SystemRunningTime;
                 NextFrameTime = PreviousFrameTime + FrameMinTime;
                 FrameCount++;
+
+                foreach (var context in ScreenManager.ScreenList.Values.ToArray())
+                    if (context.ScreenState == ScreenState.Closed)
+                        ScreenManager.ScreenList.Remove(context.ID);
 
                 HandleProcessScheduling();
 
@@ -292,14 +306,6 @@ namespace QuanLib.Minecraft.BlockScreen
             return new(screen, rootForm);
         }
 
-        public void ClearScreenContext(ScreenContext screentContext)
-        {
-            if (screentContext is null)
-                throw new ArgumentNullException(nameof(screentContext));
-
-            //TODO
-        }
-
         private Process RunServicesApp()
         {
             if (!ApplicationManager.ApplicationList[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
@@ -312,13 +318,6 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             foreach (var id in StartupChecklist)
                 ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[id], initiator);
-        }
-
-        public static MCOS GetMCOS()
-        {
-            if (_mcos is null)
-                throw new InvalidOperationException();
-            return _mcos;
         }
     }
 }
