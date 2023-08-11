@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             RemovedScreen += OnRemovedScreen;
         }
 
-        public ScreenConstructor ScreenConstructor { get; }
+        public ScreenBuilder ScreenConstructor { get; }
 
         public ScreenCollection ScreenList { get; }
 

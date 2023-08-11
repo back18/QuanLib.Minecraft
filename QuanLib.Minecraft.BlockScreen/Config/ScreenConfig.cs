@@ -17,6 +17,9 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             MaxScreenCount = json.MaxScreenCount;
             MaxLength = json.MaxLength;
             MaxPixels = json.MaxPixels;
+            MinY = json.MinY;
+            MaxY = json.MaxY;
+            ScreenBuildTimeout = json.ScreenBuildTimeout;
             RightClickObjective = json.RightClickObjective;
         }
 
@@ -25,6 +28,12 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         public int MaxLength { get; }
 
         public int MaxPixels { get; }
+
+        public int MinY { get; }
+
+        public int MaxY { get; }
+
+        public int ScreenBuildTimeout { get; }
 
         public string RightClickObjective { get; }
 
@@ -41,6 +50,12 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             public int MaxLength;
 
             public int MaxPixels;
+
+            public int MinY;
+
+            public int MaxY;
+
+            public int ScreenBuildTimeout;
 
             public string RightClickObjective;
         }

@@ -4,6 +4,7 @@ using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
+using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Files;
 using QuanLib.Minecraft.Vector;
 using System.Text;
@@ -47,6 +48,11 @@ namespace MCBS.ConsoleTerminal
             };
             Task.Run(() => server.Start());
             server.WaitForConnected();
+
+            if (server.CommandHelper.TryGetPlayerSelectedItem("ORCEHK", out Item? item))
+            {
+                Console.WriteLine(item?.ToString());
+            }
 
             MCOS os = new(server);
             os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
