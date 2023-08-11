@@ -23,6 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             Player = player;
             BuildState = ScreenBuildState.ReadStartPosition;
             Timeout = ScreenConfig.ScreenBuildTimeout;
+            Error = false;
         }
 
         public string Player { get; }
@@ -41,6 +42,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public int Timeout { get; private set; }
 
+        public bool Error { get; private set; }
+
         public void Handle()
         {
             ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
@@ -55,20 +58,16 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 BuildState = ScreenBuildState.Timedout;
                 return;
             }
-            else
-            {
-                Timeout--;
-            }
 
-            if (!command.TryGetPlayerSelectedItem(Player, out var item) ||
-                !command.TryGetEntityPosition(Player, out var position) ||
+            if (!command.TryGetEntityPosition(Player, out var position) ||
                 !command.TryGetEntityRotation(Player, out var rotation))
             {
                 BuildState = ScreenBuildState.Canceled;
                 return;
             }
 
-            if (item.Tag is not null &&
+            if (command.TryGetPlayerSelectedItem(Player, out var item) &&
+                item.Tag is not null &&
                 item.Tag.TryGetValue("display", out var display) &&
                 display is Dictionary<string, object> displayTag &&
                 displayTag.TryGetValue("Name", out var name) &&
@@ -81,12 +80,16 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
                 catch
                 {
-                    goto TryCancel;
+                    TryCancel();
+                    return;
                 }
 
                 string? text = nameJson["text"]?.Value<string>();
                 if (text is null || text != "创建屏幕")
-                    goto TryCancel;
+                {
+                    TryCancel();
+                    return;
+                }
 
                 position.Y += 1.625;
                 Vector3<int> targetPosition;
@@ -117,7 +120,14 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     PlaneCoordinate = (int)Math.Round(target, MidpointRounding.ToNegativeInfinity);
                     targetPosition = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), NormalFacing, PlaneCoordinate).ToVector3Int();
 
-                    command.SendTitle(new PlayerSelector(Player), 0, 10, 10, "你正在创建屏幕");
+                    if (targetPosition.Y < ScreenConfig.MinY || targetPosition.Y > ScreenConfig.MaxY)
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间", TextColor.Red);
+                        Error = true;
+                        goto click;
+                    }
+
+                    command.SendTitle(new PlayerSelector(Player), 0, 10, 10, "正在创建屏幕");
                     command.SendSubTitle(new PlayerSelector(Player), 0, 10, 10, $"方向:{MinecraftUtil.FacingToChineseString(playerFacing)} 距离:{distance} 目标位置:{targetPosition}");
                 }
                 else if (BuildState == ScreenBuildState.ReadEndPosition)
@@ -126,47 +136,69 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
                     if (targetPosition.Y < ScreenConfig.MinY || targetPosition.Y > ScreenConfig.MaxY)
                     {
-                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间");
-                        return;
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间", TextColor.Red);
+                        Error = true;
+                        goto click;
+                    }
+
+                    Screen? newScreen = Screen;
+                    if (EndPosition != targetPosition)
+                        newScreen = Screen.CreateScreen(StartPosition, targetPosition, NormalFacing);
+
+                    if (newScreen is null)
+                        goto click;
+
+                    if (newScreen.Width > ScreenConfig.MaxLength || newScreen.Height > ScreenConfig.MaxLength)
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：屏幕最大长度为{ScreenConfig.MaxLength}", TextColor.Red);
+                        Error = true;
+                        goto click;
+                    }
+                    else if (newScreen.TotalPixels > ScreenConfig.MaxPixels)
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：屏幕最大像素数量为{ScreenConfig.MaxLength}", TextColor.Red);
+                        Error = true;
+                        goto click;
+                    }
+                    else if (newScreen.Width < ScreenConfig.MinLength || newScreen.Height < ScreenConfig.MinLength)
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：屏幕最小长度为{ScreenConfig.MinLength}", TextColor.Red);
+                        Error = true;
+                    }
+                    else if (newScreen.TotalPixels < ScreenConfig.MinPixels)
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：屏幕最小像素数量为{ScreenConfig.MinPixels}", TextColor.Red);
+                        Error = true;
                     }
 
                     if (EndPosition != targetPosition)
                     {
-                        Screen newScreen = Screen.CreateScreen(StartPosition, targetPosition);
-                        if (newScreen.Width > ScreenConfig.MaxLength || newScreen.Height > ScreenConfig.MaxLength)
-                        {
-                            command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：超过屏幕长度上限{ScreenConfig.MaxLength}");
-                            return;
-                        }
-                        if (newScreen.TotalPixels > ScreenConfig.MaxPixels)
-                        {
-                            command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：超过屏幕像素上限{ScreenConfig.MaxLength}");
-                            return;
-                        }
-
                         EndPosition = targetPosition;
                         Screen.Replace(Screen, newScreen);
                         Screen = newScreen;
                     }
 
                     command.SendTitle(new PlayerSelector(Player), 0, 10, 10, "正在确定屏幕尺寸");
-                    command.SendSubTitle(new PlayerSelector(Player), 0, 10, 10, $"宽度:{Screen?.Width ?? 0} 高度:{Screen?.Height ?? 0} 像素数: {Screen?.TotalPixels ?? 0}");
+                    command.SendSubTitle(new PlayerSelector(Player), 0, 10, 10, $"宽度:{Screen?.Width ?? 0} 高度:{Screen?.Height ?? 0} 像素数量: {Screen?.TotalPixels ?? 0}");
                 }
                 else
                 {
                     throw new InvalidOperationException();
                 }
 
+                click:
                 if (command.TryGetPlayerScoreboard(Player, ScreenConfig.RightClickObjective, out var score) && score > 0)
                 {
                     command.SetPlayerScoreboard(Player, ScreenConfig.RightClickObjective, 0);
+
+                    if (Error)
+                    {
+                        command.SendChatMessage(new PlayerSelector(Player), "[屏幕构建器] 出现一个或多个错误，无法创建屏幕", TextColor.Red);
+                        return;
+                    }
+
                     if (BuildState == ScreenBuildState.ReadStartPosition)
                     {
-                        if (targetPosition.Y < ScreenConfig.MinY || targetPosition.Y > ScreenConfig.MaxY)
-                        {
-                            command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间");
-                            return;
-                        }
                         StartPosition = targetPosition;
                         BuildState = ScreenBuildState.ReadEndPosition;
                         command.SendChatMessage(new PlayerSelector(Player), $"[屏幕构建器] 屏幕左上角已确定，位于{StartPosition}");
@@ -184,16 +216,25 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
             else
             {
-                goto TryCancel;
+                TryCancel();
+                return;
             }
 
             Timeout = ScreenConfig.ScreenBuildTimeout;
-            return;
+            Error = false;
 
-            TryCancel:
-
-            if (BuildState != ScreenBuildState.ReadEndPosition)
-                BuildState = ScreenBuildState.Canceled;
+            void TryCancel()
+            {
+                if (BuildState == ScreenBuildState.ReadEndPosition)
+                {
+                    Timeout--;
+                    command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] {Timeout / 20}秒后无操作将取消本次屏幕创建", TextColor.Red);
+                }
+                else
+                {
+                    BuildState = ScreenBuildState.Canceled;
+                }
+            }
         }
     }
 }

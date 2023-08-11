@@ -1,7 +1,7 @@
-﻿using CoreRCON.Parsers.Standard;
+﻿using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
+using CoreRCON.Parsers.Standard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Vector;
@@ -29,28 +29,36 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
             foreach (var context in _contexts.ToArray())
             {
-                switch (_contexts[context.Key].BuildState)
+                switch (context.Value.BuildState)
                 {
                     case ScreenBuildState.Timedout:
-                        command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 操作超时，已取消本次屏幕创建");
                         context.Value.Screen?.Clear();
+                        command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 操作超时，已取消本次屏幕创建", TextColor.Red);
                         _contexts.Remove(context.Key);
                         break;
                     case ScreenBuildState.Canceled:
-                        command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 你已取消本次屏幕创建");
                         context.Value.Screen?.Clear();
+                        command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已取消本次屏幕创建", TextColor.Red);
                         _contexts.Remove(context.Key);
                         break;
                     case ScreenBuildState.Completed:
                         Screen? screen = context.Value.Screen;
                         if (screen is null)
                         {
-                            command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 未知错误，创建失败");
+                            command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 未知错误，创建失败", TextColor.Red);
                         }
                         else
                         {
-                            command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
-                            MCOS.Instance.ScreenManager.ScreenList.Add(screen);
+                            if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
+                            {
+                                context.Value.Screen?.Clear();
+                                command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxScreenCount}个，无法继续创建屏幕", TextColor.Red);
+                            }
+                            else
+                            {
+                                MCOS.Instance.ScreenManager.ScreenList.Add(screen);
+                                command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
+                            }
                         }
                         _contexts.Remove(context.Key);
                         break;

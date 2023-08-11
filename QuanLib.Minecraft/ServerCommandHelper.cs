@@ -231,6 +231,14 @@ namespace QuanLib.Minecraft
             SendCommand($"title {target} actionbar {CommandUtil.ToJson(text, color, bold)}");
         }
 
+        //public virtual void SendActionbarTitle(Selector target, int fadeIn, int stay, int fadeOut, string text, TextColor color = TextColor.White, bool bold = false)
+        //{
+        //    if (string.IsNullOrWhiteSpace(text))
+        //        return;
+        //    SendCommand($"title {target} times {fadeIn} {stay} {fadeOut}");
+        //    SendCommand($"title {target} actionbar {CommandUtil.ToJson(text, color, bold)}");
+        //}
+
         public virtual void SetTitleTimes(Selector target, int fadeIn, int stay, int fadeOut)
         {
             SendCommand($"title {target} times {fadeIn} {stay} {fadeOut}");

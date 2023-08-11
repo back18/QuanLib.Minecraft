@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         private Task? _current;
 
-        public ArrayFrame? LastFrame { get; private set; }
+        public ArrayFrame? LastFrame { get; internal set; }
 
         public bool IsGenerated => LastFrame is not null;
 

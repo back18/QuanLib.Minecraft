@@ -15,7 +15,9 @@ namespace QuanLib.Minecraft.BlockScreen.Config
                 throw new ArgumentNullException(nameof(json));
 
             MaxScreenCount = json.MaxScreenCount;
+            MinLength = json.MinLength;
             MaxLength = json.MaxLength;
+            MinPixels = json.MinPixels;
             MaxPixels = json.MaxPixels;
             MinY = json.MinY;
             MaxY = json.MaxY;
@@ -25,7 +27,11 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
         public int MaxScreenCount { get; }
 
+        public int MinLength { get; }
+
         public int MaxLength { get; }
+
+        public int MinPixels { get; }
 
         public int MaxPixels { get; }
 
@@ -47,7 +53,11 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
             public int MaxScreenCount;
 
+            public int MinLength;
+
             public int MaxLength;
+
+            public int MinPixels;
 
             public int MaxPixels;
 

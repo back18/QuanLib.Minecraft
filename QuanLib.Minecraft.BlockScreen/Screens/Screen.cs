@@ -39,7 +39,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 case "XmYm":
                 case "YmXp":
                 case "XpYp":
-                case "Ypym":
+                case "YpXm":
                     Plane = Plane.XY;
                     NormalFacing = Facing.Zm;
                     PlaneCoordinate = startPosition.Z;
@@ -355,54 +355,240 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return isScreenPlane && IncludedOnScreen(ToScreenPosition(blockPos));
         }
 
-        public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition)
+        public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition, Facing normalFacing)
         {
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, endPosition.Y, "endPosition.Y");
 
             Facing xFacing, yFacing;
             int width, height;
-            if (startPosition.X == endPosition.X)
+            if (startPosition.X == endPosition.X && (normalFacing == Facing.Xp || normalFacing == Facing.Xm))
             {
-                if (startPosition.Z > endPosition.Z)
-                    xFacing = Facing.Zm;
-                else
-                    xFacing = Facing.Zp;
-                if (startPosition.Y > endPosition.Y)
-                    yFacing = Facing.Ym;
-                else
-                    yFacing = Facing.Yp;
+                bool swap = false;
+                switch (normalFacing)
+                {
+                    case Facing.Xp:
+                        if (startPosition.Z > endPosition.Z && startPosition.Y > endPosition.Y)
+                        {
+                            xFacing = Facing.Zm;
+                            yFacing = Facing.Ym;
+                        }
+                        else if (startPosition.Z <= endPosition.Z && startPosition.Y <= endPosition.Y)
+                        {
+                            xFacing = Facing.Zp;
+                            yFacing = Facing.Yp;
+                        }
+                        else if (startPosition.Z > endPosition.Z && startPosition.Y <= endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Yp;
+                            yFacing = Facing.Zm;
+                        }
+                        else if (endPosition.Z <= endPosition.Z && startPosition.Y > endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Ym;
+                            yFacing = Facing.Zp;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        break;
+                    case Facing.Xm:
+                        if (startPosition.Z > endPosition.Z && startPosition.Y > endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Ym;
+                            yFacing = Facing.Zm;
+                        }
+                        else if (startPosition.Z <= endPosition.Z && startPosition.Y <= endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Yp;
+                            yFacing = Facing.Zp;
+                        }
+                        else if (startPosition.Z > endPosition.Z && startPosition.Y <= endPosition.Y)
+                        {
+                            xFacing = Facing.Zm;
+                            yFacing = Facing.Yp;
+                        }
+                        else if (endPosition.Z <= endPosition.Z && startPosition.Y > endPosition.Y)
+                        {
+                            xFacing = Facing.Zp;
+                            yFacing = Facing.Ym;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
 
-                width = Math.Abs(startPosition.Z - endPosition.Z) + 1;
-                height = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+                if (swap)
+                {
+                    width = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+                    height = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+                }
+                else
+                {
+                    width = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+                    height = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+                }
             }
-            else if (startPosition.Y == endPosition.Y)
+            else if (startPosition.Y == endPosition.Y && (normalFacing == Facing.Yp || normalFacing == Facing.Ym))
             {
-                if (startPosition.X > endPosition.X)
-                    xFacing = Facing.Xm;
-                else
-                    xFacing = Facing.Xp;
-                if (startPosition.Z > endPosition.Z)
-                    yFacing = Facing.Zm;
-                else
-                    yFacing = Facing.Zp;
+                bool swap = false;
+                switch (normalFacing)
+                {
+                    case Facing.Yp:
+                        if (startPosition.X > endPosition.X && startPosition.Z > endPosition.Z)
+                        {
+                            xFacing = Facing.Xm;
+                            yFacing = Facing.Zm;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Z <= endPosition.Z)
+                        {
+                            xFacing = Facing.Xp;
+                            yFacing = Facing.Zp;
+                        }
+                        else if (startPosition.X > endPosition.X && startPosition.Z <= endPosition.Z)
+                        {
+                            swap = true;
+                            xFacing = Facing.Zp;
+                            yFacing = Facing.Xm;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Z > endPosition.Z)
+                        {
+                            swap = true;
+                            xFacing = Facing.Zm;
+                            yFacing = Facing.Xp;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        break;
+                    case Facing.Ym:
+                        if (startPosition.X > endPosition.X && startPosition.Z > endPosition.Z)
+                        {
+                            swap = true;
+                            xFacing = Facing.Zm;
+                            yFacing = Facing.Xm;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Z <= endPosition.Z)
+                        {
+                            swap = true;
+                            xFacing = Facing.Zp;
+                            yFacing = Facing.Xp;
+                        }
+                        else if (startPosition.X > endPosition.X && startPosition.Z <= endPosition.Z)
+                        {
+                            xFacing = Facing.Xm;
+                            yFacing = Facing.Zp;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Z > endPosition.Z)
+                        {
+                            xFacing = Facing.Xp;
+                            yFacing = Facing.Zm;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
 
-                width = Math.Abs(startPosition.X - endPosition.X) + 1;
-                height = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+                if (swap)
+                {
+                    width = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+                    height = Math.Abs(startPosition.X - endPosition.X) + 1;
+                }
+                else
+                {
+                    width = Math.Abs(startPosition.X - endPosition.X) + 1;
+                    height = Math.Abs(startPosition.Z - endPosition.Z) + 1;
+                }
             }
-            else if (startPosition.Z == endPosition.Z)
+            else if (startPosition.Z == endPosition.Z && (normalFacing == Facing.Zp || normalFacing == Facing.Zm))
             {
-                if (startPosition.X > endPosition.X)
-                    xFacing = Facing.Xm;
-                else
-                    xFacing = Facing.Xp;
-                if (startPosition.Y > endPosition.Y)
-                    yFacing = Facing.Ym;
-                else
-                    yFacing = Facing.Yp;
+                bool swap = false;
+                switch (normalFacing)
+                {
+                    case Facing.Zp:
+                        if (startPosition.X > endPosition.X && startPosition.Y > endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Ym;
+                            yFacing = Facing.Xm;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Y <= endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Yp;
+                            yFacing = Facing.Xp;
+                        }
+                        else if (startPosition.X > endPosition.X && startPosition.Y <= endPosition.Y)
+                        {
+                            xFacing = Facing.Xm;
+                            yFacing = Facing.Yp;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Y > endPosition.Y)
+                        {
+                            xFacing = Facing.Xp;
+                            yFacing = Facing.Ym;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        break;
+                    case Facing.Zm:
+                        if (startPosition.X > endPosition.X && startPosition.Y > endPosition.Y)
+                        {
+                            xFacing = Facing.Xm;
+                            yFacing = Facing.Ym;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Y <= endPosition.Y)
+                        {
+                            xFacing = Facing.Xp;
+                            yFacing = Facing.Yp;
+                        }
+                        else if (startPosition.X > endPosition.X && startPosition.Y <= endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Yp;
+                            yFacing = Facing.Xm;
+                        }
+                        else if (startPosition.X <= endPosition.X && startPosition.Y > endPosition.Y)
+                        {
+                            swap = true;
+                            xFacing = Facing.Ym;
+                            yFacing = Facing.Xp;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
 
-                width = Math.Abs(startPosition.X - endPosition.X) + 1;
-                height = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+                if (swap)
+                {
+                    width = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+                    height = Math.Abs(startPosition.X - endPosition.X) + 1;
+                }
+                else
+                {
+                    width = Math.Abs(startPosition.X - endPosition.X) + 1;
+                    height = Math.Abs(startPosition.Y - endPosition.Y) + 1;
+                }
             }
             else
             {
@@ -417,36 +603,75 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (newScreen is null)
                 throw new ArgumentNullException(nameof(newScreen));
 
-            if (oldScreen is null)
+            if (oldScreen is null || oldScreen.OutputHandler.LastFrame is null)
             {
                 newScreen.Fill();
                 return;
             }
 
-            if (newScreen.OutputHandler.LastFrame is null)
-            {
-                newScreen.Fill();
-            }
-
             if (oldScreen.Plane != newScreen.Plane || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
             {
                 oldScreen.Clear();
+                newScreen.Fill();
+                return;
             }
-            else if (oldScreen.OutputHandler.LastFrame is not null)
+
+            ArrayFrame? frame = null;
+            if (oldScreen.DefaultBackgroundBlcokID == newScreen.DefaultBackgroundBlcokID &&
+                oldScreen.WorldStartPosition == oldScreen.WorldStartPosition &&
+                oldScreen.XFacing == newScreen.XFacing &&
+                oldScreen.YFacing == newScreen.YFacing)
             {
                 if (newScreen.OutputHandler.LastFrame is null)
-                    throw new InvalidOperationException();
+                    newScreen.OutputHandler.LastFrame = ArrayFrame.BuildFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
 
-                List<Vector3<int>> world = new();
+                if (newScreen.Width > oldScreen.Width)
+                {
+                    for (int x = oldScreen.Width; x < newScreen.Width; x++)
+                        for (int y = 0; y < newScreen.Height; y++)
+                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, "minecraft:air");
+                }
+                else if (newScreen.Width < oldScreen.Width)
+                {
+                    frame ??= oldScreen.OutputHandler.LastFrame.Clone();
+                    for (int x = newScreen.Width; x < oldScreen.Width; x++)
+                        for (int y = 0; y < oldScreen.Height; y++)
+                            frame.SetBlockID(x, y, "minecraft:air");
+                }
+
+                if (newScreen.Height > oldScreen.Height)
+                {
+                    for (int x = 0; x < newScreen.Width; x++)
+                        for (int y = oldScreen.Height; y < newScreen.Height; y++)
+                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, "minecraft:air");
+                }
+                else if (newScreen.Height < oldScreen.Height)
+                {
+                    frame ??= oldScreen.OutputHandler.LastFrame.Clone();
+                    for (int x = 0; x < oldScreen.Width; x++)
+                        for (int y = newScreen.Height; y < oldScreen.Height; y++)
+                            frame.SetBlockID(x, y, "minecraft:air");
+                }
+
+                newScreen.Fill();
+                if (frame is not null)
+                    oldScreen.OutputHandler.HandleOutput(frame);
+            }
+            else
+            {
+                frame = oldScreen.OutputHandler.LastFrame.Clone();
+                if (newScreen.OutputHandler.LastFrame is null)
+                    newScreen.Fill();
+
+                List<Vector3<int>> worlds = new();
                 for (int x = 0; x < newScreen.Width; x++)
                     for (int y = 0; y < newScreen.Height; y++)
-                        world.Add(newScreen.ToWorldPosition(new(x, y)));
+                        worlds.Add(newScreen.ToWorldPosition(new(x, y)));
 
-                ArrayFrame frame = oldScreen.OutputHandler.LastFrame.Clone();
                 for (int x = 0; x < oldScreen.Width; x++)
                     for (int y = 0; y < oldScreen.Height; y++)
                     {
-                        if (!world.Contains(oldScreen.ToWorldPosition(new(x, y))))
+                        if (!worlds.Contains(oldScreen.ToWorldPosition(new(x, y))))
                             frame.SetBlockID(x, y, "minecraft:air");
                     }
 
