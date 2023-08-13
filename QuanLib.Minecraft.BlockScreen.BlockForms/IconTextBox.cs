@@ -51,9 +51,24 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             base.Initialize();
 
             SubControls.Add(Icon_PictureBox);
+            Icon_PictureBox.ImageFrameChanged += Icon_PictureBox_ImageFrameChanged;
+
             SubControls.Add(Text_Label);
+            Text_Label.TextChanged += Text_Label_TextChanged;
 
             ActiveLayoutAll();
+        }
+
+        private void Icon_PictureBox_ImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        {
+            if (AutoSize)
+                AutoSetSize();
+        }
+
+        private void Text_Label_TextChanged(Control sender, TextChangedEventArgs e)
+        {
+            if (AutoSize)
+                AutoSetSize();
         }
 
         public override void ActiveLayoutAll()

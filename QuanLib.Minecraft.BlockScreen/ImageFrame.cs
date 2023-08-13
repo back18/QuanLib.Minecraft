@@ -105,14 +105,17 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Update(Rectangle? rectangle = null)
         {
-            _output.Dispose();
-            if (rectangle is not null)
-                _output = Image.Clone(x => x.Crop(rectangle.Value));
-            else
-                _output = Image.Clone();
-            _output.Mutate(x => x.Resize(ResizeOptions));
-            _frame = ArrayFrame.FromImage(_facing, _output, TransparentBlockID);
-            _get = false;
+            lock (Image)
+            {
+                _output.Dispose();
+                if (rectangle is not null)
+                    _output = Image.Clone(x => x.Crop(rectangle.Value));
+                else
+                    _output = Image.Clone();
+                _output.Mutate(x => x.Resize(ResizeOptions));
+                _frame = ArrayFrame.FromImage(_facing, _output, TransparentBlockID);
+                _get = false;
+            }
         }
 
         public ImageFrame Clone()
@@ -126,8 +129,8 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Dispose()
         {
-            Image.Dispose();
             _output.Dispose();
+            Image.Dispose();
 
             GC.SuppressFinalize(this);
         }

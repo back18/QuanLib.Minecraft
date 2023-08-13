@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad
 {
     public class NotepadForm : WindowForm
     {
-        public NotepadForm()
+        public NotepadForm(string? open = null)
         {
             RichTextBox = new();
+
+            _open = open;
         }
+
+        private string? _open;
 
         private readonly RichTextBox RichTextBox;
 
@@ -25,8 +30,18 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad
             RichTextBox.ClientLocation = new(2, 2);
             RichTextBox.Size = new(ClientPanel.ClientSize.Width - 4, ClientPanel.ClientSize.Height - 4);
             RichTextBox.Stretch = Direction.Bottom | Direction.Right;
-            RichTextBox.WordWrap = false;
-            RichTextBox.Text = File.ReadAllText(@"C:\Users\Administrator\Desktop\latest.log");
+
+            if (_open is not null)
+            {
+                try
+                {
+                    RichTextBox.Text = File.ReadAllText(_open);
+                }
+                catch
+                {
+                    _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开文本文件：“{_open}”", MessageBoxButtons.OK);
+                }
+            }
         }
     }
 }

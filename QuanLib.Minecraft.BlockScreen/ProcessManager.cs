@@ -78,7 +78,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 process.ID = id;
                 _id++;
                 _items.Add(id, process);
-                _owner.AddedProcess(_owner, new(process));
+                _owner.AddedProcess.Invoke(_owner, new(process));
                 return process;
             }
 
@@ -88,7 +88,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     return false;
 
                 process.ID = -1;
-                _owner.RemovedProcess(_owner, new(process));
+                _owner.RemovedProcess.Invoke(_owner, new(process));
                 return true;
             }
 

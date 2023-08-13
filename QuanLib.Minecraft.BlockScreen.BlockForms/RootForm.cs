@@ -434,10 +434,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             private void StartMenu_Switch_ControlSelected(Control sender, EventArgs e)
             {
                 _owner.SubControls.TryAdd(_owner.StartMenu_ListMenuBox);
-                int y = _owner.ClientSize.Height - _owner.TaskBar.Height - _owner.StartMenu_ListMenuBox.Height;
-                if (y < 0)
-                    y = 0;
-                _owner.StartMenu_ListMenuBox.ClientLocation = new(0, y);
+
+                _owner.StartMenu_ListMenuBox.ClientLocation = new(0, Math.Max(_owner.ClientSize.Height - _owner.TaskBar.Height - _owner.StartMenu_ListMenuBox.Height, 0));
+                if (_owner.StartMenu_ListMenuBox.BottomToBorder < _owner.TaskBar.Height)
+                    _owner.StartMenu_ListMenuBox.BottomToBorder = _owner.TaskBar.Height;
             }
 
             private void StartMenu_Switch_ControlDeselected(Control sender, EventArgs e)

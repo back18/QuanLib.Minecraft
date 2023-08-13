@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
@@ -36,8 +37,11 @@ namespace QuanLib.Minecraft
             ServerProcessRestart += OnServerProcessRestart;
             ServerProcessExit += OnServerProcessExit;
 
+            _semaphore = new(1);
             _runing = false;
         }
+
+        private readonly SemaphoreSlim _semaphore;
 
         private bool _runing;
 
@@ -130,7 +134,19 @@ namespace QuanLib.Minecraft
             if (command is null)
                 throw new ArgumentNullException(nameof(command));
 
-            Process.StandardInput.WriteLine(command);
+            _semaphore.Wait();
+            try
+            {
+                Process.StandardInput.WriteLine(command);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public void SendAllCommand(IEnumerable<string> commands)
@@ -149,7 +165,19 @@ namespace QuanLib.Minecraft
                 sb.Append('\n');
             }
 
-            Process.StandardInput.Write(sb.ToString());
+            _semaphore.Wait();
+            try
+            {
+                Process.StandardInput.Write(sb.ToString());
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task SendCommandAsync(string command)
@@ -157,7 +185,19 @@ namespace QuanLib.Minecraft
             if (command is null)
                 throw new ArgumentNullException(nameof(command));
 
-            await Process.StandardInput.WriteLineAsync(command);
+            await _semaphore.WaitAsync();
+            try
+            {
+                await Process.StandardInput.WriteLineAsync(command);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task SendAllCommandAsync(IEnumerable<string> commands)
@@ -176,7 +216,19 @@ namespace QuanLib.Minecraft
                 sb.Append('\n');
             }
 
-            await Process.StandardInput.WriteAsync(sb.ToString());
+            await _semaphore.WaitAsync();
+            try
+            {
+                await Process.StandardInput.WriteAsync(sb.ToString());
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
     }
 }

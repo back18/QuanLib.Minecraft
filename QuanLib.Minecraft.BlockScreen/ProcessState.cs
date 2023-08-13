@@ -12,8 +12,6 @@ namespace QuanLib.Minecraft.BlockScreen
 
         Running,
 
-        Pending,
-
         Stopped
     }
 }

@@ -51,7 +51,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         {
                             if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
                             {
-                                context.Value.Screen?.Clear();
+                                screen.Clear();
                                 command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxScreenCount}个，无法继续创建屏幕", TextColor.Red);
                             }
                             else
@@ -64,6 +64,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         break;
                 }
             }
+
+            if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
+                return;
 
             Dictionary<string, Item> items = command.GetAllPlayerSelectedItem();
             foreach (var item in items)
@@ -91,8 +94,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     if (text is null || text != "创建屏幕")
                         continue;
 
-                    command.SendChatMessage(new PlayerSelector(item.Key), "[屏幕构建器] 已载入屏幕创建程序");
                     _contexts.Add(item.Key, new(item.Key));
+                    command.SendChatMessage(new PlayerSelector(item.Key), "[屏幕构建器] 已载入屏幕创建程序");
                 }
             }
 

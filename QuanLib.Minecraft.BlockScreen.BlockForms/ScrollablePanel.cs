@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ScrollDelta = 16;
             _PageSize = new(0, 0);
             ScrollBarShowTime = 20;
-            ScrollBarCountdown = 0;
+            ScrollBarHideTime = 0;
 
             VerticalScrollBar = new();
             HorizontalScrollBar = new();
@@ -37,7 +37,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public int ScrollBarShowTime { get; set; }
 
-        public int ScrollBarCountdown { get; private set; }
+        public int ScrollBarHideTime { get; private set; }
 
         public int ScrollDelta { get; set; }
 
@@ -223,11 +223,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             if (VerticalScrollBar.Visible == true ||  HorizontalScrollBar.Visible == true)
             {
-                if (ScrollBarCountdown <= 0 && !VerticalScrollBar.IsHover && !HorizontalScrollBar.IsHover)
+                if (ScrollBarHideTime <= 0 && !VerticalScrollBar.IsHover && !HorizontalScrollBar.IsHover)
                 {
                     HideScrollBar();
                 }
-                ScrollBarCountdown--;
+                ScrollBarHideTime--;
             }
         }
 
@@ -238,7 +238,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (ShowHorizontalScrollBar)
                 HorizontalScrollBar.Visible = true;
 
-            ScrollBarCountdown = ScrollBarShowTime;
+            ScrollBarHideTime = ScrollBarShowTime;
         }
 
         public void HideScrollBar()

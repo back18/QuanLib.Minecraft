@@ -52,6 +52,23 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
         }
 
+        public override string Text
+        {
+            get => TitleBar?.Text ?? string.Empty;
+            set
+            {
+                if (TitleBar is null)
+                    return;
+
+                if (TitleBar.Text != value)
+                {
+                    string temp = TitleBar.Text;
+                    TitleBar.Text = value;
+                    HandleTextChanged(new(temp, TitleBar.Text));
+                }
+            }
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -157,15 +174,15 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-                Text = _owner.Text;
+                base.Text = _owner.Text;
                 LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
-                _owner.TextChanged += (sender, e) => Text = _owner.Text;
+                _owner.TextChanged += (sender, e) => base.Text = _owner.Text;
                 _owner.InitializeCompleted += Owner_InitializeCallback;
 
                 MoveAnchorPoint = new(0, 0);
-                _ButtonsToShow = FormButton.Close | FormButton.MaximizeOrRestore | FormButton.Minimize | FormButton.FullScreen;
+                _ButtonsToShow = FormButtons.Close | FormButtons.MaximizeOrRestore | FormButtons.Minimize | FormButtons.FullScreen;
 
-                IconAndTitle = new();
+                Title_IconTextBox = new();
                 Close_Button = new();
                 MaximizeOrRestore_Switch = new();
                 Minimize_Button = new();
@@ -177,7 +194,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             private readonly WindowForm _owner;
 
-            private readonly IconTextBox IconAndTitle;
+            private readonly IconTextBox Title_IconTextBox;
 
             private readonly Button Close_Button;
 
@@ -187,7 +204,21 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             private readonly Button FullScreen_Button;
 
-            public FormButton ButtonsToShow
+            public override string Text
+            {
+                get => Title_IconTextBox.Text_Label.Text;
+                set
+                {
+                    if (Title_IconTextBox.Text_Label.Text != value)
+                    {
+                        string temp = Title_IconTextBox.Text_Label.Text;
+                        Title_IconTextBox.Text_Label.Text = value;
+                        HandleTextChanged(new(temp, Title_IconTextBox.Text_Label.Text));
+                    }
+                }
+            }
+
+            public FormButtons ButtonsToShow
             {
                 get => _ButtonsToShow;
                 set
@@ -196,7 +227,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     ActiveLayoutAll();
                 }
             }
-            private FormButton _ButtonsToShow;
+            private FormButtons _ButtonsToShow;
 
             public Point MoveAnchorPoint { get; set; }
 
@@ -207,12 +238,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (_owner != ParentContainer)
                     throw new InvalidOperationException();
 
-                SubControls.Add(IconAndTitle);
-                IconAndTitle.KeepWhenClear = true;
-                IconAndTitle.Icon_PictureBox.SetImage(_owner.Icon);
-                IconAndTitle.Text_Label.Text = _owner.Text;
-                IconAndTitle.BorderWidth = 0;
-                IconAndTitle.AutoSize = true;
+                SubControls.Add(Title_IconTextBox);
+                Title_IconTextBox.KeepWhenClear = true;
+                Title_IconTextBox.AutoSize = true;
+                Title_IconTextBox.Icon_PictureBox.SetImage(_owner.Icon);
+                Title_IconTextBox.Text_Label.Text = _owner.Text;
+                Title_IconTextBox.BorderWidth = 0;
 
                 Close_Button.BorderWidth = 0;
                 Close_Button.ClientSize = new(16, 16);
@@ -335,22 +366,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             public override void ActiveLayoutAll()
             {
                 SubControls.Clear();
-                if (ButtonsToShow.HasFlag(FormButton.Close))
+                if (ButtonsToShow.HasFlag(FormButtons.Close))
                 {
                     Close_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Close_Button, 0, 0);
                     SubControls.Add(Close_Button);
                 }
-                if (ButtonsToShow.HasFlag(FormButton.MaximizeOrRestore))
+                if (ButtonsToShow.HasFlag(FormButtons.MaximizeOrRestore))
                 {
                     MaximizeOrRestore_Switch.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
                     SubControls.Add(MaximizeOrRestore_Switch);
                 }
-                if (ButtonsToShow.HasFlag(FormButton.Minimize))
+                if (ButtonsToShow.HasFlag(FormButtons.Minimize))
                 {
                     Minimize_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Minimize_Button, 0, 0);
                     SubControls.Add(Minimize_Button);
                 }
-                if (ButtonsToShow.HasFlag(FormButton.FullScreen))
+                if (ButtonsToShow.HasFlag(FormButtons.FullScreen))
                 {
                     FullScreen_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
                     SubControls.Add(FullScreen_Button);

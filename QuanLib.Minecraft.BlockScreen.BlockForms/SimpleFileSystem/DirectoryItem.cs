@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
+namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
-    public class DirectoryIcon : PathIcon
+    public class DirectoryItem : FileSystemItem
     {
-        public DirectoryIcon(DirectoryInfo directoryInfo) : base(IO.PathType.Directory)
+        public DirectoryItem(DirectoryInfo directoryInfo) : base(IO.PathType.Directory)
         {
             DirectoryInfo = directoryInfo ?? throw new ArgumentNullException(nameof(directoryInfo));
 
@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
         }
 
-        public override string Path => DirectoryInfo.FullName;
+        public override FileSystemInfo FileSystemInfo => DirectoryInfo;
 
         public DirectoryInfo DirectoryInfo { get; }
     }

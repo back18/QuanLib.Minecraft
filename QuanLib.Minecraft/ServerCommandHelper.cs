@@ -365,6 +365,7 @@ namespace QuanLib.Minecraft
             if (string.IsNullOrEmpty(itemID))
                 throw new ArgumentException($"“{nameof(itemID)}”不能为 null 或空。", nameof(itemID));
 
+            itemID = itemID.Replace("\\", "\\\\");
             string output = SendCommand($"item replace entity {name} hotbar.{slot} with {itemID}");
             if (output.StartsWith("Replaced a slot on"))
                 return true;

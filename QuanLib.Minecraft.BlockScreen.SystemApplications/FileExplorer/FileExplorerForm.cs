@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Event;
 using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem;
+using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
+using QuanLib.Minecraft.BlockScreen.Config;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
@@ -25,10 +28,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             OK_Button = new();
             Cancel_Button = new();
             Path_TextBox = new();
-            PathList_Panel = new();
-
-            _pages = new();
-            _stack = new();
+            SimpleFilesBox = new();
         }
 
         private readonly Button Backward_Button;
@@ -45,11 +45,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         private readonly TextBox Path_TextBox;
 
-        private readonly ScrollablePanel PathList_Panel;
-
-        private readonly Dictionary<int, PathIcon[]> _pages;
-
-        private readonly Stack<string> _stack;
+        private readonly SimpleFilesBox SimpleFilesBox;
 
         public override void Initialize()
         {
@@ -78,6 +74,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Forward_Button.Text = "→";
             Forward_Button.ClientSize = new(16, 16);
             Forward_Button.ClientLocation = ClientPanel.RightLayout(Backward_Button, spacing);
+            Forward_Button.RightClick += Forward_Button_RightClick;
 
             ClientPanel.SubControls.Add(Path_TextBox);
             Path_TextBox.ClientLocation = ClientPanel.RightLayout(Forward_Button, spacing);
@@ -113,35 +110,22 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             OK_Button.Anchor = Direction.Bottom | Direction.Right;
             OK_Button.RightClick += OK_Button_RightClick;
 
-            ClientPanel.SubControls.Add(PathList_Panel);
-            PathList_Panel.Width = ClientPanel.ClientSize.Width - 4;
-            PathList_Panel.Height = ClientPanel.ClientSize.Height - Backward_Button.Height - PreviousPage_Button.Height - 8;
-            PathList_Panel.ClientLocation = ClientPanel.BottomLayout(Backward_Button, spacing);
-            PathList_Panel.Stretch = Direction.Bottom | Direction.Right;
-            PathList_Panel.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
+            ClientPanel.SubControls.Add(SimpleFilesBox);
+            SimpleFilesBox.Width = ClientPanel.ClientSize.Width - 4;
+            SimpleFilesBox.Height = ClientPanel.ClientSize.Height - Backward_Button.Height - PreviousPage_Button.Height - 8;
+            SimpleFilesBox.ClientLocation = ClientPanel.BottomLayout(Backward_Button, spacing);
+            SimpleFilesBox.Stretch = Direction.Bottom | Direction.Right;
+            SimpleFilesBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
+            SimpleFilesBox.TextChanged += SimpleFilesBox_TextChanged;
+            SimpleFilesBox.OpenFile += SimpleFilesBox_OpenFile;
+            SimpleFilesBox.OpeningItemException += SimpleFilesBox_OpeningItemException;
 
             ClientPanel.ClientSize = size2;
-
-            ActiveLayoutAll();
-        }
-
-        protected override void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
-        {
-            base.OnLayoutAll(sender, e);
-
-            ActiveLayoutAll();
         }
 
         private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            List<string> paths = new();
-            foreach (var page in _pages.Values)
-                foreach (var path in page)
-                    if (path.IsSelected)
-                    {
-                        paths.Add(path.Path);
-                        path.IsSelected = false;
-                    }
+
         }
 
         private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
@@ -151,12 +135,17 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         private void Backward_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            Path_TextBox.Text = Path.GetDirectoryName(Path_TextBox.Text) ?? string.Empty;
+            SimpleFilesBox.Backward();
+        }
+
+        private void Forward_Button_RightClick(Control sender, CursorEventArgs e)
+        {
+            SimpleFilesBox.Forward();
         }
 
         private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
         {
-            ActiveLayoutAll();
+            SimpleFilesBox.Text = Path_TextBox.Text;
 
             if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
@@ -174,56 +163,28 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         }
 
-        public override void ActiveLayoutAll()
+        private void SimpleFilesBox_TextChanged(Control sender, TextChangedEventArgs e)
         {
-            List<PathIcon> paths = new();
-            if (string.IsNullOrEmpty(Path_TextBox.Text))
+            Path_TextBox.Text = SimpleFilesBox.Text;
+        }
+
+        private void SimpleFilesBox_OpenFile(SimpleFilesBox sender, FIleInfoEventArgs e)
+        {
+            FileInfo fileInfo = e.FileInfo;
+            string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
+            if (ConfigManager.Registry.TryGetValue(extension, out var id) && MCOS.Instance.ApplicationManager.ApplicationList.TryGetValue(id, out var app))
             {
-                foreach (var drive in DriveInfo.GetDrives())
-                    paths.Add(new DriveIcon(drive));
+                MCOS.Instance.ProcessManager.ProcessList.Add(app, new string[] { fileInfo.FullName }, this);
             }
             else
             {
-                switch (FileUtil.GetPathType(Path_TextBox.Text))
-                {
-                    case PathType.Unknown:
-                        return;
-                    case PathType.Drive:
-                        DirectoryInfo driveRoot = new DriveInfo(Path_TextBox.Text).RootDirectory;
-                        foreach (var dir in driveRoot.GetDirectories())
-                            paths.Add(new DirectoryIcon(dir));
-                        foreach (var file in driveRoot.GetFiles())
-                            paths.Add(new FileIcon(file));
-                        break;
-                    case PathType.Directory:
-                        DirectoryInfo directory = new DirectoryInfo(Path_TextBox.Text);
-                        foreach (var dir in directory.GetDirectories())
-                            paths.Add(new DirectoryIcon(dir));
-                        foreach (var file in directory.GetFiles())
-                            paths.Add(new FileIcon(file));
-                        break;
-                    case PathType.File:
-                        paths.Add(new FileIcon(new(Path_TextBox.Text)));
-                        break;
-                    default:
-                        break;
-                }
+                _ = DialogBoxManager.OpenMessageBoxAsync(this, "提示", $"找不到合适的应用程序打开“{extension}”格式的文件", MessageBoxButtons.OK);
             }
+        }
 
-            PathList_Panel.SubControls.Clear();
-            foreach (var icon in paths)
-            {
-                icon.AutoSetSize();
-                icon.DoubleRightClick += (sender, e) =>
-                {
-                    Path_TextBox.Text = Path.Combine(Path_TextBox.Text, icon.Text);
-                };
-                PathList_Panel.SubControls.Add(icon);
-            }
-
-            PathList_Panel.ForceFillDownLayout(1, paths);
-            PathList_Panel.PageSize = new(PathList_Panel.ClientSize.Width, paths[^1].BottomLocation + 2);
-            PathList_Panel.OffsetPosition = new(0, 0);
+        private void SimpleFilesBox_OpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e)
+        {
+            _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，因为：\n{e.Exception.GetType().Name}: {e.Exception.Message}", MessageBoxButtons.OK);
         }
     }
 }

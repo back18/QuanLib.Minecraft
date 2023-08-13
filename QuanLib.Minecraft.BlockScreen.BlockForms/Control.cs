@@ -601,30 +601,34 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Size offset = e.NewSize - e.OldSize;
             if (offset.Height != 0)
             {
-                if (!Anchor.HasFlag(Direction.Top) && !Anchor.HasFlag(Direction.Bottom))
+                if (Anchor.HasFlag(Direction.Top) && Anchor.HasFlag(Direction.Bottom))
                 {
                     double proportion = (ClientLocation.Y + Height / 2.0) / e.OldSize.Height;
                     ClientLocation = new(ClientLocation.X, (int)Math.Round(e.NewSize.Height * proportion - Height / 2.0));
                 }
-
-                if (Anchor.HasFlag(Direction.Bottom))
-                    ClientLocation = new(ClientLocation.X, ClientLocation.Y + offset.Height);
-                if (Stretch.HasFlag(Direction.Top) || Stretch.HasFlag(Direction.Bottom))
-                    BottomToBorder -= offset.Height;
+                else
+                {
+                    if (Anchor.HasFlag(Direction.Bottom))
+                        ClientLocation = new(ClientLocation.X, ClientLocation.Y + offset.Height);
+                    if (Stretch.HasFlag(Direction.Top) || Stretch.HasFlag(Direction.Bottom))
+                        BottomToBorder -= offset.Height;
+                }
             }
 
             if (offset.Width != 0)
             {
-                if (!Anchor.HasFlag(Direction.Left) && !Anchor.HasFlag(Direction.Right))
+                if (Anchor.HasFlag(Direction.Left) && Anchor.HasFlag(Direction.Right))
                 {
                     double proportion = (ClientLocation.X + Width / 2.0) / e.OldSize.Width;
                     ClientLocation = new((int)Math.Round(e.NewSize.Width * proportion - Width / 2.0), ClientLocation.Y);
                 }
-
-                if (Anchor.HasFlag(Direction.Right))
-                    ClientLocation = new(ClientLocation.X + offset.Width, ClientLocation.Y);
-                if (Stretch.HasFlag(Direction.Left) || Stretch.HasFlag(Direction.Right))
-                    RightToBorder -= offset.Width;
+                else
+                {
+                    if (Anchor.HasFlag(Direction.Right))
+                        ClientLocation = new(ClientLocation.X + offset.Width, ClientLocation.Y);
+                    if (Stretch.HasFlag(Direction.Left) || Stretch.HasFlag(Direction.Right))
+                        RightToBorder -= offset.Width;
+                }
             }
         }
 

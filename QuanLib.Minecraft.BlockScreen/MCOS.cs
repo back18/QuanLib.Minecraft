@@ -1,4 +1,4 @@
-﻿#define DebugTimer
+﻿//#define DebugTimer
 
 using Newtonsoft.Json;
 using System;
@@ -40,7 +40,8 @@ namespace QuanLib.Minecraft.BlockScreen
             ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
             StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
-            _callbacks = new();
+            TaskList = new();
+            TempTaskList = new();
             _stopwatch = new();
 
             _mcos = this;
@@ -58,7 +59,9 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private static MCOS? _mcos;
 
-        internal readonly ConcurrentQueue<Action> _callbacks;
+        internal readonly ConcurrentQueue<Action> TaskList;
+
+        internal readonly ConcurrentQueue<Action> TempTaskList;
 
         private readonly Stopwatch _stopwatch;
 
@@ -104,7 +107,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             if (EnableAccelerationEngine)
                 AccelerationEngine.Start();
-            ScreenManager.ScreenList.Add(new(new(440, 206, -90), Facing.Xm, Facing.Ym, 256, 144));
+            ScreenManager.ScreenList.Add(new(new(440, 206, -90), 256, 144, Facing.Xm, Facing.Ym));
 
 #if DebugTimer
             Console.CursorVisible = false;
@@ -131,7 +134,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
                 else
                 {
-                    _callbacks.Enqueue(() => HandleScreenInput());
+                    TempTaskList.Enqueue(() => HandleScreenInput());
                     lags++;
                 }
 
@@ -304,6 +307,22 @@ namespace QuanLib.Minecraft.BlockScreen
             rootForm.ClientSize = screen.Size;
             RunStartupChecklist(rootForm);
             return new(screen, rootForm);
+        }
+
+        public void AddTask(Action action)
+        {
+            if (action is null)
+                throw new ArgumentNullException(nameof(action));
+
+            TaskList.Enqueue(action);
+        }
+
+        public void AddTempTask(Action action)
+        {
+            if (action is null)
+                throw new ArgumentNullException(nameof(action));
+
+            TempTaskList.Enqueue(action);
         }
 
         private Process RunServicesApp()

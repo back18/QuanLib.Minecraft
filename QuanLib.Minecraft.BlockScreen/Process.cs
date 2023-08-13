@@ -54,9 +54,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             get
             {
-                if (IsPending)
-                    return ProcessState.Pending;
-                else if (MainThread.ThreadState == ThreadState.Unstarted)
+                if (MainThread.ThreadState == ThreadState.Unstarted)
                     return ProcessState.Unstarted;
                 else if (MainThread.IsAlive)
                     return ProcessState.Running;
@@ -72,10 +70,5 @@ namespace QuanLib.Minecraft.BlockScreen
         protected virtual void OnStarted(Process sender, EventArgs e) { }
 
         protected virtual void OnStopped(Process sender, EventArgs e) { }
-
-        public void Pending()
-        {
-            IsPending = true;
-        }
     }
 }

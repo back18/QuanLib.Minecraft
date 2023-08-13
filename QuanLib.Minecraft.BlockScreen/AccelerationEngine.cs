@@ -17,17 +17,20 @@ namespace QuanLib.Minecraft.BlockScreen
             EventPort = eventPort;
             DataPort = dataPort;
 
-            _tcp = new();
+            //_tcp = new();
             _data = new();
+            _semaphore = new(1);
 
             OnTick += (obj) => { };
         }
 
-        private readonly TcpClient _tcp;
+        //private readonly TcpClient _tcp;
 
         private readonly TcpClient _data;
 
         private NetworkStream _dataStream;
+
+        private readonly SemaphoreSlim _semaphore;
 
         public string ServerAddress { get; }
 
@@ -74,18 +77,42 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public async Task<int> SendDataAsync(byte[] bytes)
         {
-            byte[] respond = new byte[4096];
-            await _dataStream.WriteAsync(bytes);
-            await _dataStream.ReadAsync(respond);
-            return BitConverter.ToInt32(respond, 0);
+            _semaphore.Wait();
+            try
+            {
+                byte[] respond = new byte[4096];
+                await _dataStream.WriteAsync(bytes);
+                await _dataStream.ReadAsync(respond);
+                return BitConverter.ToInt32(respond, 0);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public int SendData(byte[] bytes)
         {
-            byte[] respond = new byte[4096];
-            _dataStream.Write(bytes);
-            _dataStream.Read(respond);
-            return BitConverter.ToInt32(respond, 0);
+            _semaphore.Wait();
+            try
+            {
+                byte[] respond = new byte[4096];
+                _dataStream.Write(bytes);
+                _dataStream.Read(respond);
+                return BitConverter.ToInt32(respond, 0);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public void Dispose()

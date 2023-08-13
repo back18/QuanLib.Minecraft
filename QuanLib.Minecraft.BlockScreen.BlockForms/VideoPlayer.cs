@@ -19,8 +19,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ProgressBar_VideoProgressBar = new(this);
             TimeText_VideoTimeTextBox = new(this);
 
-            OverlayLayerShowTime = 20;
-            OverlayLayerCountdown = 0;
+            OverlayShowTime = 20;
+            OverlayHideTime = 0;
         }
 
         public readonly VideoBox VideoBox;
@@ -31,9 +31,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         private readonly VideoTimeTextBox TimeText_VideoTimeTextBox;
 
-        public int OverlayLayerShowTime { get; set; }
+        public int OverlayShowTime { get; set; }
 
-        public int OverlayLayerCountdown { get; private set; }
+        public int OverlayHideTime { get; private set; }
 
         public override void Initialize()
         {
@@ -84,7 +84,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             base.OnCursorMove(sender, e);
 
             IsSelected = true;
-            OverlayLayerCountdown = OverlayLayerShowTime;
+            OverlayHideTime = OverlayShowTime;
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
@@ -94,12 +94,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (IsSelected && !SubControls.HaveHover)
             {
                 IsSelected = false;
-                OverlayLayerCountdown = 0;
+                OverlayHideTime = 0;
             }
             else
             {
                 IsSelected = true;
-                OverlayLayerCountdown = OverlayLayerShowTime;
+                OverlayHideTime = OverlayShowTime;
             }
         }
 
@@ -127,9 +127,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             if (IsSelected && !SubControls.HaveHover)
             {
-                if (OverlayLayerCountdown <= 0)
+                if (OverlayHideTime <= 0)
                     IsSelected = false;
-                OverlayLayerCountdown--;
+                OverlayHideTime--;
             }
         }
 

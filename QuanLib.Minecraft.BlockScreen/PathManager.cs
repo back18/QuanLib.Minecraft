@@ -15,6 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen
             Configs_Minecraft_File = Path.Combine(Configs_Dir, "Minecraft.json");
             Configs_System_File = Path.Combine(Configs_Dir, "System.json");
             Configs_Screen_File = Path.Combine(Configs_Dir, "Screen.json");
+            Configs_Registry_File = Path.Combine(Configs_Dir, "Registry.json");
             Applications_Dir = Path.Combine(Main_Dir, "Applications");
             FFmpeg_Dir = Path.Combine(Main_Dir, "FFmpeg");
             MinecraftResources_Dir = Path.Combine(Main_Dir, "MinecraftResources");
@@ -35,6 +36,9 @@ namespace QuanLib.Minecraft.BlockScreen
         public static string Configs_System_File { get; }
 
         public static string Configs_Screen_File { get; }
+
+
+        public static string Configs_Registry_File { get; }
 
         public static string Applications_Dir { get; }
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 {
@@ -90,8 +91,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
             ClientPanel.SubControls.Add(iconTextBox1);
             iconTextBox1.Icon_PictureBox.SetImage(TextureManager.GetTexture("Start"));
-            iconTextBox1.Text_Label.Text = "Windows";
-            iconTextBox1.Spacing = 5;
+            iconTextBox1.Text_Label.Text = "Minedows";
             iconTextBox1.AutoSetSize();
             iconTextBox1.ClientLocation = ClientPanel.RightLayout(textBox1, 2);
 
@@ -107,7 +107,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
         private void Button1_RightClick(Control sender, Event.CursorEventArgs e)
         {
-            Console.WriteLine("点击");
+           _ = DialogBoxManager.OpenMessageBoxAsync(this, "温馨提醒", "你今天过得开心吗？尝试点击是、否、或取消", MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel);
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)

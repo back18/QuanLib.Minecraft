@@ -67,6 +67,10 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     }
                 }
             }
+            else
+            {
+                HandleWaitAndTasks();
+            }
         }
 
         public async Task HandleOutputAsync(ArrayFrame frame)
@@ -103,26 +107,30 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     }
                 }
             }
+            else
+            {
+                HandleWaitAndTasks();
+            }
         }
 
         private void AccelerationEngineSend(AccelerationEngine ae, List<ScreenPixel> pixels)
         {
             byte[] bytes = ToSetBlockDataPacket(pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             ae.SendData(bytes);
         }
 
         private async Task AccelerationEngineSendAsync(AccelerationEngine ae, List<ScreenPixel> pixels)
         {
             byte[] bytes = ToSetBlockDataPacket(pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             await ae.SendDataAsync(bytes);
         }
 
         private void StandardInputCommandSend(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
         {
             string function = ToSetBlockFunction(pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             sender.SendCommand(function);
             MCOS.Instance.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
@@ -130,7 +138,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private async Task StandardInputCommandSendAsync(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
         {
             string function = ToSetBlockFunction(pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             await sender.SendCommandAsync(function);
             await MCOS.Instance.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
         }
@@ -138,28 +146,28 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private void BytesCommandSend(IBytesCommandSender sender, List<ScreenPixel> pixels)
         {
             ConcurrentBag<byte[]> commands = ToSetBlockBytesList(sender, pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             sender.SendAllCommand(commands);
         }
 
         private async Task BytesCommandSendAsync(IBytesCommandSender sender, List<ScreenPixel> pixels)
         {
             ConcurrentBag<byte[]> commands = ToSetBlockBytesList(sender, pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             await sender.SendAllCommandAsync(commands);
         }
 
         private void CommandSend(ICommandSender sender, List<ScreenPixel> pixels)
         {
             List<string> commands = ToSetblockCommands(pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             sender.SendAllCommand(commands);
         }
 
         private async Task CommandSendAsync(ICommandSender sender, List<ScreenPixel> pixels)
         {
             List<string> commands = ToSetblockCommands(pixels);
-            HandleWaitAndCallbacks();
+            HandleWaitAndTasks();
             await sender.SendAllCommandAsync(commands);
         }
 
@@ -212,22 +220,21 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return commands;
         }
 
-        private void HandleWaitAndCallbacks()
+        private void HandleWaitAndTasks()
         {
-            if (previous is not null)
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            MCOS.Instance.ScreenManager.WaitAllScreenPrevious();
+            while (MCOS.Instance.TaskList.TryDequeue(out var task))
+                task.Invoke();
+            stopwatch.Stop();
+            if (stopwatch.ElapsedMilliseconds > 50)
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                MCOS.Instance.ScreenManager.WaitAllScreenPrevious();
-                stopwatch.Stop();
-                if (stopwatch.ElapsedMilliseconds > 50)
-                {
-                    MCOS.Instance._callbacks.Clear();
-                }
-                else
-                {
-                    while (MCOS.Instance._callbacks.TryDequeue(out var callback))
-                        callback.Invoke();
-                }
+                MCOS.Instance.TempTaskList.Clear();
+            }
+            else
+            {
+                while (MCOS.Instance.TempTaskList.TryDequeue(out var task))
+                    task.Invoke();
             }
         }
 

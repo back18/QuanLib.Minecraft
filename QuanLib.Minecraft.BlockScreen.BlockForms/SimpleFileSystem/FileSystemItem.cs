@@ -10,11 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
+namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
-    public abstract class PathIcon : Switch
+    public abstract class FileSystemItem : Switch
     {
-        protected PathIcon(PathType pathType)
+        protected FileSystemItem(PathType pathType)
         {
             PathType = pathType;
 
@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         public PathType PathType { get; }
 
-        public abstract string Path { get; }
+        public abstract FileSystemInfo FileSystemInfo { get; }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {

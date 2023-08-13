@@ -43,11 +43,24 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         }
         private static ScreenConfig? _ScreenConfig;
 
+        public static IReadOnlyDictionary<string, string> Registry
+        {
+            get
+            {
+                if (_Registry is null)
+                    throw new InvalidOperationException();
+                return _Registry;
+            }
+        }
+        private static Dictionary<string, string>? _Registry;
+
         public static void LoadAll()
         {
             _MinecraftConfig = MinecraftConfig.Load(PathManager.Configs_Minecraft_File);
             _SystemConfig = SystemConfig.Load(PathManager.Configs_System_File);
             _ScreenConfig = ScreenConfig.Load(PathManager.Configs_Screen_File);
+
+            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PathManager.Configs_Registry_File)) ?? throw new FormatException();
         }
     }
 }

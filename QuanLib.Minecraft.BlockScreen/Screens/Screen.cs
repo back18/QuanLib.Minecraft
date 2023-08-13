@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
     /// </summary>
     public class Screen : IPlaneSize
     {
-        public Screen(Vector3<int> startPosition, Facing xFacing, Facing yFacing, int width, int height)
+        public Screen(Vector3<int> startPosition, int width, int height, Facing xFacing, Facing yFacing)
         {
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
             ThrowHelper.TryThrowArgumentOutOfMinException(1, width, nameof(width));
@@ -595,7 +595,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 throw new ArgumentException("屏幕的起始点与截止点不在一个平面");
             }
 
-            return new(startPosition, xFacing, yFacing, width, height);
+            return new(startPosition, width, height, xFacing, yFacing);
         }
 
         public static void Replace(Screen? oldScreen, Screen newScreen)

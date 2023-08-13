@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
+namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
-    public class DriveIcon : PathIcon
+    public class DriveItem : FileSystemItem
     {
-        public DriveIcon(DriveInfo driveInfo) : base(IO.PathType.Drive)
+        public DriveItem(DriveInfo driveInfo) : base(IO.PathType.Drive)
         {
             DriveInfo = driveInfo ?? throw new ArgumentNullException(nameof(driveInfo));
 
@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Blue;
         }
 
-        public override string Path => DriveInfo.RootDirectory.FullName;
+        public override FileSystemInfo FileSystemInfo => DriveInfo.RootDirectory;
 
         public DriveInfo DriveInfo { get; }
     }

@@ -17,7 +17,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox
         {
             AllowDeselected = false;
             AllowResize = false;
-            TitleBar.ButtonsToShow = FormButton.Close;
+            TitleBar.ButtonsToShow = FormButtons.Close;
 
             _ButtonsToShow = DialogBoxReturnValue.Yes | DialogBoxReturnValue.No | DialogBoxReturnValue.Cancel;
             ButtonSize = new(32, 16);

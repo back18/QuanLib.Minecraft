@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft.BlockScreen.UI
 {
     [Flags]
-    public enum FormButton
+    public enum FormButtons
     {
         None = 0,
 

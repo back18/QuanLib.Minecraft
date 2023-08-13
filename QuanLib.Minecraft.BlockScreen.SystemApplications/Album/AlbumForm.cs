@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;
@@ -15,27 +16,49 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 {
     public class AlbumForm : WindowForm
     {
-        public AlbumForm()
+        public AlbumForm(string? path = null)
         {
+            _open = path;
+            _extensions = new()
+            {
+                "jpg",
+                "jpeg",
+                "png",
+                "bmp",
+                "webp"
+            };
+
             Setting_Switch = new();
-            Generate_Button = new();
             Path_TextBox = new();
+            PreviousImage_Button = new();
+            NextImage_Button = new();
             ScalablePictureBox = new();
-            Setting_Panel = new();
+            Setting_ListMenuBox = new();
             ResizeMode_ComboButton = new();
             AnchorPositionMode_ComboButton = new();
             Resampler_ComboButton = new();
+
+            OverlayShowTime = 20;
+            OverlayHideTime = 0;
         }
 
-        private readonly Switch Setting_Switch;
+        private readonly string? _open;
 
-        private readonly Button Generate_Button;
+        private readonly List<string> _extensions;
 
-        private readonly TextBox Path_TextBox;
+        private FileList? _images;
 
         private readonly ScalablePictureBox ScalablePictureBox;
 
-        private readonly Panel<Control> Setting_Panel;
+        private readonly Switch Setting_Switch;
+
+        private readonly TextBox Path_TextBox;
+
+        private readonly Button PreviousImage_Button;
+
+        private readonly Button NextImage_Button;
+
+        private readonly ListMenuBox<Control> Setting_ListMenuBox;
 
         private readonly ComboButton<ResizeMode> ResizeMode_ComboButton;
 
@@ -43,49 +66,63 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 
         private readonly ComboButton<IResampler> Resampler_ComboButton;
 
+        public int OverlayShowTime { get; set; }
+
+        public int OverlayHideTime { get; set; }
+
         public override void Initialize()
         {
             base.Initialize();
 
-            Skin.BackgroundBlockID = BlockManager.Concrete.Lime;
+            ClientPanel.SubControls.Add(ScalablePictureBox);
+            ScalablePictureBox.EnableZoom = true;
+            ScalablePictureBox.EnableDrag = true;
+            ScalablePictureBox.BorderWidth = 0;
+            ScalablePictureBox.ClientSize = ClientPanel.ClientSize;
+            ScalablePictureBox.Stretch = Direction.Bottom | Direction.Right;
+            ScalablePictureBox.Resize += ScalablePictureBox_Resize;
 
             ClientPanel.SubControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
-            Setting_Switch.Skin.BackgroundBlockID = Setting_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
+            Setting_Switch.Skin.BackgroundBlockID = string.Empty;
+            Setting_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
             Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
-            Setting_Switch.ClientLocation = ClientPanel.RightLayout(null, 2, 2);
+            Setting_Switch.ClientLocation = new(2, 2);
             Setting_Switch.ControlSelected += Setting_Switch_ControlSelected;
             Setting_Switch.ControlDeselected += Setting_Switch_ControlDeselected;
 
-            ClientPanel.SubControls.Add(Generate_Button);
-            Generate_Button.Text = "生成";
-            Generate_Button.ClientLocation = ClientPanel.LeftLayout(null, Generate_Button, 2, 2);
-            Generate_Button.Anchor = Direction.Top | Direction.Right;
-            Generate_Button.RightClick += Generate_Button_RightClick;
-
             ClientPanel.SubControls.Add(Path_TextBox);
             Path_TextBox.ClientLocation = ClientPanel.RightLayout(Setting_Switch, 2);
-            Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - Generate_Button.Width - 8;
+            Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
-            Path_TextBox.TextEditorChanged += Path_TextBox_TextEditorChanged;
+            Path_TextBox.Skin.BackgroundBlockID = string.Empty;
+            Path_TextBox.TextChanged += Path_TextBox_TextChanged;
 
-            ClientPanel.SubControls.Add(ScalablePictureBox);
-            ScalablePictureBox.EnableZoom = true;
-            ScalablePictureBox.EnableDrag = true;
-            ScalablePictureBox.ClientLocation = ClientPanel.BottomLayout(Setting_Switch, 2);
-            ScalablePictureBox.DefaultResizeOptions.Size = new(ClientPanel.ClientSize.Width - ScalablePictureBox.BorderWidth * 2 - 4, ClientPanel.ClientSize.Height - ScalablePictureBox.BorderWidth * 2 - Generate_Button.Height - 6);
-            ScalablePictureBox.Stretch = Direction.Bottom | Direction.Right;
+            ClientPanel.SubControls.Add(PreviousImage_Button);
+            PreviousImage_Button.Text = "<";
+            PreviousImage_Button.ClientSize = new(16, 16);
+            PreviousImage_Button.LayoutSyncer = new(ClientPanel, (sender, e) => { }, (sender, e) =>
+            PreviousImage_Button.ClientLocation = ClientPanel.VerticalCenterLayout(PreviousImage_Button, 2));
+            PreviousImage_Button.Skin.BackgroundBlockID = string.Empty;
+            PreviousImage_Button.RightClick += PreviousImage_Button_RightClick;
 
-            Setting_Panel.ClientSize = new(128, 18 * 4 + 2);
-            Setting_Panel.ClientLocation = ClientPanel.BottomLayout(Setting_Switch, 2);
-            Setting_Panel.Skin.SetAllBackgroundBlockID(string.Empty);
+            ClientPanel.SubControls.Add(NextImage_Button);
+            NextImage_Button.Text = ">";
+            NextImage_Button.ClientSize = new(16, 16);
+            NextImage_Button.LayoutSyncer = new(ClientPanel, (sender, e) => { }, (sender, e) =>
+            NextImage_Button.ClientLocation = ClientPanel.VerticalCenterLayout(NextImage_Button, ClientPanel.ClientSize.Width - NextImage_Button.Width - 3));
+            NextImage_Button.Skin.BackgroundBlockID = string.Empty;
+            NextImage_Button.RightClick += NextImage_Button_RightClick;
 
-            int width = Setting_Panel.ClientSize.Width - 4;
+            Setting_ListMenuBox.ClientSize = new(128, 20 * 3 + 2);
+            Setting_ListMenuBox.Spacing = 2;
+            Setting_ListMenuBox.ClientLocation = ClientPanel.BottomLayout(Setting_Switch, 2);
+            Setting_ListMenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
 
-            Setting_Panel.SubControls.Add(ResizeMode_ComboButton);
+            int width = Setting_ListMenuBox.ClientSize.Width - 4;
+
             ResizeMode_ComboButton.Width = width;
-            ResizeMode_ComboButton.ClientLocation = Setting_Panel.BottomLayout(null, 2, 2);
             ResizeMode_ComboButton.Skin.BackgroundBlockID = string.Empty;
             ResizeMode_ComboButton.Title = "模式";
             ResizeMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<ResizeMode>());
@@ -104,10 +141,9 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
                     _ => throw new InvalidOperationException(),
                 };
             };
+            Setting_ListMenuBox.AddedSubControlAndLayout(ResizeMode_ComboButton);
 
-            Setting_Panel.SubControls.Add(AnchorPositionMode_ComboButton);
             AnchorPositionMode_ComboButton.Width = width;
-            AnchorPositionMode_ComboButton.ClientLocation = Setting_Panel.BottomLayout(ResizeMode_ComboButton, 2);
             AnchorPositionMode_ComboButton.Skin.BackgroundBlockID = string.Empty;
             AnchorPositionMode_ComboButton.Title = "锚点";
             AnchorPositionMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<AnchorPositionMode>());
@@ -128,10 +164,9 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
                     _ => throw new InvalidOperationException(),
                 };
             };
+            Setting_ListMenuBox.AddedSubControlAndLayout(AnchorPositionMode_ComboButton);
 
-            Setting_Panel.SubControls.Add(Resampler_ComboButton);
             Resampler_ComboButton.Width = width;
-            Resampler_ComboButton.ClientLocation = Setting_Panel.BottomLayout(AnchorPositionMode_ComboButton, 2);
             Resampler_ComboButton.Skin.BackgroundBlockID = string.Empty;
             Resampler_ComboButton.Title = "算法";
             Resampler_ComboButton.Items.Add(KnownResamplers.Bicubic, nameof(KnownResamplers.Bicubic));
@@ -148,13 +183,58 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             Resampler_ComboButton.Items.Add(KnownResamplers.RobidouxSharp, nameof(KnownResamplers.RobidouxSharp));
             Resampler_ComboButton.Items.Add(KnownResamplers.Spline, nameof(KnownResamplers.Spline));
             Resampler_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Sampler;
+            Setting_ListMenuBox.AddedSubControlAndLayout(Resampler_ComboButton);
 
-            Path_TextBox.Text = "C:\\\\Users\\\\Administrator\\\\Desktop\\\\1.jpg";
+            if (_open is not null)
+                Path_TextBox.Text = _open;
+            else
+                ScalablePictureBox.SetImage(ScalablePictureBox.CreateImage(ScalablePictureBox.ClientSize, BlockManager.Concrete.White));
+        }
+
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorMove(sender, e);
+
+            ShowOverlay();
+            OverlayHideTime = OverlayShowTime;
+        }
+
+        protected override void OnBeforeFrame(Control sender, EventArgs e)
+        {
+            base.OnBeforeFrame(sender, e);
+
+            if (ClientPanel.SubControls.FirstHover is null or BlockForms.ScalablePictureBox)
+            {
+                if (OverlayHideTime <= 0)
+                    HideOverlay();
+                OverlayHideTime--;
+            }
+        }
+
+        private void ShowOverlay()
+        {
+            Setting_Switch.Visible = true;
+            Path_TextBox.Visible = true;
+            PreviousImage_Button.Visible = true;
+            NextImage_Button.Visible = true;
+        }
+
+        private void HideOverlay()
+        {
+            Setting_Switch.Visible = false;
+            Path_TextBox.Visible = false;
+            PreviousImage_Button.Visible = false;
+            NextImage_Button.Visible = false;
+        }
+
+        private void ScalablePictureBox_Resize(Control sender, SizeChangedEventArgs e)
+        {
+            ScalablePictureBox.ClientLocation = ClientPanel.HorizontalCenterLayout(ScalablePictureBox, 0);
         }
 
         private void Setting_Switch_ControlSelected(Control sender, EventArgs e)
         {
-            ClientPanel.SubControls.TryAdd(Setting_Panel);
+            ClientPanel.SubControls.TryAdd(Setting_ListMenuBox);
         }
 
         private void Setting_Switch_ControlDeselected(Control sender, EventArgs e)
@@ -163,23 +243,39 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             ApplySetting(ScalablePictureBox.ImageFrame.ResizeOptions);
             ScalablePictureBox.ImageFrame.Update(ScalablePictureBox.Rectangle);
             ScalablePictureBox.AutoSetSize();
-            ClientPanel.SubControls.Remove(Setting_Panel);
+            ClientPanel.SubControls.Remove(Setting_ListMenuBox);
         }
 
-        private void Path_TextBox_TextEditorChanged(Control sender, CursorTextEventArgs e)
+        private void Path_TextBox_TextChanged(Control sender, QuanLib.Event.TextChangedEventArgs e)
         {
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.Text).Width > Path_TextBox.ClientSize.Width)
+            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
+
+            if (ScalablePictureBox.TryReadImageFile(e.NewText))
+            {
+                if (_images is null || !_images.Contains(e.NewText))
+                    _images = FileList.LoadFile(e.NewText, _extensions);
+            }
+            else
+            {
+                _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开图片文件：“{e.NewText}”", MessageBoxButtons.OK);
+            }
         }
 
-        private void Generate_Button_RightClick(Control sender, CursorEventArgs e)
+        private void PreviousImage_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            if (!ScalablePictureBox.TryReadImageFile(Path_TextBox.Text))
-            {
-                Path_TextBox.Text = "生成失败";
-            }
+            string? file = _images?.GetPrevious();
+            if (file is not null)
+                Path_TextBox.Text = file;
+        }
+
+        private void NextImage_Button_RightClick(Control sender, CursorEventArgs e)
+        {
+            string? file = _images?.GetNext();
+            if (file is not null)
+                Path_TextBox.Text = file;
         }
 
         private void ApplySetting(ResizeOptions options)

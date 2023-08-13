@@ -14,7 +14,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad
 
         public override object? Main(string[] args)
         {
-            RunForm(new NotepadForm());
+            string? path = null;
+            if (args.Length > 0)
+                path = args[0];
+
+            RunForm(new NotepadForm(path));
             return null;
         }
     }
