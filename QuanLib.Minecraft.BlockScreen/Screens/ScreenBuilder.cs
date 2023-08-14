@@ -56,7 +56,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                             }
                             else
                             {
-                                MCOS.Instance.ScreenManager.ScreenList.Add(screen);
+                                MCOS.Instance.ScreenManager.ScreenList.Add(screen).LoadScreen();
                                 command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
                             }
                         }

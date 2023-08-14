@@ -32,7 +32,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public VideoBox()
         {
             PlayerState = VideoPlayerState.Unstarted;
-            MediaOptions = DefaultMediaOptions.Copy();
+            MediaOptions = DefaultMediaOptions.Clone();
             ResizeOptions = DefaultResizeOptions.Clone();
 
             AutoSize = true;

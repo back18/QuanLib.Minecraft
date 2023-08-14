@@ -21,7 +21,6 @@ namespace QuanLib.Minecraft.BlockScreen
             Stopped += OnStopped;
             Application = Application.CreateApplication(ApplicationInfo.TypeObject);
             Initiator = initiator;
-            SubprocessCallbackQueue = new();
             MainThread = new(() =>
             {
                 Started.Invoke(this, EventArgs.Empty);
@@ -32,7 +31,6 @@ namespace QuanLib.Minecraft.BlockScreen
                 Name = ApplicationInfo.Name,
                 IsBackground = true
             };
-            IsPending = false;
             ID = -1;
         }
 
@@ -44,24 +42,9 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public IForm? Initiator { get; }
 
-        public Queue<Action<object?>> SubprocessCallbackQueue { get; }
-
         public Thread MainThread { get; }
 
-        public bool IsPending { get; internal set; }
-
-        public ProcessState ProcessState
-        {
-            get
-            {
-                if (MainThread.ThreadState == ThreadState.Unstarted)
-                    return ProcessState.Unstarted;
-                else if (MainThread.IsAlive)
-                    return ProcessState.Running;
-                else
-                    return ProcessState.Stopped;
-            }
-        }
+        public ProcessState ProcessState { get; private set; }
 
         public event EventHandler<Process, EventArgs> Started;
 
@@ -69,6 +52,53 @@ namespace QuanLib.Minecraft.BlockScreen
 
         protected virtual void OnStarted(Process sender, EventArgs e) { }
 
-        protected virtual void OnStopped(Process sender, EventArgs e) { }
+        protected virtual void OnStopped(Process sender, EventArgs e)
+        {
+            foreach (var form in Application.GetForms())
+            {
+                form.CloseForm();
+            }
+        }
+
+        public void Handle()
+        {
+            switch (ProcessState)
+            {
+                case ProcessState.Unstarted:
+                    break;
+                case ProcessState.Starting:
+                    if (!MainThread.IsAlive)
+                        MainThread.Start();
+                    ProcessState = ProcessState.Running;
+                    break;
+                case ProcessState.Running:
+                    break;
+                case ProcessState.Stopped:
+                    if (MainThread.IsAlive)
+                    {
+                        try
+                        {
+                            MainThread.Abort();
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void StartProcess()
+        {
+            ProcessState = ProcessState.Starting;
+        }
+
+        public void StopProcess()
+        {
+            ProcessState = ProcessState.Stopped;
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         Unstarted,
 
+        Starting,
+
         Running,
 
         Stopped

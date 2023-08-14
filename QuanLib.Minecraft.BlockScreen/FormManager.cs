@@ -29,6 +29,16 @@ namespace QuanLib.Minecraft.BlockScreen
 
         protected virtual void OnRemovedForm(FormManager sender, FormContextEventArgs e) { }
 
+        public void FormScheduling()
+        {
+            foreach (var context in FormList.ToArray())
+            {
+                context.Handle();
+                if (context.FormState == FormState.Closed)
+                    FormList.Remove(context);
+            }
+        }
+
         public class FormCollection : IList<FormContext>, IReadOnlyList<FormContext>
         {
             public FormCollection(FormManager owner)

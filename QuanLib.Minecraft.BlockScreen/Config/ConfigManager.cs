@@ -56,11 +56,11 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
         public static void LoadAll()
         {
-            _MinecraftConfig = MinecraftConfig.Load(PathManager.Configs_Minecraft_File);
-            _SystemConfig = SystemConfig.Load(PathManager.Configs_System_File);
-            _ScreenConfig = ScreenConfig.Load(PathManager.Configs_Screen_File);
+            _MinecraftConfig = MinecraftConfig.Load(MCOS.MainDirectory.Configs.Minecraft);
+            _SystemConfig = SystemConfig.Load(MCOS.MainDirectory.Configs.System);
+            _ScreenConfig = ScreenConfig.Load(MCOS.MainDirectory.Configs.Screen);
 
-            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PathManager.Configs_Registry_File)) ?? throw new FormatException();
+            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(MCOS.MainDirectory.Configs.Registry)) ?? throw new FormatException();
         }
     }
 }

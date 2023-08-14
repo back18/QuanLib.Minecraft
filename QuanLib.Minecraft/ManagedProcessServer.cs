@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft
             _rcon = new(IPAddress.Parse(ServerAddress), RconPort, RconPassword);
 
             CommandHelper = new(_rcon);
-            Launcher = new(PathManager.MainDir, launchArguments);
+            Launcher = new(ServerDirectory.Directory, launchArguments);
             LogParser = new(Launcher);
             CommandHelper = new(_rcon);
             CommandSender = Launcher;

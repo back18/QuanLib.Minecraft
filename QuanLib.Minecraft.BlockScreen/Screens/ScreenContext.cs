@@ -72,19 +72,42 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             _bind = false;
         }
 
+        public void Handle()
+        {
+            switch (ScreenState)
+            {
+                case ScreenState.NotLoaded:
+                    break;
+                case ScreenState.Loading:
+                    Screen.Start();
+                    RootForm.ClientSize = Screen.Size;
+                    RootForm.HandleAllInitialize();
+                    RootForm.HandleFormLoad(EventArgs.Empty);
+                    MCOS.Instance.RunStartupChecklist(RootForm);
+                    ScreenState = ScreenState.Active;
+                    break;
+                case ScreenState.Active:
+                    break;
+                case ScreenState.Sleep:
+                    break;
+                case ScreenState.Closed:
+                    foreach (var forem in RootForm.GetAllForm().ToArray())
+                        forem.CloseForm();
+                    RootForm.CloseForm();
+                    Screen.Stop();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public void LoadScreen()
         {
-            Screen.Start();
-            ScreenState = ScreenState.Active;
+            ScreenState = ScreenState.Loading;
         }
 
         public void CloseScreen()
         {
-            foreach (var forem in RootForm.GetAllForm().ToArray())
-                MCOS.Instance.FormContextOf(forem)?.CloseForm();
-            MCOS.Instance.FormContextOf(RootForm)?.CloseForm();
-            Screen.Stop();
-
             ScreenState = ScreenState.Closed;
         }
 

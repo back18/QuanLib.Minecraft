@@ -10,6 +10,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
     {
         NotLoaded,
 
+        Loading,
+
         Active,
 
         Sleep,

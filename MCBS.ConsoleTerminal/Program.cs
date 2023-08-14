@@ -35,9 +35,9 @@ namespace MCBS.ConsoleTerminal
             ConfigManager.LoadAll();
             SystemResourcesManager.LoadAll();
             MinecraftResourcesManager.LoadAll();
-            TextureManager.Load(PathManager.SystemResources_Textures_Control_Dir);
-            //FFmpegLoader.FFmpegPath = PathManager.FFmpeg_Dir;
-            //FFmpegLoader.LoadFFmpeg();
+            TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
+            FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.Directory;
+            FFmpegLoader.LoadFFmpeg();
 
             MinecraftConfig config = ConfigManager.MinecraftConfig;
             MinecraftServer server = config.MinecraftServerMode switch

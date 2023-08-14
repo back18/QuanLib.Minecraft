@@ -229,7 +229,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 
         private void ScalablePictureBox_Resize(Control sender, SizeChangedEventArgs e)
         {
-            ScalablePictureBox.ClientLocation = ClientPanel.HorizontalCenterLayout(ScalablePictureBox, 0);
+            ScalablePictureBox.ClientLocation = ClientPanel.CenterLayout(ScalablePictureBox);
         }
 
         private void Setting_Switch_ControlSelected(Control sender, EventArgs e)

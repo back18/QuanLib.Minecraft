@@ -33,8 +33,8 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public static void LoadAll()
         {
-            _DefaultFont = BdfFont.Load(Path.Combine(PathManager.SystemResources_Fonts_Dir, "DefaultFont.bdf"));
-            _CursorManager = CursorManager.Load(PathManager.SystemResources_Cursors_Dir);
+            _DefaultFont = BdfFont.Load(Path.Combine(MCOS.MainDirectory.SystemResources.Fonts.DefaultFont));
+            _CursorManager = CursorManager.Load(MCOS.MainDirectory.SystemResources.Cursors.Directory);
         }
     }
 }

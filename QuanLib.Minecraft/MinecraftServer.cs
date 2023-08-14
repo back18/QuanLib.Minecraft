@@ -1,6 +1,7 @@
 ﻿using CoreRCON;
 using CoreRCON.Parsers.Standard;
 using QuanLib.Minecraft.Data;
+using QuanLib.Minecraft.DirectoryManagers;
 using QuanLib.Minecraft.Files;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
@@ -27,10 +28,9 @@ namespace QuanLib.Minecraft
             if (string.IsNullOrEmpty(serverAddress))
                 throw new ArgumentException($"“{nameof(serverAddress)}”不能为 null 或空。", nameof(serverAddress));
 
-            PathManager = new(serverPath);
-            FileHelper = new(PathManager);
+            ServerDirectory = new(serverPath);
 
-            Dictionary<string, string> properties = FileHelper.GetServerProperties();
+            Dictionary<string, string> properties = ServerDirectory.ReadServerProperties();
             if (properties["enable-rcon"] != "true")
                 throw new InvalidOperationException("需要在 server.properties 中将 enable-rcon 设置为 true");
             if (!ushort.TryParse(properties["server-port"], out var serverPort))
@@ -58,9 +58,7 @@ namespace QuanLib.Minecraft
 
         public string RconPassword { get; }
 
-        public ServerPathManager PathManager { get; }
-
-        public ServerFileHelper FileHelper { get; }
+        public MinecraftServerDirectory ServerDirectory { get; }
 
         public abstract ServerLogParser LogParser { get; }
 

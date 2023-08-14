@@ -46,8 +46,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
         {
             base.Initialize();
 
-            string dir = PathManager.SystemResources_Textures_Control_Dir;
-
             ClientLocation = new(3, 3);
             BorderWidth = 8;
             Width = GetFormContainerSize().Width - 7;

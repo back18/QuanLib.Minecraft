@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         static ApplicationInfo()
         {
-            DefaultIcon = Image.Load<Rgba32>(Path.Combine(PathManager.SystemResources_Textures_Icon_Dir, "DefaultIcon.png"));
+            DefaultIcon = Image.Load<Rgba32>(Path.Combine(MCOS.MainDirectory.SystemResources.Textures.Icon, "DefaultIcon.png"));
         }
 
         protected ApplicationInfo(Type typeObject)

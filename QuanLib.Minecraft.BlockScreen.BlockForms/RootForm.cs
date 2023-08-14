@@ -445,7 +445,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 _owner.SubControls.Remove(_owner.StartMenu_ListMenuBox);
             }
 
-
             private void FormContainer_AddedSubControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
             {
                 if (e.Control is IForm form && !FormsMenu.ContainsForm(form) && (MCOS.Instance.ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false))

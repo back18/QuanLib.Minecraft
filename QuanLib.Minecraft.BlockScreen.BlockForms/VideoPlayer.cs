@@ -39,9 +39,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.Initialize();
 
-            MCOS os = MCOS.Instance;
-            string dir = PathManager.SystemResources_Textures_Control_Dir;
-
             SubControls.Add(VideoBox);
             VideoBox.BorderWidth = 0;
             VideoBox.DisplayPriority = -32;

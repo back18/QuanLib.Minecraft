@@ -99,7 +99,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
         {
             base.OnDoubleRightClick(sender, e);
 
-            MCOS.Instance.ProcessManager.ProcessList.Add(_appInfo, GetForm());
+            MCOS.Instance.ProcessManager.ProcessList.Add(_appInfo, GetForm()).StartProcess();
             ParentContainer?.AsControlCollection<Control>()?.ClearSelecteds();
         }
     }

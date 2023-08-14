@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager
             Version = Version.Parse("1.0");
             try
             {
-                Icon = Image.Load<Rgba32>(Path.Combine(PathManager.GetApplicationDir(ID), "Icon.png"));
+                Icon = Image.Load<Rgba32>(Path.Combine(MCOS.MainDirectory.Applications.GetApplicationDirectory(ID), "Icon.png"));
             }
             catch
             {

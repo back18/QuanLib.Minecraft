@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using QuanLib.Minecraft.DirectoryManagers;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -94,18 +95,17 @@ namespace QuanLib.Minecraft.Files
             return MatchBlockTexture(facing, rgba32);
         }
 
-        public static BlockTextureManager LoadDirectory(string path)
+        public static BlockTextureManager LoadDirectory(string directory)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
-            if (!Directory.Exists(path))
-                throw new DirectoryNotFoundException(nameof(path));
+            if (string.IsNullOrEmpty(directory))
+                throw new ArgumentException($"“{nameof(directory)}”不能为 null 或空。", nameof(directory));
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException(nameof(directory));
 
-            ResourcePackPathManager paths = new(path);
-            string[] blockStates = Directory.GetFiles(paths.BlockStatesDir, "*.json");
+            ResourcePackDirectory resourcePack = new(directory);
+            string[] blockStates = Directory.GetFiles(resourcePack.BlockStates, "*.json");
             Dictionary<string, JObject> modelsCache = new();
             Dictionary<string, Image<Rgba32>> imagesCache = new();
-            Dictionary<string, Rgba32> averageColorsCache = new();
             Dictionary<string, BlockTexture> result = new();
             foreach (var blockState in blockStates)
             {
@@ -120,19 +120,34 @@ namespace QuanLib.Minecraft.Files
                             TryGetName(model, out var name))
                         {
                             JObject jobj2 = GetModel(name);
-                            if (jobj2.TryGetValue("parent", out var parent) && jobj2.TryGetValue("textures", out var textures) && textures is JObject cube_all_jobj)
+                            if (jobj2.TryGetValue("parent", out var parent) && jobj2.TryGetValue("textures", out var textures) && textures is JObject textures_jobj)
                             {
                                 string? value = parent.Value<string>();
                                 BlockTextureType type;
                                 string xp, xm, yp, ym, zp, zm;
-                                if (value == "minecraft:block/cube")
+                                if (value == "minecraft:block/cube_all")
                                 {
-                                    if (cube_all_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
-                                        cube_all_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
-                                        cube_all_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
-                                        cube_all_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
-                                        cube_all_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
-                                        cube_all_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
+                                    if (textures_jobj.TryGetValue("all", out var all) && TryGetName(all, out var allName))
+                                    {
+                                        xp = allName;
+                                        xm = allName;
+                                        yp = allName;
+                                        ym = allName;
+                                        zp = allName;
+                                        zm = allName;
+                                    }
+                                    else
+                                        continue;
+                                    type = BlockTextureType.CubeAll;
+                                }
+                                else if (value == "minecraft:block/cube")
+                                {
+                                    if (textures_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
+                                        textures_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
+                                        textures_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
+                                        textures_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
+                                        textures_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
+                                        textures_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
                                     {
                                         xp = eastName;
                                         xm = westName;
@@ -145,20 +160,21 @@ namespace QuanLib.Minecraft.Files
                                         continue;
                                     type = BlockTextureType.Cube;
                                 }
-                                else if (value == "minecraft:block/cube_all")
+                                else if (value == "minecraft:block/cube_column")
                                 {
-                                    if (cube_all_jobj.TryGetValue("all", out var all) && TryGetName(all, out var allName))
+                                    if (textures_jobj.TryGetValue("side", out var side) && TryGetName(side, out var sideName) &&
+                                        textures_jobj.TryGetValue("end", out var end) && TryGetName(end, out var endName))
                                     {
-                                        xp = allName;
-                                        xm = allName;
-                                        yp = allName;
-                                        ym = allName;
-                                        zp = allName;
-                                        zm = allName;
+                                        xp = sideName;
+                                        xm = sideName;
+                                        yp = endName;
+                                        ym = endName;
+                                        zp = sideName;
+                                        zm = sideName;
                                     }
                                     else
                                         continue;
-                                    type = BlockTextureType.CubeAll;
+                                    type = BlockTextureType.CubeColumn;
                                 }
                                 else
                                     continue;
@@ -173,20 +189,10 @@ namespace QuanLib.Minecraft.Files
                                     { Facing.Zm, GetImage(zm) }
                                 };
 
-                                Dictionary<Facing, Rgba32> averageColors = new()
-                                {
-                                    { Facing.Xp, GetAverageColors(xp) },
-                                    { Facing.Xm, GetAverageColors(xm) },
-                                    { Facing.Yp, GetAverageColors(yp) },
-                                    { Facing.Ym, GetAverageColors(ym) },
-                                    { Facing.Zp, GetAverageColors(zp) },
-                                    { Facing.Zm, GetAverageColors(zm) }
-                                };
-
                                 string id = "minecraft:" + Path.GetFileNameWithoutExtension(blockState);
                                 if (!string.IsNullOrEmpty(variant_jpro.Name))
                                     id += $"[{variant_jpro.Name}]";
-                                result.Add(id, new(id, type, images, averageColors));
+                                result.Add(id, new(id, type, images));
                             }
                         }
                     }
@@ -207,7 +213,7 @@ namespace QuanLib.Minecraft.Files
                     return model;
                 else
                 {
-                    JObject jobj = JObject.Parse(File.ReadAllText(Path.Combine(paths.BlockModelsDir, name + ".json")));
+                    JObject jobj = JObject.Parse(File.ReadAllText(Path.Combine(resourcePack.Models.Block, name + ".json")));
                     modelsCache.Add(name, jobj);
                     return jobj;
                 }
@@ -219,36 +225,9 @@ namespace QuanLib.Minecraft.Files
                     return image;
                 else
                 {
-                    image = Image.Load<Rgba32>(File.ReadAllBytes(Path.Combine(paths.BlockTexturesDir, name + ".png")));
+                    image = Image.Load<Rgba32>(File.ReadAllBytes(Path.Combine(resourcePack.Textures.Block, name + ".png")));
                     imagesCache.Add(name, image);
                     return image;
-                }
-            }
-
-            Rgba32 GetAverageColors(string name)
-            {
-                if (averageColorsCache.TryGetValue(name, out var averageColor))
-                    return averageColor;
-                else
-                {
-                    Image<Rgba32> image = GetImage(name);
-                    int r = 0, g = 0, b = 0, a = 0;
-                    for (int x = 0; x < image.Width; x++)
-                        for (int y = 0; y < image.Height; y++)
-                        {
-                            r += image[x, y].R;
-                            g += image[x, y].G;
-                            b += image[x, y].B;
-                            a += image[x, y].A;
-                        }
-                    int size = image.Width * image.Height;
-                    r /= size;
-                    g /= size;
-                    b /= size;
-                    a /= size;
-                    averageColor = new((byte)r, (byte)g, (byte)b, (byte)a);
-                    averageColorsCache.Add(name, averageColor);
-                    return averageColor;
                 }
             }
         }
@@ -328,7 +307,19 @@ namespace QuanLib.Minecraft.Files
 
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out BlockTexture value)
         {
-            return _items.TryGetValue(key, out value);
+            if (_items.TryGetValue(key, out value))
+                return true;
+
+            foreach (var item in  _items)
+            {
+                if (item.Key.StartsWith(key))
+                {
+                    value = item.Value;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public IEnumerator<KeyValuePair<string, BlockTexture>> GetEnumerator()

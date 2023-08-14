@@ -1,4 +1,4 @@
-﻿//#define DebugTimer
+﻿#define DebugTimer
 
 using Newtonsoft.Json;
 using System;
@@ -17,11 +17,17 @@ using QuanLib.Minecraft.BlockScreen.Frame;
 using System.Collections.Concurrent;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Screens;
+using QuanLib.Minecraft.BlockScreen.DirectoryManagers;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
     public class MCOS : ISwitchable
     {
+        static MCOS()
+        {
+            MainDirectory = new("MCBS");
+        }
+
         public MCOS(MinecraftServer minecraftServer)
         {
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
@@ -36,7 +42,7 @@ namespace QuanLib.Minecraft.BlockScreen
             FrameMinTime = TimeSpan.FromMilliseconds(50);
             PreviousFrameTime = TimeSpan.Zero;
             NextFrameTime = PreviousFrameTime + FrameMinTime;
-            Timer = new();
+            SystemTimer = new();
             ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
             StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
@@ -44,20 +50,21 @@ namespace QuanLib.Minecraft.BlockScreen
             TempTaskList = new();
             _stopwatch = new();
 
-            _mcos = this;
+            _Instance = this;
         }
 
         public static MCOS Instance
         {
             get
             {
-                if (_mcos is null)
+                if (_Instance is null)
                     throw new InvalidOperationException();
-                return _mcos;
+                return _Instance;
             }
         }
+        private static MCOS? _Instance;
 
-        private static MCOS? _mcos;
+        public static McbsDirectory MainDirectory { get; }
 
         internal readonly ConcurrentQueue<Action> TaskList;
 
@@ -83,7 +90,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public int FrameCount { get; private set; }
 
-        public SystemTimer Timer { get; }
+        public SystemTimer SystemTimer { get; }
 
         public MinecraftServer MinecraftServer { get; }
 
@@ -107,7 +114,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             if (EnableAccelerationEngine)
                 AccelerationEngine.Start();
-            ScreenManager.ScreenList.Add(new(new(440, 206, -90), 256, 144, Facing.Xm, Facing.Ym));
+            ScreenManager.ScreenList.Add(new(new(440, 206, -90), 256, 144, Facing.Xm, Facing.Ym)).LoadScreen();
 
 #if DebugTimer
             Console.CursorVisible = false;
@@ -121,13 +128,10 @@ namespace QuanLib.Minecraft.BlockScreen
                 NextFrameTime = PreviousFrameTime + FrameMinTime;
                 FrameCount++;
 
-                foreach (var context in ScreenManager.ScreenList.Values.ToArray())
-                    if (context.ScreenState == ScreenState.Closed)
-                        ScreenManager.ScreenList.Remove(context.ID);
-
+                HandleScreenScheduling();
                 HandleProcessScheduling();
+                HandleFormScheduling();
 
-                ScreenManager.ScreenConstructor.Handle();
                 if (_screen?.IsCompleted ?? true)
                 {
                     HandleScreenInput();
@@ -142,17 +146,18 @@ namespace QuanLib.Minecraft.BlockScreen
                 HandleUIRendering(out var frames);
                 HandleScreenOutput(frames);
                 HandleAfterFrame();
+                HandleScreenBuild();
                 HandleSystemInterrupt();
 
-                Timer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
+                SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
 
 #if DebugTimer
                 string empty = new(' ', 200);
                 Console.SetCursorPosition(0, 0);
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 14; i++)
                     Console.WriteLine(empty);
                 Console.SetCursorPosition(0, 0);
-                Console.WriteLine(Timer.ToString(BlockScreen.Timer.Duration.Tick20));
+                Console.WriteLine(SystemTimer.ToString(Timer.Duration.Tick20));
                 Console.WriteLine($"帧: {FrameCount}");
                 Console.WriteLine($"滞后: {lags}");
 #endif
@@ -166,14 +171,36 @@ namespace QuanLib.Minecraft.BlockScreen
             _runing = false;
         }
 
+        private TimeSpan HandleScreenScheduling()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            ScreenManager.ScreenScheduling();
+
+            stopwatch.Stop();
+            SystemTimer.ScreenScheduling.Add(stopwatch.Elapsed);
+            return stopwatch.Elapsed;
+        }
+
         private TimeSpan HandleProcessScheduling()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            //TODO
+            ProcessManager.ProcessScheduling();
 
             stopwatch.Stop();
-            Timer.ProcessScheduling.Add(stopwatch.Elapsed);
+            SystemTimer.ProcessScheduling.Add(stopwatch.Elapsed);
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan HandleFormScheduling()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            FormManager.FormScheduling();
+
+            stopwatch.Stop();
+            SystemTimer.FormScheduling.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -184,18 +211,7 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenManager.HandleAllScreenInput();
 
             stopwatch.Stop();
-            Timer.ScreenInput.Add(stopwatch.Elapsed);
-            return stopwatch.Elapsed;
-        }
-
-        private TimeSpan HandleBeforeFrame()
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            ScreenManager.HandleAllBeforeFrame();
-
-            stopwatch.Stop();
-            Timer.HandleBeforeFrame.Add(stopwatch.Elapsed);
+            SystemTimer.ScreenInput.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -206,7 +222,7 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenManager.HandleAllAfterFrame();
 
             stopwatch.Stop();
-            Timer.HandleAfterFrame.Add(stopwatch.Elapsed);
+            SystemTimer.HandleAfterFrame.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -217,7 +233,7 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenManager.HandleAllUIRendering(out frames);
 
             stopwatch.Stop();
-            Timer.UIRendering.Add(stopwatch.Elapsed);
+            SystemTimer.UIRendering.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -229,7 +245,29 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenManager.WaitAllScreenPrevious();
 
             stopwatch.Stop();
-            Timer.ScreenOutput.Add(stopwatch.Elapsed);
+            SystemTimer.ScreenOutput.Add(stopwatch.Elapsed);
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan HandleBeforeFrame()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            ScreenManager.HandleAllBeforeFrame();
+
+            stopwatch.Stop();
+            SystemTimer.HandleBeforeFrame.Add(stopwatch.Elapsed);
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan HandleScreenBuild()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            ScreenManager.ScreenBuilder.Handle();
+
+            stopwatch.Stop();
+            SystemTimer.ScreenBuild.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -244,7 +282,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 Thread.Yield();
 
             stopwatch.Stop();
-            Timer.SystemInterrupt.Add(stopwatch.Elapsed);
+            SystemTimer.SystemInterrupt.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -296,19 +334,6 @@ namespace QuanLib.Minecraft.BlockScreen
             return null;
         }
 
-        public ScreenContext CreateScreenContext(Screen screen)
-        {
-            if (screen is null)
-                throw new ArgumentNullException(nameof(screen));
-
-            Process process = RunServicesApp();
-            IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
-            rootForm.HandleAllInitialize();
-            rootForm.ClientSize = screen.Size;
-            RunStartupChecklist(rootForm);
-            return new(screen, rootForm);
-        }
-
         public void AddTask(Action action)
         {
             if (action is null)
@@ -325,18 +350,20 @@ namespace QuanLib.Minecraft.BlockScreen
             TempTaskList.Enqueue(action);
         }
 
-        private Process RunServicesApp()
+        internal Process RunServicesApp()
         {
             if (!ApplicationManager.ApplicationList[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
-            return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[ServicesAppID]);
+            Process process = ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[ServicesAppID]);
+            process.StartProcess();
+            return process;
         }
 
-        private void RunStartupChecklist(IForm? initiator = null)
+        internal void RunStartupChecklist(IRootForm rootForm)
         {
             foreach (var id in StartupChecklist)
-                ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[id], initiator);
+                ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[id], rootForm).StartProcess();
         }
     }
 }

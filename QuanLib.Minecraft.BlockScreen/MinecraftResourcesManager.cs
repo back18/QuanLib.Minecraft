@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public static void LoadAll()
         {
-            _BlockTextureManager = BlockTextureManager.LoadDirectory(Path.Combine(PathManager.MinecraftResources_Dir, "assets", "minecraft"));
+            _BlockTextureManager = BlockTextureManager.LoadDirectory(Path.Combine(MCOS.MainDirectory.MinecraftResources.Directory, "assets", "minecraft"));
         }
     }
 }

@@ -8,8 +8,10 @@ namespace QuanLib.Minecraft.Files
 {
     public enum BlockTextureType
     {
+        CubeAll,
+
         Cube,
 
-        CubeAll
+        CubeColumn
     }
 }

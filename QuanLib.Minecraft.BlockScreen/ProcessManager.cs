@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,13 +27,19 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public event EventHandler<ProcessManager, ProcessEventArgs> RemovedProcess;
 
-        protected virtual void OnAddedProcess(ProcessManager sender, ProcessEventArgs e)
-        {
-            e.Process.Stopped += (sender, e) => ProcessList.Remove(sender.ID);
-            e.Process.MainThread.Start();
-        }
+        protected virtual void OnAddedProcess(ProcessManager sender, ProcessEventArgs e) { }
 
         protected virtual void OnRemovedProcess(ProcessManager sender, ProcessEventArgs e) { }
+
+        public void ProcessScheduling()
+        {
+            foreach (var process in ProcessList.ToArray())
+            {
+                process.Value.Handle();
+                if (process.Value.ProcessState == ProcessState.Stopped)
+                    ProcessList.Remove(process.Key);
+            }
+        }
 
         public class ProcessCollection : IDictionary<int, Process>
         {

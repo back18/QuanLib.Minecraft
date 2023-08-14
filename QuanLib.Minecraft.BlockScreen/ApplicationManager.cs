@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         protected virtual void OnAddedApplication(ApplicationManager sender, ApplicationInfoEventArgs e)
         {
-            string dir = Path.Combine(PathManager.Applications_Dir, e.ApplicationInfo.ID);
+            string dir = MCOS.MainDirectory.Applications.GetApplicationDirectory(e.ApplicationInfo.ID);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
         }

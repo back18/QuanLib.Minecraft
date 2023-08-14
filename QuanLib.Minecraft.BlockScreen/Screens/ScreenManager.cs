@@ -16,14 +16,14 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
     {
         public ScreenManager()
         {
-            ScreenConstructor = new();
+            ScreenBuilder = new();
             ScreenList = new(this);
 
             AddedScreen += OnAddedScreen;
             RemovedScreen += OnRemovedScreen;
         }
 
-        public ScreenBuilder ScreenConstructor { get; }
+        public ScreenBuilder ScreenBuilder { get; }
 
         public ScreenCollection ScreenList { get; }
 
@@ -31,22 +31,24 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public event EventHandler<ScreenManager, ScreenContextEventArgs> RemovedScreen;
 
-        protected virtual void OnAddedScreen(ScreenManager sender, ScreenContextEventArgs e)
-        {
-            if (e.ScreenContext.ScreenState == ScreenState.NotLoaded)
-                e.ScreenContext.LoadScreen();
-        }
+        protected virtual void OnAddedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
 
-        protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e)
+        protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
+
+        public void ScreenScheduling()
         {
-            if (e.ScreenContext.ScreenState != ScreenState.Closed)
-                e.ScreenContext.CloseScreen();
+            foreach (var context in ScreenList.ToArray())
+            {
+                context.Value.Handle();
+                if (context.Value.ScreenState == ScreenState.Closed)
+                    ScreenList.Remove(context.Key);
+            }
         }
 
         public void HandleAllScreenInput()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in ScreenList.Values.ToArray())
                 tasks.Add(Task.Run(() => screen.Screen.InputHandler.HandleInput()));
             Task.WaitAll(tasks.ToArray());
         }
@@ -54,7 +56,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllBeforeFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in ScreenList.Values.ToArray())
                 tasks.Add(Task.Run(() => screen.RootForm.HandleBeforeFrame(EventArgs.Empty)));
             Task.WaitAll(tasks.ToArray());
         }
@@ -62,7 +64,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllAfterFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in ScreenList.Values.ToArray())
                 tasks.Add(Task.Run(() => screen.RootForm.HandleAfterFrame(EventArgs.Empty)));
             Task.WaitAll(tasks.ToArray());
         }
@@ -71,7 +73,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         {
             frames = new();
             List<(int id, Task<ArrayFrame> task)> tasks = new();
-            foreach (var context in ScreenList)
+            foreach (var context in ScreenList.ToArray())
             {
                 if (context.Value.ScreenState == ScreenState.Closed)
                     continue;
@@ -112,7 +114,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void WaitAllScreenPrevious()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in ScreenList.Values.ToArray())
                 tasks.Add(screen.Screen.OutputHandler.WaitPreviousAsync());
             Task.WaitAll(tasks.ToArray());
         }
@@ -150,7 +152,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     throw new ArgumentNullException(nameof(screen));
 
                 int id = _id;
-                ScreenContext context = MCOS.Instance.CreateScreenContext(screen);
+                Process process = MCOS.Instance.RunServicesApp();
+                IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
+                ScreenContext context = new(screen, rootForm);
                 context.ID = id;
                 _items.Add(id, context);
                 _owner.AddedScreen.Invoke(_owner, new(context));

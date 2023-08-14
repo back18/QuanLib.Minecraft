@@ -174,7 +174,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
             if (ConfigManager.Registry.TryGetValue(extension, out var id) && MCOS.Instance.ApplicationManager.ApplicationList.TryGetValue(id, out var app))
             {
-                MCOS.Instance.ProcessManager.ProcessList.Add(app, new string[] { fileInfo.FullName }, this);
+                MCOS.Instance.ProcessManager.ProcessList.Add(app, new string[] { fileInfo.FullName }, this).StartProcess();
             }
             else
             {

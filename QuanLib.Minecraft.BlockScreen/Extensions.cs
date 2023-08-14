@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen
             return Image.LoadPixelData<TPixel>(source.Data, source.ImageSize.Width, source.ImageSize.Height);
         }
 
-        public static MediaOptions Copy(this MediaOptions source)
+        public static MediaOptions Clone(this MediaOptions source)
         {
             return new()
             {

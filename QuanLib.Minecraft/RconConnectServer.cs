@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft
         {
             _rcon = new(IPAddress.Parse(ServerAddress), RconPort, RconPassword);
 
-            LogFileListener = new(PathManager.LatestLogFile);
+            LogFileListener = new(ServerDirectory.Logs.Latest);
             RconMax = new(ServerAddress, RconPort, RconPassword);
             LogParser = new(LogFileListener);
             CommandHelper = new(_rcon);

@@ -10,6 +10,8 @@ namespace QuanLib.Minecraft.BlockScreen.UI
     {
         NotLoaded,
 
+        Loading,
+
         Active,
 
         Minimize,
