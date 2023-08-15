@@ -115,13 +115,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return TryHandleCursorItemChanged(e);
         }
 
-        public override bool HandleTextEditorChanged(CursorTextEventArgs e)
+        public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
         {
             Control? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text)) && control.FirstHandleTextEditorChanged)
+            if (control is not null && control.HandleTextEditorUpdate(new(control.ParentPos2SubPos(e.Position), e.Text)) && control.FirstHandleTextEditorUpdate)
                 return true;
 
-            return TryHandleTextEditorChanged(e);
+            return TryHandleTextEditorUpdate(e);
         }
 
         public override void UpdateHoverState(CursorEventArgs e)

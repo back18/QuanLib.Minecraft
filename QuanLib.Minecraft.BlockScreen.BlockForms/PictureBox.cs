@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageFrame = QuanLib.Minecraft.BlockScreen.Frame.ImageFrame;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
-    public class PictureBox : Control
+    public class PictureBox : Control, IDisposable
     {
         public PictureBox()
         {
@@ -70,8 +71,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return;
 
             Size offset = e.NewSize - e.OldSize;
-            ImageFrame.ResizeOptions.Size += offset;
             DefaultResizeOptions.Size += offset;
+            ImageFrame.ResizeOptions.Size += offset;
             ImageFrame.Update();
             if (AutoSize)
                 AutoSetSize();
@@ -131,6 +132,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             {
                 return false;
             }
+        }
+
+        public void Dispose()
+        {
+            ImageFrame.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

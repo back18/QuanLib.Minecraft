@@ -41,9 +41,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 IsSelected = false;
         }
 
-        protected override void OnTextEditorChanged(Control sender, CursorTextEventArgs e)
+        protected override void OnTextEditorUpdate(Control sender, CursorTextEventArgs e)
         {
-            base.OnTextEditorChanged(sender, e);
+            base.OnTextEditorUpdate(sender, e);
 
             Text = e.Text;
         }

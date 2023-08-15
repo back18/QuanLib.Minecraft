@@ -30,6 +30,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad
             RichTextBox.ClientLocation = new(2, 2);
             RichTextBox.Size = new(ClientPanel.ClientSize.Width - 4, ClientPanel.ClientSize.Height - 4);
             RichTextBox.Stretch = Direction.Bottom | Direction.Right;
+        }
+
+        public override void OnInitCompleted3()
+        {
+            base.OnInitCompleted3();
 
             if (_open is not null)
             {

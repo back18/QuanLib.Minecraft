@@ -25,6 +25,20 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 
         private readonly Stack<string> _forward;
 
+        public string SearchText
+        {
+            get => _SearchText;
+            set
+            {
+                if (_SearchText != value)
+                {
+                    _SearchText = value;
+                    ActiveLayoutAll();
+                }
+            }
+        }
+        private string _SearchText;
+
         public event EventHandler<SimpleFilesBox, ExceptionEventArgs> OpeningItemException;
 
         public event EventHandler<SimpleFilesBox, FIleInfoEventArgs> OpenFile;
@@ -54,11 +68,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 
         public override void ActiveLayoutAll()
         {
-            List<FileSystemItem> paths = new();
+            List<FileSystemItem> items = new();
             if (string.IsNullOrEmpty(Text))
             {
                 foreach (var drive in DriveInfo.GetDrives())
-                    paths.Add(new DriveItem(drive));
+                    items.Add(new DriveItem(drive));
             }
             else
             {
@@ -71,16 +85,16 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                         case PathType.Drive:
                             DirectoryInfo driveRoot = new DriveInfo(Text).RootDirectory;
                             foreach (var dir in driveRoot.GetDirectories())
-                                paths.Add(new DirectoryItem(dir));
+                                items.Add(new DirectoryItem(dir));
                             foreach (var file in driveRoot.GetFiles())
-                                paths.Add(new FileItem(file));
+                                items.Add(new FileItem(file));
                             break;
                         case PathType.Directory:
                             DirectoryInfo directory = new(Text);
                             foreach (var dir in directory.GetDirectories())
-                                paths.Add(new DirectoryItem(dir));
+                                items.Add(new DirectoryItem(dir));
                             foreach (var file in directory.GetFiles())
-                                paths.Add(new FileItem(file));
+                                items.Add(new FileItem(file));
                             break;
                         case PathType.File:
                             FileInfo fileInfo = new(Text);
@@ -99,11 +113,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                 }
             }
 
+            if (!string.IsNullOrEmpty(SearchText))
+            {
+                List<FileSystemItem> result = new();
+                foreach (var item in items)
+                {
+                    if (item.FileSystemInfo.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                        result.Add(item);
+                }
+                items = result;
+            }
+
             SubControls.Clear();
 
-            if (paths.Count > 0)
+            if (items.Count > 0)
             {
-                foreach (var path in paths)
+                foreach (var path in items)
                 {
                     path.AutoSetSize();
                     path.DoubleRightClick += (sender, e) =>
@@ -121,8 +146,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                     };
                     SubControls.Add(path);
                 }
-                this.ForceFillDownLayout(1, paths);
-                PageSize = new(ClientSize.Width, paths[^1].BottomLocation + 2);
+                this.ForceFillDownLayout(1, items);
+                PageSize = new(ClientSize.Width, items[^1].BottomLocation + 2);
                 OffsetPosition = new(0, 0);
             }
             else

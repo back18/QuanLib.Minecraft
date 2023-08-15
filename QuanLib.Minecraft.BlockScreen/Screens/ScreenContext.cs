@@ -52,7 +52,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             Screen.InputHandler.LeftClick += InputHandler_LeftClick;
             Screen.InputHandler.CursorSlotChanged += InputHandler_CursorSlotChanged;
             Screen.InputHandler.CursorItemChanged += InputHandler_CursorItemChanged;
-            Screen.InputHandler.TextEditorChanged += InputHandler_TextEditorChanged;
+            Screen.InputHandler.TextEditorUpdate += InputHandler_TextEditorUpdate;
 
             _bind = true;
         }
@@ -67,7 +67,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             Screen.InputHandler.LeftClick -= InputHandler_LeftClick;
             Screen.InputHandler.CursorSlotChanged -= InputHandler_CursorSlotChanged;
             Screen.InputHandler.CursorItemChanged -= InputHandler_CursorItemChanged;
-            Screen.InputHandler.TextEditorChanged -= InputHandler_TextEditorChanged;
+            Screen.InputHandler.TextEditorUpdate -= InputHandler_TextEditorUpdate;
 
             _bind = false;
         }
@@ -146,9 +146,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             RootForm.HandleCursorItemChanged(e);
         }
 
-        private void InputHandler_TextEditorChanged(ITextEditor sender, CursorTextEventArgs e)
+        private void InputHandler_TextEditorUpdate(ITextEditor sender, CursorTextEventArgs e)
         {
-            RootForm.HandleTextEditorChanged(e);
+            RootForm.HandleTextEditorUpdate(e);
         }
     }
 }

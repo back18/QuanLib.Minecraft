@@ -127,12 +127,12 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return TryHandleCursorItemChanged(e);
         }
 
-        public override bool HandleTextEditorChanged(CursorTextEventArgs e)
+        public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
         {
             TControl? control = GetSubControls().FirstHover;
-            control?.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
+            control?.HandleTextEditorUpdate(new(control.ParentPos2SubPos(e.Position), e.Text));
 
-            return TryHandleTextEditorChanged(e);
+            return TryHandleTextEditorUpdate(e);
         }
 
         public override void HandleBeforeFrame(EventArgs e)

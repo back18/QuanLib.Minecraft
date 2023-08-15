@@ -38,7 +38,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             LeftClick += OnLeftClick;
             CursorSlotChanged += OnCursorSlotChanged;
             CursorItemChanged += OnCursorItemChanged;
-            TextEditorChanged += OnTextEditorChanged;
+            TextEditorUpdate += OnTextEditorUpdate;
         }
 
         private const string MOUSE_ITEM = "minecraft:snowball";
@@ -77,7 +77,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public event EventHandler<ICursorReader, CursorItemEventArgs> CursorItemChanged;
 
-        public event EventHandler<ITextEditor, CursorTextEventArgs> TextEditorChanged;
+        public event EventHandler<ITextEditor, CursorTextEventArgs> TextEditorUpdate;
 
         protected virtual void OnCursorMove(ICursorReader sender, CursorEventArgs e) { }
 
@@ -89,7 +89,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         protected virtual void OnCursorItemChanged(ICursorReader sender, CursorItemEventArgs e) { }
 
-        protected virtual void OnTextEditorChanged(ITextEditor sender, CursorTextEventArgs e) { }
+        protected virtual void OnTextEditorUpdate(ITextEditor sender, CursorTextEventArgs e) { }
 
         public void ResetText()
         {
@@ -236,13 +236,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         if (texts[0] != CurrentText)
                         {
                             CurrentText = texts[0];
-                            actions.Add(() => TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText)));
+                            actions.Add(() => TextEditorUpdate.Invoke(this, new(CurrentPosition, CurrentText)));
                         }
                     }
                     else if (!string.IsNullOrEmpty(CurrentText))
                     {
                         CurrentText = string.Empty;
-                        actions.Add(() => TextEditorChanged.Invoke(this, new(CurrentPosition, CurrentText)));
+                        actions.Add(() => TextEditorUpdate.Invoke(this, new(CurrentPosition, CurrentText)));
                     }
                     break;
             }

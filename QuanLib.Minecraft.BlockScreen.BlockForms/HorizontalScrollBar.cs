@@ -13,7 +13,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             int position = (int)Math.Round(ClientSize.Width * SliderPosition);
             int slider = (int)Math.Round(ClientSize.Width * SliderSize);
-            if (slider <= 0)
+            if (slider < 1)
                 slider = 1;
 
             ArrayFrame frame = ArrayFrame.BuildFrame(ClientSize, Skin.GetBackgroundBlockID());

@@ -46,9 +46,9 @@ namespace QuanLib.Minecraft.BlockScreen
             if (_files.Count == 0)
                 return null;
 
-            CurrentIndex++;
-            if (CurrentIndex >= _files.Count)
-                CurrentIndex = 0;
+            CurrentIndex--;
+            if (CurrentIndex < 0)
+                CurrentIndex = _files.Count - 1;
 
             return _files[CurrentIndex];
         }
@@ -58,9 +58,9 @@ namespace QuanLib.Minecraft.BlockScreen
             if (_files.Count == 0)
                 return null;
 
-            CurrentIndex--;
-            if (CurrentIndex < 0)
-                CurrentIndex = _files.Count - 1;
+            CurrentIndex++;
+            if (CurrentIndex >= _files.Count)
+                CurrentIndex = 0;
 
             return _files[CurrentIndex];
         }

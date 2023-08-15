@@ -16,6 +16,7 @@ using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Event;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp.PixelFormats;
+using ImageFrame = QuanLib.Minecraft.BlockScreen.Frame.ImageFrame;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -30,7 +31,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             FirstHandleLeftClick = false;
             FirstHandleCursorSlotChanged = false;
             FirstHandleCursorItemChanged = false;
-            FirstHandleTextEditorChanged = false;
+            FirstHandleTextEditorUpdate = false;
             InvokeExternalCursorMove = false;
             IsInitializeCompleted = false;
             KeepWhenClear = false;
@@ -64,7 +65,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             DoubleLeftClick += OnDoubleLeftClick;
             CursorSlotChanged += OnCursorSlotChanged;
             CursorItemChanged += OnCursorItemChanged;
-            TextEditorChanged += OnTextEditorChanged;
+            TextEditorUpdate += OnTextEditorUpdate;
             BeforeFrame += OnBeforeFrame;
             AfterFrame += OnAfterFrame;
             InitializeCompleted += OnInitializeCompleted;
@@ -96,7 +97,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public bool FirstHandleCursorItemChanged { get; set; }
 
-        public bool FirstHandleTextEditorChanged { get; set; }
+        public bool FirstHandleTextEditorUpdate { get; set; }
 
         public bool InvokeExternalCursorMove { get; set; }
 
@@ -528,7 +529,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public event EventHandler<Control, CursorItemEventArgs> CursorItemChanged;
 
-        public event EventHandler<Control, CursorTextEventArgs> TextEditorChanged;
+        public event EventHandler<Control, CursorTextEventArgs> TextEditorUpdate;
 
         public event EventHandler<Control, EventArgs> BeforeFrame;
 
@@ -574,7 +575,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         protected virtual void OnCursorItemChanged(Control sender, CursorItemEventArgs e) { }
 
-        protected virtual void OnTextEditorChanged(Control sender, CursorTextEventArgs e) { }
+        protected virtual void OnTextEditorUpdate(Control sender, CursorTextEventArgs e) { }
 
         protected virtual void OnBeforeFrame(Control sender, EventArgs e) { }
 
@@ -666,9 +667,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return TryHandleCursorItemChanged(e);
         }
 
-        public virtual bool HandleTextEditorChanged(CursorTextEventArgs e)
+        public virtual bool HandleTextEditorUpdate(CursorTextEventArgs e)
         {
-            return TryHandleTextEditorChanged(e);
+            return TryHandleTextEditorUpdate(e);
         }
 
         public virtual void HandleBeforeFrame(EventArgs e)
@@ -751,11 +752,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return false;
         }
 
-        protected bool TryHandleTextEditorChanged(CursorTextEventArgs e)
+        protected bool TryHandleTextEditorUpdate(CursorTextEventArgs e)
         {
             if (Visible && IsHover)
             {
-                TextEditorChanged.Invoke(this, e);
+                TextEditorUpdate.Invoke(this, e);
                 return true;
             }
             return false;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageFrame = QuanLib.Minecraft.BlockScreen.Frame.ImageFrame;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {

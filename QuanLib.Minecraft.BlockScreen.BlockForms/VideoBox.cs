@@ -5,6 +5,7 @@ using NAudio.Midi;
 using NAudio.Wave;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -17,301 +18,133 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
     public class VideoBox : Control, IDisposable
     {
-        static VideoBox()
-        {
-            DefaultMediaOptions = new();
-            DefaultResizeOptions = new()
-            {
-                Size = new(64, 36),
-                Mode = ResizeMode.Pad,
-                Position = AnchorPositionMode.Center,
-                Sampler = KnownResamplers.Bicubic
-            };
-        }
-
         public VideoBox()
         {
-            PlayerState = VideoPlayerState.Unstarted;
-            MediaOptions = DefaultMediaOptions.Clone();
-            ResizeOptions = DefaultResizeOptions.Clone();
-
-            AutoSize = true;
+            DefaultMediaOptions = new();
+            DefaultResizeOptions = VideoFrame.DefaultResizeOptions.Clone();
+            DefaultResizeOptions.Size = ClientSize;
+            ClientSize = new(64, 64);
             ContentAnchor = AnchorPosition.Centered;
 
-            StartedPlay += OnStartedPlay;
-            EndedPlay += OnEndedPlay;
-            Pause += OnPause;
-            Resume += OnResume;
+            Played += OnPlayed;
+            Paused += OnPaused;
             VideoFrameChanged += OnVideoFrameChanged;
-            MediaFileChanged += OnMediaFileChanged;
-
-            _decoder = null;
-            _audio = null;
-            _event = null;
-            _start = TimeSpan.Zero;
-            _stopwatch = new();
+            MediaFilePlayerChanged += OnMediaFilePlayerChanged;
         }
 
-        public static MediaOptions DefaultMediaOptions { get; }
+        public MediaOptions DefaultMediaOptions { get; }
 
-        public static ResizeOptions DefaultResizeOptions { get; }
+        public ResizeOptions DefaultResizeOptions { get; }
 
-        private VideoDecoder? _decoder;
-
-        private MediaFoundationReader? _audio;
-
-        private WaveOutEvent? _event;
-
-        private TimeSpan _start;
-
-        private readonly Stopwatch _stopwatch;
-
-        public VideoPlayerState PlayerState
+        public MediaFilePlayer? MediaFilePlayer
         {
-            get => _PlayerState;
-            private set
-            {
-                if (_PlayerState != value)
-                {
-                    VideoPlayerState temp = _PlayerState;
-                    _PlayerState = value;
-
-                    if ((temp == VideoPlayerState.Unstarted || temp == VideoPlayerState.Ended) && _PlayerState == VideoPlayerState.Playing)
-                    {
-                        StartedPlay.Invoke(this, EventArgs.Empty);
-                    }
-
-                    switch (_PlayerState)
-                    {
-                        case VideoPlayerState.Playing:
-                            Resume.Invoke(this, EventArgs.Empty);
-                            break;
-                        case VideoPlayerState.Pause:
-                            Pause.Invoke(this, EventArgs.Empty);
-                            break;
-                        case VideoPlayerState.Ended:
-                            EndedPlay.Invoke(this, EventArgs.Empty);
-                            break;
-                    }
-                }
-            }
-        }
-        private VideoPlayerState _PlayerState;
-
-        public TimeSpan CurrentPosition
-        {
-            get => _decoder?.CurrentPosition ?? TimeSpan.Zero;
+            get => _MediaFilePlayer;
             set
             {
-                _stopwatch.Restart();
-                _stopwatch.Start();
-                if (PlayerState != VideoPlayerState.Playing)
-                    Play();
-                _decoder?.TryJumpToFrame(value);
-                if (_audio is not null)
-                    _audio.CurrentTime = value;
-                _start = value;
-            }
-        }
-
-        public TimeSpan TotalTime => MediaFile?.Info.Duration ?? TimeSpan.Zero;
-
-        public MediaFile? MediaFile
-        {
-            get => _MediaFile;
-            private set
-            {
-                _MediaFile?.Dispose();
-                _MediaFile = value;
-                if (AutoSize)
-                    AutoSetSize();
-                MediaFileChanged.Invoke(this, new(_MediaFile));
+                MediaFilePlayer? temp = _MediaFilePlayer;
+                _MediaFilePlayer = value;
+                MediaFilePlayerChanged.Invoke(this, new(temp, _MediaFilePlayer));
                 RequestUpdateFrame();
             }
         }
-        private MediaFile? _MediaFile;
+        private MediaFilePlayer? _MediaFilePlayer;
 
-        public VideoFrame? CurrentVideoFrame { get; private set; }
+        public TimeSpan CurrentPosition => MediaFilePlayer?.CurrentPosition ?? TimeSpan.Zero;
 
-        public MediaOptions MediaOptions { get; }
+        public TimeSpan TotalTime => MediaFilePlayer?.TotalTime ?? TimeSpan.Zero;
 
-        public ResizeOptions ResizeOptions { get; }
+        public event EventHandler<VideoBox, EventArgs> Played;
 
-        public event EventHandler<VideoBox, EventArgs> StartedPlay;
-
-        public event EventHandler<VideoBox, EventArgs> EndedPlay;
-
-        public event EventHandler<VideoBox, EventArgs> Pause;
-
-        public event EventHandler<VideoBox, EventArgs> Resume;
+        public event EventHandler<VideoBox, EventArgs> Paused;
 
         public event EventHandler<VideoBox, VideoFrameChangedEventArgs> VideoFrameChanged;
 
-        public event EventHandler<VideoBox, MediaFileChangedEventArge> MediaFileChanged;
+        public event EventHandler<VideoBox, MediaFilePlayerChangedEventArge> MediaFilePlayerChanged;
+
+        protected virtual void OnPlayed(VideoBox sender, EventArgs e) { }
+
+        protected virtual void OnPaused(VideoBox sender, EventArgs e) { }
+
+        protected virtual void OnVideoFrameChanged(VideoBox sender, VideoFrameChangedEventArgs e)
+        {
+            RequestUpdateFrame();
+        }
+
+        protected virtual void OnMediaFilePlayerChanged(VideoBox sender, MediaFilePlayerChangedEventArge e)
+        {
+            e.OldMediaFilePlayer?.Dispose();
+
+            if (e.OldMediaFilePlayer is not null)
+            {
+                e.OldMediaFilePlayer.Played -= NewMediaFilePlayer_Played;
+                e.OldMediaFilePlayer.Paused -= NewMediaFilePlayer_Paused;
+                e.OldMediaFilePlayer.VideoFrameChanged -= NewMediaFilePlayer_VideoFrameChanged;
+            }
+
+            if (e.NewMediaFilePlayer is not null)
+            {
+                e.NewMediaFilePlayer.Played += NewMediaFilePlayer_Played;
+                e.NewMediaFilePlayer.Paused += NewMediaFilePlayer_Paused;
+                e.NewMediaFilePlayer.VideoFrameChanged += NewMediaFilePlayer_VideoFrameChanged;
+            }
+        }
+
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        {
+            base.OnResize(sender, e);
+
+            Size offset = e.NewSize - e.OldSize;
+            DefaultResizeOptions.Size += offset;
+            if (MediaFilePlayer is not null)
+                MediaFilePlayer.VideoDecoder.ResizeOptions.Size += offset;
+        }
 
         protected override void OnAfterFrame(Control sender, EventArgs e)
         {
             base.OnAfterFrame(sender, e);
 
-            if (_decoder is not null && PlayerState == VideoPlayerState.Playing)
-            {
-                NextFrame();
-                RequestUpdateFrame();
-            }
-        }
-
-        protected virtual void OnStartedPlay(VideoBox sender, EventArgs e)
-        {
-            if (_decoder is not null)
-            {
-                _stopwatch.Restart();
-                _start = TimeSpan.Zero;
-                if (_decoder.Runing)
-                    _decoder.TryJumpToFrame(_start);
-                else
-                {
-                    if (_decoder.CurrentPosition != _start)
-                        _decoder.TryJumpToFrame(_start);
-                    Task.Run(() => _decoder.Start());
-                }
-            }
-        }
-
-        protected virtual void OnEndedPlay(VideoBox sender, EventArgs e)
-        {
-            _stopwatch.Stop();
-            _decoder?.Stop();
-            _event?.Stop();
-        }
-
-        protected virtual void OnPause(VideoBox sender, EventArgs e)
-        {
-            _stopwatch.Stop();
-            _event?.Pause();
-        }
-
-        protected virtual void OnResume(VideoBox sender, EventArgs e)
-        {
-            _stopwatch.Start();
-            _event?.Play();
-        }
-
-        protected virtual void OnVideoFrameChanged(VideoBox sender, VideoFrameChangedEventArgs e)
-        {
-
-        }
-
-        protected virtual void OnMediaFileChanged(VideoBox sender, MediaFileChangedEventArge e)
-        {
-            _stopwatch.Stop();
-            _decoder?.Stop();
-            if (e.MediaFile is null)
-                _decoder = null;
-            else
-                _decoder = new(e.MediaFile.Video);
-            PlayerState = VideoPlayerState.Unstarted;
-        }
-
-        public override void AutoSetSize()
-        {
-            ClientSize = ResizeOptions.Size;
+            MediaFilePlayer?.Handle();
         }
 
         public override IFrame RenderingFrame()
         {
-            if (CurrentVideoFrame is not null)
+            if (MediaFilePlayer is null || MediaFilePlayer.CurrentVideoFrame is null)
             {
-                CurrentVideoFrame.Image.Mutate(x => x.Resize(ResizeOptions));
-                return ArrayFrame.FromImage(GetScreenPlaneSize().NormalFacing, CurrentVideoFrame.Image);
+                return base.RenderingFrame();
             }
-            else
+
+            if (MediaFilePlayer.CurrentVideoFrame.FrameSize != ClientSize)
             {
-                return ArrayFrame.BuildFrame(ResizeOptions.Size.Width, ResizeOptions.Size.Height, Skin.GetBackgroundBlockID());
+                MediaFilePlayer.CurrentVideoFrame.ResizeOptions.Size = ClientSize;
+                MediaFilePlayer.CurrentVideoFrame.Update();
             }
+
+            return MediaFilePlayer.CurrentVideoFrame.GetFrameClone();
         }
 
-        public void Play()
+        private void NewMediaFilePlayer_Played(MediaFilePlayer sender, EventArgs e)
         {
-            if (_decoder is not null)
-            {
-                PlayerState = VideoPlayerState.Playing;
-            }
+            Played.Invoke(this, e);
         }
 
-        public void StartPlay()
+        private void NewMediaFilePlayer_Paused(MediaFilePlayer sender, EventArgs e)
         {
-            PlayerState = VideoPlayerState.Playing;
+            Paused.Invoke(this, e);
         }
 
-        public void EndPlay()
+        private void NewMediaFilePlayer_VideoFrameChanged(MediaFilePlayer sender, VideoFrameChangedEventArgs e)
         {
-            PlayerState = VideoPlayerState.Ended;
-        }
-
-        public void Pauseing()
-        {
-            PlayerState = VideoPlayerState.Pause;
-        }
-
-        public void Resumeing()
-        {
-            PlayerState = VideoPlayerState.Playing;
-        }
-
-        private void NextFrame()
-        {
-            if (_decoder is not null)
-            {
-                VideoFrame? frame;
-                while (true)
-                {
-                    if (!_decoder.TryGetNextFrame(out frame))
-                    {
-                        EndPlay();
-                        return;
-                    }
-
-                    double next = frame.Position.TotalMilliseconds + _decoder.FrameInterval;
-                    double now = (_start + _stopwatch.Elapsed).TotalMilliseconds;
-                    if (Math.Abs(now - frame.Position.TotalMilliseconds) < Math.Abs(now - next))
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        frame.Image.Dispose();
-                    }
-                }
-
-                CurrentVideoFrame = frame;
-                VideoFrameChanged.Invoke(this, new(CurrentVideoFrame));
-            }
+            VideoFrameChanged.Invoke(this, e);
         }
 
         public bool TryReadMediaFile(string path)
         {
+            if (!File.Exists(path))
+                return false;
+
             try
             {
-                MediaFile = MediaFile.Open(path, MediaOptions);
-                try
-                {
-                    _event?.Dispose();
-                    _audio?.Dispose();
-                    _audio = new(path);
-                }
-                catch
-                {
-                    _audio = null;
-                }
-                if (_audio is not null)
-                {
-                    _event = new();
-                    _event.Init(_audio);
-                }
-                else
-                {
-                    _event = null;
-                }
+                MediaFilePlayer = new(path, GetScreenPlaneSize().NormalFacing, DefaultMediaOptions, DefaultResizeOptions);
                 return true;
             }
             catch
@@ -322,11 +155,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public void Dispose()
         {
-            _stopwatch.Stop();
-            _decoder?.Stop();
-            MediaFile?.Dispose();
-            _event?.Dispose();
-            _audio?.Dispose();
+            MediaFilePlayer?.Dispose();
 
             GC.SuppressFinalize(this);
         }

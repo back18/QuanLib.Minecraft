@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Minecraft.BlockScreen.Frame;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,14 @@ namespace QuanLib.Minecraft.BlockScreen.Event
 {
     public class VideoFrameChangedEventArgs : EventArgs
     {
-        public VideoFrameChangedEventArgs(VideoFrame videoFrame)
+        public VideoFrameChangedEventArgs(VideoFrame? oldVideoFrame, VideoFrame? newVideoFrame)
         {
-            VideoFrame = videoFrame;
+            OldVideoFrame = oldVideoFrame;
+            NewVideoFrame = newVideoFrame;
         }
 
-        public VideoFrame VideoFrame { get; }
+        public VideoFrame? OldVideoFrame { get; }
+
+        public VideoFrame? NewVideoFrame { get; }
     }
 }

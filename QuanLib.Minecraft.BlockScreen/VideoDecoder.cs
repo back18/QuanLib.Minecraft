@@ -1,5 +1,9 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
+using QuanLib.Minecraft.BlockScreen.Frame;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,11 +20,18 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class VideoDecoder : ISwitchable
     {
-        public VideoDecoder(VideoStream video)
+        public VideoDecoder(VideoStream video, Facing facing, Size size) : this(video, facing, VideoFrame.DefaultResizeOptions)
+        {
+            ResizeOptions.Size = size;
+        }
+
+        public VideoDecoder(VideoStream video, Facing facing, ResizeOptions resizeOptions)
         {
             _video = video ?? throw new ArgumentNullException(nameof(video));
+            ResizeOptions = resizeOptions ?? throw new ArgumentNullException(nameof(resizeOptions));
 
-            CacheFrames = 16;
+            Facing = facing;
+            MaxFrames = 16;
             FrameInterval = 0;
             FrameInterval = Math.Round(1000 / video.Info.AvgFrameRate);
 
@@ -42,7 +53,11 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public bool Runing => _runing;
 
-        public int CacheFrames { get; set; }
+        public int MaxFrames { get; set; }
+
+        public Facing Facing { get; set; }
+
+        public ResizeOptions ResizeOptions { get; set; }
 
         public TimeSpan DecodingEndPosition
         {
@@ -61,10 +76,13 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Start()
         {
+            if (_runing)
+                return;
+
             _runing = true;
             while (_runing)
             {
-                if (_frames.Count >= CacheFrames)
+                if (_frames.Count >= MaxFrames)
                     Thread.Sleep(10);
                 else
                 {
@@ -73,24 +91,30 @@ namespace QuanLib.Minecraft.BlockScreen
                     if (!_runing)
                         break;
 
-                    _frames.Enqueue(Task.Run(() =>
+                    lock (_frames)
                     {
-                        _semaphore.Wait();
-                        ImageData imageData;
-                        try
+                        _frames.Enqueue(Task.Run(() =>
                         {
-                            imageData = _video.GetNextFrame();
-                        }
-                        catch
-                        {
-                            return null;
-                        }
-                        finally
-                        {
-                            _semaphore.Release();
-                        }
-                        return VideoFrame.FromImageData(_video.Position, imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
-                    }));
+                            _semaphore.Wait();
+                            ImageData imageData;
+                            try
+                            {
+                                imageData = _video.GetNextFrame();
+                            }
+                            catch
+                            {
+                                return null;
+                            }
+                            finally
+                            {
+                                _semaphore.Release();
+                            }
+                            Image<Bgr24> image = VideoFrame.FromImageData(imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
+                            VideoFrame frame = new VideoFrame(_video.Position, image, Facing, ResizeOptions);
+                            frame.Update();
+                            return frame;
+                        }));
+                    }
                 }
             }
         }
@@ -155,15 +179,21 @@ namespace QuanLib.Minecraft.BlockScreen
             try
             {
                 if (_video is null || !_video.TryGetFrame(time, out imageData))
+                {
+                    _pause = false;
                     return false;
+                }
             }
             finally
             {
                 _semaphore.Release();
             }
-            VideoFrame frame = VideoFrame.FromImageData(_video.Position, imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
 
+            Image<Bgr24> image = VideoFrame.FromImageData(imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
+            VideoFrame frame = new VideoFrame(_video.Position, image, Facing, ResizeOptions);
+            frame.Update();
             _frames.Enqueue(Task.Run<VideoFrame?>(() => frame));
+
             _pause = false;
             return true;
         }

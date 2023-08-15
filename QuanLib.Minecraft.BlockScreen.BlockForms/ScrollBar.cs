@@ -25,6 +25,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             get => _SliderSize;
             set
             {
+                if (value < 0)
+                    value = 0;
+                else if (value > 1)
+                    value = 1;
+
                 if (_SliderSize != value)
                 {
                     _SliderSize = value;
@@ -39,6 +44,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             get => _SliderPosition;
             set
             {
+                if (value < 0)
+                    value = 0;
+                else if (value > 1)
+                    value = 1;
+
                 if ( _SliderPosition != value)
                 {
                     _SliderPosition = value;

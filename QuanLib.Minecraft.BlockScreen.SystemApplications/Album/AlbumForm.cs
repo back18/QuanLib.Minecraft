@@ -3,6 +3,7 @@ using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageFrame = QuanLib.Minecraft.BlockScreen.Frame.ImageFrame;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 {
@@ -184,6 +186,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             Resampler_ComboButton.Items.Add(KnownResamplers.Spline, nameof(KnownResamplers.Spline));
             Resampler_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Sampler;
             Setting_ListMenuBox.AddedSubControlAndLayout(Resampler_ComboButton);
+        }
+
+        public override void OnInitCompleted3()
+        {
+            base.OnInitCompleted3();
 
             if (_open is not null)
                 Path_TextBox.Text = _open;
@@ -197,6 +204,23 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 
             ShowOverlay();
             OverlayHideTime = OverlayShowTime;
+        }
+
+        protected override void OnRightClick(Control sender, CursorEventArgs e)
+        {
+            if (ClientPanel.SubControls.FirstHover is null or BlockForms.ScalablePictureBox)
+            {
+                if (Setting_Switch.Visible)
+                {
+                    HideOverlay();
+                    OverlayHideTime = 0;
+                }
+                else
+                {
+                    ShowOverlay();
+                    OverlayHideTime = OverlayShowTime;
+                }
+            }
         }
 
         protected override void OnBeforeFrame(Control sender, EventArgs e)

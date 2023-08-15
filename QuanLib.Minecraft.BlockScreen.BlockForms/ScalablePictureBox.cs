@@ -128,8 +128,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return;
 
             Size offset = e.NewSize - e.OldSize;
-            ImageFrame.ResizeOptions.Size += offset;
             DefaultResizeOptions.Size += offset;
+            ImageFrame.ResizeOptions.Size += offset;
             Rectangle = new(0, 0, ImageFrame.Image.Size.Width, ImageFrame.Image.Size.Height);
             ImageFrame.Update(Rectangle);
             if (AutoSize)

@@ -338,14 +338,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 return result;
             }
 
-            public override bool HandleTextEditorChanged(CursorTextEventArgs e)
+            public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
             {
                 bool result = false;
                 foreach (var control in SubControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleTextEditorChanged(new(control.ParentPos2SubPos(e.Position), e.Text));
+                        result = control.HandleTextEditorUpdate(new(control.ParentPos2SubPos(e.Position), e.Text));
                     }
                 }
 
