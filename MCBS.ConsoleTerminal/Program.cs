@@ -19,6 +19,8 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
+            int result = 2 & 8;
+
             Thread.CurrentThread.Name = "MainThread";
             LOGGER.Info("Starting!");
 

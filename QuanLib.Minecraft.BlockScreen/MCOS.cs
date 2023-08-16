@@ -162,7 +162,7 @@ namespace QuanLib.Minecraft.BlockScreen
             }
 #endif
 
-            ScreenManager.ScreenList.Add(new(new(440, 206, -90), 256, 144, Facing.Xm, Facing.Ym)).LoadScreen();
+            ScreenManager.ScreenList.Add(new(new(0, 83, 0), 256, 144, Facing.Xm, Facing.Ym)).LoadScreen();
 
             _stopwatch.Start();
             while (_runing)

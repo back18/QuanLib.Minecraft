@@ -95,7 +95,7 @@ namespace QuanLib.Minecraft.Files
             return MatchBlockTexture(facing, rgba32);
         }
 
-        public static BlockTextureManager LoadDirectory(string directory)
+        public static BlockTextureManager LoadDirectory(string directory, IEnumerable<string> blacklist)
         {
             if (string.IsNullOrEmpty(directory))
                 throw new ArgumentException($"“{nameof(directory)}”不能为 null 或空。", nameof(directory));
@@ -179,6 +179,21 @@ namespace QuanLib.Minecraft.Files
                                 else
                                     continue;
 
+                                string id = "minecraft:" + Path.GetFileNameWithoutExtension(blockState);
+                                if (!string.IsNullOrEmpty(variant_jpro.Name))
+                                    id += $"[{variant_jpro.Name}]";
+                                bool disable = false;
+                                foreach (var black in blacklist)
+                                {
+                                    if (id.StartsWith(black))
+                                    {
+                                        disable = true;
+                                        break;
+                                    }
+                                }
+                                if (disable)
+                                    continue;
+
                                 Dictionary<Facing, Image<Rgba32>> images = new()
                                 {
                                     { Facing.Xp, GetImage(xp) },
@@ -189,9 +204,6 @@ namespace QuanLib.Minecraft.Files
                                     { Facing.Zm, GetImage(zm) }
                                 };
 
-                                string id = "minecraft:" + Path.GetFileNameWithoutExtension(blockState);
-                                if (!string.IsNullOrEmpty(variant_jpro.Name))
-                                    id += $"[{variant_jpro.Name}]";
                                 result.Add(id, new(id, type, images));
                             }
                         }

@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public static void LoadAll()
         {
-            _BlockTextureManager = BlockTextureManager.LoadDirectory(Path.Combine(MCOS.MainDirectory.MinecraftResources.Directory, "assets", "minecraft"));
+            _BlockTextureManager = BlockTextureManager.LoadDirectory(Path.Combine(MCOS.MainDirectory.MinecraftResources.Directory, "assets", "minecraft"), Config.ConfigManager.MinecraftConfig.BlockTextureBlacklist);
             LOGGER.Info($"Minecraft方块贴图文件加载完成，数量:{BlockTextureManager.Count}");
         }
     }

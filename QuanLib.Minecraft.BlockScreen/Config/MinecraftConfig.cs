@@ -21,6 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             LaunchArguments = json.LaunchArguments;
             AccelerationEngineEventPort = json.AccelerationEngineEventPort;
             AccelerationEngineDataPort = json.AccelerationEngineDataPort;
+            BlockTextureBlacklist = json.BlockTextureBlacklist;
         }
 
         public MinecraftServerMode MinecraftServerMode { get; }
@@ -36,6 +37,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         public ushort AccelerationEngineEventPort { get; }
 
         public ushort AccelerationEngineDataPort { get; }
+
+        public IReadOnlyList<string> BlockTextureBlacklist { get; }
 
         public static MinecraftConfig Load(string path)
         {
@@ -58,6 +61,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             public ushort AccelerationEngineEventPort;
 
             public ushort AccelerationEngineDataPort;
+
+            public string[] BlockTextureBlacklist;
         }
     }
 }
