@@ -1,5 +1,6 @@
 ﻿using CoreRCON;
 using CoreRCON.Parsers.Standard;
+using QuanLib.FileListeners;
 using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.DirectoryManagers;
 using QuanLib.Minecraft.Files;
@@ -59,6 +60,10 @@ namespace QuanLib.Minecraft
         public string RconPassword { get; }
 
         public MinecraftServerDirectory ServerDirectory { get; }
+
+        public abstract ITextListener TextListener { get; }
+
+        public abstract ILogListener LogListener { get; }
 
         public abstract ServerLogParser LogParser { get; }
 
@@ -130,6 +135,21 @@ namespace QuanLib.Minecraft
             {
                 Thread.Sleep(1000);
             }
+        }
+
+        public void EnableConsoleOutput()
+        {
+            TextListener.WriteLineText += TextListener_WriteLineText;
+        }
+
+        public void DisableConsoleOutput()
+        {
+            TextListener.WriteLineText -= TextListener_WriteLineText;
+        }
+
+        private void TextListener_WriteLineText(ITextListener sender, QuanLib.Event.TextEventArgs e)
+        {
+            Console.WriteLine(e.Text);
         }
 
         public abstract void WaitForConnected();

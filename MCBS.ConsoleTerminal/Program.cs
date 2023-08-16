@@ -1,90 +1,117 @@
-﻿using FFMediaToolkit;
+﻿#define TryCatch
+
+using FFMediaToolkit;
+using log4net.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Config;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Data;
-using QuanLib.Minecraft.Files;
-using QuanLib.Minecraft.Vector;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal
 {
     public static class Program
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         private static void Main(string[] args)
         {
-            //LogFileListener listener = new("D:\\程序\\HMCL\\服务端\\logs\\latest.log");
-            ////listener.WriteLog += (sender, e) => Console.WriteLine('\n' + e.MinecraftLog.ToString());
-            //ServerLogParser logHelper = new(listener);
-            //logHelper.Starting += (sender, e) => Console.WriteLine("开始启动");
-            //logHelper.PreparingLevel += (sender, e) => Console.WriteLine("开始加载地图：" + e.Text);
-            //logHelper.Started += (sender, e) => Console.WriteLine("启动完成");
-            //logHelper.Stopping += (sender, e) => Console.WriteLine("正在停止");
-            //logHelper.Stopped +=  (sender, e) => Console.WriteLine("已停止");
-            //logHelper.FailToStart += (sender, e) => Console.WriteLine("无法启动：" + e.Text);
-            //logHelper.Crashed += (sender, e) => Console.WriteLine("已崩溃：" + e.Guid);
-            //logHelper.RconRunning += (sender, e) => Console.WriteLine("RCON启动：" + e.IPEndPoint);
-            //logHelper.RconStopped += (sender, e) => Console.WriteLine("RCON停止");
-            //logHelper.PlayerJoined += (sender, e) => Console.WriteLine("玩家登录：" + e.PlayerLoginInfo.Name);
-            //logHelper.PlayerLeft += (sender, e) => Console.WriteLine("玩家离开：" + e.PlayerLeftInfo.Name);
-            //logHelper.PlayerSendChatMessage += (sender, e) => Console.WriteLine("玩家消息：" + e.ChatMessage);
-            //listener.Start();
+            Thread.CurrentThread.Name = "MainThread";
+            LOGGER.Info("Starting!");
 
-            ConfigManager.LoadAll();
-            SystemResourcesManager.LoadAll();
-            MinecraftResourcesManager.LoadAll();
-            TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
-            FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.Directory;
-            FFmpegLoader.LoadFFmpeg();
+            Terminal terminal = new();
+            Task.Run(() => terminal.Start());
 
-            MinecraftConfig config = ConfigManager.MinecraftConfig;
-            MinecraftServer server = config.MinecraftServerMode switch
+#if TryCatch
+            try
             {
-                MinecraftServerMode.RconConnect => new RconConnectServer(config.ServerPath, config.ServerAddress),
-                MinecraftServerMode.ManagedProcess => new ManagedProcessServer(config.ServerPath, config.ServerAddress, new CustomServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                _ => throw new InvalidOperationException(),
-            };
-            Task.Run(() => server.Start());
-            server.WaitForConnected();
-
-            if (server.CommandHelper.TryGetPlayerSelectedItem("ORCEHK", out Item? item))
-            {
-                Console.WriteLine(item?.ToString());
+#endif
+                ConfigManager.LoadAll();
+                SystemResourcesManager.LoadAll();
+                MinecraftResourcesManager.LoadAll();
+                TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
+                FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.Directory;
+#if TryCatch
             }
+            catch (Exception ex)
+            {
+                LOGGER.Fatal("无法完成初始化", ex);
+                return;
+            }
+#endif
 
-            MCOS os = new(server);
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.ScreenManager.ScreenManagerAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager.TaskManagerAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer.FileExplorerAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad.NotepadAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Album.AlbumAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing.DrawingAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen.DataScreenAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox.DialogBoxAppInfo());
-            os.ApplicationManager.ApplicationList.Add(new Test01AppInfo());
-            os.ApplicationManager.ApplicationList.Add(new Test02AppInfo());
-            os.ApplicationManager.ApplicationList.Add(new Test03AppInfo());
+            MinecraftServer server;
+            MCOS mcos;
 
-            //MCOS.BlockTextureCollection.BuildMapCache(screen.ScreenFacing);
-            //Console.WriteLine("完成，按回车继续");
-            //Console.ReadLine();
+#if TryCatch
+            try
+            {
+#endif
+                MinecraftConfig config = ConfigManager.MinecraftConfig;
+                switch (config.MinecraftServerMode)
+                {
+                    case MinecraftServerMode.RconConnect:
+                        LOGGER.Info($"将以RCON连接模式绑定到Minecraft服务器\n服务端路径: {config.ServerPath}\n服务器地址: {config.ServerAddress}");
+                        server = new RconConnectServer(config.ServerPath, config.ServerAddress);
+                        break;
+                    case MinecraftServerMode.ManagedProcess:
+                        LOGGER.Info($"将以托管进程模式绑定到Minecraft服务器\n服务端路径: {config.ServerPath}\n服务器地址: {config.ServerAddress}\nJava路径: {config.JavaPath}\n 启动参数: {config.LaunchArguments}");
+                        server = new ManagedProcessServer(config.ServerPath, config.ServerAddress, new CustomServerLaunchArguments(config.JavaPath, config.LaunchArguments));
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
 
-            os.Start();
+                Task.Run(() => server.Start());
+#if TryCatch
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Fatal("无法绑定到Minecraft服务器", ex);
+                return;
+            }
+#endif
 
-            //while (true)
-            //{
-            //    string? read = Console.ReadLine();
-            //    if (read is null)
-            //        continue;
-            //    string output = server.CommandHelper.SendCommand(read);
-            //    Console.WriteLine(output);
-            //}
+#if TryCatch
+            try
+            {
+#endif
+                LOGGER.Info("开始初始化MCOS");
+                mcos = MCOS.Load(server);
+                LOGGER.Info("MCOS初始化完成");
+#if TryCatch
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Fatal("无法初始化MCOS", ex);
+                return;
+            }
+#endif
+
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.ScreenManager.ScreenManagerAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager.TaskManagerAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer.FileExplorerAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad.NotepadAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Album.AlbumAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing.DrawingAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen.DataScreenAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox.DialogBoxAppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new Test01AppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new Test02AppInfo());
+            mcos.ApplicationManager.ApplicationList.Add(new Test03AppInfo());
+
+            LOGGER.Info("正在等待Minecraft服务器启动...");
+            server.WaitForConnected();
+            LOGGER.Info("成功连接到Minecraft服务器");
+
+            mcos.Start();
         }
     }
 }

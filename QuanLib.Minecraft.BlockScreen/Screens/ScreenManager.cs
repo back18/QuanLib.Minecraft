@@ -151,25 +151,31 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 if (screen is null)
                     throw new ArgumentNullException(nameof(screen));
 
-                int id = _id;
-                Process process = MCOS.Instance.RunServicesApp();
-                IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
-                ScreenContext context = new(screen, rootForm);
-                context.ID = id;
-                _items.Add(id, context);
-                _owner.AddedScreen.Invoke(_owner, new(context));
-                _id++;
-                return context;
+                lock (this)
+                {
+                    int id = _id;
+                    Process process = MCOS.Instance.RunServicesApp();
+                    IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
+                    ScreenContext context = new(screen, rootForm);
+                    context.ID = id;
+                    _items.Add(id, context);
+                    _owner.AddedScreen.Invoke(_owner, new(context));
+                    _id++;
+                    return context;
+                }
             }
 
             public bool Remove(int id)
             {
-                if (!_items.TryGetValue(id, out var context) || !_items.Remove(id))
-                    return false;
+                lock (this)
+                {
+                    if (!_items.TryGetValue(id, out var context) || !_items.Remove(id))
+                        return false;
 
-                context.ID = -1;
-                _owner.RemovedScreen.Invoke(_owner, new(context));
-                return true;
+                    context.ID = -1;
+                    _owner.RemovedScreen.Invoke(_owner, new(context));
+                    return true;
+                }
             }
 
             public void Clear()

@@ -1,4 +1,6 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using log4net.Core;
+using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections.Generic;
@@ -11,7 +13,9 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class Process
     {
-        public Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
+        internal Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
         {
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
@@ -23,12 +27,15 @@ namespace QuanLib.Minecraft.BlockScreen
             Initiator = initiator;
             MainThread = new(() =>
             {
+                ProcessState = ProcessState.Running;
                 Started.Invoke(this, EventArgs.Empty);
+                LOGGER.Info($"进程“{ToString()}”已启动");
                 object? @return = Application.Main(args);
+                ProcessState = ProcessState.Stopped;
                 Stopped.Invoke(this, EventArgs.Empty);
+                LOGGER.Info($"进程“{ToString()}”已退出");
             })
             {
-                Name = ApplicationInfo.Name,
                 IsBackground = true
             };
             ID = -1;
@@ -68,8 +75,10 @@ namespace QuanLib.Minecraft.BlockScreen
                     break;
                 case ProcessState.Starting:
                     if (!MainThread.IsAlive)
+                    {
+                        MainThread.Name = $"{ApplicationInfo.ID}#{ID}";
                         MainThread.Start();
-                    ProcessState = ProcessState.Running;
+                    }
                     break;
                 case ProcessState.Running:
                     break;
@@ -99,6 +108,11 @@ namespace QuanLib.Minecraft.BlockScreen
         public void StopProcess()
         {
             ProcessState = ProcessState.Stopped;
+        }
+
+        public override string ToString()
+        {
+            return $"PID={ID}, AppID={ApplicationInfo.ID}";
         }
     }
 }

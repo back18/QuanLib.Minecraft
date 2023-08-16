@@ -96,14 +96,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
             else
             {
-                var pen = new Pen(color, PenWidth)
-                {
-                    JointStyle = JointStyle.Round,
-                    EndCapStyle = EndCapStyle.Round
-                };
+                PenOptions options = new(color, PenWidth);
+                options.JointStyle = JointStyle.Round;
+                options.EndCapStyle = EndCapStyle.Round;
+                SolidPen pen = new(options);
+
                 ImageFrame.Image.Mutate(ctx =>
                 {
-                    ctx.DrawLines(pen, new PointF[] { position1, position2 });
+                    ctx.DrawLine(pen, new PointF[] { position1, position2 });
                 });
             }
 

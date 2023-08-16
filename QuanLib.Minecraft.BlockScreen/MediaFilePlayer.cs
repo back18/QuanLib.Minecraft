@@ -1,7 +1,6 @@
 ﻿using FFMediaToolkit.Decoding;
 using NAudio.Wave;
 using Newtonsoft.Json.Linq;
-using PostSharp.Aspects.Advices;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp.Processing;

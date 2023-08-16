@@ -1,4 +1,6 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using log4net.Core;
+using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,27 +13,31 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class ApplicationManager
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public ApplicationManager()
         {
             ApplicationList = new(this);
             AddedApplication += OnAddedApplication;
-            RemovedApplication += OnRemovedApplication;
+            //RemovedApplication += OnRemovedApplication;
         }
 
         public ApplicationCollection ApplicationList { get; }
 
         public event EventHandler<ApplicationManager, ApplicationInfoEventArgs> AddedApplication;
 
-        public event EventHandler<ApplicationManager, ApplicationInfoEventArgs> RemovedApplication;
+        //public event EventHandler<ApplicationManager, ApplicationInfoEventArgs> RemovedApplication;
 
         protected virtual void OnAddedApplication(ApplicationManager sender, ApplicationInfoEventArgs e)
         {
             string dir = MCOS.MainDirectory.Applications.GetApplicationDirectory(e.ApplicationInfo.ID);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
+
+            LOGGER.Info($"应用程序“{e.ApplicationInfo}”已加载");
         }
 
-        protected virtual void OnRemovedApplication(ApplicationManager sender, ApplicationInfoEventArgs e) { }
+        //protected virtual void OnRemovedApplication(ApplicationManager sender, ApplicationInfoEventArgs e) { }
 
         public class ApplicationCollection : IDictionary<string, ApplicationInfo>
         {
@@ -63,6 +69,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     throw new ArgumentNullException(nameof(applicationInfo));
 
                 _items.Add(applicationInfo.ID, applicationInfo);
+                _owner.AddedApplication.Invoke(_owner, new(applicationInfo));
             }
 
             public bool ContainsKey(string key)

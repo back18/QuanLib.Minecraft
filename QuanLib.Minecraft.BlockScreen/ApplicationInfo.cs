@@ -35,6 +35,11 @@ namespace QuanLib.Minecraft.BlockScreen
         public abstract Image<Rgba32> Icon { get; }
 
         public abstract bool AppendToDesktop { get; }
+
+        public override string ToString()
+        {
+            return $"Name={Name}, ID={ID}, Version={Version}";
+        }
     }
 
     public abstract class ApplicationInfo<T> : ApplicationInfo where T : Application

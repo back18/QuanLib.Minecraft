@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
 {
     public static class DialogBoxManager
     {
-        public static MessageBoxButtons OpenMessageBox(Form initiator, string title, string message, MessageBoxButtons buttons, Action<MessageBoxButtons>? callback = null)
+        public static MessageBoxButtons OpenMessageBox(IForm initiator, string title, string message, MessageBoxButtons buttons, Action<MessageBoxButtons>? callback = null)
         {
             if (initiator is null)
                 throw new ArgumentNullException(nameof(initiator));
@@ -35,7 +35,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
             return form.DialogResult;
         }
 
-        public static async Task<MessageBoxButtons> OpenMessageBoxAsync(Form initiator, string title, string message, MessageBoxButtons buttons, Action<MessageBoxButtons>? callback = null)
+        public static async Task<MessageBoxButtons> OpenMessageBoxAsync(IForm initiator, string title, string message, MessageBoxButtons buttons, Action<MessageBoxButtons>? callback = null)
         {
            return await Task.Run(() => OpenMessageBox(initiator, title, message, buttons, callback));
         }

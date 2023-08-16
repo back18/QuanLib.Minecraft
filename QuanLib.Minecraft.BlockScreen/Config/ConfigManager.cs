@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using log4net.Core;
+using log4net.Repository.Hierarchy;
+using Newtonsoft.Json;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 {
     public static class ConfigManager
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public static MinecraftConfig MinecraftConfig
         {
             get
@@ -61,6 +66,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             _ScreenConfig = ScreenConfig.Load(MCOS.MainDirectory.Configs.Screen);
 
             _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(MCOS.MainDirectory.Configs.Registry)) ?? throw new FormatException();
+
+            LOGGER.Info("配置文件加载完成");
         }
     }
 }

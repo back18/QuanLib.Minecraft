@@ -1,4 +1,6 @@
-﻿using QuanLib.Minecraft.Event;
+﻿using QuanLib.Event;
+using QuanLib.FileListeners;
+using QuanLib.Minecraft.Event;
 using QuanLib.Minecraft.Files;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
 {
-    public class ServerLauncher : ISwitchable, IStandardInputCommandSender, ILogListener
+    public class ServerLauncher : ISwitchable, IStandardInputCommandSender, ITextListener, ILogListener
     {
         public ServerLauncher(string serverPath, ServerLaunchArguments launchArguments)
         {
@@ -32,6 +34,7 @@ namespace QuanLib.Minecraft
                 }
             };
 
+            WriteLineText += OnWriteLineText;
             WriteLog += OnWriteLog;
             ServerProcessStarted += OnServerProcessStarted;
             ServerProcessRestart += OnServerProcessRestart;
@@ -67,6 +70,8 @@ namespace QuanLib.Minecraft
         }
         private int _MaxStartCount;
 
+        public event EventHandler<ITextListener, TextEventArgs> WriteLineText;
+
         public event EventHandler<ILogListener, MinecraftLogEventArgs> WriteLog;
 
         public event EventHandler<ServerLauncher, EventArgs> ServerProcessStarted;
@@ -74,6 +79,16 @@ namespace QuanLib.Minecraft
         public event EventHandler<ServerLauncher, EventArgs> ServerProcessRestart;
 
         public event EventHandler<ServerLauncher, EventArgs> ServerProcessExit;
+
+        protected virtual void OnWriteLineText(ITextListener sender, TextEventArgs e)
+        {
+            if (e.Text.StartsWith('['))
+            {
+                WriteLog.Invoke(this, new(new(e.Text)));
+            }
+        }
+
+        protected virtual void OnWriteLog(ILogListener sender, MinecraftLogEventArgs e) { }
 
         protected virtual void OnServerProcessStarted(ServerLauncher sender, EventArgs e)
         {
@@ -85,10 +100,7 @@ namespace QuanLib.Minecraft
                     if (line is null)
                         continue;
 
-                    if (line.StartsWith('['))
-                    {
-                        WriteLog.Invoke(this, new(new(line)));
-                    }
+                    WriteLineText.Invoke(this, new(line));
                 }
             });
         }
@@ -96,8 +108,6 @@ namespace QuanLib.Minecraft
         protected virtual void OnServerProcessRestart(ServerLauncher sender, EventArgs e) { }
 
         protected virtual void OnServerProcessExit(ServerLauncher sender, EventArgs e) { }
-
-        protected virtual void OnWriteLog(ILogListener sender, MinecraftLogEventArgs e) { }
 
         public void Start()
         {

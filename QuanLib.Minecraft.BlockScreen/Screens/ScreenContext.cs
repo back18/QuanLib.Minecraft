@@ -1,6 +1,8 @@
-﻿using NAudio.Codecs;
+﻿using log4net.Core;
+using NAudio.Codecs;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
@@ -16,7 +18,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
     /// </summary>
     public class ScreenContext
     {
-        public ScreenContext(Screen screen, IRootForm form)
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
+        internal ScreenContext(Screen screen, IRootForm form)
         {
             ScreenState = ScreenState.NotLoaded;
             ID = -1;
@@ -25,7 +29,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             IsShowCursor = true;
             CursorType = BlockScreen.CursorType.Default;
             _bind = false;
-            BindEvents();
         }
 
         private bool _bind;
@@ -81,20 +84,26 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 case ScreenState.Loading:
                     Screen.Start();
                     RootForm.ClientSize = Screen.Size;
-                    RootForm.HandleAllInitialize();
-                    RootForm.HandleFormLoad(EventArgs.Empty);
                     MCOS.Instance.RunStartupChecklist(RootForm);
+                    BindEvents();
                     ScreenState = ScreenState.Active;
+                    LOGGER.Info($"屏幕“{ToString()}”已加载");
                     break;
                 case ScreenState.Active:
                     break;
                 case ScreenState.Sleep:
+                    //TODO
                     break;
                 case ScreenState.Closed:
-                    foreach (var forem in RootForm.GetAllForm().ToArray())
-                        forem.CloseForm();
+                    UnbindEvents();
+                    foreach (var forem in MCOS.Instance.FormManager.FormList.Values)
+                    {
+                        if (forem.RootForm == RootForm)
+                            forem.CloseForm();
+                    }
                     RootForm.CloseForm();
                     Screen.Stop();
+                    LOGGER.Info($"屏幕“{ToString()}”已卸载");
                     break;
                 default:
                     break;
@@ -119,6 +128,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void StopSleep()
         {
             ScreenState = ScreenState.Active;
+        }
+
+        public override string ToString()
+        {
+            return $"SID={ID}, Screen=[{Screen}]";
         }
 
         private void InputHandler_CursorMove(ICursorReader sender, CursorEventArgs e)

@@ -1,4 +1,6 @@
 ﻿using CoreRCON;
+using QuanLib.FileListeners;
+using QuanLib.Minecraft.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,8 @@ namespace QuanLib.Minecraft
 
             CommandHelper = new(_rcon);
             Launcher = new(ServerDirectory.Directory, launchArguments);
+            TextListener = Launcher;
+            LogListener = Launcher;
             LogParser = new(Launcher);
             CommandHelper = new(_rcon);
             CommandSender = Launcher;
@@ -35,6 +39,10 @@ namespace QuanLib.Minecraft
         public override bool Runing => _runing;
 
         public ServerLauncher Launcher { get;}
+
+        public override ITextListener TextListener { get; }
+
+        public override ILogListener LogListener { get; }
 
         public override ServerLogParser LogParser { get; }
 

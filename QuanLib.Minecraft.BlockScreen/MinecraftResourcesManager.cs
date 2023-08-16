@@ -1,4 +1,6 @@
-﻿using QuanLib.Minecraft.Files;
+﻿using log4net.Core;
+using QuanLib.Minecraft.BlockScreen.Logging;
+using QuanLib.Minecraft.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,8 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public static class MinecraftResourcesManager
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public static BlockTextureManager BlockTextureManager
         {
             get
@@ -23,6 +27,7 @@ namespace QuanLib.Minecraft.BlockScreen
         public static void LoadAll()
         {
             _BlockTextureManager = BlockTextureManager.LoadDirectory(Path.Combine(MCOS.MainDirectory.MinecraftResources.Directory, "assets", "minecraft"));
+            LOGGER.Info($"Minecraft方块贴图文件加载完成，数量:{BlockTextureManager.Count}");
         }
     }
 }

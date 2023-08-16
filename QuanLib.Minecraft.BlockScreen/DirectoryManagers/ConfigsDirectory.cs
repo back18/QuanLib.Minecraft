@@ -15,6 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
             System = Combine("System.json");
             Screen = Combine("Screen.json");
             Registry = Combine("Registry.json");
+            Log4Net = Combine("log4net.xml");
         }
 
         public string Minecraft { get; }
@@ -24,5 +25,7 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
         public string Screen { get; }
 
         public string Registry { get; }
+
+        public string Log4Net { get; }
     }
 }

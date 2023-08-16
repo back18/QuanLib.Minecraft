@@ -59,57 +59,6 @@ namespace QuanLib.Minecraft.Files
         /// </summary>
         public string Message { get; }
 
-        //public static bool TryParse(string? s, [MaybeNullWhen(false)] out MinecraftLog result)
-        //{
-        //    if (s is null)
-        //        goto err;
-
-        //    string separator = ": ";
-        //    int index = s.IndexOf(separator);
-        //    string items, message;
-
-        //    if (index == -1)
-        //    {
-        //        items = s;
-        //        message = string.Empty;
-        //    }
-        //    else
-        //    {
-        //        items = s[..index];
-        //        message = s[(index + separator.Length)..];
-        //    }
-
-        //    string pattern = @"\[(.*?)\]";
-        //    MatchCollection matches = Regex.Matches(items, pattern);
-
-        //    if (matches.Count < 2)
-        //        goto err;
-
-        //    _ = DateTime.TryParse(matches[0].Groups[1].Value, out var dateTime);
-
-        //    string[] item2 = matches[1].Groups[1].Value.Split('/');
-        //    if (item2.Length != 2)
-        //        goto err;
-
-        //    string thread = item2[0];
-
-        //    if (!_level.TryGetValue(item2[1], out var level))
-        //        goto err;
-
-        //    string type;
-        //    if (matches.Count > 2)
-        //        type = matches[2].Groups[1].Value;
-        //    else
-        //        type = string.Empty;
-
-        //    result = new(dateTime, thread, level, type, message);
-        //    return true;
-
-        //    err:
-        //    result = null;
-        //    return false;
-        //}
-
         public override string ToString()
         {
             return $"{Info}: {Message}";

@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
 {
     public class MessageBoxForm : DialogBoxForm<MessageBoxButtons>
     {
-        public MessageBoxForm(Form initiator, string title, string message, MessageBoxButtons buttons) : base(initiator, title)
+        public MessageBoxForm(IForm initiator, string title, string message, MessageBoxButtons buttons) : base(initiator, title)
         {
             _message = message ?? throw new ArgumentNullException(nameof(message));
 
@@ -64,8 +65,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
 
             ClientSize = new(110, 70 + TitleBar.Height);
             ClientLocation = new(
-                _initiator.ClientLocation.X + (_initiator.Width - Width) / 2,
-                _initiator.ClientLocation.Y + (_initiator.Height - Height) / 2);
+                _initiator.ClientLocation.X + (_initiator.ClientSize.Width + _initiator.BorderWidth - Width) / 2,
+                _initiator.ClientLocation.Y + (_initiator.ClientSize.Height + _initiator.BorderWidth - Height) / 2);
 
             ClientPanel.SubControls.Add(Message_RichTextBox);
             Message_RichTextBox.KeepWhenClear = true;

@@ -192,7 +192,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         private void SimpleFilesBox_OpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e)
         {
-            _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，因为：\n{e.Exception.GetType().Name}: {e.Exception.Message}", MessageBoxButtons.OK);
+            _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，错误信息：\n{e.Exception.GetType().Name}: {e.Exception.Message}", MessageBoxButtons.OK);
         }
     }
 }

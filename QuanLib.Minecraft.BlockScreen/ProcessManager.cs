@@ -80,23 +80,29 @@ namespace QuanLib.Minecraft.BlockScreen
                 if (args is null)
                     throw new ArgumentNullException(nameof(args));
 
-                int id = _id;
-                Process process = new(applicationInfo, args, initiator);
-                process.ID = id;
-                _id++;
-                _items.Add(id, process);
-                _owner.AddedProcess.Invoke(_owner, new(process));
-                return process;
+                lock (this)
+                {
+                    int id = _id;
+                    Process process = new(applicationInfo, args, initiator);
+                    process.ID = id;
+                    _items.Add(id, process);
+                    _owner.AddedProcess.Invoke(_owner, new(process));
+                    _id++;
+                    return process;
+                }
             }
 
             public bool Remove(int id)
             {
-                if (!_items.TryGetValue(id, out var process) || !_items.Remove(id))
-                    return false;
+                lock (this)
+                {
+                    if (!_items.TryGetValue(id, out var process) || !_items.Remove(id))
+                        return false;
 
-                process.ID = -1;
-                _owner.RemovedProcess.Invoke(_owner, new(process));
-                return true;
+                    process.ID = -1;
+                    _owner.RemovedProcess.Invoke(_owner, new(process));
+                    return true;
+                }
             }
 
             public void Clear()

@@ -1,4 +1,4 @@
-﻿#define DebugTimer
+﻿#define TryCatch
 
 using Newtonsoft.Json;
 using System;
@@ -18,17 +18,24 @@ using System.Collections.Concurrent;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.DirectoryManagers;
+using log4net.Core;
+using QuanLib.Minecraft.BlockScreen.Logging;
+using System.Runtime.CompilerServices;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
     public class MCOS : ISwitchable
     {
+        private static LogImpl LOGGER => LogUtil.MainLogger;
+
         static MCOS()
         {
+            _lock = new();
+            IsLoaded = false;
             MainDirectory = new("MCBS");
         }
 
-        public MCOS(MinecraftServer minecraftServer)
+        private MCOS(MinecraftServer minecraftServer)
         {
             MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
             AccelerationEngine = new(ConfigManager.MinecraftConfig.ServerAddress, ConfigManager.MinecraftConfig.AccelerationEngineEventPort, ConfigManager.MinecraftConfig.AccelerationEngineDataPort);
@@ -39,6 +46,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             EnableAccelerationEngine = ConfigManager.SystemConfig.EnableAccelerationEngine;
             FrameCount = 0;
+            LagFrameCount = 0;
             FrameMinTime = TimeSpan.FromMilliseconds(50);
             PreviousFrameTime = TimeSpan.Zero;
             NextFrameTime = PreviousFrameTime + FrameMinTime;
@@ -52,6 +60,10 @@ namespace QuanLib.Minecraft.BlockScreen
 
             _Instance = this;
         }
+
+        private static object _lock;
+
+        public static bool IsLoaded { get; private set; }
 
         public static MCOS Instance
         {
@@ -78,7 +90,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public bool Runing => _runing;
 
-        public bool EnableAccelerationEngine { get; }
+        public bool EnableAccelerationEngine { get; private set; }
 
         public TimeSpan SystemRunningTime => _stopwatch.Elapsed;
 
@@ -89,6 +101,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public TimeSpan NextFrameTime { get; private set; }
 
         public int FrameCount { get; private set; }
+
+        public int LagFrameCount { get; private set; }
 
         public SystemTimer SystemTimer { get; }
 
@@ -108,19 +122,48 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public IReadOnlyList<string> StartupChecklist { get; }
 
+        public static MCOS Load(MinecraftServer server)
+        {
+            if (server is null)
+                throw new ArgumentNullException(nameof(server));
+
+            lock (_lock)
+            {
+                _Instance ??= new(server);
+                IsLoaded = true;
+                return _Instance;
+            }
+        }
+
         public void Start()
         {
+            if (_runing)
+                return;
             _runing = true;
 
-            if (EnableAccelerationEngine)
-                AccelerationEngine.Start();
-            ScreenManager.ScreenList.Add(new(new(440, 206, -90), 256, 144, Facing.Xm, Facing.Ym)).LoadScreen();
+            LOGGER.Info("MCOS已启动");
 
-#if DebugTimer
-            Console.CursorVisible = false;
+#if TryCatch
+            try
+            {
+#endif
+                if (EnableAccelerationEngine)
+                {
+                    LOGGER.Info($"加速引擎已启用，正在连接加速引擎服务器\n服务器地址:{AccelerationEngine.ServerAddress}\n事件端口:{AccelerationEngine.EventPort}\n数据端口:{AccelerationEngine.DataPort}");
+                    AccelerationEngine.Start();
+                    LOGGER.Info("已连接到加速引擎服务器");
+                }
+#if TryCatch
+            }
+            catch (Exception ex)
+            {
+                EnableAccelerationEngine = false;
+                LOGGER.Error("无法连接到加速引擎服务器，加速引擎已禁用", ex);
+            }
 #endif
 
-            int lags = 0;
+            ScreenManager.ScreenList.Add(new(new(440, 206, -90), 256, 144, Facing.Xm, Facing.Ym)).LoadScreen();
+
             _stopwatch.Start();
             while (_runing)
             {
@@ -139,7 +182,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 else
                 {
                     TempTaskList.Enqueue(() => HandleScreenInput());
-                    lags++;
+                    LagFrameCount++;
                 }
 
                 HandleBeforeFrame();
@@ -150,17 +193,6 @@ namespace QuanLib.Minecraft.BlockScreen
                 HandleSystemInterrupt();
 
                 SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
-
-#if DebugTimer
-                string empty = new(' ', 200);
-                Console.SetCursorPosition(0, 0);
-                for (int i = 0; i < 14; i++)
-                    Console.WriteLine(empty);
-                Console.SetCursorPosition(0, 0);
-                Console.WriteLine(SystemTimer.ToString(Timer.Duration.Tick20));
-                Console.WriteLine($"帧: {FrameCount}");
-                Console.WriteLine($"滞后: {lags}");
-#endif
             }
 
             _stopwatch.Stop();
@@ -327,7 +359,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var context in FormManager.FormList)
+            foreach (var context in FormManager.FormList.Values)
                 if (form == context.Form)
                     return context;
 

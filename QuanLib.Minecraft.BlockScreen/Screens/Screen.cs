@@ -355,6 +355,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return isScreenPlane && IncludedOnScreen(ToScreenPosition(blockPos));
         }
 
+        public override string ToString()
+        {
+            return $"WorldStartPosition={WorldStartPosition}, Width={Width}, Height={Height}, XFacing={XFacing}, YFacing={YFacing}";
+        }
+
         public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition, Facing normalFacing)
         {
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");

@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.Files
 
         protected virtual void OnWriteLog(ILogListener sender, MinecraftLogEventArgs e) { }
 
-        protected override void OnWriteLineText(TextFileListener sender, TextEventArgs e)
+        protected override void OnWriteLineText(ITextListener sender, TextEventArgs e)
         {
             base.OnWriteLineText(sender, e);
 

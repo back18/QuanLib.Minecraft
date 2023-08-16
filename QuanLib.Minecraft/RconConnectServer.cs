@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using QuanLib.FileListeners;
 using QuanLib.Minecraft.Files;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace QuanLib.Minecraft
 
             LogFileListener = new(ServerDirectory.Logs.Latest);
             RconMax = new(ServerAddress, RconPort, RconPassword);
+            TextListener = LogFileListener;
+            LogListener = LogFileListener;
             LogParser = new(LogFileListener);
             CommandHelper = new(_rcon);
             CommandSender = RconMax;
@@ -38,6 +41,10 @@ namespace QuanLib.Minecraft
         public LogFileListener LogFileListener { get; }
 
         public RconMax RconMax { get; }
+
+        public override ITextListener TextListener { get; }
+
+        public override ILogListener LogListener { get; }
 
         public override ServerLogParser LogParser { get; }
 

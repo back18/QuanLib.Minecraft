@@ -1,9 +1,12 @@
 ﻿using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,13 +36,13 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             foreach (var context in FormList.ToArray())
             {
-                context.Handle();
-                if (context.FormState == FormState.Closed)
-                    FormList.Remove(context);
+                context.Value.Handle();
+                if (context.Value.FormState == FormState.Closed)
+                    FormList.Remove(context.Key);
             }
         }
 
-        public class FormCollection : IList<FormContext>, IReadOnlyList<FormContext>
+        public class FormCollection : IDictionary<int, FormContext>
         {
             public FormCollection(FormManager owner)
             {
@@ -49,78 +52,71 @@ namespace QuanLib.Minecraft.BlockScreen
 
             private readonly FormManager _owner;
 
-            private readonly List<FormContext> _items;
+            private readonly Dictionary<int, FormContext> _items;
 
-            public FormContext this[int index] => _items[index];
+            private int _id;
 
-            FormContext IList<FormContext>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+            public ICollection<int> Keys => _items.Keys;
+
+            public ICollection<FormContext> Values => _items.Values;
 
             public int Count => _items.Count;
 
             public bool IsReadOnly => false;
 
-            public void Add(FormContext item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
+            public FormContext this[int index] => _items[index];
 
-                _items.Add(item);
-                _owner.AddedForm.Invoke(_owner, new(item));
+            FormContext IDictionary<int, FormContext>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+            public FormContext Add(Application application, IForm form)
+            {
+                if (application is null)
+                    throw new ArgumentNullException(nameof(application));
+                if (form is null)
+                    throw new ArgumentNullException(nameof(form));
+
+                lock (this)
+                {
+                    int id = _id;
+                    FormContext context = new(application, form);
+                    context.ID = id;
+                    _items.Add(id, context);
+                    _owner.AddedForm.Invoke(_owner, new(context));
+                    _id++;
+                    return context;
+                }
             }
 
-            public bool TryAdd(FormContext item)
+            public bool Remove(int id)
             {
-                if (_items.Contains(item))
-                    return false;
+                lock (this)
+                {
+                    if (!_items.TryGetValue(id, out var context) || !_items.Remove(id))
+                        return false;
 
-                Add(item);
-                return true;
-            }
-
-            public bool Remove(FormContext item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                if (!_items.Remove(item))
-                    return false;
-
-                _owner.RemovedForm.Invoke(_owner, new(item));
-                return true;
-            }
-
-            public void RemoveAt(int index)
-            {
-                Remove(_items[index]);
+                    context.ID = -1;
+                    _owner.RemovedForm.Invoke(_owner, new(context));
+                    return true;
+                }
             }
 
             public void Clear()
             {
-                foreach (var item in _items.ToArray())
-                    Remove(item);
+                foreach (var id in _items.Keys.ToArray())
+                    Remove(id);
             }
 
-            public bool Contains(FormContext item)
+            public bool ContainsKey(int id)
             {
-                return _items.Contains(item);
+                return _items.ContainsKey(id);
             }
 
-            public int IndexOf(FormContext item)
+            public bool TryGetValue(int id, [MaybeNullWhen(false)] out FormContext context)
             {
-                return _items.IndexOf(item);
+                return _items.TryGetValue(id, out context);
             }
 
-            public void CopyTo(FormContext[] array, int arrayIndex)
-            {
-                _items.CopyTo(array, arrayIndex);
-            }
-
-            public FormContext[] ToArray()
-            {
-                return _items.ToArray();
-            }
-
-            public IEnumerator<FormContext> GetEnumerator()
+            public IEnumerator<KeyValuePair<int, FormContext>> GetEnumerator()
             {
                 return _items.GetEnumerator();
             }
@@ -130,7 +126,27 @@ namespace QuanLib.Minecraft.BlockScreen
                 return ((IEnumerable)_items).GetEnumerator();
             }
 
-            void IList<FormContext>.Insert(int index, FormContext item)
+            void ICollection<KeyValuePair<int, FormContext>>.Add(KeyValuePair<int, FormContext> item)
+            {
+                ((ICollection<KeyValuePair<int, FormContext>>)_items).Add(item);
+            }
+
+            bool ICollection<KeyValuePair<int, FormContext>>.Remove(KeyValuePair<int, FormContext> item)
+            {
+                return ((ICollection<KeyValuePair<int, FormContext>>)_items).Remove(item);
+            }
+
+            bool ICollection<KeyValuePair<int, FormContext>>.Contains(KeyValuePair<int, FormContext> item)
+            {
+                return ((ICollection<KeyValuePair<int, FormContext>>)_items).Contains(item);
+            }
+
+            void ICollection<KeyValuePair<int, FormContext>>.CopyTo(KeyValuePair<int, FormContext>[] array, int arrayIndex)
+            {
+                ((ICollection<KeyValuePair<int, FormContext>>)_items).CopyTo(array, arrayIndex);
+            }
+
+            void IDictionary<int, FormContext>.Add(int key, FormContext value)
             {
                 throw new NotSupportedException();
             }

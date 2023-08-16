@@ -1,5 +1,4 @@
-﻿using PostSharp.Extensibility;
-using QuanLib.Minecraft.BlockScreen.UI;
+﻿using QuanLib.Minecraft.BlockScreen.UI;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
 {
     public abstract class DialogBoxForm<Result> : WindowForm
     {
-        protected DialogBoxForm(Form initiator, string title)
+        protected DialogBoxForm(IForm initiator, string title)
         {
             _initiator = initiator ?? throw new ArgumentNullException(nameof(initiator));
             _title = title ?? throw new ArgumentNullException(nameof(title));
@@ -21,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
             TitleBar.ButtonsToShow = FormButtons.Close;
         }
 
-        protected readonly Form _initiator;
+        protected readonly IForm _initiator;
 
         protected readonly string _title;
 
