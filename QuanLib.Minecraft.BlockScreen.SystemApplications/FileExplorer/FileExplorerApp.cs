@@ -15,7 +15,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
         public override object? Main(string[] args)
         {
-            RunForm(new FileExplorerForm());
+            string? path = null;
+            if (args.Length > 0)
+                path = args[0];
+
+            RunForm(new FileExplorerForm(path));
             return null;
         }
     }

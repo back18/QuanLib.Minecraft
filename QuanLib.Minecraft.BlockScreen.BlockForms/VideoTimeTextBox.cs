@@ -77,7 +77,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 Form? form = GetForm();
                 if (form is not null)
                 {
-                    _ = DialogBoxManager.OpenMessageBoxAsync(form, "警告", $"无法跳转到：“{e.Text}”", MessageBoxButtons.OK);
+                    _ = DialogBoxHelper.OpenMessageBoxAsync(form, "警告", $"无法跳转到：“{e.Text}”", MessageBoxButtons.OK);
                 }
             }
         }

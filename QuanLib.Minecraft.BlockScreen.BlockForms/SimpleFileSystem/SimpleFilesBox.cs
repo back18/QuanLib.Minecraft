@@ -16,6 +16,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
         {
             _backwards = new();
             _forward = new();
+            _SearchText = string.Empty;
 
             OpenFile += OnOpenFile;
             OpeningItemException += OnOpeningItemException;
@@ -164,6 +165,15 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                 _forward.Push(Text);
                 Text = _backwards.Pop();
             }
+            else
+            {
+                string? dir = Path.GetDirectoryName(Text);
+                if (dir is not null)
+                {
+                    _forward.Push(Text);
+                    Text = dir;
+                }
+            }
         }
 
         public void Forward()
@@ -173,6 +183,17 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                 _backwards.Push(Text);
                 Text = _forward.Pop();
             }
+        }
+
+        public string[] GetSelecteds()
+        {
+            List<string> result = new();
+            foreach (var selected in SubControls.GetSelecteds())
+            {
+                if (selected is FileSystemItem item)
+                    result.Add(item.FileSystemInfo.FullName);
+            }
+            return result.ToArray();
         }
     }
 }

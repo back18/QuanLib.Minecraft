@@ -23,7 +23,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
             Retry_Button = new();
 
             _ButtonsToShow = buttons;
-            DialogResult = MessageBoxButtons.None;
+            DefaultResult = MessageBoxButtons.Cancel;
+            DialogResult = DefaultResult;
 
             _pos1 = new(2, 50);
             _pos2 = new(38, 50);
@@ -57,6 +58,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
         }
         private MessageBoxButtons _ButtonsToShow;
 
+        public override MessageBoxButtons DefaultResult { get; }
+
         public override MessageBoxButtons DialogResult { get; protected set; }
 
         public override void Initialize()
@@ -64,9 +67,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
             base.Initialize();
 
             ClientSize = new(110, 70 + TitleBar.Height);
-            ClientLocation = new(
-                _initiator.ClientLocation.X + (_initiator.ClientSize.Width + _initiator.BorderWidth - Width) / 2,
-                _initiator.ClientLocation.Y + (_initiator.ClientSize.Height + _initiator.BorderWidth - Height) / 2);
+            CenterOnInitiatorForm();
 
             ClientPanel.SubControls.Add(Message_RichTextBox);
             Message_RichTextBox.KeepWhenClear = true;
@@ -163,7 +164,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
 
         private void Cancel_Button_RightClick(Control sender, Event.CursorEventArgs e)
         {
-            DialogResult = MessageBoxButtons.Cancel;
             CloseForm();
         }
 

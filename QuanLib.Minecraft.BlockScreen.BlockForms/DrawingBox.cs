@@ -117,6 +117,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             base.OnCursorEnter(sender, e);
 
+            Drawing = false;
+
             var context = GetScreenContext();
             if (context is not null)
                 context.IsShowCursor = false;

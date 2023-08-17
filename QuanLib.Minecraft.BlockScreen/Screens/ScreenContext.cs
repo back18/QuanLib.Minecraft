@@ -110,9 +110,10 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
         }
 
-        public void LoadScreen()
+        public ScreenContext LoadScreen()
         {
             ScreenState = ScreenState.Loading;
+            return this;
         }
 
         public void CloseScreen()

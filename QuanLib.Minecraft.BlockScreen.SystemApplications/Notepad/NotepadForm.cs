@@ -44,7 +44,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad
                 }
                 catch
                 {
-                    _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开文本文件：“{_open}”", MessageBoxButtons.OK);
+                    _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开文本文件：“{_open}”", MessageBoxButtons.OK);
                 }
             }
         }

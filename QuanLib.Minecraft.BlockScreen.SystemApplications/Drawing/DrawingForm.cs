@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
+using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using SixLabors.ImageSharp;
 using System;
@@ -7,13 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 {
     public class DrawingForm : WindowForm
     {
-        public DrawingForm()
+        public DrawingForm(string? open = null)
         {
+            _open = open;
+            _save = open;
+
             Draw_Switch = new();
             Zoom_Switch = new();
             Drag_Switch = new();
@@ -27,7 +32,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             Open_Button = new();
             Save_Button = new();
             DrawingBox = new();
+
+            MinSize = 16;
+            MaxSize = 1920;
         }
+
+        private string? _save;
+
+        private readonly string? _open;
 
         private readonly Switch Draw_Switch;
 
@@ -54,6 +66,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
         private readonly Button Save_Button;
 
         private readonly DrawingBox DrawingBox;
+
+        public int MinSize { get; set; }
+
+        public int MaxSize { get; set; }
 
         public override void Initialize()
         {
@@ -137,7 +153,16 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             DrawingBox.ClientLocation = new(1, 1);
             DrawingBox.Size = new(ClientPanel.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel.ClientSize.Height - 2);
             DrawingBox.Stretch = Direction.Bottom | Direction.Right;
-            DrawingBox.SetImage(DrawingBox.CreateImage(DrawingBox.ClientSize, BlockManager.Concrete.White));
+        }
+
+        public override void OnInitCompleted3()
+        {
+            base.OnInitCompleted3();
+
+            if (_open is not null)
+                OpenImage(_open);
+            else
+                DrawingBox.SetImage(DrawingBox.CreateImage(DrawingBox.ClientSize, BlockManager.Concrete.White));
         }
 
         private void Draw_Switch_ControlSelected(Control sender, EventArgs e)
@@ -203,17 +228,85 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
         private void Create_Button_RightClick(Control sender, Event.CursorEventArgs e)
         {
-            DrawingBox.SetImage(DrawingBox.CreateImage(16, 16, string.Empty));
+            SizeSettingsBoxForm dialogBox = new(this, "输入尺寸", DrawingBox.DefaultResizeOptions.Size);
+            _ = DialogBoxHelper.OpenDialogBoxAsync(this, dialogBox, (size) =>
+            {
+                if (size == dialogBox.DefaultResult)
+                    return;
+
+                if (size.Width < MinSize || size.Height < MinSize || size.Width > MaxSize || size.Height > MaxSize)
+                {
+                    _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", $"图片尺寸需要在{MinSize}至{MaxSize}之间", MessageBoxButtons.OK);
+                    return;
+                }
+
+                DrawingBox.SetImage(DrawingBox.CreateImage(size, string.Empty));
+                _save = null;
+            });
         }
 
         private void Open_Button_RightClick(Control sender, Event.CursorEventArgs e)
         {
-            DrawingBox.TryReadImageFile("new.png");
+            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.GetApplicationDirectory();
+            if (string.IsNullOrEmpty(dir))
+                return;
+            dir = Path.Combine(dir, "Saves");
+
+            MCOS.Instance.RunApplication("FileExplorer", new string[] { dir }, this);
         }
 
         private void Save_Button_RightClick(Control sender, Event.CursorEventArgs e)
         {
-            DrawingBox.ImageFrame.Image.Save("new.png");
+            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.GetApplicationDirectory();
+            if (string.IsNullOrEmpty(dir))
+                return;
+            dir = Path.Combine(dir, "Saves");
+
+            if (_save is not null && _save.StartsWith(dir))
+            {
+                DrawingBox.ImageFrame.Image.Save(_save);
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", "已成功保存", MessageBoxButtons.OK);
+                return;
+            }
+
+            _ = DialogBoxHelper.OpenTextInputBoxAsync(this, "输入名称", (name) =>
+            {
+                bool save = false;
+                if (string.IsNullOrEmpty(name))
+                {
+                    save = false;
+                }
+                else if (File.Exists(Path.Combine(dir, name + ".png")))
+                {
+                    DialogBoxHelper.OpenMessageBox(this, "警告", "文件已存在，是否覆盖？", MessageBoxButtons.OK | MessageBoxButtons.Cancel, (result) => save = result == MessageBoxButtons.OK);
+                }
+                else
+                {
+                    save = true;
+                }
+
+                if (save)
+                {
+                    if (!Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+
+                    _save = Path.Combine(dir, name + ".png");
+                    DrawingBox.ImageFrame.Image.Save(_save);
+                    DialogBoxHelper.OpenMessageBox(this, "温馨提醒", "已成功保存", MessageBoxButtons.OK);
+                }
+                else
+                {
+                    DialogBoxHelper.OpenMessageBox(this, "温馨提醒", "已取消保存", MessageBoxButtons.OK);
+                }
+            });
+        }
+
+        private void OpenImage(string path)
+        {
+            if (!DrawingBox.TryReadImageFile(path))
+            {
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开图片文件：“{path}”", MessageBoxButtons.OK);
+            }
         }
     }
 }

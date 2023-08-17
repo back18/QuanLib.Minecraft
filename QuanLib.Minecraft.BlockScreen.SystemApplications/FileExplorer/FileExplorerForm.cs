@@ -20,8 +20,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
     public class FileExplorerForm : WindowForm
     {
-        public FileExplorerForm()
+        public FileExplorerForm(string? path = null)
         {
+            _open = path;
+
             Backward_Button = new();
             Forward_Button = new();
             OK_Button = new();
@@ -31,6 +33,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Search_TextBox = new();
             SimpleFilesBox = new();
         }
+
+        private readonly string? _open;
 
         private readonly Button Backward_Button;
 
@@ -125,6 +129,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             ClientPanel.ClientSize = size2;
         }
 
+        public override void OnInitCompleted3()
+        {
+            base.OnInitCompleted3();
+
+            if (_open is not null)
+                Path_TextBox.Text = _open;
+        }
+
         private void Backward_Button_RightClick(Control sender, CursorEventArgs e)
         {
             SimpleFilesBox.Backward();
@@ -135,12 +147,19 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             SimpleFilesBox.Forward();
         }
 
-        private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
+        private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
+            string[] args = SimpleFilesBox.GetSelecteds();
+            if (args.Length == 0 )
+            {
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", "请先选择文件或文件夹", MessageBoxButtons.OK);
+                return;
+            }
 
+            SelectApplication(args);
         }
 
-        private void OK_Button_RightClick(Control sender, CursorEventArgs e)
+        private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
         {
 
         }
@@ -182,17 +201,31 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
             if (ConfigManager.Registry.TryGetValue(extension, out var id) && MCOS.Instance.ApplicationManager.ApplicationList.TryGetValue(id, out var app))
             {
-                MCOS.Instance.ProcessManager.ProcessList.Add(app, new string[] { fileInfo.FullName }, this).StartProcess();
+                MCOS.Instance.RunApplication(app, new string[] { fileInfo.FullName }, this);
             }
             else
             {
-                _ = DialogBoxManager.OpenMessageBoxAsync(this, "提示", $"找不到合适的应用程序打开“{extension}”格式的文件", MessageBoxButtons.OK);
+                SelectApplication(new string[] { fileInfo.FullName });
             }
         }
 
         private void SimpleFilesBox_OpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e)
         {
-            _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，错误信息：\n{e.Exception.GetType().Name}: {e.Exception.Message}", MessageBoxButtons.OK);
+            _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，错误信息：\n{e.Exception.GetType().Name}: {e.Exception.Message}", MessageBoxButtons.OK);
+        }
+
+        private void SelectApplication(string[] args)
+        {
+            if (args is null)
+                throw new ArgumentNullException(nameof(args));
+
+            _ = DialogBoxHelper.OpenApplicationListBoxAsync(this, "请选择应用程序", (appInfo) =>
+            {
+                if (appInfo is not null)
+                {
+                    MCOS.Instance.RunApplication(appInfo, args, this);
+                }
+            });
         }
     }
 }

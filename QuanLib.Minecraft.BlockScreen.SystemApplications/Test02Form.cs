@@ -105,7 +105,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
         private void Button1_RightClick(Control sender, Event.CursorEventArgs e)
         {
-           _ = DialogBoxManager.OpenMessageBoxAsync(this, "温馨提醒", "你今天过得开心吗？尝试点击是、否、或取消", MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel);
+           _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", "你今天过得开心吗？尝试点击是、否、或取消", MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel);
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)

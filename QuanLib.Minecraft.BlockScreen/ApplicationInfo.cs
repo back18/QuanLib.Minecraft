@@ -36,6 +36,11 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public abstract bool AppendToDesktop { get; }
 
+        public string GetApplicationDirectory()
+        {
+            return MCOS.MainDirectory.Applications.GetApplicationDirectory(ID);
+        }
+
         public override string ToString()
         {
             return $"Name={Name}, ID={ID}, Version={Version}";

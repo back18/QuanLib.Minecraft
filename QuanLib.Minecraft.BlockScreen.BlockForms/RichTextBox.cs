@@ -1,4 +1,5 @@
 ﻿using QuanLib.BDF;
+using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
@@ -16,6 +17,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         public RichTextBox()
         {
+            IsReadOnly = true;
+            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
+            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightBlue;
+
             _frame = ArrayFrame.BuildFrame(PageSize, Skin.GetBackgroundBlockID());
             _text = new();
             _lines = new();
@@ -32,6 +37,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public int LineCount => _lines.Count;
 
+        public bool IsReadOnly { get; set; }
+
         public override string Text
         {
             get => _text.ToString();
@@ -43,7 +50,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                     _text.Clear();
                     _text.Append(value);
                     HandleTextChanged(new(temp, value));
-                    ActiveLayoutAll();
                     RequestUpdateFrame();
                 }
             }
@@ -57,7 +63,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (_WordWrap != value)
                 {
                     _WordWrap = value;
-                    ActiveLayoutAll();
                     RequestUpdateFrame();
                 }
             }
@@ -66,14 +71,37 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public override IFrame RenderingFrame()
         {
-            return _frame.Clone();
+            ActiveLayoutAll();
+            return _frame;
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
-            base.OnResize(sender, e);
+            base.OnCursorMove(sender, e);
 
-            ActiveLayoutAll();
+            HandleInput();
+        }
+
+        protected override void OnCursorEnter(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorEnter(sender, e);
+
+            HandleInput();
+        }
+
+        protected override void OnCursorLeave(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorLeave(sender, e);
+
+            IsSelected = false;
+        }
+
+        protected override void OnTextEditorUpdate(Control sender, CursorTextEventArgs e)
+        {
+            base.OnTextEditorUpdate(sender, e);
+
+            if (!IsReadOnly)
+                Text = e.Text;
         }
 
         public override void ActiveLayoutAll()
@@ -136,6 +164,20 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 }
                 position.X = 0;
                 position.Y += font.Height;
+            }
+        }
+
+        private void HandleInput()
+        {
+            if (!IsReadOnly && GetScreenContext()?.Screen.InputHandler.CurrenMode == CursorMode.TextEditor)
+            {
+                IsSelected = true;
+                SetTextEditorInitialText();
+                ResetTextEditor();
+            }
+            else
+            {
+                IsSelected = false;
             }
         }
     }

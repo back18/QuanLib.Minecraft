@@ -39,6 +39,11 @@ namespace QuanLib.Minecraft.BlockScreen
             return MCOS.Instance.ProcessOf(this)?.ApplicationInfo;
         }
 
+        public string? GetApplicationDirectory()
+        {
+            return GetInfo()?.GetApplicationDirectory();
+        }
+
         public static Application CreateApplication(Type appType)
         {
             if (appType is null)

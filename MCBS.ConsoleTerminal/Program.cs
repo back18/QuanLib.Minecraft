@@ -104,7 +104,6 @@ namespace MCBS.ConsoleTerminal
             mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing.DrawingAppInfo());
             mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
             mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen.DataScreenAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DialogBox.DialogBoxAppInfo());
             mcos.ApplicationManager.ApplicationList.Add(new Test01AppInfo());
             mcos.ApplicationManager.ApplicationList.Add(new Test02AppInfo());
             mcos.ApplicationManager.ApplicationList.Add(new Test03AppInfo());

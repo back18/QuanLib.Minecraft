@@ -32,7 +32,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             _lock = new();
             IsLoaded = false;
-            MainDirectory = new("MCBS");
+            MainDirectory = new(Path.GetFullPath("MCBS"));
         }
 
         private MCOS(MinecraftServer minecraftServer)
@@ -366,6 +366,48 @@ namespace QuanLib.Minecraft.BlockScreen
             return null;
         }
 
+        public Process RunApplication(ApplicationInfo appInfo, IForm? initiator = null)
+        {
+            if (appInfo is null)
+                throw new ArgumentNullException(nameof(appInfo));
+
+            return ProcessManager.ProcessList.Add(appInfo, initiator).StartProcess();
+        }
+
+        public Process RunApplication(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
+        {
+            if (appInfo is null)
+                throw new ArgumentNullException(nameof(appInfo));
+            if (args is null)
+                throw new ArgumentNullException(nameof(args));
+
+            return ProcessManager.ProcessList.Add(appInfo, args, initiator).StartProcess();
+        }
+
+        public Process RunApplication(string appID, string[] args, IForm? initiator = null)
+        {
+            if (string.IsNullOrEmpty(appID))
+                throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
+
+            return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[appID], args, initiator).StartProcess();
+        }
+
+        public Process RunApplication(string appID, IForm? initiator = null)
+        {
+            if (string.IsNullOrEmpty(appID))
+                throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
+
+            return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[appID], initiator).StartProcess();
+        }
+
+        public ScreenContext CreateScreen(Screen screen)
+        {
+            if (screen is null)
+                throw new ArgumentNullException(nameof(screen));
+
+            return ScreenManager.ScreenList.Add(screen).LoadScreen();
+        }
+
         public void AddTask(Action action)
         {
             if (action is null)
@@ -387,15 +429,13 @@ namespace QuanLib.Minecraft.BlockScreen
             if (!ApplicationManager.ApplicationList[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
-            Process process = ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[ServicesAppID]);
-            process.StartProcess();
-            return process;
+            return RunApplication(ServicesAppID);
         }
 
         internal void RunStartupChecklist(IRootForm rootForm)
         {
             foreach (var id in StartupChecklist)
-                ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[id], rootForm).StartProcess();
+                RunApplication(ApplicationManager.ApplicationList[id], rootForm);
         }
     }
 }

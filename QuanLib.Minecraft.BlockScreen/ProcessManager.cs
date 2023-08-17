@@ -68,22 +68,22 @@ namespace QuanLib.Minecraft.BlockScreen
 
             public bool IsReadOnly => false;
 
-            public Process Add(ApplicationInfo applicationInfo, IForm? initiator = null)
+            public Process Add(ApplicationInfo appInfo, IForm? initiator = null)
             {
-                return Add(applicationInfo, Array.Empty<string>(), initiator);
+                return Add(appInfo, Array.Empty<string>(), initiator);
             }
 
-            public Process Add(ApplicationInfo applicationInfo, string[] args, IForm? initiator = null)
+            public Process Add(ApplicationInfo APPInfo, string[] args, IForm? initiator = null)
             {
-                if (applicationInfo is null)
-                    throw new ArgumentNullException(nameof(applicationInfo));
+                if (APPInfo is null)
+                    throw new ArgumentNullException(nameof(APPInfo));
                 if (args is null)
                     throw new ArgumentNullException(nameof(args));
 
                 lock (this)
                 {
                     int id = _id;
-                    Process process = new(applicationInfo, args, initiator);
+                    Process process = new(APPInfo, args, initiator);
                     process.ID = id;
                     _items.Add(id, process);
                     _owner.AddedProcess.Invoke(_owner, new(process));

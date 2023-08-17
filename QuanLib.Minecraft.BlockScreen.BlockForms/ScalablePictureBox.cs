@@ -114,6 +114,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             LastCursorPosition = e.Position;
         }
 
+        protected override void OnCursorLeave(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorLeave(sender, e);
+
+            Dragging = false;
+        }
+
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
             base.OnRightClick(sender, e);
@@ -134,12 +141,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ImageFrame.Update(Rectangle);
             if (AutoSize)
                 AutoSetSize();
-
         }
 
         protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
         {
-            base.OnImageFrameChanged(sender, e);
+            e.NewImageFrame.TransparentBlockID = "minecraft:glass";
 
             if (e.OldImageFrame.Image.Size != e.NewImageFrame.Image.Size)
                 Rectangle = new(0, 0, e.NewImageFrame.Image.Size.Width, e.NewImageFrame.Image.Size.Height);
@@ -149,7 +155,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             else
                 e.NewImageFrame.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
 
-            e.NewImageFrame.TransparentBlockID = "minecraft:glass";
+            base.OnImageFrameChanged(sender, e);
         }
 
         protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)

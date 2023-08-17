@@ -16,7 +16,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
     {
         public DesktopIcon(ApplicationInfo appInfo)
         {
-            _appInfo = appInfo;
+            _appInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
 
             Icon_PictureBox = new();
             Name_Label = new();
@@ -29,11 +29,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Blue;
         }
 
+        private readonly ApplicationInfo _appInfo;
+
         private readonly PictureBox Icon_PictureBox;
 
         private readonly Label Name_Label;
-
-        private readonly ApplicationInfo _appInfo;
 
         public override void Initialize()
         {
@@ -99,7 +99,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
         {
             base.OnDoubleRightClick(sender, e);
 
-            MCOS.Instance.ProcessManager.ProcessList.Add(_appInfo, GetForm()).StartProcess();
+            MCOS.Instance.RunApplication(_appInfo, GetForm());
             ParentContainer?.AsControlCollection<Control>()?.ClearSelecteds();
         }
     }

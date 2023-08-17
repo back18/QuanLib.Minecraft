@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
             {
                 IForm? initiator = MCOS.Instance.ProcessOf(this)?.Initiator;
                 if (initiator is not null)
-                    DialogBoxManager.OpenMessageBox(initiator, "警告", $"因为FFmpeg加载失败，视频播放器无法使用，错误信息：\n{ex.GetType()}: {ex.Message}", MessageBoxButtons.OK);
+                    DialogBoxHelper.OpenMessageBox(initiator, "警告", $"因为FFmpeg加载失败，视频播放器无法使用，错误信息：\n{ex.GetType()}: {ex.Message}", MessageBoxButtons.OK);
                 return null;
             }
 

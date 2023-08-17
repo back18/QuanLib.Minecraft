@@ -15,7 +15,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
 
         public override object? Main(string[] args)
         {
-            RunForm(new DrawingForm());
+            string? path = null;
+            if (args.Length > 0)
+                path = args[0];
+
+            RunForm(new DrawingForm(path));
             return null;
         }
     }

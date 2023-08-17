@@ -120,13 +120,14 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public void LoadForm()
+        public FormContext LoadForm()
         {
             if (!Runing)
             {
                 Runing = true;
                 FormState = FormState.Loading;
             }
+            return this;
         }
 
         public void CloseForm()

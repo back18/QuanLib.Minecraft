@@ -87,9 +87,14 @@ namespace QuanLib.Minecraft.BlockScreen
                 _start = time;
                 if (MediaFoundationReader is not null)
                     MediaFoundationReader.CurrentTime = _start;
+                WaveOutEvent?.Play();
                 _stopwatch.Restart();
                 _stopwatch.Start();
-                Play();
+                if (PlayerState != MediaFilePlayerState.Playing)
+                {
+                    PlayerState = MediaFilePlayerState.Playing;
+                    Played.Invoke(this, EventArgs.Empty);
+                }
                 return true;
             }
             return false;

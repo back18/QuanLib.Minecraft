@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
 {
-    public abstract class DialogBoxForm<Result> : WindowForm
+    public abstract class DialogBoxForm<R> : WindowForm
     {
         protected DialogBoxForm(IForm initiator, string title)
         {
@@ -23,14 +23,23 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
         protected readonly IForm _initiator;
 
         protected readonly string _title;
+        
+        public abstract R DefaultResult { get; }
 
-        public abstract Result DialogResult { get; protected set; }
+        public abstract R DialogResult { get; protected set; }
 
         public override void OnInitCompleted3()
         {
             base.OnInitCompleted3();
 
             Text = _title;
+        }
+
+        public void CenterOnInitiatorForm()
+        {
+            ClientLocation = new(
+                _initiator.ClientLocation.X + (_initiator.ClientSize.Width + _initiator.BorderWidth - Width) / 2,
+                _initiator.ClientLocation.Y + (_initiator.ClientSize.Height + _initiator.BorderWidth - Height) / 2);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             Icon_PictureBox.BorderWidth = 0;
             Icon_PictureBox.ClientSize = new(16, 16);
             Icon_PictureBox.Skin.SetAllBackgroundBlockID(string.Empty);
+
             Text_Label = new();
             Text_Label.Skin.SetAllBackgroundBlockID(string.Empty);
 

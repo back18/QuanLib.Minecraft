@@ -284,7 +284,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             }
             else
             {
-                _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开图片文件：“{e.NewText}”", MessageBoxButtons.OK);
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开图片文件：“{e.NewText}”", MessageBoxButtons.OK);
             }
         }
 

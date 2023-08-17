@@ -100,9 +100,10 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public void StartProcess()
+        public Process StartProcess()
         {
             ProcessState = ProcessState.Starting;
+            return this;
         }
 
         public void StopProcess()

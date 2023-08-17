@@ -144,7 +144,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer
             }
             else
             {
-                _ = DialogBoxManager.OpenMessageBoxAsync(this, "警告", $"无法打开视频文件：“{e.NewText}”", MessageBoxButtons.OK);
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开视频文件：“{e.NewText}”", MessageBoxButtons.OK);
             }
         }
     }
