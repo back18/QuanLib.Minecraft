@@ -3,6 +3,7 @@ using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void FormScheduling()
         {
-            foreach (var context in FormList.ToArray())
+            foreach (var context in FormList)
             {
                 context.Value.Handle();
                 if (context.Value.FormState == FormState.Closed)
@@ -52,7 +53,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             private readonly FormManager _owner;
 
-            private readonly Dictionary<int, FormContext> _items;
+            private readonly ConcurrentDictionary<int, FormContext> _items;
 
             private int _id;
 
@@ -80,7 +81,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     int id = _id;
                     FormContext context = new(application, form);
                     context.ID = id;
-                    _items.Add(id, context);
+                    _items.TryAdd(id, context);
                     _owner.AddedForm.Invoke(_owner, new(context));
                     _id++;
                     return context;
@@ -91,7 +92,7 @@ namespace QuanLib.Minecraft.BlockScreen
             {
                 lock (this)
                 {
-                    if (!_items.TryGetValue(id, out var context) || !_items.Remove(id))
+                    if (!_items.TryGetValue(id, out var context) || !_items.TryRemove(id, out _))
                         return false;
 
                     context.ID = -1;

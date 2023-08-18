@@ -3,6 +3,7 @@ using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Logging;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             private readonly ApplicationManager _owner;
 
-            private readonly Dictionary<string, ApplicationInfo> _items;
+            private readonly ConcurrentDictionary<string, ApplicationInfo> _items;
 
             public ApplicationInfo this[string id] => _items[id];
 
@@ -68,7 +69,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 if (applicationInfo is null)
                     throw new ArgumentNullException(nameof(applicationInfo));
 
-                _items.Add(applicationInfo.ID, applicationInfo);
+                _items.TryAdd(applicationInfo.ID, applicationInfo);
                 _owner.AddedApplication.Invoke(_owner, new(applicationInfo));
             }
 

@@ -12,7 +12,10 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         public TiledMenuBox()
         {
             _MinWidth = 1;
+            _widths = new();
         }
+
+        private readonly List<(T control, int width)> _widths;
 
         public int MinWidth
         {
@@ -38,7 +41,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 control.ClientLocation = this.RightLayout(PreviousSubControl, Spacing);
             else
                 control.ClientLocation = new(Spacing, Spacing);
+
             _items.Add(control);
+            _widths.Add((control, control.Width));
 
             if (control.RightToBorder < 0)
             {
@@ -50,22 +55,23 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             SubControls.Remove(control);
 
-            if (control != PreviousSubControl)
+            _items.Remove(control);
+            foreach (var width in _widths)
             {
-                _items.Remove(control);
-                ActiveLayoutAll();
+                if (control == width.control)
+                {
+                    _widths.Remove(width);
+                    break;
+                }
             }
-            else
-            {
-                _items.Remove(control);
-            }
+            ActiveLayoutAll();
         }
 
         public override void ActiveLayoutAll()
         {
             int totalWidth = 0;
-            foreach (var control in _items)
-                totalWidth += control.Width;
+            foreach (var width in _widths)
+                totalWidth += width.width;
 
             if (totalWidth > ClientSize.Width)
             {
@@ -80,6 +86,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
             else
             {
+                foreach (var width in _widths)
+                    width.control.Width = width.width;
                 PageSize = ClientSize;
             }
 

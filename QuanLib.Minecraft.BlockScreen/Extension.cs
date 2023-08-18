@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public static class Extensions
+    public static class Extension
     {
         public static Image<TPixel> ToImage<TPixel>(this ImageData source) where TPixel : unmanaged, IPixel<TPixel>
         {

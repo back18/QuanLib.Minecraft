@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public readonly struct PlaneSize : IPlaneSize
+    public readonly struct Plane : IPlane
     {
-        public PlaneSize(int width, int height, Facing normalFacing)
+        public Plane(int width, int height, Facing normalFacing)
         {
             Width = width;
             Height = height;
@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public Facing NormalFacing { get; }
 
-        public static bool TryParse(string s, out PlaneSize result)
+        public static bool TryParse(string s, out Plane result)
         {
             if (string.IsNullOrEmpty(s))
                 goto err;

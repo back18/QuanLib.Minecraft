@@ -65,13 +65,13 @@ namespace QuanLib.Minecraft.BlockScreen
             return _files[CurrentIndex];
         }
 
-        public static FileList LoadDirectory(string directory, IEnumerable<string> extensions)
+        public static FileList LoadDirectory(string directory, IEnumerable<string> Extension)
         {
             if (!System.IO.Directory.Exists(directory))
                 throw new DirectoryNotFoundException();
 
             string[] items = System.IO.Directory.GetFiles(directory);
-            List<string> extensionList = new(extensions);
+            List<string> extensionList = new(Extension);
             List<string> files = new();
             foreach (string item in items)
                 if (extensionList.Contains(Path.GetExtension(item).TrimStart('.')))
@@ -85,7 +85,7 @@ namespace QuanLib.Minecraft.BlockScreen
             return new(directory, files, index);
         }
 
-        public static FileList LoadFile(string file, IEnumerable<string> extensions)
+        public static FileList LoadFile(string file, IEnumerable<string> Extension)
         {
             if (!File.Exists(file))
                 throw new FileNotFoundException();
@@ -93,7 +93,7 @@ namespace QuanLib.Minecraft.BlockScreen
             string directory = Path.GetDirectoryName(file) ?? throw new DirectoryNotFoundException();
 
             string[] items = System.IO.Directory.GetFiles(directory);
-            List<string> extensionList = new(extensions);
+            List<string> extensionList = new(Extension);
             List<string> files = new();
             foreach (string item in items)
                 if (extensionList.Contains(Path.GetExtension(item).TrimStart('.')))

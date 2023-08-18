@@ -61,6 +61,7 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】stop-------------关闭MCOS并退出程序");
                         break;
                     case "mcconsole":
+                    case "mcc":
                         Console.WriteLine("【MCBS控制台】已进入Minecraft控制台");
                         LogUtil.DisableConsoleOutput();
                         MCOS.Instance.MinecraftServer.EnableConsoleOutput();
@@ -78,6 +79,7 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已退出Minecraft控制台");
                         break;
                     case "commandsystem":
+                    case "cs":
                         Console.WriteLine("【MCBS控制台】已进入可视化命令系统");
                         LogUtil.DisableConsoleOutput();
                         CommandSystem.Start();
@@ -134,10 +136,25 @@ namespace MCBS.ConsoleTerminal
 
         private void RegisterCommands()
         {
+            CommandSystem.Pool.AddCommand(new(new("application lsit"), CommandFunc.GetFunc(GetApplicationList)));
             CommandSystem.Pool.AddCommand(new(new("screen lsit"), CommandFunc.GetFunc(GetScreenList)));
+            CommandSystem.Pool.AddCommand(new(new("screen close"), CommandFunc.GetFunc(CloseScreen)));
+            CommandSystem.Pool.AddCommand(new(new("screen builder"), CommandFunc.GetFunc(SetScreenBuilderEnable)));
             CommandSystem.Pool.AddCommand(new(new("process lsit"), CommandFunc.GetFunc(GetProcessList)));
             CommandSystem.Pool.AddCommand(new(new("form lsit"), CommandFunc.GetFunc(GetFormList)));
             CommandSystem.Pool.AddCommand(new(new("frame count"), CommandFunc.GetFunc(GetFrameCount)));
+        }
+
+        private static string GetApplicationList()
+        {
+            var list = MCOS.Instance.ApplicationManager.ApplicationList;
+            StringBuilder sb = new();
+            sb.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
+            foreach (var appInfo in list.Values)
+                sb.AppendLine(appInfo.ToString());
+            sb.Length--;
+
+            return sb.ToString();
         }
 
         private static string GetScreenList()
@@ -150,6 +167,29 @@ namespace MCBS.ConsoleTerminal
             sb.Length--;
 
             return sb.ToString();
+        }
+
+        private static string CloseScreen(int id)
+        {
+            if (MCOS.Instance.ScreenManager.ScreenList.TryGetValue(id, out var context))
+            {
+                context.CloseScreen();
+                return $"屏幕“{context}”已关闭";
+            }
+            else
+            {
+                return "未知的屏幕ID";
+            }
+        }
+
+        private static string SetScreenBuilderEnable(bool enable)
+        {
+            MCOS.Instance.ScreenManager.ScreenBuilder.Enable = enable;
+
+            if (enable)
+                return "屏幕构造器已启用";
+            else
+                return "屏幕构造器已禁用";
         }
 
         private static string GetProcessList()

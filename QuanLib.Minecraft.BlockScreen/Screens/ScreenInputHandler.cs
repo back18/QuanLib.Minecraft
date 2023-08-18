@@ -22,8 +22,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public ScreenInputHandler(Screen owner)
         {
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
-            _objective = ConfigManager.ScreenConfig.RightClickObjective;
-            _batuuid = "f78b8570-3f3f-43be-8ade-5f11e77a4563";
             IsInitialState = true;
             CurrentPlayer = string.Empty;
             CurrenMode = CursorMode.Cursor;
@@ -46,10 +44,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private const string TEXTEDITOR_ITEM = "minecraft:writable_book";
 
         private readonly Screen _owner;
-
-        private readonly string _objective;
-
-        private readonly string _batuuid;
 
         public bool IsInitialState { get; private set; }
 
@@ -103,7 +97,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
-            Vector3<int> center = screen.WorldCenterPosition;
+            Vector3<int> center = screen.CenterPosition;
             Vector3<double> start = new(center.X - length, center.Y - length, center.Z - length);
             Vector3<double> range = new(length * 2, length * 2, length * 2);
 
@@ -206,17 +200,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             switch (selectedItem.ID)
             {
                 case MOUSE_ITEM:
-                    if (command.TryGetPlayerScoreboard(player, _objective, out var score) && score > 0)
+                    if (command.TryGetPlayerScoreboard(player, ConfigManager.ScreenConfig.RightClickObjective, out var score) && score > 0)
                     {
                         RightClick.Invoke(this, new(CurrentPosition));
-                        command.SetPlayerScoreboard(player, _objective, 0);
+                        command.SetPlayerScoreboard(player, ConfigManager.ScreenConfig.RightClickObjective, 0);
                     }
-                    //if (command.TryGetEntityHealth(_batuuid, out var health) && health < 6)
-                    //{
-                    //    OnLeftClick.Invoke(CurrentPosition);
-                    //    Console.WriteLine("左键");
-                    //    command.SetEntityHealthAsync(_batuuid, 6).Wait();
-                    //}
                     break;
                 case TEXTEDITOR_ITEM:
                     if (IsInitialState)
@@ -246,9 +234,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     }
                     break;
             }
-
-            //position.Y -= 0.5;
-            //command.TelePortAsync(_batuuid, position + direction * 0.625).Wait();
 
             foreach (var action in actions)
                 action.Invoke();

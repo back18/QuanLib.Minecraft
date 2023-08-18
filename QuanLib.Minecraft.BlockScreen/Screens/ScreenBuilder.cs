@@ -1,4 +1,6 @@
-﻿using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
+﻿#define TryCatch
+
+using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
 using CoreRCON.Parsers.Standard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,17 +14,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using log4net.Core;
+using QuanLib.Minecraft.BlockScreen.Logging;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     public class ScreenBuilder
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public ScreenBuilder()
         {
             _contexts = new();
+
+            Enable = true;
         }
 
         private readonly Dictionary<string, ScreenBuildContext> _contexts;
+
+        public bool Enable { get; set; }
 
         public void Handle()
         {
@@ -56,8 +66,20 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                             }
                             else
                             {
-                                MCOS.Instance.ScreenManager.ScreenList.Add(screen).LoadScreen();
-                                command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
+#if TryCatch
+                                try
+                                {
+#endif
+                                    MCOS.Instance.LoadScreen(screen);
+                                    command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
+#if TryCatch
+                                }
+                                catch (Exception ex)
+                                {
+                                    LOGGER.Error($"屏幕“{screen}”无法加载", ex);
+                                    command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 屏幕构建失败: {ex.GetType()}: {ex.Message}", TextColor.Red);
+                                }
+#endif
                             }
                         }
                         _contexts.Remove(context.Key);
@@ -65,7 +87,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
             }
 
-            if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
+            if (!Enable || MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
                 return;
 
             Dictionary<string, Item> items = command.GetAllPlayerSelectedItem();

@@ -2,6 +2,7 @@
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -33,7 +34,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void ProcessScheduling()
         {
-            foreach (var process in ProcessList.ToArray())
+            foreach (var process in ProcessList)
             {
                 process.Value.Handle();
                 if (process.Value.ProcessState == ProcessState.Stopped)
@@ -52,7 +53,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             private readonly ProcessManager _owner;
 
-            private readonly Dictionary<int, Process> _items;
+            private readonly ConcurrentDictionary<int, Process> _items;
 
             private int _id;
 
@@ -85,7 +86,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     int id = _id;
                     Process process = new(APPInfo, args, initiator);
                     process.ID = id;
-                    _items.Add(id, process);
+                    _items.TryAdd(id, process);
                     _owner.AddedProcess.Invoke(_owner, new(process));
                     _id++;
                     return process;
@@ -96,7 +97,7 @@ namespace QuanLib.Minecraft.BlockScreen
             {
                 lock (this)
                 {
-                    if (!_items.TryGetValue(id, out var process) || !_items.Remove(id))
+                    if (!_items.TryGetValue(id, out var process) || !_items.TryRemove(id, out _))
                         return false;
 
                     process.ID = -1;

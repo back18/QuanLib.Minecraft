@@ -19,8 +19,6 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            int result = 2 & 8;
-
             Thread.CurrentThread.Name = "MainThread";
             LOGGER.Info("Starting!");
 
@@ -41,6 +39,7 @@ namespace MCBS.ConsoleTerminal
             catch (Exception ex)
             {
                 LOGGER.Fatal("无法完成初始化", ex);
+                Console.ReadLine();
                 return;
             }
 #endif
@@ -73,6 +72,7 @@ namespace MCBS.ConsoleTerminal
             catch (Exception ex)
             {
                 LOGGER.Fatal("无法绑定到Minecraft服务器", ex);
+                Console.ReadLine();
                 return;
             }
 #endif
@@ -89,6 +89,7 @@ namespace MCBS.ConsoleTerminal
             catch (Exception ex)
             {
                 LOGGER.Fatal("无法初始化MCOS", ex);
+                Console.ReadLine();
                 return;
             }
 #endif
@@ -112,7 +113,20 @@ namespace MCBS.ConsoleTerminal
             server.WaitForConnected();
             LOGGER.Info("成功连接到Minecraft服务器");
 
-            mcos.Start();
+#if TryCatch
+            try
+            {
+#endif
+                mcos.Start();
+#if TryCatch
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Fatal("MCOS运行时出现意外异常", ex);
+                Console.ReadLine();
+                return;
+            }
+#endif
         }
     }
 }

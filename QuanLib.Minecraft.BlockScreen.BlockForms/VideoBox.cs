@@ -144,7 +144,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             try
             {
-                MediaFilePlayer = new(path, GetScreenPlaneSize().NormalFacing, DefaultMediaOptions, DefaultResizeOptions);
+                MediaFilePlayer = new(path, GetScreenPlane().NormalFacing, DefaultMediaOptions, DefaultResizeOptions);
                 return true;
             }
             catch

@@ -1,9 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
+﻿#define TryCatch
+
+using log4net.Core;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.UI;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -14,14 +21,20 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     public class ScreenManager
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public ScreenManager()
         {
             ScreenBuilder = new();
             ScreenList = new(this);
 
+            _saves = new();
+
             AddedScreen += OnAddedScreen;
             RemovedScreen += OnRemovedScreen;
         }
+
+        private readonly List<ScreenOptions> _saves;
 
         public ScreenBuilder ScreenBuilder { get; }
 
@@ -35,20 +48,97 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
 
+        public void Initialize()
+        {
+            LOGGER.Info($"开始加载常驻屏幕，共计{ConfigManager.ScreenConfig.ResidentScreenList.Count}个");
+            foreach (var options in ConfigManager.ScreenConfig.ResidentScreenList)
+            {
+#if TryCatch
+                try
+                {
+#endif
+                    ScreenList.Add(new(options)).LoadScreen();
+#if TryCatch
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error($"屏幕“{options}”无法加载", ex);
+                }
+#endif
+            }
+
+            ReadScreens();
+            IEnumerable<ScreenOptions> creates = creates = _saves.Where(save => !ScreenList.Values.Any(context => context.Screen.EqualsScreenOption(save)));
+
+            LOGGER.Info($"开始加载上次未关闭屏幕，共计{creates.Count()}个");
+            foreach (var options in creates)
+            {
+#if TryCatch
+                try
+                {
+#endif
+                    ScreenList.Add(new(options)).LoadScreen();
+#if TryCatch
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error($"屏幕“{options}”无法加载", ex);
+                }
+#endif
+            }
+        }
+
         public void ScreenScheduling()
         {
-            foreach (var context in ScreenList.ToArray())
+            foreach (var context in ScreenList)
             {
+                if (context.Value.ScreenState == ScreenState.Loading)
+                {
+                    if (!_saves.ContainsScreenOption(context.Value.Screen))
+                        _saves.Add(new(context.Value.Screen));
+                    SaveScreens();
+
+                }
                 context.Value.Handle();
                 if (context.Value.ScreenState == ScreenState.Closed)
+                {
                     ScreenList.Remove(context.Key);
+                    _saves.Remove(new(context.Value.Screen));
+                    SaveScreens();
+                    if (context.Value.IsRestart)
+                        ScreenList.Add(new(context.Value.Screen));
+                }
             }
+        }
+
+        private void ReadScreens()
+        {
+            if (!File.Exists(MCOS.MainDirectory.Saves.ScreenSaves))
+                return;
+
+            string json = File.ReadAllText(MCOS.MainDirectory.Saves.ScreenSaves);
+            ScreenOptions.Json[] items = JsonConvert.DeserializeObject<ScreenOptions.Json[]>(json) ?? throw new FormatException();
+            foreach (var item in items)
+            {
+                ScreenOptions options = new(item);
+                if (!_saves.ContainsScreenOption(options))
+                    _saves.Add(options);
+            }
+        }
+
+        private void SaveScreens()
+        {
+            List<ScreenOptions.Json> items = new();
+            foreach (var save in _saves)
+                items.Add(save.ToJson());
+            string json = JsonConvert.SerializeObject(items);
+            File.WriteAllText(MCOS.MainDirectory.Saves.ScreenSaves, json);
         }
 
         public void HandleAllScreenInput()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values.ToArray())
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(Task.Run(() => screen.Screen.InputHandler.HandleInput()));
             Task.WaitAll(tasks.ToArray());
         }
@@ -56,7 +146,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllBeforeFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values.ToArray())
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(Task.Run(() => screen.RootForm.HandleBeforeFrame(EventArgs.Empty)));
             Task.WaitAll(tasks.ToArray());
         }
@@ -64,7 +154,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllAfterFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values.ToArray())
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(Task.Run(() => screen.RootForm.HandleAfterFrame(EventArgs.Empty)));
             Task.WaitAll(tasks.ToArray());
         }
@@ -73,7 +163,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         {
             frames = new();
             List<(int id, Task<ArrayFrame> task)> tasks = new();
-            foreach (var context in ScreenList.ToArray())
+            foreach (var context in ScreenList)
             {
                 if (context.Value.ScreenState == ScreenState.Closed)
                     continue;
@@ -114,7 +204,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void WaitAllScreenPrevious()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values.ToArray())
+            foreach (var screen in ScreenList.Values)
                 tasks.Add(screen.Screen.OutputHandler.WaitPreviousAsync());
             Task.WaitAll(tasks.ToArray());
         }
@@ -130,7 +220,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             private readonly ScreenManager _owner;
 
-            private readonly Dictionary<int, ScreenContext> _items;
+            private readonly ConcurrentDictionary<int, ScreenContext> _items;
 
             private int _id;
 
@@ -153,12 +243,18 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
                 lock (this)
                 {
+                    foreach (var value in Values)
+                    {
+                        if (value.Screen.EqualsScreenOption(screen))
+                            throw new ArgumentException("尝试加载相同的屏幕" ,nameof(screen));
+                    }
+
                     int id = _id;
                     Process process = MCOS.Instance.RunServicesApp();
                     IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
                     ScreenContext context = new(screen, rootForm);
                     context.ID = id;
-                    _items.Add(id, context);
+                    _items.TryAdd(id, context);
                     _owner.AddedScreen.Invoke(_owner, new(context));
                     _id++;
                     return context;
@@ -169,7 +265,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             {
                 lock (this)
                 {
-                    if (!_items.TryGetValue(id, out var context) || !_items.Remove(id))
+                    if (!_items.TryGetValue(id, out var context) || !_items.TryRemove(id, out _))
                         return false;
 
                     context.ID = -1;

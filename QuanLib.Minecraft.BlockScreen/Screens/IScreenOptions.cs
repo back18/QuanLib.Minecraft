@@ -5,14 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen
+namespace QuanLib.Minecraft.BlockScreen.Screens
 {
-    public interface IPlaneSize
+    public interface IScreenOptions
     {
+        public Vector3<int> StartPosition { get; }
+
         public int Width { get; }
 
         public int Height { get; }
 
-        public Facing NormalFacing { get; }
+        public Facing XFacing { get; }
+
+        public Facing YFacing { get; }
     }
 }

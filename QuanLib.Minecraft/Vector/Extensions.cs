@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Vector
 {
-    public static class Extensions
+    public static class Extension
     {
 
     }

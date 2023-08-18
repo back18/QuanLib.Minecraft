@@ -170,7 +170,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public override string ToString()
         {
-            return $"FID={ID}, SID = {MCOS.Instance.ScreenContextOf(RootForm)?.ID} AppID={Application.GetInfo()?.ID} Title={Form.Text}";
+            return $"State={FormState} FID={ID}, PID={MCOS.Instance.ProcessOf(Form)?.ID}, SID = {MCOS.Instance.ScreenContextOf(Form)?.ID}, Form=[{Form}]";
         }
     }
 }

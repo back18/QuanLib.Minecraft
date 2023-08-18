@@ -162,7 +162,9 @@ namespace QuanLib.Minecraft.BlockScreen
             }
 #endif
 
-            ScreenManager.ScreenList.Add(new(new(0, 83, 0), 256, 144, Facing.Xm, Facing.Ym)).LoadScreen();
+            ScreenManager.Initialize();
+
+            MinecraftServer.CommandHelper.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
 
             _stopwatch.Start();
             while (_runing)
@@ -359,7 +361,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var context in FormManager.FormList.Values)
+            foreach (var context in FormManager.FormList.Values.ToArray())
                 if (form == context.Form)
                     return context;
 
@@ -400,7 +402,7 @@ namespace QuanLib.Minecraft.BlockScreen
             return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[appID], initiator).StartProcess();
         }
 
-        public ScreenContext CreateScreen(Screen screen)
+        public ScreenContext LoadScreen(Screen screen)
         {
             if (screen is null)
                 throw new ArgumentNullException(nameof(screen));

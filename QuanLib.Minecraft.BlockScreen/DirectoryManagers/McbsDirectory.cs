@@ -15,6 +15,7 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
             Configs = new(Combine("Configs"));
             FFmpeg = new(Combine("FFmpeg"));
             MinecraftResources = new(Combine("MinecraftResources"));
+            Saves = new(Combine("Saves"));
             SystemResources = new(Combine("SystemResources"));
         }
 
@@ -25,6 +26,8 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
         public FFmpegDirectory FFmpeg { get; }
 
         public MinecraftResourcesDirectory MinecraftResources { get; }
+
+        public SavesDirectory Saves { get; }
 
         public SystemResourcesDirectory SystemResources { get; }
     }

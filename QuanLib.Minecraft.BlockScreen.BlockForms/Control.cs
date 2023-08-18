@@ -303,7 +303,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public int BottomToBorder
         {
-            get => (ParentContainer?.Height - ParentBorderWidth ?? GetScreenPlaneSize().Height) - (Location.Y + Height);
+            get => (ParentContainer?.Height - ParentBorderWidth ?? GetScreenPlane().Height) - (Location.Y + Height);
             set
             {
                 int offset = BottomToBorder - value;
@@ -324,7 +324,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public int RightToBorder
         {
-            get => (ParentContainer?.Width - ParentBorderWidth ?? GetScreenPlaneSize().Width) - (Location.X + Width);
+            get => (ParentContainer?.Width - ParentBorderWidth ?? GetScreenPlane().Width) - (Location.X + Width);
             set
             {
                 int offset = RightToBorder - value;
@@ -1030,7 +1030,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             return new Size(256, 126);
         }
 
-        public IPlaneSize GetScreenPlaneSize()
+        public IPlane GetScreenPlane()
         {
             Form? form = GetForm();
             if (form is not null)
@@ -1048,7 +1048,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 }
             }
 
-            return new PlaneSize(256, 144, Facing.Zp);
+            return new Plane(256, 144, Facing.Zp);
         }
 
         public Rgba32 GetBlockColor(string blockID)
@@ -1056,7 +1056,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (TryGetBlockColor(blockID, out var color))
                 return color;
             else
-                return MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White].AverageColors[GetScreenPlaneSize().NormalFacing];
+                return MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White].AverageColors[GetScreenPlane().NormalFacing];
         }
 
         public Rgba32 GetBlockColorOrDefault(string? blockID, string def)
@@ -1081,7 +1081,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             }
             else if (MinecraftResourcesManager.BlockTextureManager.TryGetValue(blockID, out var texture))
             {
-                color = texture.AverageColors[GetScreenPlaneSize().NormalFacing];
+                color = texture.AverageColors[GetScreenPlane().NormalFacing];
                 return true;
             }
 
@@ -1520,7 +1520,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (image is null)
                     throw new ArgumentNullException(nameof(image));
 
-                SetAllBackgroundImage(new ImageFrame(image, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+                SetAllBackgroundImage(new ImageFrame(image, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
             }
 
             public void SetAllBackgroundImage(string path)
@@ -1528,7 +1528,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (string.IsNullOrEmpty(path))
                     throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
 
-                SetAllBackgroundImage(new ImageFrame(path, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+                SetAllBackgroundImage(new ImageFrame(path, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
             }
 
             public void SetForegroundBlockID(ControlState state, string blockID)
@@ -1620,7 +1620,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (image is null)
                     throw new ArgumentNullException(nameof(image));
 
-                SetBackgroundImage(state, new ImageFrame(image, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+                SetBackgroundImage(state, new ImageFrame(image, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
             }
 
             public void SetBackgroundImage(ControlState state, string path)
@@ -1628,7 +1628,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 if (string.IsNullOrEmpty(path))
                     throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
 
-                SetBackgroundImage(state, new ImageFrame(path, _owner.GetScreenPlaneSize().NormalFacing, _owner.ClientSize));
+                SetBackgroundImage(state, new ImageFrame(path, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
             }
         }
     }

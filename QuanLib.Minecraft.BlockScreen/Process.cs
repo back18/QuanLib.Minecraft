@@ -113,7 +113,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public override string ToString()
         {
-            return $"PID={ID}, AppID={ApplicationInfo.ID}";
+            return $"State={ProcessState}, PID={ID}, AppID={ApplicationInfo.ID}";
         }
     }
 }

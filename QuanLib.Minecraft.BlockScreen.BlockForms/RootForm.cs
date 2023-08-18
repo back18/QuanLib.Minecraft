@@ -108,6 +108,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             RestartScreen_Button.Text = "重启屏幕";
             RestartScreen_Button.ClientSize = new(64, 16);
+            RestartScreen_Button.RightClick += RestartScreen_Button_RightClick;
             StartMenu_ListMenuBox.AddedSubControlAndLayout(RestartScreen_Button);
 
             ShowTaskBar_Button.Visible = false;
@@ -125,6 +126,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)
         {
             MCOS.Instance.ScreenContextOf(this)?.CloseScreen();
+        }
+
+        private void RestartScreen_Button_RightClick(Control sender, CursorEventArgs e)
+        {
+            MCOS.Instance.ScreenContextOf(this)?.RestartScreen();
         }
 
         private void ShowTaskBar_Button_CursorEnter(Control sender, CursorEventArgs e)

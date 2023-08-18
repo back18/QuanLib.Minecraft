@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         {
             DefaultResizeOptions = ImageFrame.DefaultResizeOptions.Clone();
             DefaultResizeOptions.Size = ClientSize;
-            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockColor(BlockManager.Concrete.White)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
+            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockColor(BlockManager.Concrete.White)), GetScreenPlane().NormalFacing, DefaultResizeOptions.Clone());
             ClientSize = new(64, 64);
 
             AutoSize = true;
@@ -115,7 +115,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
         public void SetImage(Image<Rgba32> image)
         {
-            ImageFrame = new(image, GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
+            ImageFrame = new(image, GetScreenPlane().NormalFacing, DefaultResizeOptions.Clone());
         }
 
         public bool TryReadImageFile(string path)
@@ -125,7 +125,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
 
             try
             {
-                ImageFrame = new(Image.Load<Rgba32>(File.ReadAllBytes(path)), GetScreenPlaneSize().NormalFacing, DefaultResizeOptions.Clone());
+                ImageFrame = new(Image.Load<Rgba32>(File.ReadAllBytes(path)), GetScreenPlane().NormalFacing, DefaultResizeOptions.Clone());
                 return true;
             }
             catch

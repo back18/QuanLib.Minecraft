@@ -26,6 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ID = -1;
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
+            IsRestart = false;
             IsShowCursor = true;
             CursorType = BlockScreen.CursorType.Default;
             _bind = false;
@@ -34,6 +35,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private bool _bind;
 
         public ScreenState ScreenState { get; private set; }
+
+        public bool IsRestart { get; private set; }
 
         public int ID { get; internal set; }
 
@@ -90,6 +93,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     LOGGER.Info($"屏幕“{ToString()}”已加载");
                     break;
                 case ScreenState.Active:
+                    //TODO
                     break;
                 case ScreenState.Sleep:
                     //TODO
@@ -112,13 +116,22 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public ScreenContext LoadScreen()
         {
-            ScreenState = ScreenState.Loading;
+            if (ScreenState == ScreenState.NotLoaded)
+            {
+                ScreenState = ScreenState.Loading;
+            }
             return this;
         }
 
         public void CloseScreen()
         {
             ScreenState = ScreenState.Closed;
+        }
+
+        public void RestartScreen()
+        {
+            ScreenState = ScreenState.Closed;
+            IsRestart = true;
         }
 
         public void StartSleep()
@@ -133,7 +146,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public override string ToString()
         {
-            return $"SID={ID}, Screen=[{Screen}]";
+            return $"State={ScreenState}, SID={ID}, Screen=[{Screen}]";
         }
 
         private void InputHandler_CursorMove(ICursorReader sender, CursorEventArgs e)

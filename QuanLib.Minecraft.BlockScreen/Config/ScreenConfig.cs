@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using QuanLib.Minecraft.BlockScreen.Screens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,13 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             MaxY = json.MaxY;
             ScreenBuildTimeout = json.ScreenBuildTimeout;
             RightClickObjective = json.RightClickObjective;
+
+            List<ScreenOptions> list = new();
+            foreach (var item in json.ResidentScreenList)
+            {
+                list.Add(new(item));
+            }
+            ResidentScreenList = list;
         }
 
         public int MaxScreenCount { get; }
@@ -42,6 +50,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         public int ScreenBuildTimeout { get; }
 
         public string RightClickObjective { get; }
+
+        public IReadOnlyList<ScreenOptions> ResidentScreenList { get; }
 
         public static ScreenConfig Load(string path)
         {
@@ -68,6 +78,8 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             public int ScreenBuildTimeout;
 
             public string RightClickObjective;
+
+            public ScreenOptions.Json[] ResidentScreenList;
         }
     }
 }
