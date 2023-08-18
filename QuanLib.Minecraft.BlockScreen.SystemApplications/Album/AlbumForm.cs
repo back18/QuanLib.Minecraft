@@ -4,6 +4,7 @@ using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
@@ -39,6 +40,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             ResizeMode_ComboButton = new();
             AnchorPositionMode_ComboButton = new();
             Resampler_ComboButton = new();
+            SetAsWallpaper_Button = new();
 
             OverlayShowTime = 20;
             OverlayHideTime = 0;
@@ -67,6 +69,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
         private readonly ComboButton<AnchorPositionMode> AnchorPositionMode_ComboButton;
 
         private readonly ComboButton<IResampler> Resampler_ComboButton;
+
+        private readonly Button SetAsWallpaper_Button;
 
         public int OverlayShowTime { get; set; }
 
@@ -186,6 +190,12 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             Resampler_ComboButton.Items.Add(KnownResamplers.Spline, nameof(KnownResamplers.Spline));
             Resampler_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Sampler;
             Setting_ListMenuBox.AddedSubControlAndLayout(Resampler_ComboButton);
+
+            SetAsWallpaper_Button.Width = width;
+            SetAsWallpaper_Button.Skin.BackgroundBlockID = string.Empty;
+            SetAsWallpaper_Button.Text = "设为壁纸";
+            SetAsWallpaper_Button.RightClick += SetAsWallpaper_Button_RightClick;
+            Setting_ListMenuBox.AddedSubControlAndLayout(SetAsWallpaper_Button);
         }
 
         public override void OnInitCompleted3()
@@ -300,6 +310,15 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             string? file = _images?.GetNext();
             if (file is not null)
                 Path_TextBox.Text = file;
+        }
+
+        private void SetAsWallpaper_Button_RightClick(Control sender, CursorEventArgs e)
+        {
+            foreach (var context in MCOS.Instance.FormManager.FormList.Values)
+            {
+                if (context.Form is DesktopForm desktop)
+                    desktop.SetAsWallpaper(ScalablePictureBox.ImageFrame.Image);
+            }
         }
 
         private void ApplySetting(ResizeOptions options)

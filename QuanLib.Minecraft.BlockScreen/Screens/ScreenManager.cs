@@ -99,14 +99,16 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     SaveScreens();
 
                 }
+
                 context.Value.Handle();
+
                 if (context.Value.ScreenState == ScreenState.Closed)
                 {
                     ScreenList.Remove(context.Key);
                     _saves.Remove(new(context.Value.Screen));
                     SaveScreens();
                     if (context.Value.IsRestart)
-                        ScreenList.Add(new(context.Value.Screen));
+                        ScreenList.Add(new(context.Value.Screen)).LoadScreen();
                 }
             }
         }

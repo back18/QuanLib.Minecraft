@@ -26,6 +26,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             TaskBar = new(this);
             StartMenu_ListMenuBox = new();
             StartMenu_Label = new();
+            Light_Switch = new();
             StartSleep_Button = new();
             CloseScreen_Button = new();
             RestartScreen_Button = new();
@@ -39,6 +40,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
         private readonly ListMenuBox<Control> StartMenu_ListMenuBox;
 
         private readonly Label StartMenu_Label;
+
+        private readonly Switch Light_Switch;
 
         private readonly Button StartSleep_Button;
 
@@ -85,17 +88,22 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             SubControls.Add(FormContainer);
             FormContainer.LayoutSyncer?.Sync();
 
-            StartMenu_ListMenuBox.ClientSize = new(70, 20 * 4 + 2);
+            StartMenu_ListMenuBox.ClientSize = new(70, 20 * 5 + 2);
             StartMenu_ListMenuBox.MaxDisplayPriority = int.MaxValue;
             StartMenu_ListMenuBox.DisplayPriority = int.MaxValue - 1;
             StartMenu_ListMenuBox.Spacing = 2;
             StartMenu_ListMenuBox.Anchor = Direction.Bottom | Direction.Left;
-            StartMenu_ListMenuBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
 
             StartMenu_Label.Text = "==开始==";
             StartMenu_Label.ClientSize = new(64, 16);
             StartMenu_Label.Skin.SetAllBackgroundBlockID(string.Empty);
             StartMenu_ListMenuBox.AddedSubControlAndLayout(StartMenu_Label);
+
+            Light_Switch.OnText = "点亮屏幕";
+            Light_Switch.OffText = "熄灭屏幕";
+            Light_Switch.ClientSize = new(64, 16);
+            Light_Switch.RightClick += Light_Switch_RightClick;
+            StartMenu_ListMenuBox.AddedSubControlAndLayout(Light_Switch);
 
             StartSleep_Button.Text = "进入休眠";
             StartSleep_Button.ClientSize = new(64, 16);
@@ -121,6 +129,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
             ShowTaskBar_Button.CursorLeave += ShowTaskBar_Button_CursorLeave;
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
+        }
+
+        private void Light_Switch_RightClick(Control sender, CursorEventArgs e)
+        {
+            if (Light_Switch.IsSelected)
+                MCOS.Instance.ScreenContextOf(this)?.Screen.CloseLight();
+            else
+                MCOS.Instance.ScreenContextOf(this)?.Screen.OpenLight();
         }
 
         private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)
@@ -444,6 +460,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 _owner.StartMenu_ListMenuBox.ClientLocation = new(0, Math.Max(_owner.ClientSize.Height - _owner.TaskBar.Height - _owner.StartMenu_ListMenuBox.Height, 0));
                 if (_owner.StartMenu_ListMenuBox.BottomToBorder < _owner.TaskBar.Height)
                     _owner.StartMenu_ListMenuBox.BottomToBorder = _owner.TaskBar.Height;
+
+                if (MCOS.Instance.ScreenContextOf(_owner)?.Screen.TestLight() ?? false)
+                    _owner.Light_Switch.IsSelected = false;
+                else
+                    _owner.Light_Switch.IsSelected = true;
             }
 
             private void StartMenu_Switch_ControlDeselected(Control sender, EventArgs e)

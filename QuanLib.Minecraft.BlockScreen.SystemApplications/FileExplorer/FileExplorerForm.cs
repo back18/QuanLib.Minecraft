@@ -108,11 +108,13 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Clear_Button.Skin.BackgroundBlockID = BlockManager.Concrete.Pink;
             Clear_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
             Clear_Button.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Red;
+            Clear_Button.Anchor = Direction.Bottom | Direction.Left;
             Clear_Button.RightClick += Clear_Button_RightClick;
 
             ClientPanel.SubControls.Add(Search_TextBox);
             Search_TextBox.ClientLocation = ClientPanel.RightLayout(Clear_Button, spacing);
             Search_TextBox.Width = ClientPanel.ClientSize.Width - Clear_Button.Width - Cancel_Button.Width - OK_Button.Width - 10;
+            Search_TextBox.Anchor = Direction.Bottom | Direction.Left;
             Search_TextBox.Stretch = Direction.Right;
             Search_TextBox.TextChanged += Search_TextBox_TextChanged;
 

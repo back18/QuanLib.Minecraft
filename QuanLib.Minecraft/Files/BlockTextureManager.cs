@@ -125,59 +125,105 @@ namespace QuanLib.Minecraft.Files
                                 string? value = parent.Value<string>();
                                 BlockTextureType type;
                                 string xp, xm, yp, ym, zp, zm;
-                                if (value == "minecraft:block/cube_all")
+                                switch (value)
                                 {
-                                    if (textures_jobj.TryGetValue("all", out var all) && TryGetName(all, out var allName))
-                                    {
-                                        xp = allName;
-                                        xm = allName;
-                                        yp = allName;
-                                        ym = allName;
-                                        zp = allName;
-                                        zm = allName;
-                                    }
-                                    else
+                                    case "minecraft:block/cube_all":
+                                        {
+                                            if (textures_jobj.TryGetValue("all", out var all) && TryGetName(all, out var allName))
+                                            {
+                                                xp = allName;
+                                                xm = allName;
+                                                yp = allName;
+                                                ym = allName;
+                                                zp = allName;
+                                                zm = allName;
+                                            }
+                                            else
+                                                continue;
+                                            type = BlockTextureType.CubeAll;
+                                            break;
+                                        }
+
+                                    case "minecraft:block/cube":
+                                        {
+                                            if (textures_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
+                                                textures_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
+                                                textures_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
+                                                textures_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
+                                                textures_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
+                                                textures_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
+                                            {
+                                                xp = eastName;
+                                                xm = westName;
+                                                yp = upName;
+                                                ym = downName;
+                                                zp = southName;
+                                                zm = northName;
+                                            }
+                                            else
+                                                continue;
+                                            type = BlockTextureType.Cube;
+                                            break;
+                                        }
+                                    case "minecraft:block/cube_column":
+                                        {
+                                            if (textures_jobj.TryGetValue("side", out var side) && TryGetName(side, out var sideName) &&
+                                                textures_jobj.TryGetValue("end", out var end) && TryGetName(end, out var endName))
+                                            {
+                                                xp = sideName;
+                                                xm = sideName;
+                                                yp = endName;
+                                                ym = endName;
+                                                zp = sideName;
+                                                zm = sideName;
+                                            }
+                                            else
+                                                continue;
+                                            type = BlockTextureType.CubeColumn;
+                                            break;
+                                        }
+                                    case "minecraft:block/cube_bottom_top":
+                                        {
+                                            if (textures_jobj.TryGetValue("side", out var side) && TryGetName(side, out var sideName) &&
+                                                textures_jobj.TryGetValue("top", out var top) && TryGetName(top, out var topName) &&
+                                                textures_jobj.TryGetValue("bottom", out var bottom) && TryGetName(bottom, out var bottomName))
+                                            {
+                                                xp = sideName;
+                                                xm = sideName;
+                                                yp = topName;
+                                                ym = bottomName;
+                                                zp = sideName;
+                                                zm = sideName;
+                                            }
+                                            else
+                                                continue;
+                                            type = BlockTextureType.CubeBottomTop;
+                                            break;
+                                        }
+                                    case "block/block":
+                                        {
+                                            if (textures_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
+                                                textures_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
+                                                textures_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
+                                                textures_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
+                                                textures_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
+                                                textures_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
+                                            {
+                                                xp = eastName;
+                                                xm = westName;
+                                                yp = upName;
+                                                ym = downName;
+                                                zp = southName;
+                                                zm = northName;
+                                            }
+                                            else
+                                                continue;
+                                            type = BlockTextureType.Block;
+                                            break;
+                                        }
+                                    default:
                                         continue;
-                                    type = BlockTextureType.CubeAll;
                                 }
-                                else if (value == "minecraft:block/cube")
-                                {
-                                    if (textures_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
-                                        textures_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
-                                        textures_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
-                                        textures_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
-                                        textures_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
-                                        textures_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
-                                    {
-                                        xp = eastName;
-                                        xm = westName;
-                                        yp = upName;
-                                        ym = downName;
-                                        zp = southName;
-                                        zm = northName;
-                                    }
-                                    else
-                                        continue;
-                                    type = BlockTextureType.Cube;
-                                }
-                                else if (value == "minecraft:block/cube_column")
-                                {
-                                    if (textures_jobj.TryGetValue("side", out var side) && TryGetName(side, out var sideName) &&
-                                        textures_jobj.TryGetValue("end", out var end) && TryGetName(end, out var endName))
-                                    {
-                                        xp = sideName;
-                                        xm = sideName;
-                                        yp = endName;
-                                        ym = endName;
-                                        zp = sideName;
-                                        zm = sideName;
-                                    }
-                                    else
-                                        continue;
-                                    type = BlockTextureType.CubeColumn;
-                                }
-                                else
-                                    continue;
 
                                 string id = "minecraft:" + Path.GetFileNameWithoutExtension(blockState);
                                 if (!string.IsNullOrEmpty(variant_jpro.Name))

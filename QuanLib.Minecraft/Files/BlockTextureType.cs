@@ -12,6 +12,10 @@ namespace QuanLib.Minecraft.Files
 
         Cube,
 
-        CubeColumn
+        CubeColumn,
+
+        CubeBottomTop,
+
+        Block
     }
 }

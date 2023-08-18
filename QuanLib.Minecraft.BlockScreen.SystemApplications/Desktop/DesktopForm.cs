@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using QuanLib.Minecraft.BlockScreen.Event;
 using System.Diagnostics;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 {
@@ -21,11 +22,14 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
+            WallpaperPath = Path.Combine(MCOS.MainDirectory.Applications.GetApplicationDirectory(DesktopApp.ID), "wallpaper.jpg");
 
             ClientPanel = new();
         }
 
         public readonly ClientPanel ClientPanel;
+
+        public string WallpaperPath { get; }
 
         public override void Initialize()
         {
@@ -39,12 +43,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
 
             ActiveLayoutAll();
 
-            ClientPanel.Skin.SetAllBackgroundImage(Path.Combine(MCOS.MainDirectory.Applications.GetApplicationDirectory(DesktopApp.ID), "wallpaper.jpg"));
-        }
-
-        private void ClientPanel_LayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
-        {
-            ActiveLayoutAll();
+            ClientPanel.Skin.SetAllBackgroundImage(WallpaperPath);
         }
 
         public override void ActiveLayoutAll()
@@ -62,6 +61,20 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop
             ClientPanel.PageSize = new((ClientPanel.SubControls.RecentlyAddedControl ?? ClientPanel.SubControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
             ClientPanel.OffsetPosition = new(0, 0);
             ClientPanel.RefreshHorizontalScrollBar();
+        }
+
+        public void SetAsWallpaper(Image<Rgba32> image)
+        {
+            if (image is null)
+                throw new ArgumentNullException(nameof(image));
+
+            ClientPanel.Skin.SetAllBackgroundImage(image);
+            image.Save(WallpaperPath);
+        }
+
+        private void ClientPanel_LayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
+        {
+            ActiveLayoutAll();
         }
     }
 }

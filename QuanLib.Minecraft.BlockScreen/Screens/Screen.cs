@@ -157,6 +157,10 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, EndPosition.Y, "EndPosition.Y");
         }
 
+        private const string LIGHT_BLOCK = "minecraft:light";
+
+        private const string AIR_BLOCK = "minecraft:air";
+
         private readonly List<SurfacePos> _chunks;
 
         public Vector3<int> StartPosition { get; }
@@ -209,14 +213,50 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         }
         private ScreenOutputHandler? _OutputHandler;
 
+        private void Fill(string blockID)
+        {
+            OutputHandler.HandleOutput(ArrayFrame.BuildFrame(Width, Height, blockID));
+        }
+
+        private void FillDouble(string blockID)
+        {
+            Vector3<int> position1 = StartPosition;
+            Vector3<int> position2 = StartPosition;
+            switch (NormalFacing)
+            {
+                case Facing.Xp:
+                case Facing.Xm:
+                    position1.X--;
+                    position1.X++;
+                    break;
+                case Facing.Yp:
+                case Facing.Ym:
+                    position1.Y--;
+                    position2.Y++;
+                    break;
+                case Facing.Zp:
+                case Facing.Zm:
+                    position1.Z--;
+                    position2.Z++;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            Screen screen1 = new(position1, Width, Height, XFacing, YFacing);
+            Screen screen2 = new(position2, Width, Height, XFacing, YFacing);
+            screen2.Fill(blockID);
+            screen1.Fill(blockID);
+        }
+
         public void Fill()
         {
-            OutputHandler.HandleOutput(ArrayFrame.BuildFrame(Width, Height, DefaultBackgroundBlcokID));
+            Fill(DefaultBackgroundBlcokID);
         }
 
         public void Clear()
         {
-            OutputHandler.HandleOutput(ArrayFrame.BuildFrame(Width, Height, "minecraft:air"));
+            Fill(AIR_BLOCK);
         }
 
         public void Start()
@@ -227,8 +267,62 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public void Stop()
         {
+            if (TestLight())
+                CloseLight();
             UnloadScreenChunks();
             Clear();
+        }
+
+        public void OpenLight()
+        {
+            FillDouble(LIGHT_BLOCK);
+        }
+
+        public void CloseLight()
+        {
+            FillDouble(AIR_BLOCK);
+        }
+
+        public bool TestLight()
+        {
+            Vector3<int> position1 = StartPosition;
+            Vector3<int> position2 = StartPosition;
+            switch (NormalFacing)
+            {
+                case Facing.Xp:
+                case Facing.Xm:
+                    position1.X--;
+                    position2.X++;
+                    break;
+                case Facing.Yp:
+                case Facing.Ym:
+                    position1.Y--;
+                    position2.Y++;
+                    break;
+                case Facing.Zp:
+                case Facing.Zm:
+                    position1.Z--;
+                    position2.Z++;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            var command = MCOS.Instance.MinecraftServer.CommandHelper;
+            if (command.SetBlock(position1, AIR_BLOCK))
+            {
+                command.SetBlock(position1, LIGHT_BLOCK);
+                return true;
+            }
+            else if (command.SetBlock(position2, AIR_BLOCK))
+            {
+                command.SetBlock(position2, LIGHT_BLOCK);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void LoadScreenChunks()
@@ -640,28 +734,28 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 {
                     for (int x = oldScreen.Width; x < newScreen.Width; x++)
                         for (int y = 0; y < newScreen.Height; y++)
-                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, "minecraft:air");
+                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, AIR_BLOCK);
                 }
                 else if (newScreen.Width < oldScreen.Width)
                 {
                     frame ??= oldScreen.OutputHandler.LastFrame.Clone();
                     for (int x = newScreen.Width; x < oldScreen.Width; x++)
                         for (int y = 0; y < oldScreen.Height; y++)
-                            frame.SetBlockID(x, y, "minecraft:air");
+                            frame.SetBlockID(x, y, AIR_BLOCK);
                 }
 
                 if (newScreen.Height > oldScreen.Height)
                 {
                     for (int x = 0; x < newScreen.Width; x++)
                         for (int y = oldScreen.Height; y < newScreen.Height; y++)
-                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, "minecraft:air");
+                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, AIR_BLOCK);
                 }
                 else if (newScreen.Height < oldScreen.Height)
                 {
                     frame ??= oldScreen.OutputHandler.LastFrame.Clone();
                     for (int x = 0; x < oldScreen.Width; x++)
                         for (int y = newScreen.Height; y < oldScreen.Height; y++)
-                            frame.SetBlockID(x, y, "minecraft:air");
+                            frame.SetBlockID(x, y, AIR_BLOCK);
                 }
 
                 newScreen.Fill();
@@ -683,7 +777,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     for (int y = 0; y < oldScreen.Height; y++)
                     {
                         if (!worlds.Contains(oldScreen.ToWorldPosition(new(x, y))))
-                            frame.SetBlockID(x, y, "minecraft:air");
+                            frame.SetBlockID(x, y, AIR_BLOCK);
                     }
 
                 oldScreen.OutputHandler.HandleOutput(frame);
