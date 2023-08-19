@@ -11,6 +11,8 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
     {
         protected ScrollBar()
         {
+            DisplayPriority = int.MaxValue;
+            MaxDisplayPriority = int.MaxValue;
             _SliderSize = 1;
             _SliderPosition = 0;
 

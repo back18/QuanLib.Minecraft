@@ -38,7 +38,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             LastRightClickTime = DateTime.MinValue;
             LastLeftClickTime = DateTime.MinValue;
             _DisplayPriority = 0;
-            _MaxDisplayPriority = int.MaxValue;
+            _MaxDisplayPriority = 512;
             _Text = string.Empty;
             _Visible = true;
             _ClientLocation = new(0, 0);

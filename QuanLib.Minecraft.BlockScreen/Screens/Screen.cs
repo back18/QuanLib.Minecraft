@@ -227,7 +227,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 case Facing.Xp:
                 case Facing.Xm:
                     position1.X--;
-                    position1.X++;
+                    position2.X++;
                     break;
                 case Facing.Yp:
                 case Facing.Ym:
@@ -245,8 +245,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             Screen screen1 = new(position1, Width, Height, XFacing, YFacing);
             Screen screen2 = new(position2, Width, Height, XFacing, YFacing);
-            screen2.Fill(blockID);
             screen1.Fill(blockID);
+            screen2.Fill(blockID);
         }
 
         public void Fill()

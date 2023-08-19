@@ -74,8 +74,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             SubControls.Add(VerticalScrollBar);
             VerticalScrollBar.Visible = false;
             VerticalScrollBar.KeepWhenClear = true;
-            VerticalScrollBar.DisplayPriority = 16;
-            VerticalScrollBar.MaxDisplayPriority = 32;
             VerticalScrollBar.Width = 8;
             VerticalScrollBar.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) => { });
             VerticalScrollBar.RightClick += VerticalScrollBar_RightClick;
@@ -83,8 +81,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             SubControls.Add(HorizontalScrollBar);
             HorizontalScrollBar.Visible = false;
             HorizontalScrollBar.KeepWhenClear = true;
-            HorizontalScrollBar.DisplayPriority = 16;
-            HorizontalScrollBar.MaxDisplayPriority = 32;
             HorizontalScrollBar.Height = 8;
             HorizontalScrollBar.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) => { });
             HorizontalScrollBar.RightClick += HorizontalScrollBar_RightClick;

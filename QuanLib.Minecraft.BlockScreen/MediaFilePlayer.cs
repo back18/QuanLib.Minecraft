@@ -1,8 +1,10 @@
 ﻿using FFMediaToolkit.Decoding;
+using log4net.Core;
 using NAudio.Wave;
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using QuanLib.Minecraft.BlockScreen.Logging;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,8 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class MediaFilePlayer : IDisposable
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public MediaFilePlayer(string path, Facing facing, MediaOptions mediaOptions, ResizeOptions resizeOptions, bool enableAudio = true)
         {
             if (!File.Exists(path))
@@ -25,9 +29,18 @@ namespace QuanLib.Minecraft.BlockScreen
             EnableAudio = enableAudio;
             if (EnableAudio)
             {
-                MediaFoundationReader = new(path);
-                WaveOutEvent = new();
-                WaveOutEvent.Init(MediaFoundationReader);
+                try
+                {
+                    MediaFoundationReader = new(path);
+                    WaveOutEvent = new();
+                    WaveOutEvent.Init(MediaFoundationReader);
+                    WaveOutEvent.Volume = 0.25f;
+                }
+                catch (Exception ex)
+                {
+                    EnableAudio = false;
+                    LOGGER.Error("无法使用NAudio库播放音频，音频已禁用", ex);
+                }
             }
 
             _start = TimeSpan.Zero;
