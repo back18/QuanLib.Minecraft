@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ScreenBuilder = new();
             ScreenList = new(this);
 
+            _wait = false;
             _saves = new();
 
             AddedScreen += OnAddedScreen;
@@ -35,6 +37,12 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         }
 
         private readonly List<ScreenOptions> _saves;
+
+        private bool _wait;
+
+        private Task? _previous;
+
+        private Task? _current;
 
         public ScreenBuilder ScreenBuilder { get; }
 
@@ -194,21 +202,53 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (frames is null)
                 throw new ArgumentNullException(nameof(frames));
 
+            _wait = false;
+            _previous = _current;
             List<Task> tasks = new();
             foreach (var frame in frames)
             {
                 if (ScreenList.TryGetValue(frame.Key, out var context))
                     tasks.Add(context.Screen.OutputHandler.HandleOutputAsync(frame.Value));
             }
-            await Task.WhenAll(tasks);
+
+            _current = Task.WhenAll(tasks);
+            await _current;
         }
 
         public void WaitAllScreenPrevious()
         {
-            List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
-                tasks.Add(screen.Screen.OutputHandler.WaitPreviousAsync());
-            Task.WaitAll(tasks.ToArray());
+            //List<Task> tasks = new();
+            //foreach (var screen in ScreenList.Values)
+            //    tasks.Add(screen.Screen.OutputHandler.WaitPreviousAsync());
+            //Task.WaitAll(tasks.ToArray());
+
+            _previous?.Wait();
+        }
+
+        public void HandleAllWaitAndTasks()
+        {
+            lock (this)
+            {
+                if (_wait)
+                    return;
+                _wait = true;
+
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                WaitAllScreenPrevious();
+                stopwatch.Stop();
+
+                while (MCOS.Instance.TaskList.TryDequeue(out var task))
+                    task.Invoke();
+                if (stopwatch.ElapsedMilliseconds > 50)
+                {
+                    MCOS.Instance.TempTaskList.Clear();
+                }
+                else
+                {
+                    while (MCOS.Instance.TempTaskList.TryDequeue(out var task))
+                        task.Invoke();
+                }
+            }
         }
 
         public class ScreenCollection : IDictionary<int, ScreenContext>

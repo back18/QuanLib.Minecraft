@@ -180,10 +180,12 @@ namespace QuanLib.Minecraft.BlockScreen
                 if (_screen?.IsCompleted ?? true)
                 {
                     HandleScreenInput();
+                    HandleScreenBuild();
                 }
                 else
                 {
                     TempTaskList.Enqueue(() => HandleScreenInput());
+                    TempTaskList.Enqueue(() => HandleScreenBuild());
                     LagFrameCount++;
                 }
 
@@ -191,7 +193,6 @@ namespace QuanLib.Minecraft.BlockScreen
                 HandleUIRendering(out var frames);
                 HandleScreenOutput(frames);
                 HandleAfterFrame();
-                HandleScreenBuild();
                 HandleSystemInterrupt();
 
                 SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);

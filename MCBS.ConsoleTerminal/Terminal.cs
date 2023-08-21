@@ -96,7 +96,7 @@ namespace MCBS.ConsoleTerminal
                             int top = Console.CursorTop;
                             while (run)
                             {
-                                string empty = new(' ', 16);
+                                string empty = new(' ', 32);
                                 Console.SetCursorPosition(0, top);
                                 for (int i = 0; i < 13; i++)
                                     Console.WriteLine(empty);

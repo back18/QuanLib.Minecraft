@@ -21,24 +21,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         private readonly Screen _owner;
 
-        private Task? previous;
-
-        private Task? _current;
-
         public ArrayFrame? LastFrame { get; internal set; }
 
         public bool IsGenerated => LastFrame is not null;
-
-        public void WaitPrevious()
-        {
-            previous?.Wait();
-        }
-
-        public async Task WaitPreviousAsync()
-        {
-            if (previous is not null)
-                await previous;
-        }
 
         public void HandleOutput(ArrayFrame frame)
         {
@@ -69,18 +54,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
             else
             {
-                HandleWaitAndTasks();
+                MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             }
         }
 
         public async Task HandleOutputAsync(ArrayFrame frame)
-        {
-            previous = _current;
-            _current = PrivateShowNewFrameAsync(frame);
-            await _current;
-        }
-
-        private async Task PrivateShowNewFrameAsync(ArrayFrame frame)
         {
             List<ScreenPixel> pixels = GetDifferencesPixels(frame);
             LastFrame = frame;
@@ -109,28 +87,28 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
             else
             {
-                HandleWaitAndTasks();
+                MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             }
         }
 
         private void AccelerationEngineSend(AccelerationEngine ae, List<ScreenPixel> pixels)
         {
             byte[] bytes = ToSetBlockDataPacket(pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             ae.SendData(bytes);
         }
 
         private async Task AccelerationEngineSendAsync(AccelerationEngine ae, List<ScreenPixel> pixels)
         {
             byte[] bytes = ToSetBlockDataPacket(pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             await ae.SendDataAsync(bytes);
         }
 
         private void StandardInputCommandSend(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
         {
             string function = ToSetBlockFunction(pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             sender.SendCommand(function);
             MCOS.Instance.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
@@ -138,7 +116,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private async Task StandardInputCommandSendAsync(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
         {
             string function = ToSetBlockFunction(pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             await sender.SendCommandAsync(function);
             await MCOS.Instance.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
         }
@@ -146,28 +124,30 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private void BytesCommandSend(IBytesCommandSender sender, List<ScreenPixel> pixels)
         {
             ConcurrentBag<byte[]> commands = ToSetBlockBytesList(sender, pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             sender.SendAllCommand(commands);
+            MCOS.Instance.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
 
         private async Task BytesCommandSendAsync(IBytesCommandSender sender, List<ScreenPixel> pixels)
         {
             ConcurrentBag<byte[]> commands = ToSetBlockBytesList(sender, pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             await sender.SendAllCommandAsync(commands);
+            await MCOS.Instance.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
         }
 
         private void CommandSend(ICommandSender sender, List<ScreenPixel> pixels)
         {
             List<string> commands = ToSetblockCommands(pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             sender.SendAllCommand(commands);
         }
 
         private async Task CommandSendAsync(ICommandSender sender, List<ScreenPixel> pixels)
         {
             List<string> commands = ToSetblockCommands(pixels);
-            HandleWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
             await sender.SendAllCommandAsync(commands);
         }
 
@@ -218,24 +198,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             foreach (ScreenPixel pixel in pixels)
                 commands.Add(_owner.ToWorldPixel(pixel).ToSetBlock());
             return commands;
-        }
-
-        private void HandleWaitAndTasks()
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            MCOS.Instance.ScreenManager.WaitAllScreenPrevious();
-            while (MCOS.Instance.TaskList.TryDequeue(out var task))
-                task.Invoke();
-            stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > 50)
-            {
-                MCOS.Instance.TempTaskList.Clear();
-            }
-            else
-            {
-                while (MCOS.Instance.TempTaskList.TryDequeue(out var task))
-                    task.Invoke();
-            }
         }
 
         private List<ScreenPixel> GetDifferencesPixels(ArrayFrame frame)

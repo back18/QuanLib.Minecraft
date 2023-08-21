@@ -26,11 +26,34 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public TimeSpan LastTime { get; private set; }
 
-        public TimeSpan AverageTime1Second => _total_20 / _times_20.Count;
+        public TimeSpan AverageTime1Second
+        {
+            get
+            {
+                if (_times_20.Count == 0)
+                    return TimeSpan.Zero;
+                return _total_20 / _times_20.Count;
+            }
+        }
 
-        public TimeSpan AverageTime1Minute => _total_1200 / _times_1200.Count;
+        public TimeSpan AverageTime1Minute
+        {
+            get
+            {
+                if (_times_1200.Count == 0)
+                    return TimeSpan.Zero;
+                return _total_1200 / _times_1200.Count;
+            }
+        }
 
-        public TimeSpan AverageTime5Minute => _total_6000 / _times_6000.Count;
+        public TimeSpan AverageTime5Minute {
+            get
+            {
+                if (_times_6000.Count == 0)
+                    return TimeSpan.Zero;
+                return _total_6000 / _times_6000.Count;
+            }
+        }
 
         public void Add(TimeSpan time)
         {
