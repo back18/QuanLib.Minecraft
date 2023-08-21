@@ -1,4 +1,4 @@
-﻿//#define TryCatch
+﻿#define TryCatch
 
 using FFMediaToolkit;
 using log4net.Core;
