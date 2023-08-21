@@ -33,7 +33,10 @@ namespace MCBS.ConsoleTerminal
                 SystemResourcesManager.LoadAll();
                 MinecraftResourcesManager.LoadAll();
                 TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
-                FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.Directory;
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.Directory;
+                else
+                    FFmpegLoader.FFmpegPath = "/usr/lib/";
 #if TryCatch
             }
             catch (Exception ex)

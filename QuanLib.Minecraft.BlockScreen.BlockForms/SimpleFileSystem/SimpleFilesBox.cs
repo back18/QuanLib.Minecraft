@@ -48,9 +48,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 
         protected virtual void OnOpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e) { }
 
-        public override void Initialize()
+        public override void HandleInitCompleted3()
         {
-            base.Initialize();
+            base.HandleInitCompleted3();
 
             ActiveLayoutAll();
         }
@@ -70,6 +70,9 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
         public override void ActiveLayoutAll()
         {
             List<FileSystemItem> items = new();
+            if (string.IsNullOrEmpty(Text) && Environment.OSVersion.Platform != PlatformID.Win32NT)
+                Text = "/";
+
             if (string.IsNullOrEmpty(Text))
             {
                 foreach (var drive in DriveInfo.GetDrives())

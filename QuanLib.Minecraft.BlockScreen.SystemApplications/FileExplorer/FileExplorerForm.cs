@@ -137,6 +137,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
             if (_open is not null)
                 Path_TextBox.Text = _open;
+            else if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+                Path_TextBox.Text = "/";
         }
 
         private void Backward_Button_RightClick(Control sender, CursorEventArgs e)
@@ -186,10 +188,10 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
         {
             SimpleFilesBox.SearchText = e.NewText;
 
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
-                Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
+            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Search_TextBox.ClientSize.Width)
+                Search_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
-                Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
+                Search_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
         private void SimpleFilesBox_TextChanged(Control sender, TextChangedEventArgs e)

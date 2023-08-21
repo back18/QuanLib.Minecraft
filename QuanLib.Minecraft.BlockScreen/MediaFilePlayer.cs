@@ -38,6 +38,10 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
                 catch (Exception ex)
                 {
+                    WaveOutEvent?.Dispose();
+                    MediaFoundationReader?.Dispose();
+                    WaveOutEvent = null;
+                    MediaFoundationReader = null;
                     EnableAudio = false;
                     LOGGER.Error("无法使用NAudio库播放音频，音频已禁用", ex);
                 }
@@ -56,7 +60,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         private readonly Stopwatch _stopwatch;
 
-        public bool EnableAudio { get; set; }
+        public bool EnableAudio { get; }
 
         public MediaFile MediaFile { get; }
 
@@ -67,6 +71,23 @@ namespace QuanLib.Minecraft.BlockScreen
         public WaveOutEvent? WaveOutEvent { get; }
 
         public VideoFrame? CurrentVideoFrame { get; private set; }
+
+        public float Volume
+        {
+            get => WaveOutEvent?.Volume ?? 0;
+            set
+            {
+                if (WaveOutEvent is null)
+                    return;
+
+                if (value < 0)
+                    value = 0;
+                else if (value > 1)
+                    value = 1;
+
+                WaveOutEvent.Volume = value;
+            }
+        }
 
         public TimeSpan CurrentPosition
         {
@@ -98,9 +119,14 @@ namespace QuanLib.Minecraft.BlockScreen
             if (VideoDecoder.TryJumpToFrame(time))
             {
                 _start = time;
-                if (MediaFoundationReader is not null)
-                    MediaFoundationReader.CurrentTime = _start;
-                WaveOutEvent?.Play();
+
+                if (EnableAudio)
+                {
+                    if (MediaFoundationReader is not null)
+                        MediaFoundationReader.CurrentTime = _start;
+                    WaveOutEvent?.Play();
+                }
+
                 _stopwatch.Restart();
                 _stopwatch.Start();
                 if (PlayerState != MediaFilePlayerState.Playing)
@@ -123,7 +149,11 @@ namespace QuanLib.Minecraft.BlockScreen
                         Task.Run(() => VideoDecoder.Start());
                 }
 
-                WaveOutEvent?.Play();
+                if (EnableAudio)
+                {
+                    WaveOutEvent?.Play();
+                }
+
                 _stopwatch.Start();
 
                 PlayerState = MediaFilePlayerState.Playing;
@@ -139,7 +169,11 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             if (PlayerState != MediaFilePlayerState.Pause)
             {
-                WaveOutEvent?.Stop();
+                if (EnableAudio)
+                {
+                    WaveOutEvent?.Stop();
+                }
+
                 _stopwatch.Stop();
 
                 PlayerState = MediaFilePlayerState.Pause;

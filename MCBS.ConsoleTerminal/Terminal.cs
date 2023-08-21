@@ -93,14 +93,15 @@ namespace MCBS.ConsoleTerminal
                         bool run = true;
                         Task.Run(() =>
                         {
-                            int top = Console.CursorTop;
+                            string empty = new(' ', 32);
+                            for (int i = 0; i < 13; i++)
+                                Console.WriteLine(empty);
                             while (run)
                             {
-                                string empty = new(' ', 32);
-                                Console.SetCursorPosition(0, top);
+                                Console.CursorTop -= 13;
                                 for (int i = 0; i < 13; i++)
                                     Console.WriteLine(empty);
-                                Console.SetCursorPosition(0, top);
+                                Console.CursorTop -= 13;
                                 Console.WriteLine(MCOS.Instance.SystemTimer.ToString(QuanLib.Minecraft.BlockScreen.Timer.Duration.Tick20));
                                 Console.WriteLine($"帧: {MCOS.Instance.FrameCount}");
                                 Console.WriteLine($"滞后: {MCOS.Instance.LagFrameCount}");
@@ -109,10 +110,17 @@ namespace MCBS.ConsoleTerminal
                         });
                         while (true)
                         {
-                            if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                            if (Console.KeyAvailable)
                             {
-                                run = false;
-                                break;
+                                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                                {
+                                    run = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                Thread.Sleep(10);
                             }
                         }
                         Console.CursorVisible = true;
@@ -136,12 +144,12 @@ namespace MCBS.ConsoleTerminal
 
         private void RegisterCommands()
         {
-            CommandSystem.Pool.AddCommand(new(new("application lsit"), CommandFunc.GetFunc(GetApplicationList)));
-            CommandSystem.Pool.AddCommand(new(new("screen lsit"), CommandFunc.GetFunc(GetScreenList)));
+            CommandSystem.Pool.AddCommand(new(new("application list"), CommandFunc.GetFunc(GetApplicationList)));
+            CommandSystem.Pool.AddCommand(new(new("screen list"), CommandFunc.GetFunc(GetScreenList)));
             CommandSystem.Pool.AddCommand(new(new("screen close"), CommandFunc.GetFunc(CloseScreen)));
             CommandSystem.Pool.AddCommand(new(new("screen builder"), CommandFunc.GetFunc(SetScreenBuilderEnable)));
-            CommandSystem.Pool.AddCommand(new(new("process lsit"), CommandFunc.GetFunc(GetProcessList)));
-            CommandSystem.Pool.AddCommand(new(new("form lsit"), CommandFunc.GetFunc(GetFormList)));
+            CommandSystem.Pool.AddCommand(new(new("process list"), CommandFunc.GetFunc(GetProcessList)));
+            CommandSystem.Pool.AddCommand(new(new("form list"), CommandFunc.GetFunc(GetFormList)));
             CommandSystem.Pool.AddCommand(new(new("frame count"), CommandFunc.GetFunc(GetFrameCount)));
         }
 
