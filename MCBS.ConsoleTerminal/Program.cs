@@ -20,6 +20,9 @@ namespace MCBS.ConsoleTerminal
         private static void Main(string[] args)
         {
             Thread.CurrentThread.Name = "MainThread";
+            
+            ConfigManager.CreateIfNotExists();
+
             LOGGER.Info("Starting!");
 
             Terminal terminal = new();
@@ -55,7 +58,7 @@ namespace MCBS.ConsoleTerminal
             {
 #endif
                 MinecraftConfig config = ConfigManager.MinecraftConfig;
-                switch (config.MinecraftServerMode)
+                switch (config.ServerMode)
                 {
                     case MinecraftServerMode.RconConnect:
                         LOGGER.Info($"将以RCON连接模式绑定到Minecraft服务器\n服务端路径: {config.ServerPath}\n服务器地址: {config.ServerAddress}");

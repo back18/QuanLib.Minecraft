@@ -7,6 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Config\Default\log4net.xml" />
+    <None Remove="Config\Default\Minecraft.toml" />
+    <None Remove="Config\Default\Registry.json" />
+    <None Remove="Config\Default\Screen.toml" />
+    <None Remove="Config\Default\System.toml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Config\Default\log4net.xml" />
+    <EmbeddedResource Include="Config\Default\Minecraft.toml" />
+    <EmbeddedResource Include="Config\Default\Registry.json" />
+    <EmbeddedResource Include="Config\Default\Screen.toml" />
+    <EmbeddedResource Include="Config\Default\System.toml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FFMediaToolkit" Version="4.5.1" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="MongoDB.Bson" Version="2.21.0" />

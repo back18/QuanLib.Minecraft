@@ -5,6 +5,7 @@ using QuanLib.Minecraft.BlockScreen.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,7 +37,6 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         }
         private static SystemConfig? _SystemConfig;
 
-
         public static ScreenConfig ScreenConfig
         {
             get
@@ -59,12 +59,39 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         }
         private static Dictionary<string, string>? _Registry;
 
+        public static void CreateIfNotExists()
+        {
+            if (!Directory.Exists(MCOS.MainDirectory.Configs.Directory))
+                Directory.CreateDirectory(MCOS.MainDirectory.Configs.Directory);
+
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Log4Net, "QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Minecraft, "QuanLib.Minecraft.BlockScreen.Config.Default.Minecraft.toml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.System, "QuanLib.Minecraft.BlockScreen.Config.Default.System.toml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Screen, "QuanLib.Minecraft.BlockScreen.Config.Default.Screen.toml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Registry, "QuanLib.Minecraft.BlockScreen.Config.Default.Registry.json");
+        }
+
+        private static void CreateIfNotExists(string path, string resource)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+            if (string.IsNullOrEmpty(resource))
+                throw new ArgumentException($"“{nameof(resource)}”不能为 null 或空。", nameof(resource));
+
+            if (!File.Exists(path))
+            {
+                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource) ?? throw new IndexOutOfRangeException();
+                using FileStream fileStream = new(path, FileMode.Create);
+                stream.CopyTo(fileStream);
+                Console.WriteLine($"配置文件“{path}”不存在，已创建默认配置文件");
+            }
+        }
+
         public static void LoadAll()
         {
             _MinecraftConfig = MinecraftConfig.Load(MCOS.MainDirectory.Configs.Minecraft);
             _SystemConfig = SystemConfig.Load(MCOS.MainDirectory.Configs.System);
             _ScreenConfig = ScreenConfig.Load(MCOS.MainDirectory.Configs.Screen);
-
             _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(MCOS.MainDirectory.Configs.Registry)) ?? throw new FormatException();
 
             LOGGER.Info("配置文件加载完成");

@@ -127,7 +127,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 return;
 
             string json = File.ReadAllText(MCOS.MainDirectory.Saves.ScreenSaves);
-            ScreenOptions.Json[] items = JsonConvert.DeserializeObject<ScreenOptions.Json[]>(json) ?? throw new FormatException();
+            ScreenOptions.Model[] items = JsonConvert.DeserializeObject<ScreenOptions.Model[]>(json) ?? throw new FormatException();
             foreach (var item in items)
             {
                 ScreenOptions options = new(item);
@@ -138,9 +138,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         private void SaveScreens()
         {
-            List<ScreenOptions.Json> items = new();
+            List<ScreenOptions.Model> items = new();
             foreach (var save in _saves)
-                items.Add(save.ToJson());
+                items.Add(save.ToModel());
             string json = JsonConvert.SerializeObject(items);
             File.WriteAllText(MCOS.MainDirectory.Saves.ScreenSaves, json);
         }

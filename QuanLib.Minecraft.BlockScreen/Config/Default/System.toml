@@ -1,0 +1,10 @@
+#是否启用加速引擎
+EnableAccelerationEngine = true
+
+#系统服务AppID
+ServicesAppID = "Services"
+
+#启动项AppID列表
+StartupChecklist = [
+    "Desktop"
+]

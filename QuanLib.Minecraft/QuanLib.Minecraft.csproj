@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="CoreRCON" Version="5.0.5" />
+    <PackageReference Include="Nett" Version="0.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
   </ItemGroup>

@@ -1,0 +1,61 @@
+#系统与服务器的连接模式
+#0代表RCON连接模式（连接到已启动的服务端）
+#1代表托管进程模式（根据JavaPath和LaunchArguments启动一个新的服务端进程）
+ServerMode = 0
+
+#服务端主目录所在路径
+#不能为空
+ServerPath = ""
+
+#服务器地址
+#不能为空
+ServerAddress = "127.0.0.1"
+
+#启动服务端进程所使用的Java路径
+#当ServerMode为1时不能为空
+JavaPath = "java"
+
+#启动服务端进程所使用的启动参数
+#当ServerMode为1时不能为空
+LaunchArguments = ""
+
+#加速引擎的服务端事件端口
+#范围: 0~65535
+AccelerationEngineEventPort = 0
+
+#加速引擎的服务端数据端口
+#范围: 0~65535
+AccelerationEngineDataPort = 12345
+
+#方块贴图黑名单列表
+#将指定方块ID添加到黑名单列表后，将跳过该方块的读取
+BlockTextureBlacklist = [
+"minecraft:glowstone",
+"minecraft:jack_o_lantern",
+"minecraft:sea_lantern",
+"minecraft:ochre_froglight",
+"minecraft:verdant_froglight",
+"minecraft:pearlescent_froglight",
+"minecraft:shroomlight",
+"minecraft:redstone_lamp[lit=true]",
+"minecraft:crying_obsidian",
+"minecraft:magma_block",
+"minecraft:sculk_catalyst",
+"minecraft:beacon",
+"minecraft:respawn_anchor[charges=1]",
+"minecraft:respawn_anchor[charges=2]",
+"minecraft:respawn_anchor[charges=3]",
+"minecraft:respawn_anchor[charges=4]",
+"minecraft:grass_block",
+"minecraft:podzol",
+"minecraft:mycelium",
+"minecraft:crimson_nylium",
+"minecraft:warped_nylium",
+"minecraft:tnt",
+"minecraft:snow",
+"minecraft:tube_coral_block",
+"minecraft:brain_coral_block",
+"minecraft:bubble_coral_block",
+"minecraft:fire_coral_block",
+"minecraft:horn_coral_block"
+]

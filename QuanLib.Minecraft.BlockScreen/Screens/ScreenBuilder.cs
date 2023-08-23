@@ -59,10 +59,10 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         }
                         else
                         {
-                            if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
+                            if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxCount)
                             {
                                 screen.Clear();
-                                command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxScreenCount}个，无法继续创建屏幕", TextColor.Red);
+                                command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxCount}个，无法继续创建屏幕", TextColor.Red);
                             }
                             else
                             {
@@ -87,7 +87,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
             }
 
-            if (!Enable || MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxScreenCount)
+            if (!Enable || MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxCount)
                 return;
 
             Dictionary<string, Item> items = command.GetAllPlayerSelectedItem();

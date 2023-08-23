@@ -11,9 +11,9 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
     {
         public ConfigsDirectory(string directory) : base(directory)
         {
-            Minecraft = Combine("Minecraft.json");
-            System = Combine("System.json");
-            Screen = Combine("Screen.json");
+            Minecraft = Combine("Minecraft.toml");
+            System = Combine("System.toml");
+            Screen = Combine("Screen.toml");
             Registry = Combine("Registry.json");
             Log4Net = Combine("log4net.xml");
         }

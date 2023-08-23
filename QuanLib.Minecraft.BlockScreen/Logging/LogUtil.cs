@@ -7,6 +7,7 @@ using log4net.Repository.Hierarchy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,13 @@ namespace QuanLib.Minecraft.BlockScreen.Logging
     {
         static LogUtil()
         {
+            if (!File.Exists(MCOS.MainDirectory.Configs.Log4Net))
+            {
+                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml") ?? throw new IndexOutOfRangeException();
+                using FileStream fileStream = new(MCOS.MainDirectory.Configs.Log4Net, FileMode.Create);
+                stream.CopyTo(fileStream);
+                Console.WriteLine($"配置文件“{MCOS.MainDirectory.Configs.Log4Net}”不存在，已创建默认配置文件");
+            }
             XmlConfigurator.Configure(new FileInfo(MCOS.MainDirectory.Configs.Log4Net));
             _repository = (Hierarchy)LogManager.GetRepository();
             _console = new();
