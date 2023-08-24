@@ -1,4 +1,5 @@
-﻿using log4net.Core;
+﻿using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
+using log4net.Core;
 using NAudio.Codecs;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
@@ -93,7 +94,12 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     LOGGER.Info($"屏幕“{ToString()}”已加载");
                     break;
                 case ScreenState.Active:
-                    //TODO
+                    if (ScreenConfig.ScreenIdleTimeout != -1 && Screen.InputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
+                    {
+                        ScreenState = ScreenState.Closed;
+                        LOGGER.Warn($"ID为{ID}的屏幕已达到最大闲置时间，即将卸载");
+                        goto case ScreenState.Closed;
+                    }
                     break;
                 case ScreenState.Sleep:
                     //TODO

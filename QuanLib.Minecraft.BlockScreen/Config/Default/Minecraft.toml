@@ -5,7 +5,7 @@ ServerMode = 0
 
 #服务端主目录所在路径
 #不能为空
-ServerPath = ""
+ServerPath = ".."
 
 #服务器地址
 #不能为空

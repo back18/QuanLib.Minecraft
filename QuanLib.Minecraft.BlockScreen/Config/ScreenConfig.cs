@@ -12,23 +12,27 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 {
     public class ScreenConfig
     {
-        private ScreenConfig(Model json)
+        private ScreenConfig(Model model)
         {
-            if (json is null)
-                throw new ArgumentNullException(nameof(json));
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-            MaxCount = json.MaxCount;
-            MinLength = json.MinLength;
-            MaxLength = json.MaxLength;
-            MinPixels = json.MinPixels;
-            MaxPixels = json.MaxPixels;
-            MinY = json.MinY;
-            MaxY = json.MaxY;
-            ScreenBuildTimeout = json.ScreenBuildTimeout;
-            RightClickObjective = json.RightClickObjective;
+            MaxCount = model.MaxCount;
+            MinLength = model.MinLength;
+            MaxLength = model.MaxLength;
+            MinPixels = model.MinPixels;
+            MaxPixels = model.MaxPixels;
+            MinY = model.MinY;
+            MaxY = model.MaxY;
+            ScreenBuildTimeout = model.ScreenBuildTimeout;
+            ScreenIdleTimeout = model.ScreenIdleTimeout;
+            RightClickObjective = model.RightClickObjective;
+            ScreenBuildItemName = model.ScreenBuildItemName;
+            ScreenOperatorList = model.ScreenOperatorList;
+            ScreenBuildOperatorList = model.ScreenBuildOperatorList;
 
             List<ScreenOptions> list = new();
-            foreach (var item in json.ResidentScreenList)
+            foreach (var item in model.ResidentScreenList)
             {
                 list.Add(new(item));
             }
@@ -51,7 +55,15 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
         public int ScreenBuildTimeout { get; }
 
+        public int ScreenIdleTimeout { get; }
+
         public string RightClickObjective { get; }
+
+        public string ScreenBuildItemName { get; }
+
+        public IReadOnlyList<string> ScreenOperatorList { get; }
+
+        public IReadOnlyList<string> ScreenBuildOperatorList { get; }
 
         public IReadOnlyList<ScreenOptions> ResidentScreenList { get; }
 
@@ -136,11 +148,23 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
             public int MaxY { get; set; }
 
-            [Range(0, int.MaxValue, ErrorMessage = "屏幕构造器的超时时间范围应该为0~214748367")]
+            [Range(-1, int.MaxValue, ErrorMessage = "屏幕构造器的超时时间范围应该为-1~214748367")]
             public int ScreenBuildTimeout { get; set; }
+
+            [Range(-1, int.MaxValue, ErrorMessage = "屏幕的闲置超时时间范围应该为-1~214748367")]
+            public int ScreenIdleTimeout { get; set; }
 
             [Required(ErrorMessage = "右键计分板名称不能为空")]
             public string RightClickObjective { get; set; }
+
+            [Required(ErrorMessage = "屏幕构建器物品名称不能为空")]
+            public string ScreenBuildItemName { get; set; }
+
+            [Required(ErrorMessage = "配置项缺失")]
+            public string[] ScreenOperatorList { get; set; }
+
+            [Required(ErrorMessage = "配置项缺失")]
+            public string[] ScreenBuildOperatorList { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
             public ScreenOptions.Model[] ResidentScreenList { get; set; }

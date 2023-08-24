@@ -159,6 +159,31 @@ namespace QuanLib.Minecraft
             }
         }
 
+        public virtual bool TestBlcok(int x, int y, int z, string id)
+        {
+            if (id is null)
+                throw new ArgumentNullException(nameof(id));
+
+            string output = SendCommand($"execute if block {x} {y} {z} {id}");
+            if (output.StartsWith("Test passed"))
+                return true;
+            else
+                return false;
+        }
+
+        public virtual bool TestBlcok(IVector3<int> pos, string id)
+        {
+            if (id is null)
+                throw new ArgumentNullException(nameof(id));
+
+            string output = SendCommand($"execute if block {pos.X} {pos.Y} {pos.Z} {id}");
+
+            if (output.StartsWith("Test passed"))
+                return true;
+            else
+                return false;
+        }
+
         public virtual bool SetBlock(int x, int y, int z, string id)
         {
             if (id is null)

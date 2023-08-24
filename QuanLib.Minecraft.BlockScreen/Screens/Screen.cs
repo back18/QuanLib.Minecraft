@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {
@@ -213,12 +214,34 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         }
         private ScreenOutputHandler? _OutputHandler;
 
-        private void Fill(string blockID)
+        private bool Check(string blockID)
         {
-            OutputHandler.HandleOutput(ArrayFrame.BuildFrame(Width, Height, blockID));
+            if (blockID is null)
+                throw new ArgumentNullException(nameof(blockID));
+
+            var command = MCOS.Instance.MinecraftServer.CommandHelper;
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                {
+                    if (!command.TestBlcok(ToWorldPosition(new(x, y)), blockID))
+                        return false;
+                }
+
+            return true;
         }
 
-        private void FillDouble(string blockID)
+        private bool Fill(string blockID, bool check = false)
+        {
+            if (check && !CheckAir())
+            {
+                return false;
+            }
+
+            OutputHandler.HandleOutput(ArrayFrame.BuildFrame(Width, Height, blockID));
+            return true;
+        }
+
+        private bool FillDouble(string blockID, bool check = false)
         {
             Vector3<int> position1 = StartPosition;
             Vector3<int> position2 = StartPosition;
@@ -245,13 +268,24 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             Screen screen1 = new(position1, Width, Height, XFacing, YFacing);
             Screen screen2 = new(position2, Width, Height, XFacing, YFacing);
+
+            if (check && (!screen1.CheckAir() || !screen2.CheckAir()))
+                return false;
+
             screen1.Fill(blockID);
             screen2.Fill(blockID);
+
+            return true;
         }
 
-        public void Fill()
+        public bool Fill(bool check = false)
         {
-            Fill(DefaultBackgroundBlcokID);
+            return Fill(DefaultBackgroundBlcokID, check);
+        }
+
+        public bool CheckAir()
+        {
+            return Check(AIR_BLOCK);
         }
 
         public void Clear()
@@ -309,14 +343,12 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
 
             var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            if (command.SetBlock(position1, AIR_BLOCK))
+            if (command.TestBlcok(position1, LIGHT_BLOCK))
             {
-                command.SetBlock(position1, LIGHT_BLOCK);
                 return true;
             }
-            else if (command.SetBlock(position2, AIR_BLOCK))
+            else if (command.TestBlcok(position2, LIGHT_BLOCK))
             {
-                command.SetBlock(position2, LIGHT_BLOCK);
                 return true;
             }
             else
@@ -703,84 +735,97 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return new(startPosition, width, height, xFacing, yFacing);
         }
 
-        public static void Replace(Screen? oldScreen, Screen newScreen)
+        public static bool Replace(Screen? oldScreen, Screen newScreen, bool check = false)
         {
             if (newScreen is null)
                 throw new ArgumentNullException(nameof(newScreen));
 
             if (oldScreen is null || oldScreen.OutputHandler.LastFrame is null)
             {
-                newScreen.Fill();
-                return;
+                return newScreen.Fill(check);
             }
 
             if (oldScreen.Plane != newScreen.Plane || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
             {
+                if (!newScreen.Fill(check))
+                    return false;
+
                 oldScreen.Clear();
-                newScreen.Fill();
-                return;
+                return true;
             }
 
-            ArrayFrame? frame = null;
+            var command = MCOS.Instance.MinecraftServer.CommandHelper;
             if (oldScreen.DefaultBackgroundBlcokID == newScreen.DefaultBackgroundBlcokID &&
                 oldScreen.StartPosition == oldScreen.StartPosition &&
                 oldScreen.XFacing == newScreen.XFacing &&
                 oldScreen.YFacing == newScreen.YFacing)
             {
+                if (newScreen.Width == oldScreen.Width && newScreen.Height == oldScreen.Height)
+                    return true;
+
+                ArrayFrame? oldFrame = null;
                 if (newScreen.OutputHandler.LastFrame is null)
                     newScreen.OutputHandler.LastFrame = ArrayFrame.BuildFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
 
                 if (newScreen.Width > oldScreen.Width)
                 {
+                    if (check)
+                    {
+                        for (int x = oldScreen.Width; x < newScreen.Width; x++)
+                            for (int y = 0; y < newScreen.Height; y++)
+                            {
+                                if (!command.TestBlcok(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
+                                    return false;
+                            }
+                    }
+
                     for (int x = oldScreen.Width; x < newScreen.Width; x++)
                         for (int y = 0; y < newScreen.Height; y++)
                             newScreen.OutputHandler.LastFrame.SetBlockID(x, y, AIR_BLOCK);
                 }
                 else if (newScreen.Width < oldScreen.Width)
                 {
-                    frame ??= oldScreen.OutputHandler.LastFrame.Clone();
+                    oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
                     for (int x = newScreen.Width; x < oldScreen.Width; x++)
                         for (int y = 0; y < oldScreen.Height; y++)
-                            frame.SetBlockID(x, y, AIR_BLOCK);
+                            oldFrame.SetBlockID(x, y, AIR_BLOCK);
                 }
 
                 if (newScreen.Height > oldScreen.Height)
                 {
-                    for (int x = 0; x < newScreen.Width; x++)
+                    if (check)
+                    {
                         for (int y = oldScreen.Height; y < newScreen.Height; y++)
+                            for (int x = 0; x < newScreen.Width; x++)
+                            {
+
+                                if (!command.TestBlcok(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
+                                    return false;
+                            }
+                    }
+
+                    for (int y = oldScreen.Height; y < newScreen.Height; y++)
+                        for (int x = 0; x < newScreen.Width; x++)
                             newScreen.OutputHandler.LastFrame.SetBlockID(x, y, AIR_BLOCK);
                 }
                 else if (newScreen.Height < oldScreen.Height)
                 {
-                    frame ??= oldScreen.OutputHandler.LastFrame.Clone();
-                    for (int x = 0; x < oldScreen.Width; x++)
-                        for (int y = newScreen.Height; y < oldScreen.Height; y++)
-                            frame.SetBlockID(x, y, AIR_BLOCK);
+                    oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
+                    for (int y = newScreen.Height; y < oldScreen.Height; y++)
+                        for (int x = 0; x < oldScreen.Width; x++)
+                            oldFrame.SetBlockID(x, y, AIR_BLOCK);
                 }
 
                 newScreen.Fill();
-                if (frame is not null)
-                    oldScreen.OutputHandler.HandleOutput(frame);
+                if (oldFrame is not null)
+                    oldScreen.OutputHandler.HandleOutput(oldFrame);
+
+                return true;
             }
             else
             {
-                frame = oldScreen.OutputHandler.LastFrame.Clone();
-                if (newScreen.OutputHandler.LastFrame is null)
-                    newScreen.Fill();
-
-                List<Vector3<int>> worlds = new();
-                for (int x = 0; x < newScreen.Width; x++)
-                    for (int y = 0; y < newScreen.Height; y++)
-                        worlds.Add(newScreen.ToWorldPosition(new(x, y)));
-
-                for (int x = 0; x < oldScreen.Width; x++)
-                    for (int y = 0; y < oldScreen.Height; y++)
-                    {
-                        if (!worlds.Contains(oldScreen.ToWorldPosition(new(x, y))))
-                            frame.SetBlockID(x, y, AIR_BLOCK);
-                    }
-
-                oldScreen.OutputHandler.HandleOutput(frame);
+                oldScreen.Clear();
+                return newScreen.Fill(check);
             }
         }
     }

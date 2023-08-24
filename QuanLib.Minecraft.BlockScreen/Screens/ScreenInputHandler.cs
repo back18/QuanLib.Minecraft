@@ -1,6 +1,6 @@
-﻿using CoreRCON;
+﻿using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
+using CoreRCON;
 using QuanLib.Event;
-using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Vector;
@@ -11,6 +11,9 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static log4net.Appender.RollingFileAppender;
+using CoreRCON.Parsers.Standard;
+using QuanLib.Minecraft.Selectors;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {
@@ -30,6 +33,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             CurrentItem = null;
             InitialText = string.Empty;
             CurrentText = string.Empty;
+            IdleTime = 0;
 
             CursorMove += OnCursorMove;
             RightClick += OnRightClick;
@@ -60,6 +64,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public string InitialText { get; set; }
 
         public string CurrentText { get; private set; }
+
+        public int IdleTime { get; private set; }
 
         public event EventHandler<ICursorReader, CursorEventArgs> CursorMove;
 
@@ -103,7 +109,10 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             Dictionary<string, IVector3<double>> players = command.GetRangePlayerPosition(start, range);
             if (players.Count == 0)
+            {
+                IdleTime++;
                 return;
+            }
 
             Func<IVector3<double>, double> GetDistance = screen.NormalFacing switch
             {
@@ -120,8 +129,14 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             foreach (var distance in orderDistances)
             {
                 if (HandlePlayer(distance.name))
+                {
+                    IdleTime = 0;
                     return;
+                }
             }
+
+            IdleTime++;
+            return;
         }
 
         private bool HandlePlayer(string player)
@@ -164,6 +179,12 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (!screen.IncludedOnScreen(targetPosition))
                 return false;
 
+            if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(player))
+            {
+                command.SendActionbarTitle(new PlayerSelector(player), $"[屏幕输入处理模块] 错误：你没有权限控制屏幕", TextColor.Red);
+                return false;
+            }
+
             List<Action> actions = new();
 
             CurrentPlayer = player;
@@ -200,10 +221,10 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             switch (selectedItem.ID)
             {
                 case MOUSE_ITEM:
-                    if (command.TryGetPlayerScoreboard(player, ConfigManager.ScreenConfig.RightClickObjective, out var score) && score > 0)
+                    if (command.TryGetPlayerScoreboard(player, ScreenConfig.RightClickObjective, out var score) && score > 0)
                     {
                         RightClick.Invoke(this, new(CurrentPosition));
-                        command.SetPlayerScoreboard(player, ConfigManager.ScreenConfig.RightClickObjective, 0);
+                        command.SetPlayerScoreboard(player, ScreenConfig.RightClickObjective, 0);
                     }
                     break;
                 case TEXTEDITOR_ITEM:

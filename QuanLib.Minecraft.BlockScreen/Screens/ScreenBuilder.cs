@@ -113,8 +113,14 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     }
 
                     string? text = nameJson["text"]?.Value<string>();
-                    if (text is null || text != "创建屏幕")
+                    if (text is null || text != ScreenConfig.ScreenBuildItemName)
                         continue;
+
+                    if (ScreenConfig.ScreenBuildOperatorList.Count != 0 && !ScreenConfig.ScreenBuildOperatorList.Contains(item.Key))
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(item.Key), $"[屏幕构建器] 错误：你没有权限创建屏幕", TextColor.Red);
+                        continue;
+                    }
 
                     _contexts.Add(item.Key, new(item.Key));
                     command.SendChatMessage(new PlayerSelector(item.Key), "[屏幕构建器] 已载入屏幕创建程序");

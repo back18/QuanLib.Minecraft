@@ -53,7 +53,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 return;
             }
 
-            if (Timeout <= 0)
+            if (ScreenConfig.ScreenBuildTimeout != -1 && Timeout <= 0)
             {
                 BuildState = ScreenBuildState.Timedout;
                 return;
@@ -85,7 +85,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
 
                 string? text = nameJson["text"]?.Value<string>();
-                if (text is null || text != "创建屏幕")
+                if (text is null || text != ScreenConfig.ScreenBuildItemName)
                 {
                     TryCancel();
                     return;
@@ -143,10 +143,27 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
                     Screen? newScreen = Screen;
                     if (EndPosition != targetPosition)
+                    {
                         newScreen = Screen.CreateScreen(StartPosition, targetPosition, NormalFacing);
+                    }
 
                     if (newScreen is null)
                         goto click;
+
+                    if (Screen.Replace(Screen, newScreen, true))
+                    {
+                        if (EndPosition != targetPosition)
+                        {
+                            Screen = newScreen;
+                            EndPosition = targetPosition;
+                        }
+                    }
+                    else
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：所选范围内含有非空气方块", TextColor.Red);
+                        Error = true;
+                        goto click;
+                    }
 
                     if (newScreen.Width > ScreenConfig.MaxLength || newScreen.Height > ScreenConfig.MaxLength)
                     {
@@ -169,13 +186,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     {
                         command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 错误：屏幕最小像素数量为{ScreenConfig.MinPixels}", TextColor.Red);
                         Error = true;
-                    }
-
-                    if (EndPosition != targetPosition)
-                    {
-                        EndPosition = targetPosition;
-                        Screen.Replace(Screen, newScreen);
-                        Screen = newScreen;
                     }
 
                     command.SendTitle(new PlayerSelector(Player), 0, 10, 10, "正在确定屏幕尺寸");
@@ -227,8 +237,15 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             {
                 if (BuildState == ScreenBuildState.ReadEndPosition)
                 {
-                    Timeout--;
-                    command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] {Timeout / 20}秒后无操作将取消本次屏幕创建", TextColor.Red);
+                    if (ScreenConfig.ScreenBuildTimeout == -1)
+                    {
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] 你有一个屏幕未完成创建， 位于{StartPosition}", TextColor.Red);
+                    }
+                    else
+                    {
+                        Timeout--;
+                        command.SendActionbarTitle(new PlayerSelector(Player), $"[屏幕构建器] {Timeout / 20}秒后无操作将取消本次屏幕创建", TextColor.Red);
+                    }
                 }
                 else
                 {
