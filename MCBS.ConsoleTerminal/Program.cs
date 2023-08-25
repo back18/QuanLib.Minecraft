@@ -7,6 +7,7 @@ using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Logging;
+using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
 using QuanLib.Minecraft.Data;
 using System.Text;
@@ -20,13 +21,11 @@ namespace MCBS.ConsoleTerminal
         private static void Main(string[] args)
         {
             Thread.CurrentThread.Name = "MainThread";
-            
             ConfigManager.CreateIfNotExists();
-
             LOGGER.Info("Starting!");
 
             Terminal terminal = new();
-            Task.Run(() => terminal.Start());
+            Task terminalTask = Task.Run(() => terminal.Start());
 
 #if TryCatch
             try
@@ -45,7 +44,7 @@ namespace MCBS.ConsoleTerminal
             catch (Exception ex)
             {
                 LOGGER.Fatal("无法完成初始化", ex);
-                Console.ReadLine();
+                Exit();
                 return;
             }
 #endif
@@ -78,7 +77,7 @@ namespace MCBS.ConsoleTerminal
             catch (Exception ex)
             {
                 LOGGER.Fatal("无法绑定到Minecraft服务器", ex);
-                Console.ReadLine();
+                Exit();
                 return;
             }
 #endif
@@ -87,15 +86,15 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
-                LOGGER.Info("开始初始化MCOS");
+                LOGGER.Info("系统开始初始化");
                 mcos = MCOS.Load(server);
-                LOGGER.Info("MCOS初始化完成");
+                LOGGER.Info("系统初始化完成");
 #if TryCatch
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("无法初始化MCOS", ex);
-                Console.ReadLine();
+                LOGGER.Fatal("系统无法完成初始化", ex);
+                Exit();
                 return;
             }
 #endif
@@ -119,20 +118,17 @@ namespace MCBS.ConsoleTerminal
             server.WaitForConnected();
             LOGGER.Info("成功连接到Minecraft服务器");
 
-#if TryCatch
-            try
+            mcos.Start();
+
+            Exit();
+            return;
+
+            void Exit()
             {
-#endif
-                mcos.Start();
-#if TryCatch
+                terminal.Stop();
+                LOGGER.Info("按下回车键退出...");
+                terminalTask.Wait();
             }
-            catch (Exception ex)
-            {
-                LOGGER.Fatal("MCOS运行时出现意外异常", ex);
-                Console.ReadLine();
-                return;
-            }
-#endif
         }
     }
 }

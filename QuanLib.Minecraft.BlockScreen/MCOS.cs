@@ -61,7 +61,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _Instance = this;
         }
 
-        private static object _lock;
+        private static readonly object _lock;
 
         public static bool IsLoaded { get; private set; }
 
@@ -83,8 +83,6 @@ namespace QuanLib.Minecraft.BlockScreen
         internal readonly ConcurrentQueue<Action> TempTaskList;
 
         private readonly Stopwatch _stopwatch;
-
-        private Task? _screen;
 
         private bool _runing;
 
@@ -141,7 +139,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 return;
             _runing = true;
 
-            LOGGER.Info("MCOS已启动");
+            LOGGER.Info("系统已开始运行");
 
 #if TryCatch
             try
@@ -163,42 +161,86 @@ namespace QuanLib.Minecraft.BlockScreen
 #endif
 
             ScreenManager.Initialize();
-
             MinecraftServer.CommandHelper.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
-
             _stopwatch.Start();
-            while (_runing)
+
+            run:
+
+#if TryCatch
+            try
             {
-                PreviousFrameTime = SystemRunningTime;
-                NextFrameTime = PreviousFrameTime + FrameMinTime;
-                FrameCount++;
-
-                HandleScreenScheduling();
-                HandleProcessScheduling();
-                HandleFormScheduling();
-
-                if (_screen?.IsCompleted ?? true)
+#endif
+                while (_runing)
                 {
-                    HandleScreenInput();
-                    HandleScreenBuild();
+                    PreviousFrameTime = SystemRunningTime;
+                    NextFrameTime = PreviousFrameTime + FrameMinTime;
+                    FrameCount++;
+
+                    HandleScreenScheduling();
+                    HandleProcessScheduling();
+                    HandleFormScheduling();
+
+                    if (ScreenManager.IsCompletedOutput)
+                    {
+                        HandleScreenInput();
+                        HandleScreenBuild();
+                    }
+                    else
+                    {
+                        AddTempTask(() => HandleScreenInput());
+                        AddTempTask(() => HandleScreenBuild());
+                        LagFrameCount++;
+                    }
+
+                    HandleBeforeFrame();
+                    HandleUIRendering(out var frames);
+                    HandleScreenOutput(frames);
+                    HandleAfterFrame();
+                    HandleSystemInterrupt();
+
+                    SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
+                }
+#if TryCatch
+            }
+            catch (Exception ex)
+            {
+                bool connect = MinecraftServer.PingServer(out _) && MinecraftServer.PingRcon(out _);
+
+                if (!connect)
+                {
+                    LOGGER.Fatal("系统运行时遇到意外错误，并且无法继续连接到Minecraft服务器，系统即将终止运行", ex);
+                }
+                else if (ConfigManager.SystemConfig.CrashAutoRestart)
+                {
+                    foreach (var context in ScreenManager.ScreenList.Values)
+                    {
+                        context.RestartScreen();
+                    }
+                    LOGGER.Error("系统运行时遇到意外错误，已启用自动重启，系统即将在3秒后重启", ex);
+                    for (int i = 3; i >= 1; i--)
+                    {
+                        LOGGER.Info($"将在{i}秒后自动重启...");
+                        Thread.Sleep(1000);
+                    }
+                    ScreenManager.ClearOutputTask();
+                    LOGGER.Info("开始重启...");
+                    goto run;
                 }
                 else
                 {
-                    TempTaskList.Enqueue(() => HandleScreenInput());
-                    TempTaskList.Enqueue(() => HandleScreenBuild());
-                    LagFrameCount++;
+                    foreach (var context in ScreenManager.ScreenList.Values)
+                    {
+                        context.Screen.Fill();
+                        context.Screen.UnloadScreenChunks();
+                    }
+                    LOGGER.Fatal("系统运行时遇到意外错误，未启用自动重启，系统即将终止运行", ex);
                 }
-
-                HandleBeforeFrame();
-                HandleUIRendering(out var frames);
-                HandleScreenOutput(frames);
-                HandleAfterFrame();
-                HandleSystemInterrupt();
-
-                SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
             }
+#endif
 
             _stopwatch.Stop();
+            _runing = false;
+            LOGGER.Info("系统已终止运行");
         }
 
         public void Stop()
@@ -276,8 +318,8 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            _screen = ScreenManager.HandleAllScreenOutputAsync(frames);
-            ScreenManager.WaitAllScreenPrevious();
+            _ = ScreenManager.HandleAllScreenOutputAsync(frames);
+            ScreenManager.WaitAllScreenPreviousOutputTask();
 
             stopwatch.Stop();
             SystemTimer.ScreenOutput.Add(stopwatch.Elapsed);

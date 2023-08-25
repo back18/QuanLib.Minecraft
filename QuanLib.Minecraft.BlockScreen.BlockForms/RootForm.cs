@@ -420,7 +420,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 StartMenu_Switch.Skin.BackgroundBlockID_Hover = Skin.BackgroundBlockID;
                 StartMenu_Switch.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Orange;
                 StartMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
-                StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Start"));
+                StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Logo"));
                 StartMenu_Switch.ControlSelected += StartMenu_Switch_ControlSelected;
                 StartMenu_Switch.ControlDeselected += StartMenu_Switch_ControlDeselected; ;
 

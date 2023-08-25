@@ -1,4 +1,5 @@
-﻿using QuanLib.Event;
+﻿using Newtonsoft.Json.Linq;
+using QuanLib.Event;
 using QuanLib.IO;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
@@ -12,8 +13,11 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
     public class SimpleFilesBox : ScrollablePanel
     {
-        public SimpleFilesBox()
+        public SimpleFilesBox(string rootDirectory)
         {
+            _RootDirectory = string.Empty;  //这里赋值仅为了抑制 CS8618 - Non-nullable variable must contain a non-null value when exiting constructor. Consider declaring it as
+            RootDirectory = rootDirectory;
+            Text = rootDirectory;
             _backwards = new();
             _forward = new();
             _SearchText = string.Empty;
@@ -25,6 +29,28 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
         private readonly Stack<string> _backwards;
 
         private readonly Stack<string> _forward;
+
+        public override string Text
+        {
+            get => base.Text;
+            set
+            {
+                value = GetFullPath(value);
+                base.Text = value;
+            }
+        }
+
+        public string RootDirectory
+        {
+            get => _RootDirectory;
+            set
+            {
+                value = GetFullPath(value);
+                _RootDirectory = value;
+            }
+        }
+
+        private string _RootDirectory;
 
         public string SearchText
         {
@@ -48,13 +74,6 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 
         protected virtual void OnOpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e) { }
 
-        public override void HandleInitCompleted3()
-        {
-            base.HandleInitCompleted3();
-
-            ActiveLayoutAll();
-        }
-
         protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
         {
             base.OnTextChanged(sender, e);
@@ -70,22 +89,25 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
         public override void ActiveLayoutAll()
         {
             List<FileSystemItem> items = new();
-            if (string.IsNullOrEmpty(Text) && Environment.OSVersion.Platform != PlatformID.Win32NT)
-                Text = "/";
 
-            if (string.IsNullOrEmpty(Text))
+            try
             {
-                foreach (var drive in DriveInfo.GetDrives())
-                    items.Add(new DriveItem(drive));
-            }
-            else
-            {
-                try
+                if (!Text.StartsWith(RootDirectory))
+                {
+                    throw new UnauthorizedAccessException("未经授权的访问");
+                }
+
+                if (string.IsNullOrEmpty(Text))
+                {
+                    foreach (var drive in DriveInfo.GetDrives())
+                        items.Add(new DriveItem(drive));
+                }
+                else
                 {
                     switch (FileUtil.GetPathType(Text))
                     {
                         case PathType.Unknown:
-                            throw new DirectoryNotFoundException();
+                            throw new DirectoryNotFoundException("目录不存在");
                         case PathType.Drive:
                             DirectoryInfo driveRoot = new DriveInfo(Text).RootDirectory;
                             foreach (var dir in driveRoot.GetDirectories())
@@ -108,13 +130,13 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                             break;
                     }
                 }
-                catch (Exception ex)
-                {
-                    OpeningItemException.Invoke(this, new(ex));
-                    Backward();
-                    _forward.Clear();
-                    return;
-                }
+            }
+            catch (Exception ex)
+            {
+                OpeningItemException.Invoke(this, new(ex));
+                Backward();
+                _forward.Clear();
+                return;
             }
 
             if (!string.IsNullOrEmpty(SearchText))
@@ -171,10 +193,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
             else
             {
                 string? dir = Path.GetDirectoryName(Text);
-                if (dir is not null)
+                if (dir is not null && dir.StartsWith(RootDirectory))
                 {
                     _forward.Push(Text);
                     Text = dir;
+                }
+                else
+                {
+                    Text = RootDirectory;
                 }
             }
         }
@@ -197,6 +223,14 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
                     result.Add(item.FileSystemInfo.FullName);
             }
             return result.ToArray();
+        }
+
+        public static string GetFullPath(string value)
+        {
+            if (string.IsNullOrEmpty(value) && Environment.OSVersion.Platform != PlatformID.Win32NT)
+                value = "/";
+            value = string.IsNullOrEmpty(value) ? string.Empty : Path.GetFullPath(value);
+            return value;
         }
     }
 }

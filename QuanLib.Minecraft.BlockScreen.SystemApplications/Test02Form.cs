@@ -68,15 +68,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             ClientPanel.SubControls.Add(switch1);
             switch1.ClientLocation = new(5, 65);
 
-            //ClientPanel.SubControls.Add(switch2);
-            //switch2.ClientLocation = new(5, 85);
-            //switch2.OnText = string.Empty;
-            //switch2.OffText = string.Empty;
-            //switch2.Skin.BackgroundImage = new(Path.Combine(dir, "OFF.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-            //switch2.Skin.BackgroundImage_Selected = new(Path.Combine(dir, "ON.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-            //switch2.Skin.BackgroundImage_Hover = new(Path.Combine(dir, "OFF过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-            //switch2.Skin.BackgroundImage_Hover_Selected = new(Path.Combine(dir, "ON过度.png"), GetScreenPlaneSize().NormalFacing, switch2.ClientSize);
-
             ClientPanel.SubControls.Add(comboButton1);
             comboButton1.ClientSize = new(110, 16);
             comboButton1.ClientLocation = ClientPanel.RightLayout(button1, 2, 3);
@@ -105,7 +96,11 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
         private void Button1_RightClick(Control sender, Event.CursorEventArgs e)
         {
-           _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", "你今天过得开心吗？尝试点击是、否、或取消", MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel);
+            _ = DialogBoxHelper.OpenMessageBoxAsync(this, "崩溃测试", "点击“是”系统将立刻崩溃", MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel, (result) =>
+            {
+                if (result == MessageBoxButtons.Yes)
+                    MCOS.Instance.AddTask(() => throw new Exception("手动触发崩溃"));
+            });
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)

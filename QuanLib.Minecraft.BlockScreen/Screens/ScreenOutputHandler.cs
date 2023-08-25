@@ -54,7 +54,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
             else
             {
-                MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+                MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             }
         }
 
@@ -87,28 +87,28 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
             else
             {
-                MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+                MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             }
         }
 
         private void AccelerationEngineSend(AccelerationEngine ae, List<ScreenPixel> pixels)
         {
             byte[] bytes = ToSetBlockDataPacket(pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             ae.SendData(bytes);
         }
 
         private async Task AccelerationEngineSendAsync(AccelerationEngine ae, List<ScreenPixel> pixels)
         {
             byte[] bytes = ToSetBlockDataPacket(pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             await ae.SendDataAsync(bytes);
         }
 
         private void StandardInputCommandSend(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
         {
             string function = ToSetBlockFunction(pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             sender.SendCommand(function);
             MCOS.Instance.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
@@ -116,7 +116,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private async Task StandardInputCommandSendAsync(IStandardInputCommandSender sender, List<ScreenPixel> pixels)
         {
             string function = ToSetBlockFunction(pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             await sender.SendCommandAsync(function);
             await MCOS.Instance.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
         }
@@ -124,7 +124,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private void BytesCommandSend(IBytesCommandSender sender, List<ScreenPixel> pixels)
         {
             ConcurrentBag<byte[]> commands = ToSetBlockBytesList(sender, pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             sender.SendAllCommand(commands);
             MCOS.Instance.MinecraftServer.CommandHelper.SendCommand("time query gametime");
         }
@@ -132,7 +132,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private async Task BytesCommandSendAsync(IBytesCommandSender sender, List<ScreenPixel> pixels)
         {
             ConcurrentBag<byte[]> commands = ToSetBlockBytesList(sender, pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             await sender.SendAllCommandAsync(commands);
             await MCOS.Instance.MinecraftServer.CommandHelper.SendCommandAsync("time query gametime");
         }
@@ -140,14 +140,14 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private void CommandSend(ICommandSender sender, List<ScreenPixel> pixels)
         {
             List<string> commands = ToSetblockCommands(pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             sender.SendAllCommand(commands);
         }
 
         private async Task CommandSendAsync(ICommandSender sender, List<ScreenPixel> pixels)
         {
             List<string> commands = ToSetblockCommands(pixels);
-            MCOS.Instance.ScreenManager.HandleAllWaitAndTasks();
+            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             await sender.SendAllCommandAsync(commands);
         }
 

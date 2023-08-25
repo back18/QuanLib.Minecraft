@@ -45,11 +45,7 @@ namespace QuanLib.Minecraft
             ServerPort = serverPort;
             RconPort = rconPort;
             RconPassword = properties["rcon.password"];
-
-            _ping = new();
         }
-
-        private TcpClient _ping;
 
         public string ServerAddress { get; }
 
@@ -87,38 +83,27 @@ namespace QuanLib.Minecraft
             return Ping(ServerAddress, RconPort, out time);
         }
 
-        private bool Ping(string hostname, int port, out TimeSpan time)
+        private static bool Ping(string hostname, int port, out TimeSpan time)
         {
-            lock (_ping)
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            TcpClient client = new();
+            try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                try
-                {
-                    _ping.Connect(hostname, port);
-                }
-                catch
-                {
-                    time = TimeSpan.Zero;
-                    return false;
-                }
-                finally
-                {
-                    if (_ping.Connected)
-                    {
-                        Task.Run(() =>
-                        {
-                            lock (_ping)
-                            {
-                                _ping.Close();
-                                _ping = new();
-                            }
-                        });
-                    }
-                }
-                stopwatch.Stop();
-                time = stopwatch.Elapsed;
-                return true;
+                client.Connect(hostname, port);
             }
+            catch
+            {
+                time = TimeSpan.Zero;
+                return false;
+            }
+            finally
+            {
+                if (client.Connected)
+                    client.Close();
+            }
+            stopwatch.Stop();
+            time = stopwatch.Elapsed;
+            return true;
         }
 
         public virtual void WaitForServerStartup()

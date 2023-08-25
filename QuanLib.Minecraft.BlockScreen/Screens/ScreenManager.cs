@@ -44,6 +44,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         private Task? _current;
 
+        public bool IsCompletedOutput => _current?.IsCompleted ?? true;
+
         public ScreenBuilder ScreenBuilder { get; }
 
         public ScreenCollection ScreenList { get; }
@@ -215,7 +217,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             await _current;
         }
 
-        public void WaitAllScreenPrevious()
+        public void WaitAllScreenPreviousOutputTask()
         {
             //List<Task> tasks = new();
             //foreach (var screen in ScreenList.Values)
@@ -225,7 +227,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             _previous?.Wait();
         }
 
-        public void HandleAllWaitAndTasks()
+        public void ClearOutputTask()
+        {
+            _previous = null;
+            _current = null;
+        }
+
+        public void HandleWaitAndTasks()
         {
             lock (this)
             {
@@ -234,7 +242,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 _wait = true;
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                WaitAllScreenPrevious();
+                WaitAllScreenPreviousOutputTask();
                 stopwatch.Stop();
 
                 while (MCOS.Instance.TaskList.TryDequeue(out var task))

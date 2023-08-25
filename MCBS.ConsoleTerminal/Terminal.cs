@@ -37,11 +37,15 @@ namespace MCBS.ConsoleTerminal
                 return;
             _runing = true;
 
-            LOGGER.Info("命令行终端已启动");
+            LOGGER.Info("命令行终端已开始运行");
 
             while (_runing)
             {
                 string? input = Console.ReadLine();
+                if (_runing == false)
+                {
+                    break;
+                }
                 if (!MCOS.IsLoaded)
                 {
                     Console.WriteLine("【MCBS控制台】MCOS未加载，控制台输入已被禁用");
@@ -58,7 +62,7 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】mcconsole--------Minecraft控制台");
                         Console.WriteLine("【MCBS控制台】commandsystem----可视化命令系统");
                         Console.WriteLine("【MCBS控制台】timer------------MSPT实时计时器");
-                        Console.WriteLine("【MCBS控制台】stop-------------关闭MCOS并退出程序");
+                        Console.WriteLine("【MCBS控制台】stop-------------终止系统并退出程序");
                         break;
                     case "mcconsole":
                     case "mcc":
@@ -128,13 +132,24 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":
-                        MCOS.Instance.Stop();
+                        if (MCOS.Instance.Runing)
+                        {
+                            MCOS.Instance.Stop();
+                            _runing = false;
+                        }
+                        else
+                        {
+                            Console.WriteLine("【MCBS控制台】系统未开始运行，因此无法关闭");
+                        }
                         break;
                     default:
                         Console.WriteLine("【MCBS控制台】未知或不完整命令，输入“help”可查看可用命令列表");
                         break;
                 }
             }
+
+            _runing = false;
+            LOGGER.Info("命令行终端已终止运行");
         }
 
         public void Stop()

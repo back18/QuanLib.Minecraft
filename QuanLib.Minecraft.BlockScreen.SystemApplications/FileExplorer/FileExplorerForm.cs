@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 {
     public class FileExplorerForm : WindowForm
     {
-        public FileExplorerForm(string? path = null)
+        public FileExplorerForm(string rootDirectory, string? path = null)
         {
             _open = path;
 
@@ -31,7 +31,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             Clear_Button = new();
             Path_TextBox = new();
             Search_TextBox = new();
-            SimpleFilesBox = new();
+            SimpleFilesBox = new(rootDirectory);
         }
 
         private readonly string? _open;
@@ -137,8 +137,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
 
             if (_open is not null)
                 Path_TextBox.Text = _open;
-            else if (Environment.OSVersion.Platform != PlatformID.Win32NT)
-                Path_TextBox.Text = "/";
+            else
+                Path_TextBox.Text = SimpleFilesBox.Text;
         }
 
         private void Backward_Button_RightClick(Control sender, CursorEventArgs e)
@@ -178,7 +178,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
             SimpleFilesBox.Text = e.NewText;
             Search_TextBox.Text = string.Empty;
 
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
+            if (SystemResourcesManager.DefaultFont.GetTotalSize(Path_TextBox.Text).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
@@ -188,7 +188,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
         {
             SimpleFilesBox.SearchText = e.NewText;
 
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Search_TextBox.ClientSize.Width)
+            if (SystemResourcesManager.DefaultFont.GetTotalSize(Search_TextBox.Text).Width > Search_TextBox.ClientSize.Width)
                 Search_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Search_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
