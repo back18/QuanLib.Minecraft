@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Files
+namespace QuanLib.Minecraft.ResourcePack.Block
 {
-    public enum BlockTextureType
+    public enum BlockType
     {
-        CubeAll,
+        Block,
 
         Cube,
+
+        CubeAll,
 
         CubeColumn,
 
         CubeBottomTop,
 
-        Block
+        Orientable
     }
 }

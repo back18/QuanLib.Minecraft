@@ -27,7 +27,14 @@ AccelerationEngineEventPort = 0
 #范围: 0~65535
 AccelerationEngineDataPort = 12345
 
-#方块贴图黑名单列表
+#资源包列表
+#支持: 原版客户端.jar、模组文件.jar、资源包.zip
+#加载顺序: 从前往后加载
+ResourcePackList = [
+    "1.20.1.jar"
+]
+
+#方块纹理黑名单列表
 #将指定方块ID添加到黑名单列表后，将跳过该方块的读取
 BlockTextureBlacklist = [
 "minecraft:glowstone",
@@ -46,6 +53,9 @@ BlockTextureBlacklist = [
 "minecraft:respawn_anchor[charges=2]",
 "minecraft:respawn_anchor[charges=3]",
 "minecraft:respawn_anchor[charges=4]",
+"minecraft:furnace[lit=true]",
+"minecraft:smoker[lit=true]",
+"minecraft:blast_furnace[lit=true]",
 "minecraft:grass_block",
 "minecraft:podzol",
 "minecraft:mycelium",

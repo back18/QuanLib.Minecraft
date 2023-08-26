@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Files
+namespace QuanLib.Minecraft.MinecraftLogs
 {
     public interface ILogListener
     {

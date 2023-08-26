@@ -11,6 +11,9 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
     {
         public MinecraftResourcesDirectory(string directory) : base(directory)
         {
+            ResourcePacks = new(Combine("ResourcePacks"));
         }
+
+        public ResourcePackDirectory ResourcePacks { get; }
     }
 }

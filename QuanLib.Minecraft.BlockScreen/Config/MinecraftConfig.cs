@@ -24,7 +24,15 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             LaunchArguments = model.LaunchArguments;
             AccelerationEngineEventPort = (ushort)model.AccelerationEngineEventPort;
             AccelerationEngineDataPort = (ushort)model.AccelerationEngineDataPort;
-            BlockTextureBlacklist = model.BlockTextureBlacklist;
+            ResourcePackList = model.ResourcePackList;
+
+            List<BlockState> list = new();
+            foreach (var item in model.BlockTextureBlacklist)
+            {
+                if (BlockState.TryParse(item, out var blockState))
+                    list.Add(blockState);
+            }
+            BlockTextureBlacklist = list;
         }
 
         public MinecraftServerMode ServerMode { get; }
@@ -41,7 +49,9 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
         public ushort AccelerationEngineDataPort { get; }
 
-        public IReadOnlyList<string> BlockTextureBlacklist { get; }
+        public IReadOnlyList<string> ResourcePackList { get; }
+
+        public IReadOnlyList<BlockState> BlockTextureBlacklist { get; }
 
         public static MinecraftConfig Load(string path)
         {
@@ -57,11 +67,12 @@ namespace QuanLib.Minecraft.BlockScreen.Config
                 throw new ArgumentNullException(nameof(model));
 
             List<ValidationResult> results = new();
+            StringBuilder message = new();
+            message.AppendLine();
+            int count = 0;
+
             if (!Validator.TryValidateObject(model, new(model), results, true))
             {
-                StringBuilder message = new();
-                message.AppendLine();
-                int count = 0;
                 foreach (var result in results)
                 {
                     string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
@@ -87,12 +98,21 @@ namespace QuanLib.Minecraft.BlockScreen.Config
                     message.AppendLine($"[{memberName}]: {result.ErrorMessage}");
                     count++;
                 }
+            }
 
-                if (count > 0)
+            foreach (string resourcePack in model.ResourcePackList)
+            {
+                if (!MCOS.MainDirectory.MinecraftResources.ResourcePacks.ExistsFile(resourcePack))
                 {
-                    message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
-                    throw new ValidationException(message.ToString().TrimEnd());
+                    message.AppendLine($"[ResourcePackList]: 资源包“{resourcePack}”不存在");
+                    count++;
                 }
+            }
+
+            if (count > 0)
+            {
+                message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
+                throw new ValidationException(message.ToString().TrimEnd());
             }
         }
 
@@ -120,6 +140,10 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
             [Range(0, 65535, ErrorMessage = "端口范围应该在0到65535之间")]
             public int AccelerationEngineDataPort { get; set; }
+
+            [Required(ErrorMessage = "配置项缺失")]
+            [MinLength(1, ErrorMessage = "至少选择一个资源包，但资源包列表为空")]
+            public string[] ResourcePackList { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
             public string[] BlockTextureBlacklist { get; set; }

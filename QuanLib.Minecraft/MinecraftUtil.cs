@@ -1,6 +1,7 @@
 ﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -109,6 +110,30 @@ namespace QuanLib.Minecraft
                 Facing.Zm => "North",
                 _ => throw new InvalidOperationException(),
             };
+        }
+
+        public static bool TryParseBlockState(string s, [MaybeNullWhen(false)] out Dictionary<string, string> result)
+        {
+            if (string.IsNullOrEmpty(s))
+                goto err;
+
+            Dictionary<string, string> items = new();
+            string[] states = s.Split(',');
+            foreach (string state in states)
+            {
+                string[] kv = state.Split('=');
+                if (kv.Length != 2)
+                    goto err;
+
+                items.Add(kv[0], kv[1]);
+            }
+
+            result = items;
+            return true;
+
+            err:
+            result = null;
+            return false;
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Files
+namespace QuanLib.Minecraft.MinecraftLogs
 {
     public class MinecraftLog
     {
