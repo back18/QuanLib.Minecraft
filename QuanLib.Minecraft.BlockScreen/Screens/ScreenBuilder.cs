@@ -4,7 +4,6 @@ using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
 using CoreRCON.Parsers.Standard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
@@ -16,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using log4net.Core;
 using QuanLib.Minecraft.BlockScreen.Logging;
+using QuanLib.Minecraft.Snbt.Data;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {

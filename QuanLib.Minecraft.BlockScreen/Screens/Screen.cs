@@ -363,7 +363,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 for (int y = 0; y < Height; y++)
                 {
                     var blockPos = ToWorldPosition(new(x, y));
-                    ChunkPos chunkPos = MinecraftUtil.BlockPos2ChunkPos(new(blockPos.X, blockPos.Z));
+                    ChunkPos chunkPos = MinecraftUtil.BlockPos2ChunkPos(blockPos);
                     if (!_chunks.Contains(chunkPos))
                         _chunks.Add(chunkPos);
                 }
@@ -376,6 +376,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         {
             foreach (var chunk in _chunks)
                 MCOS.Instance.MinecraftServer.CommandHelper.RemoveForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
+
+            _chunks.Clear();
         }
 
         public WorldPixel ToWorldPixel(ScreenPixel pixel)

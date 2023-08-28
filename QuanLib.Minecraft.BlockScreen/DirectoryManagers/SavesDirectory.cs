@@ -11,8 +11,11 @@ namespace QuanLib.Minecraft.BlockScreen.DirectoryManagers
     {
         public SavesDirectory(string directory) : base(directory)
         {
+            Interactions = new(Combine("Interactions"));
             ScreenSaves = Combine("ScreenSaves.json");
         }
+
+        public InteractionsDirectory Interactions { get; }
 
         public string ScreenSaves { get; }
     }

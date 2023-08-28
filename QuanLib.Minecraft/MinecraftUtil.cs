@@ -1,5 +1,4 @@
-﻿using QuanLib.Minecraft.Data;
-using QuanLib.Minecraft.Snbt;
+﻿using QuanLib.Minecraft.Snbt;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -90,16 +89,16 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static ChunkPos BlockPos2ChunkPos(ChunkPos blockPos)
+        public static ChunkPos BlockPos2ChunkPos(IVector3<int> blockPos)
         {
             return new ChunkPos
                     ((int)Math.Round(blockPos.X / 16.0, MidpointRounding.ToNegativeInfinity),
                     (int)Math.Round(blockPos.Z / 16.0, MidpointRounding.ToNegativeInfinity));
         }
 
-        public static ChunkPos ChunkPos2BlockPos(ChunkPos chunkPos)
+        public static BlockPos ChunkPos2BlockPos(ChunkPos chunkPos)
         {
-            return new(chunkPos.X * 16, chunkPos.Z * 16);
+            return new(chunkPos.X * 16, 0, chunkPos.Z * 16);
         }
 
         public static TimeSpan GameTicksToTimeSpan(int ticks)

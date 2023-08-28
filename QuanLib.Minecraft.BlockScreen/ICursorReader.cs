@@ -1,6 +1,6 @@
 ﻿using QuanLib.Event;
 using QuanLib.Minecraft.BlockScreen.Event;
-using QuanLib.Minecraft.Data;
+using QuanLib.Minecraft.Snbt.Data;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

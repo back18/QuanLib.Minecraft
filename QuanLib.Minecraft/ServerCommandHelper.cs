@@ -1,7 +1,7 @@
 ﻿using CoreRCON;
-using QuanLib.Minecraft.Data;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
+using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -202,15 +202,10 @@ namespace QuanLib.Minecraft
                 throw new ArgumentNullException(nameof(target));
 
             string output = SendCommand($"execute if entity {target}");
-            Match match = Regex.Match(@"count:\s*(\d+)", output);
-            if (match.Success)
-            {
-                string countValue = match.Groups[1].Value;
-                if (int.TryParse(countValue, out int value))
-                    return value;
-            }
-
-            return 0;
+            if (int.TryParse(output.Split(' ')[^1], out int value))
+                return value;
+            else
+                return 0;
         }
 
         public virtual bool TestEntity(Selector target)
@@ -244,12 +239,12 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual bool Summon(string type, double x, double y, double z, string? nbt = null)
+        public virtual bool SummonEntity(string id, double x, double y, double z, string? nbt = null)
         {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+            if (id is null)
+                throw new ArgumentNullException(nameof(id));
 
-            string command = $"summon {x} {y} {z}";
+            string command = $"summon {id} {x} {y} {z}";
             if (!string.IsNullOrEmpty(nbt))
                 command += ' ' + nbt;
 
@@ -260,17 +255,29 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual bool Summon(string type, IVector3<double> pos, string? nbt = null)
+        public virtual bool SummonEntity(string id, IVector3<double> pos, string? nbt = null)
         {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+            if (id is null)
+                throw new ArgumentNullException(nameof(id));
 
-            string command = $"summon {pos.X} {pos.Y} {pos.Z}";
+            string command = $"summon {id} {pos.X} {pos.Y} {pos.Z}";
             if (!string.IsNullOrEmpty(nbt))
                 command += ' ' + nbt;
 
             string output = SendCommand(command);
             if (output.StartsWith("Summoned new"))
+                return true;
+            else
+                return false;
+        }
+
+        public virtual bool KillEntity(Selector target)
+        {
+            if (target is null)
+                throw new ArgumentNullException(nameof(target));
+
+            string output = SendCommand($"kill {target}");
+            if (output.StartsWith("Killed"))
                 return true;
             else
                 return false;
@@ -422,7 +429,7 @@ namespace QuanLib.Minecraft
             return false;
         }
 
-        public virtual Dictionary<string, Item> GetPlayersItem(Dictionary<string, int> slots)
+        public virtual Dictionary<string, Item> GetAllPlayerItem(Dictionary<string, int> slots)
         {
             Dictionary<string, Item> result = new();
             foreach (var slot in slots)
@@ -485,6 +492,16 @@ namespace QuanLib.Minecraft
             return MinecraftUtil.TryParseRotationSbnt(snbt, out result);
         }
 
+        public virtual bool TryGetEntityUUID(string target, out Guid result)
+        {
+            if (!TryGetEntitySnbt(target, "UUID", out var snbt))
+            {
+                result = default;
+                return false;
+            }
+            return MinecraftUtil.TryParseUUIDSbnt(snbt, out result);
+        }
+
         public virtual bool TryGetEntityHealth(string target, out float result)
         {
             if (!TryGetEntitySnbt(target, "Health", out var snbt))
@@ -493,6 +510,20 @@ namespace QuanLib.Minecraft
                 return false;
             }
             return float.TryParse(snbt[..^1], out result);
+        }
+
+        public virtual bool TryGetInteractionData(string target, [MaybeNullWhen(false)] out LeftRightKeys result)
+        {
+            if (!TryGetEntitySnbt(target, "attack", out var left) || !TryGetEntitySnbt(target, "interaction", out var right))
+            {
+                result = default;
+                return false;
+            }
+
+            InteractionData leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(left));
+            InteractionData rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(right));
+            result = new(leftData, rightData);
+            return true;
         }
 
         public virtual string GetAllEntitySbnt(string target, string? path)
@@ -650,12 +681,12 @@ namespace QuanLib.Minecraft
 
         public virtual Dictionary<string, Item> GetAllPlayerSelectedItem()
         {
-            return GetPlayersItem(GetAllPlayerSelectedItemSlot());
+            return GetAllPlayerItem(GetAllPlayerSelectedItemSlot());
         }
 
         public virtual Dictionary<string, Item> GetRadiusPlayerSelectedItem(EntityPos centre, int radius)
         {
-            return GetPlayersItem(GetRadiusPlayerSelectedItemSlot(centre, radius));
+            return GetAllPlayerItem(GetRadiusPlayerSelectedItemSlot(centre, radius));
         }
 
         public virtual Dictionary<string, Item> GetAllPlayerDualWieldItem()
@@ -760,7 +791,7 @@ namespace QuanLib.Minecraft
 
         #endregion
 
-        public virtual bool AddForceLoadChunk(ChunkPos blockPos)
+        public virtual bool AddForceLoadChunk(IVector3<int> blockPos)
         {
             string output = SendCommand($"forceload add {blockPos.X} {blockPos.Z}");
             if (output.StartsWith("Marked chunk"))
@@ -769,7 +800,7 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual bool RemoveForceLoadChunk(ChunkPos blockPos)
+        public virtual bool RemoveForceLoadChunk(IVector3<int> blockPos)
         {
             string output = SendCommand($"forceload remove {blockPos.X} {blockPos.Z}");
             if (output.StartsWith("Unmarked chunk"))

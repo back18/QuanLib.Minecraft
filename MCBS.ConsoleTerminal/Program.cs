@@ -9,7 +9,6 @@ using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
-using QuanLib.Minecraft.Data;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal
@@ -117,6 +116,8 @@ namespace MCBS.ConsoleTerminal
             LOGGER.Info("正在等待Minecraft服务器启动...");
             server.WaitForConnected();
             LOGGER.Info("成功连接到Minecraft服务器");
+
+            bool boo = server.CommandHelper.TryGetInteractionData("5cdf0980-3a61-4fab-9bc5-79a393d8128b", out var result);
 
             mcos.Start();
 

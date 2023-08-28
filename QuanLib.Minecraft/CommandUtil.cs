@@ -111,6 +111,11 @@ namespace QuanLib.Minecraft
             }
         }
 
+        public static GenericSelector ToSelector(this Guid guid)
+        {
+            return new(guid.ToString());
+        }
+
         public static string ToJson(string text, TextColor color, bool bold)
         {
             string boldStr = bold ? "true" : "false";

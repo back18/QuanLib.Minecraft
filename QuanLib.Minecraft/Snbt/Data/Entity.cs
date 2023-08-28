@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Data
+namespace QuanLib.Minecraft.Snbt.Data
 {
     public class Entity
     {
@@ -23,12 +23,12 @@ namespace QuanLib.Minecraft.Data
             Glowing = nbt.Glowing;
             HasVisualFire = nbt.HasVisualFire;
             Invulnerable = nbt.Invulnerable;
-            Motion = SnbtSerializer.ToVector3<double>(nbt.Motion);
+            Motion = SnbtSerializer.ToVector3(nbt.Motion);
             NoGravity = nbt.NoGravity is null ? null : nbt.NoGravity.Value;
             OnGround = nbt.OnGround;
             Passengers = nbt.Passengers;
             PortalCooldown = nbt.PortalCooldown;
-            Pos = SnbtSerializer.ToVector3<double>(nbt.Pos);
+            Pos = SnbtSerializer.ToVector3(nbt.Pos);
             Rotation = SnbtSerializer.ToRotation(nbt.Rotation);
             Silent = nbt.Silent;
             Tags = nbt.Tags;

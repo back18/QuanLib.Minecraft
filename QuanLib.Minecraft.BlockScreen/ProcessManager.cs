@@ -112,14 +112,14 @@ namespace QuanLib.Minecraft.BlockScreen
                     Remove(id);
             }
 
-            public bool TryGetValue(int id, [MaybeNullWhen(false)] out Process process)
-            {
-                return _items.TryGetValue(id, out process);
-            }
-
             public bool ContainsKey(int id)
             {
                 return _items.ContainsKey(id);
+            }
+
+            public bool TryGetValue(int id, [MaybeNullWhen(false)] out Process process)
+            {
+                return _items.TryGetValue(id, out process);
             }
 
             public IEnumerator<KeyValuePair<int, Process>> GetEnumerator()
