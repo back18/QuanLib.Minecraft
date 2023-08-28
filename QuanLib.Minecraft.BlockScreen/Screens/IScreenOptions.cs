@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     public interface IScreenOptions
     {
-        public Vector3<int> StartPosition { get; }
+        public BlockPos StartPosition { get; }
 
         public int Width { get; }
 

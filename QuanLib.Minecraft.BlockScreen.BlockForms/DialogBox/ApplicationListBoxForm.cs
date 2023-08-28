@@ -43,7 +43,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox
             ApplicationList_ListMenuBox.ClientSize = new(107, 60);
             ApplicationList_ListMenuBox.RightClick += ApplicationList_ListMenuBox_RightClick;
 
-            foreach (var appInfo in MCOS.Instance.ApplicationManager.ApplicationList.Values)
+            foreach (var appInfo in MCOS.Instance.ApplicationManager.Items.Values)
             {
                 if (appInfo.AppendToDesktop)
                 {

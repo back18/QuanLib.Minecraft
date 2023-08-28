@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft
 {
     public static class CommandUtil
     {
-        public static string GamemodeToString(Gamemode gamemode)
+        public static string ToCommandArgument(this Gamemode gamemode)
         {
             return gamemode switch
             {
@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static string SortToString(Sort sort)
+        public static string ToCommandArgument(this Sort sort)
         {
             return sort switch
             {
@@ -33,7 +33,7 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static string TargetToString(Target target)
+        public static string ToCommandArgument(this Target target)
         {
             return target switch
             {
@@ -46,7 +46,7 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static string TextColorToString(TextColor color)
+        public static string ToCommandArgument(this TextColor color)
         {
             return color switch
             {
@@ -70,7 +70,7 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static string MinecraftColorToString(MinecraftColor color)
+        public static string ToCommandArgument(this MinecraftColor color)
         {
             switch (color)
             {
@@ -111,34 +111,10 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public static string TextColorToCode(TextColor color)
-        {
-            return color switch
-            {
-                TextColor.Black => "§0",
-                TextColor.DarkBlue => "§1",
-                TextColor.DarkGreen => "§2",
-                TextColor.DarkAqua => "§3",
-                TextColor.DarkRed => "§4",
-                TextColor.Purple => "§5",
-                TextColor.Gold => "§6",
-                TextColor.Gray => "§7",
-                TextColor.DarkGray => "§8",
-                TextColor.Blue => "§9",
-                TextColor.Green => "§a",
-                TextColor.Aqua => "§b",
-                TextColor.Red => "§c",
-                TextColor.LightPurple => "§d",
-                TextColor.Yellow => "§e",
-                TextColor.White => "§f",
-                _ => throw new InvalidOperationException(),
-            };
-        }
-
         public static string ToJson(string text, TextColor color, bool bold)
         {
             string boldStr = bold ? "true" : "false";
-            return $"{{\"text\":\"{text}\",\"color\":\"{TextColorToString(color)}\",\"bold\":\"{boldStr}\"}}";
+            return $"{{\"text\":\"{text}\",\"color\":\"{color.ToCommandArgument()}\",\"bold\":\"{boldStr}\"}}";
         }
     }
 }

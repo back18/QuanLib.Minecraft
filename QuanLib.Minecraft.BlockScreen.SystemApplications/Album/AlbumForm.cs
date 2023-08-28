@@ -314,7 +314,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
 
         private void SetAsWallpaper_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            foreach (var context in MCOS.Instance.FormManager.FormList.Values)
+            foreach (var context in MCOS.Instance.FormManager.Items.Values)
             {
                 if (context.Form is DesktopForm desktop)
                     desktop.SetAsWallpaper(ScalablePictureBox.ImageFrame.Image);

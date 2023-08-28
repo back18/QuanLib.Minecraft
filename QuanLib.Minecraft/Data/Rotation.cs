@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.Data
         /// </summary>
         public float Yaw
         {
-            get { return _Yaw; }
+            readonly get { return _Yaw; }
             set { _Yaw = Math.Clamp(value, -180f, 180f); }
         }
         private float _Yaw;
@@ -32,12 +32,12 @@ namespace QuanLib.Minecraft.Data
         /// </summary>
         public float Pitch
         {
-            get { return _Pitch; }
+            readonly get { return _Pitch; }
             set { _Pitch = Math.Clamp(value, -90f, 90f); }
         }
         private float _Pitch;
 
-        public Facing YawFacing
+        public readonly Facing YawFacing
         {
             get
             {
@@ -54,30 +54,23 @@ namespace QuanLib.Minecraft.Data
             }
         }
 
-        public Facing PitchFacing => _Pitch < 0 ? Facing.Yp : Facing.Ym;
+        public readonly Facing PitchFacing => _Pitch < 0 ? Facing.Yp : Facing.Ym;
 
-        public bool Contain(Facing facing)
+        public readonly bool Contains(Facing facing)
         {
-            switch (facing)
+            return facing switch
             {
-                case Facing.Zp:
-                    return _Yaw > -90 && _Yaw <= 90;
-                case Facing.Zm:
-                    return _Yaw <= -90 || _Yaw > 90;
-                case Facing.Xp:
-                    return _Yaw < 0;
-                case Facing.Xm:
-                    return _Yaw >= 0;
-                case Facing.Yp:
-                    return _Pitch < 0;
-                case Facing.Ym:
-                    return _Pitch >= 0;
-                default:
-                    throw new InvalidOperationException();
-            }
+                Facing.Zp => _Yaw > -90 && _Yaw <= 90,
+                Facing.Zm => _Yaw <= -90 || _Yaw > 90,
+                Facing.Xp => _Yaw < 0,
+                Facing.Xm => _Yaw >= 0,
+                Facing.Yp => _Pitch < 0,
+                Facing.Ym => _Pitch >= 0,
+                _ => throw new InvalidOperationException(),
+            };
         }
 
-        public Vector3Double ToDirection()
+        public readonly Vector3<double> ToDirection()
         {
             float yaw = _Yaw;
             float pitch = _Pitch;
@@ -94,31 +87,6 @@ namespace QuanLib.Minecraft.Data
             double dirZ = Math.Cos(radiansPitch) * Math.Cos(radiansYaw);
 
             return new(dirX, dirY, dirZ);
-        }
-
-        public static bool TryParse(string s, out Rotation result)
-        {
-            if (string.IsNullOrEmpty(s))
-                goto err;
-
-            int index = s.IndexOf('[');
-            if (index < 0)
-                goto err;
-
-            string[] items = s[index..].Trim('[', ']').Split(", "); ;
-            if (items.Length != 2)
-                goto err;
-
-            if (!float.TryParse(items[0].TrimEnd('f'), out var yaw) ||
-                !float.TryParse(items[1].TrimEnd('f'), out var pitch))
-                goto err;
-
-            result = new(yaw, pitch);
-            return true;
-
-            err:
-            result = default;
-            return false;
         }
     }
 }

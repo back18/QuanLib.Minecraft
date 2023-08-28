@@ -99,20 +99,20 @@ namespace MCBS.ConsoleTerminal
             }
 #endif
 
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.ScreenManager.ScreenManagerAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager.TaskManagerAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer.FileExplorerAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad.NotepadAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Album.AlbumAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing.DrawingAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen.DataScreenAppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new Test01AppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new Test02AppInfo());
-            mcos.ApplicationManager.ApplicationList.Add(new Test03AppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.ScreenManager.ScreenManagerAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.TaskManager.TaskManagerAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer.FileExplorerAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Notepad.NotepadAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Album.AlbumAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing.DrawingAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
+            mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.DataScreen.DataScreenAppInfo());
+            mcos.ApplicationManager.Items.Add(new Test01AppInfo());
+            mcos.ApplicationManager.Items.Add(new Test02AppInfo());
+            mcos.ApplicationManager.Items.Add(new Test03AppInfo());
 
             LOGGER.Info("正在等待Minecraft服务器启动...");
             server.WaitForConnected();

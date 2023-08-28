@@ -42,7 +42,7 @@ namespace QuanLib.Minecraft.Data
 
         public short HurtTime { get; }
 
-        public Vector3<int> Sleeping { get; }
+        public BlockPos Sleeping { get; }
 
         public new class Nbt : Entity.Nbt
         {

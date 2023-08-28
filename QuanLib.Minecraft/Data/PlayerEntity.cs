@@ -92,7 +92,7 @@ namespace QuanLib.Minecraft.Data
 
         public bool? SpawnForced { get; }
 
-        public Vector3<int>? Spawn { get; }
+        public BlockPos? Spawn { get; }
 
         public object WardenSpawnTracker { get; }
 

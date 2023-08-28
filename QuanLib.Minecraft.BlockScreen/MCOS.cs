@@ -211,7 +211,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
                 else if (ConfigManager.SystemConfig.CrashAutoRestart)
                 {
-                    foreach (var context in ScreenManager.ScreenList.Values)
+                    foreach (var context in ScreenManager.Items.Values)
                     {
                         context.RestartScreen();
                     }
@@ -227,7 +227,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
                 else
                 {
-                    foreach (var context in ScreenManager.ScreenList.Values)
+                    foreach (var context in ScreenManager.Items.Values)
                     {
                         context.Screen.Fill();
                         context.Screen.UnloadScreenChunks();
@@ -367,7 +367,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var context in ScreenManager.ScreenList.Values)
+            foreach (var context in ScreenManager.Items.Values)
                 if (context.RootForm == form || context.RootForm.ContainsForm(form))
                     return context;
 
@@ -379,7 +379,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (application is null)
                 throw new ArgumentNullException(nameof(application));
 
-            foreach (var process in ProcessManager.ProcessList.Values)
+            foreach (var process in ProcessManager.Items.Values)
                 if (application == process.Application)
                     return process;
 
@@ -403,7 +403,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            foreach (var context in FormManager.FormList.Values.ToArray())
+            foreach (var context in FormManager.Items.Values.ToArray())
                 if (form == context.Form)
                     return context;
 
@@ -415,7 +415,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (appInfo is null)
                 throw new ArgumentNullException(nameof(appInfo));
 
-            return ProcessManager.ProcessList.Add(appInfo, initiator).StartProcess();
+            return ProcessManager.Items.Add(appInfo, initiator).StartProcess();
         }
 
         public Process RunApplication(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
@@ -425,7 +425,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
 
-            return ProcessManager.ProcessList.Add(appInfo, args, initiator).StartProcess();
+            return ProcessManager.Items.Add(appInfo, args, initiator).StartProcess();
         }
 
         public Process RunApplication(string appID, string[] args, IForm? initiator = null)
@@ -433,7 +433,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (string.IsNullOrEmpty(appID))
                 throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
 
-            return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[appID], args, initiator).StartProcess();
+            return ProcessManager.Items.Add(ApplicationManager.Items[appID], args, initiator).StartProcess();
         }
 
         public Process RunApplication(string appID, IForm? initiator = null)
@@ -441,7 +441,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (string.IsNullOrEmpty(appID))
                 throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
 
-            return ProcessManager.ProcessList.Add(ApplicationManager.ApplicationList[appID], initiator).StartProcess();
+            return ProcessManager.Items.Add(ApplicationManager.Items[appID], initiator).StartProcess();
         }
 
         public ScreenContext LoadScreen(Screen screen)
@@ -449,7 +449,7 @@ namespace QuanLib.Minecraft.BlockScreen
             if (screen is null)
                 throw new ArgumentNullException(nameof(screen));
 
-            return ScreenManager.ScreenList.Add(screen).LoadScreen();
+            return ScreenManager.Items.Add(screen).LoadScreen();
         }
 
         public void AddTask(Action action)
@@ -470,7 +470,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         internal Process RunServicesApp()
         {
-            if (!ApplicationManager.ApplicationList[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
+            if (!ApplicationManager.Items[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
             return RunApplication(ServicesAppID);
@@ -479,7 +479,7 @@ namespace QuanLib.Minecraft.BlockScreen
         internal void RunStartupChecklist(IRootForm rootForm)
         {
             foreach (var id in StartupChecklist)
-                RunApplication(ApplicationManager.ApplicationList[id], rootForm);
+                RunApplication(ApplicationManager.Items[id], rootForm);
         }
     }
 }

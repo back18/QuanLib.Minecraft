@@ -7,13 +7,20 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Vector
 {
-    public struct Vector3Double : IVector3<double>
+    public struct EntityPos : IVector3<double>
     {
-        public Vector3Double(double x, double y, double z)
+        public EntityPos(double x, double y, double z)
         {
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public EntityPos(IVector3<double> vector)
+        {
+            X = vector.X;
+            Y = vector.Y;
+            Z = vector.Z;
         }
 
         public double X { get; set; }
@@ -22,12 +29,7 @@ namespace QuanLib.Minecraft.Vector
 
         public double Z { get; set; }
 
-        public static Vector3Double GetVector3Double(Vector3<double> vector)
-        {
-            return new(vector.X, vector.Y, vector.Z);
-        }
-
-        public Vector3<int> ToVector3Int()
+        public readonly BlockPos ToBlockPos()
         {
             int x = (int)Math.Round(X, MidpointRounding.ToNegativeInfinity);
             int y = (int)Math.Round(Y, MidpointRounding.ToNegativeInfinity);
@@ -35,9 +37,9 @@ namespace QuanLib.Minecraft.Vector
             return new(x, y, z);
         }
 
-        public static bool CheckPlaneReachability(Vector3Double position, Rotation rotation, Facing normalFacing, int target)
+        public static bool CheckPlaneReachability(EntityPos position, Rotation rotation, Facing normalFacing, int target)
         {
-            if (!rotation.Contain(MinecraftUtil.ToReverseFacing(normalFacing)))
+            if (!rotation.Contains(normalFacing.ToReverse()))
                 return false;
 
             position.Y += 1.625;
@@ -60,15 +62,7 @@ namespace QuanLib.Minecraft.Vector
             }
         }
 
-        public static Vector3Double GetToPlaneIntersection(Vector3Double position, Rotation rotation, Facing planeFacing, int target)
-        {
-            position.Y += 1.625;
-            Vector3Double direction = rotation.ToDirection();
-
-            return GetToPlaneIntersection(position, direction, planeFacing, target);
-        }
-
-        public static Vector3Double GetToPlaneIntersection(Vector3Double position, Vector3Double direction, Facing planeFacing, int target)
+        public static EntityPos GetToPlaneIntersection(EntityPos position, Vector3<double> direction, Facing planeFacing, int target)
         {
             int targetOffset = target;
             if (planeFacing > 0)
@@ -106,49 +100,89 @@ namespace QuanLib.Minecraft.Vector
             return new(x, y, z);
         }
 
-        public static Vector3Double operator -(Vector3Double a)
+        public static EntityPos operator -(EntityPos a)
         {
             return new(0 - a.X, 0 - a.Y, 0 - a.Z);
         }
 
-        public static Vector3Double operator +(Vector3Double a, double b)
+        public static EntityPos operator +(EntityPos a, EntityPos b)
+        {
+            return new EntityPos(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static EntityPos operator -(EntityPos a, EntityPos b)
+        {
+            return new EntityPos(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
+        public static EntityPos operator *(EntityPos a, EntityPos b)
+        {
+            return new EntityPos(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+        }
+
+        public static EntityPos operator /(EntityPos a, EntityPos b)
+        {
+            return new EntityPos(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
+        }
+
+        public static EntityPos operator +(EntityPos a, double b)
         {
             return new(a.X + b, a.Y + b, a.Z + b);
         }
 
-        public static Vector3Double operator -(Vector3Double a, double b)
+        public static EntityPos operator -(EntityPos a, double b)
         {
             return new(a.X - b, a.Y - b, a.Z - b);
         }
 
-        public static Vector3Double operator *(Vector3Double a, double b)
+        public static EntityPos operator *(EntityPos a, double b)
         {
             return new(a.X * b, a.Y * b, a.Z * b);
         }
 
-        public static Vector3Double operator /(Vector3Double a, double b)
+        public static EntityPos operator /(EntityPos a, double b)
         {
             return new(a.X / b, a.Y / b, a.Z / b);
         }
 
-        public static Vector3Double operator +(Vector3Double a, Vector3Double b)
+        public static bool operator ==(EntityPos v1, EntityPos v2)
         {
-            return new Vector3Double(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+            return v1.X == v2.X && v1.Y == v2.Y && v1.Z == v2.Z;
         }
 
-        public static Vector3Double operator -(Vector3Double a, Vector3Double b)
+        public static bool operator !=(EntityPos v1, EntityPos v2)
         {
-            return new Vector3Double(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+            return v1.X != v2.X || v1.Y != v2.Y || v1.Z != v2.Z;
         }
 
-        public static Vector3Double operator *(Vector3Double a, Vector3Double b)
+        public static implicit operator EntityPos(Vector3<double> v)
         {
-            return new Vector3Double(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+            return new(v.X, v.Y, v.Z);
         }
 
-        public static Vector3Double operator /(Vector3Double a, Vector3Double b)
+        public override readonly bool Equals(object? obj)
         {
-            return new Vector3Double(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
+            if (obj is EntityPos other)
+            {
+                return Equals(other);
+            }
+
+            return false;
+        }
+
+        public readonly bool Equals(EntityPos other)
+        {
+            return X == other.X && Y == other.Y && Z == other.Z;
+        }
+
+        public override readonly int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z);
+        }
+
+        public override readonly string ToString()
+        {
+            return $"[{X},{Y},{Z}]";
         }
     }
 }

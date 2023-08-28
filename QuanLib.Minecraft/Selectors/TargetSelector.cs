@@ -89,7 +89,7 @@ namespace QuanLib.Minecraft.Selectors
             if (Sort is not null)
                 items.Add(Sort.ToString("sort"));
 
-            string result = CommandUtil.TargetToString(Target);
+            string result = Target.ToCommandArgument();
             if (items.Count > 0)
                 result += $"[{string.Join(',', items)}]";
 

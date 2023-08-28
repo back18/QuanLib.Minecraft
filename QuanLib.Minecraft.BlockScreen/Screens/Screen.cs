@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         {
         }
 
-        public Screen(Vector3<int> startPosition, int width, int height, Facing xFacing, Facing yFacing)
+        public Screen(BlockPos startPosition, int width, int height, Facing xFacing, Facing yFacing)
         {
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
             ThrowHelper.TryThrowArgumentOutOfMinException(1, width, nameof(width));
@@ -162,13 +162,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         private const string AIR_BLOCK = "minecraft:air";
 
-        private readonly List<SurfacePos> _chunks;
+        private readonly List<ChunkPos> _chunks;
 
-        public Vector3<int> StartPosition { get; }
+        public BlockPos StartPosition { get; }
 
-        public Vector3<int> EndPosition => ToWorldPosition(new(Width - 1, Height - 1));
+        public BlockPos EndPosition => ToWorldPosition(new(Width - 1, Height - 1));
 
-        public Vector3<int> CenterPosition => ToWorldPosition(ScreenCenterPosition);
+        public BlockPos CenterPosition => ToWorldPosition(ScreenCenterPosition);
 
         public Point ScreenCenterPosition => new(Width / 2, Height / 2);
 
@@ -243,8 +243,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         private bool FillDouble(string blockID, bool check = false)
         {
-            Vector3<int> position1 = StartPosition;
-            Vector3<int> position2 = StartPosition;
+            BlockPos position1 = StartPosition;
+            BlockPos position2 = StartPosition;
             switch (NormalFacing)
             {
                 case Facing.Xp:
@@ -319,8 +319,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public bool TestLight()
         {
-            Vector3<int> position1 = StartPosition;
-            Vector3<int> position2 = StartPosition;
+            BlockPos position1 = StartPosition;
+            BlockPos position2 = StartPosition;
             switch (NormalFacing)
             {
                 case Facing.Xp:
@@ -363,7 +363,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 for (int y = 0; y < Height; y++)
                 {
                     var blockPos = ToWorldPosition(new(x, y));
-                    SurfacePos chunkPos = MinecraftUtil.BlockPos2ChunkPos(new(blockPos.X, blockPos.Z));
+                    ChunkPos chunkPos = MinecraftUtil.BlockPos2ChunkPos(new(blockPos.X, blockPos.Z));
                     if (!_chunks.Contains(chunkPos))
                         _chunks.Add(chunkPos);
                 }
@@ -383,7 +383,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return new(ToWorldPosition(pixel.Position), pixel.BlockID);
         }
 
-        public Vector3<int> ToWorldPosition(Point pixel)
+        public BlockPos ToWorldPosition(Point pixel)
         {
             int? x = null;
             int? y = null;
@@ -444,7 +444,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return new(x.Value, y.Value, z.Value);
         }
 
-        public Point ToScreenPosition(Vector3<int> blockPos)
+        public Point ToScreenPosition(BlockPos blockPos)
         {
             var x = XFacing switch
             {
@@ -475,7 +475,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return pixel.X >= 0 && pixel.Y >= 0 && pixel.X < Width && pixel.Y < Height;
         }
 
-        public bool IncludedOnScreen(Vector3<int> blockPos)
+        public bool IncludedOnScreen(BlockPos blockPos)
         {
             bool isScreenPlane = NormalFacing switch
             {
@@ -492,7 +492,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             return $"StartPosition={StartPosition}, Width={Width}, Height={Height}, XFacing={XFacing}, YFacing={YFacing}";
         }
 
-        public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition, Facing normalFacing)
+        public static Screen CreateScreen(BlockPos startPosition, BlockPos endPosition, Facing normalFacing)
         {
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
             ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, endPosition.Y, "endPosition.Y");

@@ -43,26 +43,26 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 {
                     case ScreenBuildState.Timedout:
                         context.Value.Screen?.Clear();
-                        command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 操作超时，已取消本次屏幕创建", TextColor.Red);
+                        command.SendChatMessage(new GenericSelector(context.Key), "[屏幕构建器] 操作超时，已取消本次屏幕创建", TextColor.Red);
                         _contexts.Remove(context.Key);
                         break;
                     case ScreenBuildState.Canceled:
                         context.Value.Screen?.Clear();
-                        command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已取消本次屏幕创建", TextColor.Red);
+                        command.SendChatMessage(new GenericSelector(context.Key), "[屏幕构建器] 已取消本次屏幕创建", TextColor.Red);
                         _contexts.Remove(context.Key);
                         break;
                     case ScreenBuildState.Completed:
                         Screen? screen = context.Value.Screen;
                         if (screen is null)
                         {
-                            command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 未知错误，创建失败", TextColor.Red);
+                            command.SendChatMessage(new GenericSelector(context.Key), "[屏幕构建器] 未知错误，创建失败", TextColor.Red);
                         }
                         else
                         {
-                            if (MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxCount)
+                            if (MCOS.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
                             {
                                 screen.Clear();
-                                command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxCount}个，无法继续创建屏幕", TextColor.Red);
+                                command.SendChatMessage(new GenericSelector(context.Key), $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxCount}个，无法继续创建屏幕", TextColor.Red);
                             }
                             else
                             {
@@ -71,13 +71,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                                 {
 #endif
                                     MCOS.Instance.LoadScreen(screen);
-                                    command.SendChatMessage(new PlayerSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
+                                    command.SendChatMessage(new GenericSelector(context.Key), "[屏幕构建器] 已完成本次屏幕创建");
 #if TryCatch
                                 }
                                 catch (Exception ex)
                                 {
                                     LOGGER.Error($"屏幕“{screen}”无法加载", ex);
-                                    command.SendChatMessage(new PlayerSelector(context.Key), $"[屏幕构建器] 屏幕构建失败: {ex.GetType()}: {ex.Message}", TextColor.Red);
+                                    command.SendChatMessage(new GenericSelector(context.Key), $"[屏幕构建器] 屏幕构建失败: {ex.GetType()}: {ex.Message}", TextColor.Red);
                                 }
 #endif
                             }
@@ -87,7 +87,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
             }
 
-            if (!Enable || MCOS.Instance.ScreenManager.ScreenList.Count >= ScreenConfig.MaxCount)
+            if (!Enable || MCOS.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
                 return;
 
             Dictionary<string, Item> items = command.GetAllPlayerSelectedItem();
@@ -118,12 +118,12 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
                     if (ScreenConfig.ScreenBuildOperatorList.Count != 0 && !ScreenConfig.ScreenBuildOperatorList.Contains(item.Key))
                     {
-                        command.SendActionbarTitle(new PlayerSelector(item.Key), $"[屏幕构建器] 错误：你没有权限创建屏幕", TextColor.Red);
+                        command.SendActionbarTitle(new GenericSelector(item.Key), $"[屏幕构建器] 错误：你没有权限创建屏幕", TextColor.Red);
                         continue;
                     }
 
                     _contexts.Add(item.Key, new(item.Key));
-                    command.SendChatMessage(new PlayerSelector(item.Key), "[屏幕构建器] 已载入屏幕创建程序");
+                    command.SendChatMessage(new GenericSelector(item.Key), "[屏幕构建器] 已载入屏幕创建程序");
                 }
             }
 

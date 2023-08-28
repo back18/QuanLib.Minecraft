@@ -44,13 +44,13 @@ namespace QuanLib.Minecraft.Selectors
             string? minValue, maxValue;
             if (MinValue is Gamemode minGamemode && MaxValue is Gamemode maxGamemode)
             {
-                minValue = CommandUtil.GamemodeToString(minGamemode);
-                maxValue = CommandUtil.GamemodeToString(maxGamemode);
+                minValue = minGamemode.ToCommandArgument();
+                maxValue = maxGamemode.ToCommandArgument();
             }
             else if (MinValue is Sort minSort && MaxValue is Sort maxSort)
             {
-                minValue = CommandUtil.SortToString(minSort);
-                maxValue = CommandUtil.SortToString(maxSort);
+                minValue = minSort.ToCommandArgument();
+                maxValue = maxSort.ToCommandArgument();
             }
             else
             {

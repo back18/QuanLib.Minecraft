@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public abstract class GroupReader
+    public class InteractionManager
     {
-        public abstract void Read();
+
     }
 }

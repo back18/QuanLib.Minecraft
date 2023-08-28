@@ -170,7 +170,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetApplicationList()
         {
-            var list = MCOS.Instance.ApplicationManager.ApplicationList;
+            var list = MCOS.Instance.ApplicationManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
             foreach (var appInfo in list.Values)
@@ -182,7 +182,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetScreenList()
         {
-            var list = MCOS.Instance.ScreenManager.ScreenList;
+            var list = MCOS.Instance.ScreenManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
             foreach (var context in list.Values)
@@ -194,7 +194,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string CloseScreen(int id)
         {
-            if (MCOS.Instance.ScreenManager.ScreenList.TryGetValue(id, out var context))
+            if (MCOS.Instance.ScreenManager.Items.TryGetValue(id, out var context))
             {
                 context.CloseScreen();
                 return $"屏幕“{context}”已关闭";
@@ -217,7 +217,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetProcessList()
         {
-            var list = MCOS.Instance.ProcessManager.ProcessList;
+            var list = MCOS.Instance.ProcessManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
             foreach (var context in list.Values)
@@ -229,7 +229,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetFormList()
         {
-            var list = MCOS.Instance.FormManager.FormList;
+            var list = MCOS.Instance.FormManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
             foreach (var context in list.Values)

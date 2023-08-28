@@ -203,7 +203,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.FileExplorer
         {
             FileInfo fileInfo = e.FileInfo;
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
-            if (ConfigManager.Registry.TryGetValue(extension, out var id) && MCOS.Instance.ApplicationManager.ApplicationList.TryGetValue(id, out var app))
+            if (ConfigManager.Registry.TryGetValue(extension, out var id) && MCOS.Instance.ApplicationManager.Items.TryGetValue(id, out var app))
             {
                 MCOS.Instance.RunApplication(app, new string[] { fileInfo.FullName }, this);
             }

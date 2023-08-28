@@ -18,12 +18,12 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public ApplicationManager()
         {
-            ApplicationList = new(this);
+            Items = new(this);
             AddedApplication += OnAddedApplication;
             //RemovedApplication += OnRemovedApplication;
         }
 
-        public ApplicationCollection ApplicationList { get; }
+        public ApplicationCollection Items { get; }
 
         public event EventHandler<ApplicationManager, ApplicationInfoEventArgs> AddedApplication;
 

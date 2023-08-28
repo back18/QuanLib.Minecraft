@@ -28,7 +28,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             YFacing = (Facing)model.YFacing;
         }
 
-        public Vector3<int> StartPosition { get; }
+        public BlockPos StartPosition { get; }
 
         public int Width { get; }
 

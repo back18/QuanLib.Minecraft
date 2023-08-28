@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static Nett.TomlObjectFactory;
 
 namespace QuanLib.Minecraft
 {
@@ -120,8 +121,13 @@ namespace QuanLib.Minecraft
             return int.Parse(output.Split(' ')[^1]);
         }
 
-        public virtual bool TelePort(string source, string target)
+        public virtual bool TelePort(Selector source, Selector target)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (target is null)
+                throw new ArgumentNullException(nameof(target));
+
             string output = SendCommand($"tp {source} {target}");
             if (output.StartsWith("No entity was found"))
             {
@@ -133,8 +139,11 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public virtual bool TelePort(string source, double x, double y, double z)
+        public virtual bool TelePort(Selector source, double x, double y, double z)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
             string output = SendCommand($"tp {source} {x} {y} {z}");
             if (output.StartsWith("No entity was found"))
             {
@@ -146,8 +155,11 @@ namespace QuanLib.Minecraft
             }
         }
 
-        public virtual bool TelePort(string source, IVector3<double> target)
+        public virtual bool TelePort(Selector source, IVector3<double> target)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
             string output = SendCommand($"tp {source} {target.X} {target.Y} {target.Z}");
             if (output.StartsWith("No entity was found"))
             {
@@ -184,6 +196,28 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
+        public virtual int TestEntityCount(Selector target)
+        {
+            if (target is null)
+                throw new ArgumentNullException(nameof(target));
+
+            string output = SendCommand($"execute if entity {target}");
+            Match match = Regex.Match(@"count:\s*(\d+)", output);
+            if (match.Success)
+            {
+                string countValue = match.Groups[1].Value;
+                if (int.TryParse(countValue, out int value))
+                    return value;
+            }
+
+            return 0;
+        }
+
+        public virtual bool TestEntity(Selector target)
+        {
+            return TestEntityCount(target) > 0;
+        }
+
         public virtual bool SetBlock(int x, int y, int z, string id)
         {
             if (id is null)
@@ -205,6 +239,38 @@ namespace QuanLib.Minecraft
             string output = SendCommand($"setblock {pos.X} {pos.Y} {pos.Z} {id}");
 
             if (output.StartsWith("Changed the block at"))
+                return true;
+            else
+                return false;
+        }
+
+        public virtual bool Summon(string type, double x, double y, double z, string? nbt = null)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            string command = $"summon {x} {y} {z}";
+            if (!string.IsNullOrEmpty(nbt))
+                command += ' ' + nbt;
+
+            string output = SendCommand(command);
+            if (output.StartsWith("Summoned new"))
+                return true;
+            else
+                return false;
+        }
+
+        public virtual bool Summon(string type, IVector3<double> pos, string? nbt = null)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            string command = $"summon {pos.X} {pos.Y} {pos.Z}";
+            if (!string.IsNullOrEmpty(nbt))
+                command += ' ' + nbt;
+
+            string output = SendCommand(command);
+            if (output.StartsWith("Summoned new"))
                 return true;
             else
                 return false;
@@ -398,7 +464,7 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual bool TryGetEntityPosition(string target, out Vector3Double result)
+        public virtual bool TryGetEntityPosition(string target, out EntityPos result)
         {
             if (!TryGetEntitySnbt(target, POS, out var snbt))
             {
@@ -406,7 +472,7 @@ namespace QuanLib.Minecraft
                 return false;
             }
 
-            return MinecraftUtil.TryEntityPositionSbnt(snbt, out result);
+            return MinecraftUtil.TryParseEntityPosSbnt(snbt, out result);
         }
 
         public virtual bool TryGetEntityRotation(string target, out Rotation result)
@@ -416,7 +482,7 @@ namespace QuanLib.Minecraft
                 result = default;
                 return false;
             }
-            return Rotation.TryParse(snbt, out result);
+            return MinecraftUtil.TryParseRotationSbnt(snbt, out result);
         }
 
         public virtual bool TryGetEntityHealth(string target, out float result)
@@ -429,7 +495,18 @@ namespace QuanLib.Minecraft
             return float.TryParse(snbt[..^1], out result);
         }
 
-        public virtual Dictionary<string, string> GetPlayersSbnt(string target, string path)
+        public virtual string GetAllEntitySbnt(string target, string? path)
+        {
+            if (string.IsNullOrEmpty(target))
+                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+
+            string command = $"execute as {target} run data get entity @s";
+            if (!string.IsNullOrEmpty(path))
+                command += ' ' + path;
+            return SendCommand(command);
+        }
+
+        public virtual Dictionary<string, string> GetAllPlayerSbnt(string target, string? path)
         {
             if (string.IsNullOrEmpty(target))
                 throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
@@ -479,11 +556,11 @@ namespace QuanLib.Minecraft
         /// <returns></returns>
         public virtual Dictionary<string, IVector3<double>> GetAllPlayerPosition()
         {
-            Dictionary<string, string> items = GetPlayersSbnt("@a", POS);
+            Dictionary<string, string> items = GetAllPlayerSbnt("@a", POS);
             Dictionary<string, IVector3<double>> result = new();
             foreach (var item in items)
             {
-                if (MinecraftUtil.TryEntityPositionSbnt(item.Value, out var position))
+                if (MinecraftUtil.TryParseEntityPosSbnt(item.Value, out var position))
                     result.Add(item.Key, position);
             }
             return result;
@@ -495,13 +572,13 @@ namespace QuanLib.Minecraft
         /// <param name="centre">中心点坐标</param>
         /// <param name="radius">半径</param>
         /// <returns></returns>
-        public virtual Dictionary<string, IVector3<double>> GetRadiusPlayerPosition(Vector3Double centre, int radius)
+        public virtual Dictionary<string, IVector3<double>> GetRadiusPlayerPosition(EntityPos centre, int radius)
         {
-            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", centre, radius), POS);
+            Dictionary<string, string> items = GetAllPlayerSbnt(ToTarget("a", centre, radius), POS);
             Dictionary<string, IVector3<double>> result = new();
             foreach (var item in items)
             {
-                if (MinecraftUtil.TryEntityPositionSbnt(item.Value, out var position))
+                if (MinecraftUtil.TryParseEntityPosSbnt(item.Value, out var position))
                     result.Add(item.Key, position);
             }
             return result;
@@ -515,11 +592,11 @@ namespace QuanLib.Minecraft
         /// <returns></returns>
         public virtual Dictionary<string, IVector3<double>> GetRangePlayerPosition(IVector3<double> start, IVector3<double> range)
         {
-            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", start, range), POS);
+            Dictionary<string, string> items = GetAllPlayerSbnt(ToTarget("a", start, range), POS);
             Dictionary<string, IVector3<double>> result = new();
             foreach (var item in items)
             {
-                if (MinecraftUtil.TryEntityPositionSbnt(item.Value, out var position))
+                if (MinecraftUtil.TryParseEntityPosSbnt(item.Value, out var position))
                     result.Add(item.Key, position);
             }
             return result;
@@ -527,7 +604,7 @@ namespace QuanLib.Minecraft
 
         public virtual Dictionary<string, int> GetAllPlayerSelectedItemSlot()
         {
-            Dictionary<string, string> items = GetPlayersSbnt("@a", "SelectedItemSlot");
+            Dictionary<string, string> items = GetAllPlayerSbnt("@a", "SelectedItemSlot");
             Dictionary<string, int> result = new();
             foreach (var item in items)
             {
@@ -539,7 +616,7 @@ namespace QuanLib.Minecraft
 
         public virtual Dictionary<string, int> GetRadiusPlayerSelectedItemSlot(IVector3<double> centre, int radius)
         {
-            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", centre, radius), "SelectedItemSlot");
+            Dictionary<string, string> items = GetAllPlayerSbnt(ToTarget("a", centre, radius), "SelectedItemSlot");
             Dictionary<string, int> result = new();
             foreach (var item in items)
             {
@@ -551,7 +628,7 @@ namespace QuanLib.Minecraft
 
         public virtual Dictionary<string, Item> GetAllPlayerItem(int slot)
         {
-            Dictionary<string, string> items = GetPlayersSbnt("@a", $"Inventory[{{Slot:{slot}b}}]");
+            Dictionary<string, string> items = GetAllPlayerSbnt("@a", $"Inventory[{{Slot:{slot}b}}]");
             Dictionary<string, Item> result = new();
             foreach (var item in items)
             {
@@ -560,9 +637,9 @@ namespace QuanLib.Minecraft
             return result;
         }
 
-        public virtual Dictionary<string, Item> GetRadiusPlayerItem(Vector3Double centre, int radius, int slot)
+        public virtual Dictionary<string, Item> GetRadiusPlayerItem(EntityPos centre, int radius, int slot)
         {
-            Dictionary<string, string> items = GetPlayersSbnt(ToTarget("a", centre, radius), $"Inventory[{{Slot:{slot}b}}]");
+            Dictionary<string, string> items = GetAllPlayerSbnt(ToTarget("a", centre, radius), $"Inventory[{{Slot:{slot}b}}]");
             Dictionary<string, Item> result = new();
             foreach (var item in items)
             {
@@ -576,7 +653,7 @@ namespace QuanLib.Minecraft
             return GetPlayersItem(GetAllPlayerSelectedItemSlot());
         }
 
-        public virtual Dictionary<string, Item> GetRadiusPlayerSelectedItem(Vector3Double centre, int radius)
+        public virtual Dictionary<string, Item> GetRadiusPlayerSelectedItem(EntityPos centre, int radius)
         {
             return GetPlayersItem(GetRadiusPlayerSelectedItemSlot(centre, radius));
         }
@@ -586,7 +663,7 @@ namespace QuanLib.Minecraft
             return GetAllPlayerItem(DUAL_WIELD_SLOT);
         }
 
-        public virtual Dictionary<string, Item> GetRadiusPlayerDualWieldItem(Vector3Double centre, int radius)
+        public virtual Dictionary<string, Item> GetRadiusPlayerDualWieldItem(EntityPos centre, int radius)
         {
             return GetRadiusPlayerItem(centre, radius, DUAL_WIELD_SLOT);
         }
@@ -683,7 +760,7 @@ namespace QuanLib.Minecraft
 
         #endregion
 
-        public virtual bool AddForceLoadChunk(SurfacePos blockPos)
+        public virtual bool AddForceLoadChunk(ChunkPos blockPos)
         {
             string output = SendCommand($"forceload add {blockPos.X} {blockPos.Z}");
             if (output.StartsWith("Marked chunk"))
@@ -692,7 +769,7 @@ namespace QuanLib.Minecraft
                 return false;
         }
 
-        public virtual bool RemoveForceLoadChunk(SurfacePos blockPos)
+        public virtual bool RemoveForceLoadChunk(ChunkPos blockPos)
         {
             string output = SendCommand($"forceload remove {blockPos.X} {blockPos.Z}");
             if (output.StartsWith("Unmarked chunk"))

@@ -103,7 +103,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
 
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
-            Vector3<int> center = screen.CenterPosition;
+            BlockPos center = screen.CenterPosition;
             Vector3<double> start = new(center.X - length, center.Y - length, center.Z - length);
             Vector3<double> range = new(length * 2, length * 2, length * 2);
 
@@ -170,18 +170,18 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (!command.TryGetEntityPosition(player, out var position) || !command.TryGetEntityRotation(player, out var rotation))
                 return false;
 
-            if (!Vector3Double.CheckPlaneReachability(position, rotation, screen.NormalFacing, screen.PlaneCoordinate))
+            if (!EntityPos.CheckPlaneReachability(position, rotation, screen.NormalFacing, screen.PlaneCoordinate))
                 return false;
 
             position.Y += 1.625;
-            Vector3<int> targetBlock = Vector3Double.GetToPlaneIntersection(position, rotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToVector3Int();
+            BlockPos targetBlock = EntityPos.GetToPlaneIntersection(position, rotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToBlockPos();
             Point targetPosition = screen.ToScreenPosition(targetBlock);
             if (!screen.IncludedOnScreen(targetPosition))
                 return false;
 
             if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(player))
             {
-                command.SendActionbarTitle(new PlayerSelector(player), $"[屏幕输入处理模块] 错误：你没有权限控制屏幕", TextColor.Red);
+                command.SendActionbarTitle(new GenericSelector(player), $"[屏幕输入处理模块] 错误：你没有权限控制屏幕", TextColor.Red);
                 return false;
             }
 

@@ -17,12 +17,12 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         public ProcessManager()
         {
-            ProcessList = new(this);
+            Items = new(this);
             AddedProcess += OnAddedProcess;
             RemovedProcess += OnRemovedProcess;
         }
 
-        public ProcessCollection ProcessList { get; }
+        public ProcessCollection Items { get; }
 
         public event EventHandler<ProcessManager, ProcessEventArgs> AddedProcess;
 
@@ -34,11 +34,11 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void ProcessScheduling()
         {
-            foreach (var process in ProcessList)
+            foreach (var process in Items)
             {
                 process.Value.Handle();
                 if (process.Value.ProcessState == ProcessState.Stopped)
-                    ProcessList.Remove(process.Key);
+                    Items.Remove(process.Key);
             }
         }
 

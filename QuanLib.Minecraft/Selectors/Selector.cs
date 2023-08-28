@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Selectors
     {
         public override string ToString()
         {
-            return CommandUtil.TargetToString(Target.CommandExecutor);
+            return Target.CommandExecutor.ToCommandArgument();
         }
     }
 }

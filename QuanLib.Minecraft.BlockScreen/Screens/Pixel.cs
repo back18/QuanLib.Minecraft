@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen
+namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     public abstract class Pixel
     {

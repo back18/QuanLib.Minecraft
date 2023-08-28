@@ -17,13 +17,13 @@ namespace QuanLib.Minecraft.BlockScreen
     {
         public FormManager()
         {
-            FormList = new(this);
+            Items = new(this);
 
             AddedForm += OnAddedForm;
             RemovedForm += OnAddedForm;
         }
 
-        public FormCollection FormList { get; }
+        public FormCollection Items { get; }
 
         public event EventHandler<FormManager, FormContextEventArgs> AddedForm;
 
@@ -35,11 +35,11 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void FormScheduling()
         {
-            foreach (var context in FormList)
+            foreach (var context in Items)
             {
                 context.Value.Handle();
                 if (context.Value.FormState == FormState.Closed)
-                    FormList.Remove(context.Key);
+                    Items.Remove(context.Key);
             }
         }
 

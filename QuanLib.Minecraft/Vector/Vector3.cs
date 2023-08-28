@@ -23,11 +23,6 @@ namespace QuanLib.Minecraft.Vector
 
         public T Z { get; set; }
 
-        public override string ToString()
-        {
-            return $"[{X},{Y},{Z}]";
-        }
-
         public static bool operator ==(Vector3<T> v1, Vector3<T> v2)
         {
             return v1.Equals(v2);
@@ -38,7 +33,7 @@ namespace QuanLib.Minecraft.Vector
             return !v1.Equals(v2);
         }
 
-        public override bool Equals(object? obj)
+        public override readonly bool Equals(object? obj)
         {
             if (obj is Vector3<T> other)
             {
@@ -48,16 +43,21 @@ namespace QuanLib.Minecraft.Vector
             return false;
         }
 
-        public bool Equals(Vector3<T> other)
+        public readonly bool Equals(Vector3<T> other)
         {
             return EqualityComparer<T>.Default.Equals(X, other.X)
                    && EqualityComparer<T>.Default.Equals(Y, other.Y)
                    && EqualityComparer<T>.Default.Equals(Z, other.Z);
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return HashCode.Combine(X, Y, Z);
+        }
+
+        public override readonly string ToString()
+        {
+            return $"[{X},{Y},{Z}]";
         }
     }
 }

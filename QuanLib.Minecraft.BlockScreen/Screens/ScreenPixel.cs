@@ -1,12 +1,11 @@
-﻿using QuanLib.Minecraft;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen
+namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     public class ScreenPixel : Pixel
     {

@@ -43,8 +43,8 @@ namespace QuanLib.Minecraft.BlockScreen
 
                     if (context is not null)
                         RootForm = context.RootForm;
-                    else if (os.ScreenManager.ScreenList.Any())
-                        RootForm = os.ScreenManager.ScreenList.FirstOrDefault().Value.RootForm;
+                    else if (os.ScreenManager.Items.Any())
+                        RootForm = os.ScreenManager.Items.FirstOrDefault().Value.RootForm;
                     else
                         throw new InvalidOperationException();
                 }

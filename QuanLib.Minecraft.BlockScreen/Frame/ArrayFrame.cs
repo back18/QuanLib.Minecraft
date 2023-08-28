@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using QuanLib.ExceptionHelpe;
 using QuanLib.Minecraft.BlockScreen.Data;
 using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.BlockScreen.Screens;
 
 namespace QuanLib.Minecraft.BlockScreen.Frame
 {

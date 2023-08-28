@@ -1,21 +1,20 @@
-﻿using QuanLib.Minecraft;
-using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.BlockScreen
+namespace QuanLib.Minecraft.BlockScreen.Screens
 {
     public class WorldPixel : Pixel
     {
-        public WorldPixel(Vector3<int> position, string blockID) : base(blockID)
+        public WorldPixel(BlockPos position, string blockID) : base(blockID)
         {
             Position = position;
         }
 
-        public Vector3<int> Position { get; }
+        public BlockPos Position { get; }
 
         public string ToSetBlock()
         {

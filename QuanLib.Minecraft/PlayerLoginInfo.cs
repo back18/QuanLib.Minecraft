@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft
 {
     public class PlayerLoginInfo
     {
-        public PlayerLoginInfo(string name, IPAddress ip, ushort port, int id, Vector3Double position)
+        public PlayerLoginInfo(string name, IPAddress ip, ushort port, int id, EntityPos position)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             IP = ip ?? throw new ArgumentNullException(nameof(ip));
@@ -29,7 +29,7 @@ namespace QuanLib.Minecraft
 
         public int ID { get; }
 
-        public Vector3Double Position { get; }
+        public EntityPos Position { get; }
 
         public static bool TryParse(string s, [MaybeNullWhen(false)] out PlayerLoginInfo result)
         {

@@ -106,7 +106,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     break;
                 case ScreenState.Closed:
                     UnbindEvents();
-                    foreach (var forem in MCOS.Instance.FormManager.FormList.Values)
+                    foreach (var forem in MCOS.Instance.FormManager.Items.Values)
                     {
                         if (forem.RootForm == RootForm)
                             forem.CloseForm();

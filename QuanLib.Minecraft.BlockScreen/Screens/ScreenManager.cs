@@ -27,7 +27,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public ScreenManager()
         {
             ScreenBuilder = new();
-            ScreenList = new(this);
+            Items = new(this);
 
             _wait = false;
             _saves = new();
@@ -48,7 +48,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public ScreenBuilder ScreenBuilder { get; }
 
-        public ScreenCollection ScreenList { get; }
+        public ScreenCollection Items { get; }
 
         public event EventHandler<ScreenManager, ScreenContextEventArgs> AddedScreen;
 
@@ -67,7 +67,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 try
                 {
 #endif
-                    ScreenList.Add(new(options)).LoadScreen();
+                    Items.Add(new(options)).LoadScreen();
 #if TryCatch
                 }
                 catch (Exception ex)
@@ -78,7 +78,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             }
 
             ReadScreens();
-            IEnumerable<ScreenOptions> creates = creates = _saves.Where(save => !ScreenList.Values.Any(context => context.Screen.EqualsScreenOption(save)));
+            IEnumerable<ScreenOptions> creates = creates = _saves.Where(save => !Items.Values.Any(context => context.Screen.EqualsScreenOption(save)));
 
             LOGGER.Info($"开始加载上次未关闭屏幕，共计{creates.Count()}个");
             foreach (var options in creates)
@@ -87,7 +87,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 try
                 {
 #endif
-                    ScreenList.Add(new(options)).LoadScreen();
+                    Items.Add(new(options)).LoadScreen();
 #if TryCatch
                 }
                 catch (Exception ex)
@@ -100,7 +100,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public void ScreenScheduling()
         {
-            foreach (var context in ScreenList)
+            foreach (var context in Items)
             {
                 if (context.Value.ScreenState == ScreenState.Loading)
                 {
@@ -114,11 +114,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
                 if (context.Value.ScreenState == ScreenState.Closed)
                 {
-                    ScreenList.Remove(context.Key);
+                    Items.Remove(context.Key);
                     _saves.Remove(new(context.Value.Screen));
                     SaveScreens();
                     if (context.Value.IsRestart)
-                        ScreenList.Add(new(context.Value.Screen)).LoadScreen();
+                        Items.Add(new(context.Value.Screen)).LoadScreen();
                 }
             }
         }
@@ -150,7 +150,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllScreenInput()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in Items.Values)
                 tasks.Add(Task.Run(() => screen.Screen.InputHandler.HandleInput()));
             Task.WaitAll(tasks.ToArray());
         }
@@ -158,7 +158,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllBeforeFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in Items.Values)
                 tasks.Add(Task.Run(() => screen.RootForm.HandleBeforeFrame(EventArgs.Empty)));
             Task.WaitAll(tasks.ToArray());
         }
@@ -166,7 +166,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleAllAfterFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in ScreenList.Values)
+            foreach (var screen in Items.Values)
                 tasks.Add(Task.Run(() => screen.RootForm.HandleAfterFrame(EventArgs.Empty)));
             Task.WaitAll(tasks.ToArray());
         }
@@ -175,7 +175,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         {
             frames = new();
             List<(int id, Task<ArrayFrame> task)> tasks = new();
-            foreach (var context in ScreenList)
+            foreach (var context in Items)
             {
                 if (context.Value.ScreenState == ScreenState.Closed)
                     continue;
@@ -209,7 +209,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             List<Task> tasks = new();
             foreach (var frame in frames)
             {
-                if (ScreenList.TryGetValue(frame.Key, out var context))
+                if (Items.TryGetValue(frame.Key, out var context))
                     tasks.Add(context.Screen.OutputHandler.HandleOutputAsync(frame.Value));
             }
 
