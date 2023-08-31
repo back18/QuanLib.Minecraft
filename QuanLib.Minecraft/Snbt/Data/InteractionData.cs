@@ -18,6 +18,12 @@ namespace QuanLib.Minecraft.Snbt.Data
             Timestamp = nbt.timestamp;
         }
 
+        public InteractionData(Guid player, long timestamp)
+        {
+            Player = player;
+            Timestamp = timestamp;
+        }
+
         public Guid Player { get; }
 
         public long Timestamp { get; }

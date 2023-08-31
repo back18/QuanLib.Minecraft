@@ -19,6 +19,14 @@ namespace QuanLib.Minecraft.Snbt.Data
             Tag = nbt.tag;
         }
 
+        public Item(sbyte count, string iD, sbyte slot, Dictionary<string, object>? tag = null)
+        {
+            Count = count;
+            ID = iD;
+            Slot = slot;
+            Tag = tag;
+        }
+
         public sbyte Count { get; }
 
         public string ID { get; }

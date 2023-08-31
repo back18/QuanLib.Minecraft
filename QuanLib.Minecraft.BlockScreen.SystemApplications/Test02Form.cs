@@ -53,9 +53,8 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
 
             ClientPanel.SubControls.Add(button1);
             button1.ClientLocation = new(5, 5);
-            button1.Text = "Open";
+            button1.Text = "Test";
             button1.RightClick += Button1_RightClick;
-            button1.CursorMove += Button1_CursorMove;
 
             ClientPanel.SubControls.Add(textBox1);
             textBox1.ClientLocation = new(5, 25);
@@ -89,11 +88,6 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             numberBox1.ClientLocation = ClientPanel.RightLayout(label1, 2);
         }
 
-        private void Button1_CursorMove(Control sender, Event.CursorEventArgs e)
-        {
-            Console.WriteLine(e.Position);
-        }
-
         private void Button1_RightClick(Control sender, Event.CursorEventArgs e)
         {
             _ = DialogBoxHelper.OpenMessageBoxAsync(this, "崩溃测试", "点击“是”系统将立刻崩溃", MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel, (result) =>
@@ -103,12 +97,18 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications
             });
         }
 
+        protected override void OnLeftClick(Control sender, CursorEventArgs e)
+        {
+            base.OnLeftClick(sender, e);
+
+            Console.WriteLine("左键测试");
+        }
+
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
             base.OnRightClick(sender, e);
 
-            Console.WriteLine("Form点击");
-
+            Console.WriteLine("右键测试");
         }
     }
 }

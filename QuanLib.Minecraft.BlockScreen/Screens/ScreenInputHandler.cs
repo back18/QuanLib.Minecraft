@@ -147,19 +147,19 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (!command.TryGetPlayerSelectedItemSlot(player, out var slot))
                 return false;
 
-            command.TryGetPlayerItem(player, slot, out Item? selectedItem);
-            command.TryGetPlayerDualWieldItem(player, out Item? dualWieldItem);
+            command.TryGetPlayerItem(player, slot, out Item? mainItem);
+            command.TryGetPlayerDualWieldItem(player, out Item? dualItem);
 
             bool swap = false;
-            if (selectedItem is not null && (selectedItem.ID == MOUSE_ITEM || selectedItem.ID == TEXTEDITOR_ITEM))
+            if (mainItem is not null && (mainItem.ID == MOUSE_ITEM || mainItem.ID == TEXTEDITOR_ITEM))
             {
 
             }
-            else if (dualWieldItem is not null && (dualWieldItem.ID == MOUSE_ITEM || dualWieldItem.ID == TEXTEDITOR_ITEM))
+            else if (dualItem is not null && (dualItem.ID == MOUSE_ITEM || dualItem.ID == TEXTEDITOR_ITEM))
             {
-                Item? temp = selectedItem;
-                selectedItem = dualWieldItem;
-                dualWieldItem = temp;
+                Item? temp = mainItem;
+                mainItem = dualItem;
+                dualItem = temp;
                 swap = true;
             }
             else
@@ -181,7 +181,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(player))
             {
-                command.SendActionbarTitle(new GenericSelector(player), $"[屏幕输入处理模块] 错误：你没有权限控制屏幕", TextColor.Red);
+                command.SendActionbarTitle(new GenericSelector(player), $"[屏幕输入模块] 错误：你没有权限控制屏幕", TextColor.Red);
                 return false;
             }
 
@@ -189,7 +189,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             CurrentPlayer = player;
 
-            switch (selectedItem.ID)
+            switch (mainItem.ID)
             {
                 case MOUSE_ITEM:
                     CurrenMode = CursorMode.Cursor;
@@ -212,34 +212,44 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 actions.Add(() => CursorSlotChanged.Invoke(this, new(CurrentPosition, temp, CurrentSlot)));
             }
 
-            if (!Item.EqualsID(dualWieldItem, CurrentItem))
+            if (!Item.EqualsID(dualItem, CurrentItem))
             {
-                CurrentItem = dualWieldItem;
+                CurrentItem = dualItem;
                 actions.Add(() => CursorItemChanged.Invoke(this, new(CurrentPosition, CurrentItem)));
             }
 
-            switch (selectedItem.ID)
+            switch (mainItem.ID)
             {
                 case MOUSE_ITEM:
-                    if (command.TryGetPlayerScoreboard(player, ScreenConfig.RightClickObjective, out var score) && score > 0)
+                    if (MCOS.Instance.InteractionManager.Items.TryGetValue(CurrentPlayer, out var interaction))
                     {
-                        RightClick.Invoke(this, new(CurrentPosition));
-                        command.SetPlayerScoreboard(player, ScreenConfig.RightClickObjective, 0);
+                        if (interaction.IsLeftClick)
+                            actions.Add(() => LeftClick.Invoke(this, new(CurrentPosition)));
+                        if (interaction.IsRightClick)
+                            actions.Add(() => RightClick.Invoke(this, new(CurrentPosition)));
+                    }
+                    else
+                    {
+                        if (command.TryGetPlayerScoreboard(CurrentPlayer, ScreenConfig.RightClickObjective, out var score) && score > 0)
+                        {
+                            actions.Add(() => RightClick.Invoke(this, new(CurrentPosition)));
+                            command.SetPlayerScoreboard(CurrentPlayer, ScreenConfig.RightClickObjective, 0);
+                        }
                     }
                     break;
                 case TEXTEDITOR_ITEM:
                     if (IsInitialState)
                     {
                         if (string.IsNullOrEmpty(InitialText))
-                            command.SetPlayerHotbarItem(player, selectedItem.Slot, $"minecraft:writable_book{{pages:[]}}");
+                            command.SetPlayerHotbarItem(CurrentPlayer, mainItem.Slot, $"minecraft:writable_book{{pages:[]}}");
                         else
-                            command.SetPlayerHotbarItem(player, selectedItem.Slot, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
+                            command.SetPlayerHotbarItem(CurrentPlayer, mainItem.Slot, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
                         CurrentText = InitialText;
                         IsInitialState = false;
                     }
                     else if (
-                        selectedItem.Tag is not null &&
-                        selectedItem.Tag.TryGetValue("pages", out var pagesTag) &&
+                        mainItem.Tag is not null &&
+                        mainItem.Tag.TryGetValue("pages", out var pagesTag) &&
                         pagesTag is string[] texts && texts.Length > 0)
                     {
                         if (texts[0] != CurrentText)

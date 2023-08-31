@@ -48,7 +48,7 @@ namespace MCBS.ConsoleTerminal
                 }
                 if (!MCOS.IsLoaded)
                 {
-                    Console.WriteLine("【MCBS控制台】MCOS未加载，控制台输入已被禁用");
+                    Console.WriteLine("【MCBS控制台】系统未加载，控制台输入已被禁用");
                     continue;
                 }
                 if (input is null)
@@ -98,14 +98,15 @@ namespace MCBS.ConsoleTerminal
                         Task.Run(() =>
                         {
                             string empty = new(' ', 32);
-                            for (int i = 0; i < 13; i++)
+                            int lines = 14;
+                            for (int i = 0; i < lines; i++)
                                 Console.WriteLine(empty);
                             while (run)
                             {
-                                Console.CursorTop -= 13;
-                                for (int i = 0; i < 13; i++)
+                                Console.CursorTop -= lines;
+                                for (int i = 0; i < lines; i++)
                                     Console.WriteLine(empty);
-                                Console.CursorTop -= 13;
+                                Console.CursorTop -= lines;
                                 Console.WriteLine(MCOS.Instance.SystemTimer.ToString(QuanLib.Minecraft.BlockScreen.Timer.Duration.Tick20));
                                 Console.WriteLine($"帧: {MCOS.Instance.FrameCount}");
                                 Console.WriteLine($"滞后: {MCOS.Instance.LagFrameCount}");
@@ -168,6 +169,8 @@ namespace MCBS.ConsoleTerminal
             CommandSystem.Pool.AddCommand(new(new("frame count"), CommandFunc.GetFunc(GetFrameCount)));
         }
 
+        #region commands
+
         private static string GetApplicationList()
         {
             var list = MCOS.Instance.ApplicationManager.Items;
@@ -175,9 +178,8 @@ namespace MCBS.ConsoleTerminal
             sb.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
             foreach (var appInfo in list.Values)
                 sb.AppendLine(appInfo.ToString());
-            sb.Length--;
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
 
         private static string GetScreenList()
@@ -187,9 +189,8 @@ namespace MCBS.ConsoleTerminal
             sb.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
             foreach (var context in list.Values)
                 sb.AppendLine(context.ToString());
-            sb.Length--;
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
 
         private static string CloseScreen(int id)
@@ -222,9 +223,8 @@ namespace MCBS.ConsoleTerminal
             sb.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
             foreach (var context in list.Values)
                 sb.AppendLine(context.ToString());
-            sb.Length--;
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
 
         private static string GetFormList()
@@ -234,14 +234,15 @@ namespace MCBS.ConsoleTerminal
             sb.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
             foreach (var context in list.Values)
                 sb.AppendLine(context.ToString());
-            sb.Length--;
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
 
         private static int GetFrameCount()
         {
             return MCOS.Instance.FrameCount;
         }
+
+        #endregion
     }
 }

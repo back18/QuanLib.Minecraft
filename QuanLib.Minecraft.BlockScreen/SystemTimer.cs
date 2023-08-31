@@ -14,6 +14,7 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenScheduling = new();
             ProcessScheduling = new();
             FormScheduling = new();
+            InteractionScheduling = new();
             ScreenInput = new();
             HandleBeforeFrame = new();
             UIRendering = new();
@@ -29,6 +30,8 @@ namespace QuanLib.Minecraft.BlockScreen
         public Timer ProcessScheduling { get; }
 
         public Timer FormScheduling { get; }
+
+        public Timer InteractionScheduling { get; }
 
         public Timer ScreenInput { get; }
 
@@ -51,6 +54,7 @@ namespace QuanLib.Minecraft.BlockScreen
             return @$"屏幕调度: {Timer.FromTime(ScreenScheduling.GetTime(duration))}
 进程调度: {Timer.FromTime(ProcessScheduling.GetTime(duration))}
 窗体调度: {Timer.FromTime(FormScheduling.GetTime(duration))}
+交互调度: {Timer.FromTime(InteractionScheduling.GetTime(duration))}
 屏幕输入: {Timer.FromTime(ScreenInput.GetTime(duration))}
 帧前处理: {Timer.FromTime(HandleBeforeFrame.GetTime(duration))}
 界面渲染: {Timer.FromTime(UIRendering.GetTime(duration))}

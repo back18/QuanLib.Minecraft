@@ -1,4 +1,10 @@
-﻿using QuanLib.Minecraft.BlockScreen.Event;
+﻿using log4net.Core;
+using Newtonsoft.Json;
+using QuanLib.Minecraft.BlockScreen.Event;
+using QuanLib.Minecraft.BlockScreen.Logging;
+using QuanLib.Minecraft.Selectors;
+using QuanLib.Minecraft.Snbt.Data;
+using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -12,6 +18,8 @@ namespace QuanLib.Minecraft.BlockScreen
 {
     public class InteractionManager
     {
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+
         public InteractionManager()
         {
             Items = new(this);
@@ -28,6 +36,35 @@ namespace QuanLib.Minecraft.BlockScreen
         protected virtual void OnAddedInteraction(InteractionManager sender, InteractionEventArgs e) { }
 
         protected virtual void OnRemovedInteraction(InteractionManager sender, InteractionEventArgs e) { }
+
+        public void Initialize()
+        {
+            string dir = MCOS.MainDirectory.Saves.Interactions.Directory;
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            string[] files = Directory.GetFiles(dir, "*.json");
+            LOGGER.Info($"开始回收交互实体，共计{files.Length}个");
+            foreach (string file in files)
+            {
+                try
+                {
+                    Interaction.Json json = JsonConvert.DeserializeObject<Interaction.Json>(File.ReadAllText(file)) ?? throw new FormatException();
+                    EntityPos position = new(json.Position[0], json.Position[1], json.Position[2]);
+                    BlockPos blockPos = position.ToBlockPos();
+                    var command = MCOS.Instance.MinecraftServer.CommandHelper;
+                    command.AddForceLoadChunk(blockPos);
+                    command.KillEntity(new GenericSelector(json.EntityUUID));
+                    command.RemoveForceLoadChunk(blockPos);
+                    File.Delete(file);
+                    LOGGER.Info($"玩家[{json.PlayerUUID}]的交互实体已回收");
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error("无法回收交互实体", ex);
+                }
+            }
+        }
 
         public void InteractionScheduling()
         {

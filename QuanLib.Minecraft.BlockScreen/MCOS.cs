@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public class MCOS : ISwitchable
+    public class MCOS : ISwitchable, IDisposable
     {
         private static LogImpl LOGGER => LogUtil.MainLogger;
 
@@ -42,6 +42,7 @@ namespace QuanLib.Minecraft.BlockScreen
             ScreenManager = new();
             ProcessManager = new();
             FormManager = new();
+            InteractionManager = new();
 
             EnableAccelerationEngine = ConfigManager.SystemConfig.EnableAccelerationEngine;
             FrameCount = 0;
@@ -115,6 +116,8 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public FormManager FormManager { get; }
 
+        public InteractionManager InteractionManager { get; }
+
         public string ServicesAppID { get; }
 
         public IReadOnlyList<string> StartupChecklist { get; }
@@ -132,13 +135,13 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public void Start()
+        private void Initialize()
         {
-            if (_runing)
-                return;
-            _runing = true;
+            LOGGER.Info("开始初始化");
 
-            LOGGER.Info("系统已开始运行");
+            LOGGER.Info("正在等待Minecraft服务器启动...");
+            MinecraftServer.WaitForConnected();
+            LOGGER.Info("成功连接到Minecraft服务器");
 
 #if TryCatch
             try
@@ -160,7 +163,20 @@ namespace QuanLib.Minecraft.BlockScreen
 #endif
 
             ScreenManager.Initialize();
+            InteractionManager.Initialize();
             MinecraftServer.CommandHelper.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
+
+            LOGGER.Info("初始化完成");
+        }
+
+        public void Start()
+        {
+            if (_runing)
+                return;
+
+            _runing = true;
+            LOGGER.Info("系统已开始运行");
+            Initialize();
             _stopwatch.Start();
 
             run:
@@ -178,6 +194,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     HandleScreenScheduling();
                     HandleProcessScheduling();
                     HandleFormScheduling();
+                    HandleInteractionScheduling();
 
                     if (ScreenManager.IsCompletedOutput)
                     {
@@ -227,17 +244,13 @@ namespace QuanLib.Minecraft.BlockScreen
                 }
                 else
                 {
-                    foreach (var context in ScreenManager.Items.Values)
-                    {
-                        context.Screen.Fill();
-                        context.Screen.UnloadScreenChunks();
-                    }
                     LOGGER.Fatal("系统运行时遇到意外错误，未启用自动重启，系统即将终止运行", ex);
                 }
             }
 #endif
 
             _stopwatch.Stop();
+            Dispose();
             _runing = false;
             LOGGER.Info("系统已终止运行");
         }
@@ -266,6 +279,17 @@ namespace QuanLib.Minecraft.BlockScreen
 
             stopwatch.Stop();
             SystemTimer.ProcessScheduling.Add(stopwatch.Elapsed);
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan HandleInteractionScheduling()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            InteractionManager.InteractionScheduling();
+
+            stopwatch.Stop();
+            SystemTimer.InteractionScheduling.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 
@@ -480,6 +504,33 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             foreach (var id in StartupChecklist)
                 RunApplication(ApplicationManager.Items[id], rootForm);
+        }
+
+        public void Dispose()
+        {
+            LOGGER.Info("开始释放非托管资源");
+
+            bool connect = MinecraftServer.PingServer(out _) && MinecraftServer.PingRcon(out _);
+            if (!connect)
+            {
+                LOGGER.Warn("无法继续连接到Minecraft服务器，因此无法释放托管在Minecraft中的资源");
+                return;
+            }
+
+            foreach (var context in ScreenManager.Items.Values)
+            {
+                context.Screen.Fill();
+                context.Screen.UnloadScreenChunks();
+            }
+
+            foreach (var interaction in InteractionManager.Items.Values)
+            {
+                interaction.Dispose();
+            }
+
+            GC.SuppressFinalize(this);
+
+            LOGGER.Info("非托管资源释放完成");
         }
     }
 }

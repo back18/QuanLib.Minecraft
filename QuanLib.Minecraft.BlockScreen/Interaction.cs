@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public class Interaction
+    public class Interaction : IDisposable
     {
         private const string INTERACTION_ID = "minecraft:interaction";
 
@@ -27,6 +27,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
             _player = PlayerUUID.ToString();
             _entity = EntityUUID.ToString();
+            _file = Path.Combine(_dir, _player + ".json");
 
             _ = SaveJsonAsync();
         }
@@ -34,6 +35,10 @@ namespace QuanLib.Minecraft.BlockScreen
         private readonly string _player;
 
         private readonly string _entity;
+
+        private static readonly string _dir = MCOS.MainDirectory.Saves.Interactions.Directory;
+
+        private readonly string _file;
 
         private Task? _task;
 
@@ -67,7 +72,7 @@ namespace QuanLib.Minecraft.BlockScreen
                     _ = SaveJsonAsync();
                     break;
                 case InteractionState.Offline:
-                    Close();
+                    Dispose();
                     break;
                 case InteractionState.Closed:
                     break;
@@ -92,7 +97,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 return false;
 
             Position = position;
-            return command.TelePort(new GenericSelector(_entity), new GenericSelector(_player));
+            return command.TelePort(new GenericSelector(_entity), Position);
         }
 
         public void ReadLeftRightKeys()
@@ -100,8 +105,7 @@ namespace QuanLib.Minecraft.BlockScreen
             IsLeftClick = false;
             IsRightClick = false;
             var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            if (!command.TryGetInteractionData(_entity, out var keys))
-                return;
+            LeftRightKeys keys = command.GetInteractionData(_entity);
 
             if (keys.LeftClick.Timestamp > LeftClickTimestamp)
             {
@@ -117,31 +121,19 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public void Close()
-        {
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            BlockPos blockPos = Position.ToBlockPos();
-            command.AddForceLoadChunk(blockPos);
-            command.KillEntity(new GenericSelector(_entity));
-            command.RemoveForceLoadChunk(blockPos);
-            DaleteJson();
-            InteractionState = InteractionState.Closed;
-        }
-
         public async Task SaveJsonAsync()
         {
             _task?.Wait();
-            _task = File.WriteAllTextAsync(MCOS.MainDirectory.Saves.Interactions.Combine(_player + ".json"), JsonConvert.SerializeObject(ToJson()));
+            if (!Directory.Exists(_dir))
+                Directory.CreateDirectory(_dir);
+            _task = File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(ToJson()));
             await _task;
         }
 
         public void DaleteJson()
         {
-            string path = MCOS.MainDirectory.Saves.Interactions.Combine(_player + ".json");
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            if (File.Exists(_file))
+                File.Delete(_file);
         }
 
         public Json ToJson()
@@ -178,6 +170,18 @@ namespace QuanLib.Minecraft.BlockScreen
             err:
             result = null;
             return false;
+        }
+
+        public void Dispose()
+        {
+            var command = MCOS.Instance.MinecraftServer.CommandHelper;
+            BlockPos blockPos = Position.ToBlockPos();
+            command.AddForceLoadChunk(blockPos);
+            command.KillEntity(new GenericSelector(_entity));
+            command.RemoveForceLoadChunk(blockPos);
+            DaleteJson();
+            InteractionState = InteractionState.Closed;
+            GC.SuppressFinalize(this);
         }
 
         public class Json

@@ -30,6 +30,7 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
+                LOGGER.Info("开始加载资源文件");
                 ConfigManager.LoadAll();
                 SystemResourcesManager.LoadAll();
                 MinecraftResourcesManager.LoadAll();
@@ -42,7 +43,7 @@ namespace MCBS.ConsoleTerminal
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("无法完成初始化", ex);
+                LOGGER.Fatal("无法完成资源文件的加载", ex);
                 Exit();
                 return;
             }
@@ -81,23 +82,7 @@ namespace MCBS.ConsoleTerminal
             }
 #endif
 
-#if TryCatch
-            try
-            {
-#endif
-                LOGGER.Info("系统开始初始化");
-                mcos = MCOS.Load(server);
-                LOGGER.Info("系统初始化完成");
-#if TryCatch
-            }
-            catch (Exception ex)
-            {
-                LOGGER.Fatal("系统无法完成初始化", ex);
-                Exit();
-                return;
-            }
-#endif
-
+            mcos = MCOS.Load(server);
             mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
             mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
             mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
@@ -112,13 +97,6 @@ namespace MCBS.ConsoleTerminal
             mcos.ApplicationManager.Items.Add(new Test01AppInfo());
             mcos.ApplicationManager.Items.Add(new Test02AppInfo());
             mcos.ApplicationManager.Items.Add(new Test03AppInfo());
-
-            LOGGER.Info("正在等待Minecraft服务器启动...");
-            server.WaitForConnected();
-            LOGGER.Info("成功连接到Minecraft服务器");
-
-            bool boo = server.CommandHelper.TryGetInteractionData("5cdf0980-3a61-4fab-9bc5-79a393d8128b", out var result);
-
             mcos.Start();
 
             Exit();

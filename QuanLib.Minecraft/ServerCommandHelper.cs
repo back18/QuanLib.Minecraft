@@ -512,18 +512,22 @@ namespace QuanLib.Minecraft
             return float.TryParse(snbt[..^1], out result);
         }
 
-        public virtual bool TryGetInteractionData(string target, [MaybeNullWhen(false)] out LeftRightKeys result)
+        public virtual LeftRightKeys GetInteractionData(string target)
         {
-            if (!TryGetEntitySnbt(target, "attack", out var left) || !TryGetEntitySnbt(target, "interaction", out var right))
-            {
-                result = default;
-                return false;
-            }
+            if (string.IsNullOrEmpty(target))
+                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
 
-            InteractionData leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(left));
-            InteractionData rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(right));
-            result = new(leftData, rightData);
-            return true;
+            InteractionData leftData, rightData;
+            if (TryGetEntitySnbt(target, "attack", out var left))
+                leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(left));
+            else
+                leftData = new(Guid.Empty, 0);
+            if (TryGetEntitySnbt(target, "interaction", out var right))
+                rightData = rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(right));
+            else
+                rightData = new(Guid.Empty, 0);
+
+            return new(leftData, rightData);
         }
 
         public virtual string GetAllEntitySbnt(string target, string? path)
