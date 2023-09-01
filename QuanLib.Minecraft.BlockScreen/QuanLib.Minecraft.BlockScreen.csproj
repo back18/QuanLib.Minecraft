@@ -25,7 +25,6 @@
   <ItemGroup>
     <PackageReference Include="FFMediaToolkit" Version="4.5.1" />
     <PackageReference Include="log4net" Version="2.0.15" />
-    <PackageReference Include="MongoDB.Bson" Version="2.21.0" />
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
   </ItemGroup>
