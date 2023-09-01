@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Block;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
@@ -280,7 +281,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Album
             ClientPanel.SubControls.Remove(Setting_ListMenuBox);
         }
 
-        private void Path_TextBox_TextChanged(Control sender, QuanLib.Event.TextChangedEventArgs e)
+        private void Path_TextBox_TextChanged(Control sender, QuanLib.Core.Event.TextChangedEventArgs e)
         {
             if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;

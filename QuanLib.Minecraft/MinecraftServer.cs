@@ -1,6 +1,7 @@
 ﻿using CoreRCON;
 using CoreRCON.Parsers.Standard;
-using QuanLib.FileListeners;
+using QuanLib.Core;
+using QuanLib.Core.FileListeners;
 using QuanLib.Minecraft.DirectoryManagers;
 using QuanLib.Minecraft.MinecraftLogs;
 using QuanLib.Minecraft.Selectors;
@@ -131,7 +132,7 @@ namespace QuanLib.Minecraft
             TextListener.WriteLineText -= TextListener_WriteLineText;
         }
 
-        private void TextListener_WriteLineText(ITextListener sender, QuanLib.Event.TextEventArgs e)
+        private void TextListener_WriteLineText(ITextListener sender, QuanLib.Core.Event.TextEventArgs e)
         {
             Console.WriteLine(e.Text);
         }

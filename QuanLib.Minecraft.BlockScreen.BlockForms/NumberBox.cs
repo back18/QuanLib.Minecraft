@@ -1,4 +1,5 @@
-﻿using QuanLib.Event;
+﻿using QuanLib.Core;
+using QuanLib.Core.Event;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using System;

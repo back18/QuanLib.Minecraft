@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Event;
-using QuanLib.IO;
+using QuanLib.Core;
+using QuanLib.Core.Event;
+using QuanLib.Core.IO;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
 using System;

@@ -2,6 +2,7 @@
 using log4net.Core;
 using NAudio.Wave;
 using Newtonsoft.Json.Linq;
+using QuanLib.Core;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.BlockScreen.Logging;

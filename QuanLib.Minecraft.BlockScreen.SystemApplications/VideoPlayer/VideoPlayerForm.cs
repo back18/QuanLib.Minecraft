@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.Block;
-using QuanLib.Event;
+using QuanLib.Core.Event;
 using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;
 
 namespace QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer

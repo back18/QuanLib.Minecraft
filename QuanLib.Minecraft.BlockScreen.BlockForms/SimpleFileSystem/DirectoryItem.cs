@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
     public class DirectoryItem : FileSystemItem
     {
-        public DirectoryItem(DirectoryInfo directoryInfo) : base(IO.PathType.Directory)
+        public DirectoryItem(DirectoryInfo directoryInfo) : base(Core.IO.PathType.Directory)
         {
             DirectoryInfo = directoryInfo ?? throw new ArgumentNullException(nameof(directoryInfo));
 

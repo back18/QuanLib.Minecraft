@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
     public class DriveItem : FileSystemItem
     {
-        public DriveItem(DriveInfo driveInfo) : base(IO.PathType.Drive)
+        public DriveItem(DriveInfo driveInfo) : base(Core.IO.PathType.Drive)
         {
             DriveInfo = driveInfo ?? throw new ArgumentNullException(nameof(driveInfo));
 

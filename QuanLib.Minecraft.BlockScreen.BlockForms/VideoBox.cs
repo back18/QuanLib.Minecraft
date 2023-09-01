@@ -3,6 +3,7 @@ using FFMediaToolkit.Graphics;
 using Microsoft.VisualBasic;
 using NAudio.Midi;
 using NAudio.Wave;
+using QuanLib.Core;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using SixLabors.ImageSharp;

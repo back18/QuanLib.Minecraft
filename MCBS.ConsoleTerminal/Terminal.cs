@@ -2,6 +2,7 @@
 using QuanLib;
 using QuanLib.CommandLine;
 using QuanLib.CommandLine.ConsoleCommand;
+using QuanLib.Core;
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.Logging;
 using System;

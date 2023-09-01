@@ -1,6 +1,6 @@
 ﻿using static QuanLib.Minecraft.BlockScreen.Config.ConfigManager;
 using CoreRCON;
-using QuanLib.Event;
+using QuanLib.Core.Event;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
@@ -14,6 +14,7 @@ using static log4net.Appender.RollingFileAppender;
 using CoreRCON.Parsers.Standard;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt.Data;
+using QuanLib.Core;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {

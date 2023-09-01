@@ -1,4 +1,4 @@
-﻿using QuanLib.ExceptionHelpe;
+﻿using QuanLib.Core.ExceptionHelper;
 using QuanLib.Minecraft.BlockScreen.Frame;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;

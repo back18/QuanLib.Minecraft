@@ -1,5 +1,6 @@
-﻿using QuanLib.Event;
-using QuanLib.FileListeners;
+﻿using QuanLib.Core;
+using QuanLib.Core.Event;
+using QuanLib.Core.FileListeners;
 using QuanLib.Minecraft.Event;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;

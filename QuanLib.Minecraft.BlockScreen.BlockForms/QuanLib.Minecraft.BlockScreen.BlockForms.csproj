@@ -11,11 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="QuanLib">
-      <HintPath>..\..\QuanLib\release\QuanLib\QuanLib.dll</HintPath>
-    </Reference>
     <Reference Include="QuanLib.BDF">
       <HintPath>..\..\QuanLib\release\QuanLib.BDF\QuanLib.BDF.dll</HintPath>
+    </Reference>
+    <Reference Include="QuanLib.Core">
+      <HintPath>..\..\QuanLib\release\QuanLib.Core\QuanLib.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 

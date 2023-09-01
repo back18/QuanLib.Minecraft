@@ -1,4 +1,4 @@
-﻿using QuanLib.Event;
+﻿using QuanLib.Core.Event;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Event;
 using SixLabors.ImageSharp;

@@ -1,4 +1,4 @@
-﻿using QuanLib.IO;
+﻿using QuanLib.Core.IO;
 using QuanLib.Minecraft.BlockScreen.SystemApplications.VideoPlayer;
 using QuanLib.Minecraft.BlockScreen.BlockForms;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.BlockScreen.Event;
-using QuanLib.Event;
+using QuanLib.Core.Event;
 using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem;
 using QuanLib.Minecraft.BlockScreen.BlockForms.DialogBox;

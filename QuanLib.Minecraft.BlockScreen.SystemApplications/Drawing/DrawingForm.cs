@@ -195,7 +195,7 @@ namespace QuanLib.Minecraft.BlockScreen.SystemApplications.Drawing
             DrawingBox.EnableDrag = false;
         }
 
-        private void PenWidth_NumberBox_NumberValueChanged(NumberBox sender, QuanLib.Event.ValueChangedEventArgs<int> e)
+        private void PenWidth_NumberBox_NumberValueChanged(NumberBox sender, QuanLib.Core.Event.ValueChangedEventArgs<int> e)
         {
             DrawingBox.PenWidth = e.NewValue;
         }

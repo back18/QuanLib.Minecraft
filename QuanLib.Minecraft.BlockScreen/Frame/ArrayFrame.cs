@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using QuanLib.ExceptionHelpe;
+using QuanLib.Core.ExceptionHelper;
 using QuanLib.Minecraft.BlockScreen.Data;
 using QuanLib.Minecraft.Block;
 using QuanLib.Minecraft.BlockScreen.Screens;
+using QuanLib.Core;
 
 namespace QuanLib.Minecraft.BlockScreen.Frame
 {
@@ -46,7 +47,7 @@ namespace QuanLib.Minecraft.BlockScreen.Frame
 
         public ArrayFrame Clone()
         {
-            string[,] copy = ArrayUtil.Copy(_ids);
+            string[,] copy = ArrayUtil.Clone(_ids);
             return new(copy);
         }
 

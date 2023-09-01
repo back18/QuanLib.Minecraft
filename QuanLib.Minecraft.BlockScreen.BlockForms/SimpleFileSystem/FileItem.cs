@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms.SimpleFileSystem
 {
     public class FileItem : FileSystemItem
     {
-        public FileItem(FileInfo fileInfo) : base(IO.PathType.File)
+        public FileItem(FileInfo fileInfo) : base(Core.IO.PathType.File)
         {
             FileInfo = fileInfo;
 

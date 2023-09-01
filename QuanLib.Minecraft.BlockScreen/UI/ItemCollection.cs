@@ -1,4 +1,5 @@
-﻿using QuanLib.Event;
+﻿using QuanLib.Core;
+using QuanLib.Core.Event;
 using System;
 using System.Collections;
 using System.Collections.Generic;
