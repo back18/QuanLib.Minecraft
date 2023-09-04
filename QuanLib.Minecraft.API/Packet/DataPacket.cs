@@ -8,30 +8,27 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.API.DataPackets
+namespace QuanLib.Minecraft.API.Packet
 {
-    public class DataPacket
+    public abstract class DataPacket : ISerialize
     {
-        public DataPacket(string key, string type, byte[] data, int id, bool needResponse)
+        protected DataPacket(string type, byte[] data, int id)
         {
-            if (string.IsNullOrEmpty(key))
-                throw new ArgumentException($"“{nameof(key)}”不能为 null 或空。", nameof(key));
             if (string.IsNullOrEmpty(type))
                 throw new ArgumentException($"“{nameof(type)}”不能为 null 或空。", nameof(type));
             if (data is null)
                 throw new ArgumentNullException(nameof(data));
 
-            Key = key;
             Type = type;
             Data = data;
             ID = id;
-            NeedResponse = needResponse;
         }
 
-        public DataPacket(Model model)
+        protected DataPacket(ModelBase model)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
@@ -52,14 +49,10 @@ namespace QuanLib.Minecraft.API.DataPackets
                 throw new ArgumentException(message.ToString().TrimEnd(), nameof(model));
             }
 
-            Key = model.Key;
             Type = model.Type;
             Data = model.Data;
             ID = model.ID!.Value;
-            NeedResponse = model.NeedResponse!.Value;
         }
-
-        public string Key { get; }
 
         public string Type { get; }
 
@@ -67,23 +60,15 @@ namespace QuanLib.Minecraft.API.DataPackets
 
         public int ID { get; }
 
-        public bool NeedResponse { get; }
+        public abstract byte[] Serialize();
 
-        public Model ToModel()
+        protected static byte[] Serialize<T>(T model) where T : ModelBase
         {
-            return new()
-            {
-                ID = ID,
-                Key = Key,
-                Type = Type,
-                Data = Data
-            };
-        }
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-        public byte[] ToBytes()
-        {
             using MemoryStream stream = new();
-            BsonSerializer.Serialize(new BsonBinaryWriter(stream), ToModel());
+            BsonSerializer.Serialize(new BsonBinaryWriter(stream), model);
             byte[] length = BitConverter.GetBytes((int)stream.Length + 4);
             Array.Reverse(length);
             stream.Seek(0, SeekOrigin.Begin);
@@ -91,7 +76,7 @@ namespace QuanLib.Minecraft.API.DataPackets
             return stream.ToArray();
         }
 
-        public static bool TryParseBytes(byte[] bytes, [MaybeNullWhen(false)] out DataPacket result)
+        protected static bool TryDeserialize<T>(byte[] bytes, [MaybeNullWhen(false)] out T result) where T : ModelBase
         {
             if (bytes is null || bytes.Length <= 4)
                 goto err;
@@ -107,10 +92,11 @@ namespace QuanLib.Minecraft.API.DataPackets
                 if (length != stream.Length)
                     goto err;
 
+                stream.Seek(4, SeekOrigin.Begin);
                 byte[] buffer2 = new byte[stream.Length - 4];
                 stream.Read(buffer2, 0, buffer2.Length);
-                Model model = BsonSerializer.Deserialize<Model>(buffer2);
-                result = new(model);
+                T model = BsonSerializer.Deserialize<T>(buffer2);
+                result = model;
                 return true;
             }
             catch
@@ -118,17 +104,14 @@ namespace QuanLib.Minecraft.API.DataPackets
                 goto err;
             }
 
-        err:
+            err:
             result = null;
             return false;
         }
 
-        public class Model
+        public abstract class ModelBase
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
-            [Required(ErrorMessage = "Key参数缺失")]
-            public string Key { get; set; }
 
             [Required(ErrorMessage = "Type参数缺失")]
             public string Type { get; set; }
@@ -138,9 +121,6 @@ namespace QuanLib.Minecraft.API.DataPackets
 
             [Required(ErrorMessage = "ID参数缺失")]
             public int? ID { get; set; }
-
-            [Required(ErrorMessage = "NeedResponse参数缺失")]
-            public bool? NeedResponse { get; }
         }
     }
 }

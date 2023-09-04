@@ -10,11 +10,16 @@ namespace QuanLib.Minecraft.API
 {
     public static class BsonExtension
     {
-        public static byte[] ToBsonBytes(this object source)
+        public static byte[] SerializeBson(this object source)
         {
             using MemoryStream stream = new();
             BsonSerializer.Serialize(new BsonBinaryWriter(stream), source);
             return stream.ToArray();
+        }
+
+        public static T DeserializeBson<T>(this byte[] bytes)
+        {
+            return BsonSerializer.Deserialize<T>(bytes);
         }
     }
 }
