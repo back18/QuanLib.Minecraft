@@ -26,13 +26,13 @@ namespace QuanLib.Minecraft.API.Packet
         public static async Task<string[]> SendBatchCommandAsync(this MinecraftApiClient client, string[] commands)
         {
             RequestPacket request = CreateRequestPacket(commands, client.GetNextID(), true);
-            ResponsePacket response = await client.SendPacke(request);
-            return ParseResponsePacket(response).Results;
+            ResponsePacket response = await client.SendRequestPacket(request);
+            response.ValidateStatusCode();
+            return ParseResponsePacket(response).Results ?? Array.Empty<string>();
         }
 
         public class RequestData : BsonSerialize
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
             public RequestData()
             {
             }
@@ -42,13 +42,11 @@ namespace QuanLib.Minecraft.API.Packet
                 Commands = commands ?? throw new ArgumentNullException(nameof(commands));
             }
 
-            public string[] Commands { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public string[]? Commands { get; set; }
         }
 
         public class ResponseData : BsonSerialize
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
             public ResponseData() { }
 
             public ResponseData(string[] results)
@@ -56,8 +54,7 @@ namespace QuanLib.Minecraft.API.Packet
                 Results = results ?? throw new ArgumentNullException(nameof(results));
             }
 
-            public string[] Results { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public string[]? Results { get; set; }
         }
     }
 }

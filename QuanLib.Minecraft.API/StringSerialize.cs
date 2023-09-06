@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.API
 {
-    public abstract class StringSerialize : ISerialize
+    public abstract class StringSerialize : ISerializable
     {
         protected StringSerialize()
         {

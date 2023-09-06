@@ -25,13 +25,13 @@ namespace QuanLib.Minecraft.API.Packet
         public static async Task<ResponseData> SendBatchSetBlockAsync(this MinecraftApiClient client, IEnumerable<ISetBlockArgument> arguments)
         {
             RequestPacket request = CreateRequestPacket(arguments, client.GetNextID(), true);
-            ResponsePacket response = await client.SendPacke(request);
+            ResponsePacket response = await client.SendRequestPacket(request);
+            response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
 
         public class RequestData : BsonSerialize
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
             public RequestData() { }
 
             public RequestData(IEnumerable<ISetBlockArgument> arguments)
@@ -59,17 +59,16 @@ namespace QuanLib.Minecraft.API.Packet
                 Data = data.ToArray();
             }
 
-            public string[] Palette { get; set; }
+            public string[]? Palette { get; set; }
 
-            public int[] Data { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public int[]? Data { get; set; }
         }
 
         public class ResponseData : BsonSerialize
         {
-            public int TotalCount { get; set; }
+            public int? TotalCount { get; set; }
 
-            public int CompletedCount { get; set; }
+            public int? CompletedCount { get; set; }
         }
     }
 }

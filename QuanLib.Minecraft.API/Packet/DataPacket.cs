@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.API.Packet
 {
-    public abstract class DataPacket : ISerialize
+    public abstract class DataPacket : ISerializable
     {
         protected DataPacket(string type, byte[] data, int id)
         {

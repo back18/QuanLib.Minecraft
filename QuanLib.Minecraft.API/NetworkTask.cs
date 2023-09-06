@@ -53,10 +53,14 @@ namespace QuanLib.Minecraft.API
 
         public bool IsCompleted => State is NetworkTaskState.Completed or NetworkTaskState.Timeout;
 
+        public int DataPacketID => _request.ID;
+
         internal void Complete(ResponsePacket response)
         {
             if (response is null)
                 throw new ArgumentNullException(nameof(response));
+            if (response.ID != _request.ID)
+                throw new InvalidOperationException("请求数据包与响应数据包的ID不一致");
 
             if (State != NetworkTaskState.Sending || State != NetworkTaskState.Receiving)
                 return;

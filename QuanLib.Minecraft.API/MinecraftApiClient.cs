@@ -86,7 +86,7 @@ namespace QuanLib.Minecraft.API
             throw new NotImplementedException();
         }
 
-        public async Task<ResponsePacket> SendPacke(RequestPacket request)
+        public async Task<ResponsePacket> SendRequestPacket(RequestPacket request)
         {
             if (request is null)
                 throw new ArgumentNullException(nameof(request));
@@ -106,7 +106,7 @@ namespace QuanLib.Minecraft.API
                 throw new InvalidOperationException("TCP未连接");
 
             byte[] buffer = new byte[4096];
-            MemoryStream memoryStream = new();
+            MemoryStream cache = new();
             int total = buffer.Length;
             int current = 0;
             bool initial = true;
@@ -125,24 +125,24 @@ namespace QuanLib.Minecraft.API
 
                     total = BitConverter.ToInt32(new byte[] { buffer[3], buffer[2], buffer[1], buffer[0] });
                     if (total < 4)
-                        throw new InvalidOperationException($"数据包读取错误，“{total}”不能小于4");
+                        throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
 
-                    memoryStream.Write(buffer, 4, length - 4);
+                    cache.Write(buffer, 4, length - 4);
 
                     initial = false;
                 }
                 else
                 {
-                    memoryStream.Write(buffer, 0, length);
+                    cache.Write(buffer, 0, length);
                 }
 
                 if (current < total)
                     continue;
 
-                HandleDataPacket(memoryStream.ToArray());
+                HandleDataPacket(cache.ToArray());
 
-                memoryStream.Dispose();
-                memoryStream = new();
+                cache.Dispose();
+                cache = new();
                 total = buffer.Length;
                 current = 0;
                 initial = true;

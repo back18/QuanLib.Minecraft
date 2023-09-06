@@ -27,16 +27,16 @@ namespace QuanLib.Minecraft.API.Packet
         public static async Task<ResponseData> SendLoginAsync(this MinecraftApiClient client, string password)
         {
             RequestPacket request = CreateRequestPacket(password, client.GetNextID());
-            ResponsePacket response = await client.SendPacke(request);
+            ResponsePacket response = await client.SendRequestPacket(request);
+            response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
 
         public class ResponseData : BsonSerialize
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-            public bool IsSuccessful { get; set; }
+            public bool? IsSuccessful { get; set; }
 
-            public string Message { get; set; }
+            public string? Message { get; set; }
         }
     }
 }

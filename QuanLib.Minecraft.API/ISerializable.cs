@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.API
 {
-    public interface ISerialize
+    public interface ISerializable
     {
         public byte[] Serialize();
     }

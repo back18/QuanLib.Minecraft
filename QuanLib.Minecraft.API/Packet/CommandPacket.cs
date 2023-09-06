@@ -27,7 +27,8 @@ namespace QuanLib.Minecraft.API.Packet
         public static async Task<string> SendCommandAsync(this MinecraftApiClient client, string command)
         {
             RequestPacket request = CreateRequestPacket(command, client.GetNextID(), true);
-            ResponsePacket response = await client.SendPacke(request);
+            ResponsePacket response = await client.SendRequestPacket(request);
+            response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
     }

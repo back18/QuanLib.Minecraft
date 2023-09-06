@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.API
 {
-    public abstract class BsonSerialize : ISerialize
+    public abstract class BsonSerialize : ISerializable
     {
         public virtual byte[] Serialize()
         {

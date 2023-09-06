@@ -17,7 +17,7 @@ namespace QuanLib.Minecraft.API.Packet
 
         public ResponsePacket(ResponseModel model) : base(model)
         {
-            StatusCode = model.StatusCode!.Value;
+            StatusCode = (StatusCode)model.StatusCode!.Value;
         }
 
         public StatusCode StatusCode { get; }
@@ -26,11 +26,26 @@ namespace QuanLib.Minecraft.API.Packet
         {
             return new()
             {
-                StatusCode = StatusCode,
+                StatusCode = (int?)StatusCode,
                 Type = Type,
                 Data = Data,
                 ID = ID,
             };
+        }
+
+        public void ValidateStatusCode()
+        {
+            StatusCodeType type = StatusCode.TryeOf();
+            ErrorResponseData data;
+            switch (type)
+            {
+                case StatusCodeType.ClientError:
+                    data = Data.DeserializeBson<ErrorResponseData>();
+                    throw new ApiClientException(StatusCode, data.ErrorType, data.ErrorMessage);
+                case StatusCodeType.ServerError:
+                    data = Data.DeserializeBson<ErrorResponseData>();
+                    throw new ApiServerException(StatusCode, data.ErrorType, data.ErrorMessage);
+            }
         }
 
         public override byte[] Serialize()
@@ -47,7 +62,7 @@ namespace QuanLib.Minecraft.API.Packet
             if (!Validator.TryValidateObject(model, new(model), results, true))
                 goto err;
 
-            result = new(model.StatusCode!.Value, model.Type, model.Data, model.ID!.Value);
+            result = new((StatusCode)model.StatusCode!.Value, model.Type, model.Data, model.ID!.Value);
             return true;
 
             err:
@@ -58,7 +73,14 @@ namespace QuanLib.Minecraft.API.Packet
         public class ResponseModel : ModelBase
         {
             [Required(ErrorMessage = "StatusCode参数缺失")]
-            public StatusCode? StatusCode { get; set; }
+            public int? StatusCode { get; set; }
+        }
+
+        public class ErrorResponseData : BsonSerialize
+        {
+            public string? ErrorType { get; set; }
+
+            public string? ErrorMessage { get; set; }
         }
     }
 }
