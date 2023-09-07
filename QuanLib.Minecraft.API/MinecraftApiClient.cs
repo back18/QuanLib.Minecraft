@@ -70,20 +70,16 @@ namespace QuanLib.Minecraft.API
 
             _client.Connect(_address, _port);
             _stream = _client.GetStream();
+            StartReadStream();
 
-            try
-            {
-                StartReadStream();
-            }
-            catch
-            {
-
-            }
+            _runing = false;
+            if (_stream is not null)
+                _stream.ReadTimeout = 1;
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            _runing = false;
         }
 
         public async Task<ResponsePacket> SendRequestPacket(RequestPacket request)
@@ -105,48 +101,55 @@ namespace QuanLib.Minecraft.API
             if (_stream is null)
                 throw new InvalidOperationException("TCP未连接");
 
-            byte[] buffer = new byte[4096];
-            MemoryStream cache = new();
-            int total = buffer.Length;
-            int current = 0;
-            bool initial = true;
-            _stream.ReadTimeout = Timeout.Infinite;
-            while (_runing)
+            try
             {
-                int length = _stream.Read(buffer, 0, Math.Min(total - current, buffer.Length));
-                
-                current += length;
-                if (initial)
+                byte[] buffer = new byte[4096];
+                MemoryStream cache = new();
+                int total = buffer.Length;
+                int current = 0;
+                bool initial = true;
+                _stream.ReadTimeout = Timeout.Infinite;
+                while (_runing)
                 {
-                    _stream.ReadTimeout = 30 * 1000;
+                    int length = _stream.Read(buffer, 0, Math.Min(total - current, buffer.Length));
 
-                    if (current < 4)
+                    current += length;
+                    if (initial)
+                    {
+                        _stream.ReadTimeout = 30 * 1000;
+
+                        if (current < 4)
+                            continue;
+
+                        total = BitConverter.ToInt32(new byte[] { buffer[3], buffer[2], buffer[1], buffer[0] });
+                        if (total < 4)
+                            throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
+
+                        cache.Write(buffer, 4, length - 4);
+
+                        initial = false;
+                    }
+                    else
+                    {
+                        cache.Write(buffer, 0, length);
+                    }
+
+                    if (current < total)
                         continue;
 
-                    total = BitConverter.ToInt32(new byte[] { buffer[3], buffer[2], buffer[1], buffer[0] });
-                    if (total < 4)
-                        throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
+                    HandleDataPacket(cache.ToArray());
 
-                    cache.Write(buffer, 4, length - 4);
-
-                    initial = false;
+                    cache.Dispose();
+                    cache = new();
+                    total = buffer.Length;
+                    current = 0;
+                    initial = true;
+                    _stream.ReadTimeout = Timeout.Infinite;
                 }
-                else
-                {
-                    cache.Write(buffer, 0, length);
-                }
-
-                if (current < total)
-                    continue;
-
-                HandleDataPacket(cache.ToArray());
-
-                cache.Dispose();
-                cache = new();
-                total = buffer.Length;
-                current = 0;
-                initial = true;
-                _stream.ReadTimeout = Timeout.Infinite;
+            }
+            catch
+            {
+                _runing = false;
             }
         }
 
@@ -171,6 +174,7 @@ namespace QuanLib.Minecraft.API
 
         public void Dispose()
         {
+            _stream?.Dispose();
             _client.Dispose();
             GC.SuppressFinalize(this);
         }

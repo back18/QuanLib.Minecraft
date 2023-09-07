@@ -3,6 +3,8 @@
 using FFMediaToolkit;
 using log4net.Core;
 using QuanLib.Minecraft;
+using QuanLib.Minecraft.API;
+using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
 using QuanLib.Minecraft.BlockScreen.Config;
@@ -19,6 +21,11 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
+            MinecraftApiClient apiClient = new("127.0.0.1", 25595, "123456");
+            Task.Run(() => apiClient.Start());
+            Thread.Sleep(1000);
+            var result1 = apiClient.SendLoginAsync("123456").Result;        //TEST
+
             Thread.CurrentThread.Name = "MainThread";
             ConfigManager.CreateIfNotExists();
             LOGGER.Info("Starting!");

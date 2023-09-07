@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\QuanLib.Minecraft.API\QuanLib.Minecraft.API.csproj" />
+    <ProjectReference Include="..\QuanLib.Minecraft.BlockScreen.BlockForms\QuanLib.Minecraft.BlockScreen.BlockForms.csproj" />
     <ProjectReference Include="..\QuanLib.Minecraft.BlockScreen.SystemApplications\QuanLib.Minecraft.BlockScreen.SystemApplications.csproj" />
     <ProjectReference Include="..\QuanLib.Minecraft.BlockScreen\QuanLib.Minecraft.BlockScreen.csproj" />
     <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
