@@ -21,10 +21,11 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            MinecraftApiClient apiClient = new("127.0.0.1", 25595, "123456");
-            Task.Run(() => apiClient.Start());
-            Thread.Sleep(1000);
-            var result1 = apiClient.SendLoginAsync("123456").Result;        //TEST
+            //MinecraftApiClient apiClient = new("127.0.0.1", 25595, "123456");
+            //Task.Run(() => apiClient.Start());
+            //Thread.Sleep(1000);
+            //var result1 = apiClient.SendLoginAsync("123456").Result;
+            //var result2 = apiClient.SendCommandAsync("list").Result;
 
             Thread.CurrentThread.Name = "MainThread";
             ConfigManager.CreateIfNotExists();

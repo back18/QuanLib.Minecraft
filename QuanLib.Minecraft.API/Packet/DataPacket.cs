@@ -69,44 +69,21 @@ namespace QuanLib.Minecraft.API.Packet
 
             using MemoryStream stream = new();
             BsonSerializer.Serialize(new BsonBinaryWriter(stream), model);
-            byte[] length = BitConverter.GetBytes((int)stream.Length + 4);
-            Array.Reverse(length);
-            stream.Seek(0, SeekOrigin.Begin);
-            stream.Write(length, 0, length.Length);
             return stream.ToArray();
         }
 
         protected static bool TryDeserialize<T>(byte[] bytes, [MaybeNullWhen(false)] out T result) where T : ModelBase
         {
-            if (bytes is null || bytes.Length <= 4)
-                goto err;
-
             try
             {
-                using MemoryStream stream = new(bytes);
-                stream.Seek(0, SeekOrigin.Begin);
-                byte[] buffer1 = new byte[4];
-                stream.Read(buffer1, 0, buffer1.Length);
-                Array.Reverse(buffer1);
-                int length = BitConverter.ToInt32(buffer1);
-                if (length != stream.Length)
-                    goto err;
-
-                stream.Seek(4, SeekOrigin.Begin);
-                byte[] buffer2 = new byte[stream.Length - 4];
-                stream.Read(buffer2, 0, buffer2.Length);
-                T model = BsonSerializer.Deserialize<T>(buffer2);
-                result = model;
+                result = BsonSerializer.Deserialize<T>(bytes);
                 return true;
             }
             catch
             {
-                goto err;
+                result = null;
+                return false;
             }
-
-            err:
-            result = null;
-            return false;
         }
 
         public abstract class ModelBase

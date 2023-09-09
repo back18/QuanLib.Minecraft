@@ -121,18 +121,14 @@ namespace QuanLib.Minecraft.API
                         if (current < 4)
                             continue;
 
-                        total = BitConverter.ToInt32(new byte[] { buffer[3], buffer[2], buffer[1], buffer[0] });
+                        total = BitConverter.ToInt32(buffer, 0);
                         if (total < 4)
                             throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
 
-                        cache.Write(buffer, 4, length - 4);
-
                         initial = false;
                     }
-                    else
-                    {
-                        cache.Write(buffer, 0, length);
-                    }
+
+                    cache.Write(buffer, 0, length);
 
                     if (current < total)
                         continue;
@@ -155,15 +151,9 @@ namespace QuanLib.Minecraft.API
 
         private void HandleDataPacket(byte[] bytes)
         {
-            try
+            if (ResponsePacket.TryDeserialize(bytes, out var response))
             {
-                ResponsePacket.ResponseModel model = BsonSerializer.Deserialize<ResponsePacket.ResponseModel>(bytes);
-                ResponsePacket packet = new(model);
-                ReceivedPacket.Invoke(this, new(packet));
-            }
-            catch
-            {
-
+                ReceivedPacket.Invoke(this, new(response));
             }
         }
 

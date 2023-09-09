@@ -12,22 +12,12 @@ namespace QuanLib.Minecraft.API
     {
         public NetworkTask(RequestPacket request, Task send)
         {
-            _request = request ?? throw new ArgumentNullException(nameof(request));
-            _send = send ?? throw new ArgumentNullException(nameof(send));
-
             _semaphore = new(0);
             State = NetworkTaskState.Sending;
 
-            _receive = _send.ContinueWith(async (task) =>
-            {
-                State = NetworkTaskState.Receiving;
-                int millisecondsTimeout = 30 * 1000;
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                await _semaphore.WaitAsync(millisecondsTimeout);
-                stopwatch.Stop();
-                if (stopwatch.ElapsedMilliseconds >= millisecondsTimeout)
-                    State = NetworkTaskState.Timeout;
-            });
+            _request = request ?? throw new ArgumentNullException(nameof(request));
+            _send = send ?? throw new ArgumentNullException(nameof(send));
+            _receive = WaitForReceivAsync();
 
             if (!_request.NeedResponse)
             {
@@ -62,7 +52,7 @@ namespace QuanLib.Minecraft.API
             if (response.ID != _request.ID)
                 throw new InvalidOperationException("请求数据包与响应数据包的ID不一致");
 
-            if (State != NetworkTaskState.Sending || State != NetworkTaskState.Receiving)
+            if (State != NetworkTaskState.Sending && State != NetworkTaskState.Receiving)
                 return;
 
             _response = response;
@@ -78,6 +68,18 @@ namespace QuanLib.Minecraft.API
             await _send;
             await _receive;
             return _response;
+        }
+
+        private async Task WaitForReceivAsync()
+        {
+            await _send;
+            State = NetworkTaskState.Receiving;
+            int millisecondsTimeout = 30 * 1000;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            await _semaphore.WaitAsync(millisecondsTimeout);
+            stopwatch.Stop();
+            if (stopwatch.ElapsedMilliseconds >= millisecondsTimeout)
+                State = NetworkTaskState.Timeout;
         }
     }
 }
