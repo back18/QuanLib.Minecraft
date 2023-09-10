@@ -11,6 +11,7 @@ using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
+using QuanLib.Minecraft.ResourcePack.Language;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal
@@ -26,6 +27,16 @@ namespace MCBS.ConsoleTerminal
             //Thread.Sleep(1000);
             //var result1 = apiClient.SendLoginAsync("123456").Result;
             //var result2 = apiClient.SendCommandAsync("list").Result;
+
+            TemplateText.TryParseLanguage("key", "已将世界的出生点设置为%s, %s, %s [%s]", out var result);
+
+
+
+
+
+
+
+
 
             Thread.CurrentThread.Name = "MainThread";
             ConfigManager.CreateIfNotExists();

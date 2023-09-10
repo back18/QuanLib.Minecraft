@@ -35,8 +35,11 @@ namespace QuanLib.Minecraft.ResourcePack
                     foreach (var itemModel in zipPack.GetFiles(entry.Path.ItemModels))
                         entry.ItemModels.Add(itemModel.Name, itemModel);
 
-                    foreach (var itemTextures in zipPack.GetFiles(entry.Path.ItemTextures))
-                        entry.ItemTextures.Add(itemTextures.Name, itemTextures);
+                    foreach (var itemTexture in zipPack.GetFiles(entry.Path.ItemTextures))
+                        entry.ItemTextures.Add(itemTexture.Name, itemTexture);
+
+                    foreach (var language in zipPack.GetFiles(entry.Path.Languages))
+                        entry.Languages.Add(language.Name, language);
 
                     result.Overwrite(entry);
                 }

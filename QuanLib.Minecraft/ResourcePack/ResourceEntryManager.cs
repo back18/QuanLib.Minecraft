@@ -72,6 +72,9 @@ namespace QuanLib.Minecraft.ResourcePack
 
                 foreach (var itemTextures in resourceEntry.ItemTextures)
                     result.ItemTextures[itemTextures.Key] = itemTextures.Value;
+
+                foreach (var language in resourceEntry.Languages)
+                    result.Languages[language.Key] = language.Value;
             }
             else
             {

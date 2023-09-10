@@ -18,6 +18,7 @@ namespace QuanLib.Minecraft.ResourcePack
             BlockTextures = $"assets/{modID}/textures/block/";
             ItemModels = $"assets/{modID}/models/item/";
             ItemTextures = $"assets/{modID}/textures/item/";
+            ItemTextures = $"assets/{modID}/lang/";
         }
 
         public string BlockStates { get; }
@@ -29,5 +30,7 @@ namespace QuanLib.Minecraft.ResourcePack
         public string ItemModels { get; }
 
         public string ItemTextures { get; }
+
+        public string Languages { get; }
     }
 }

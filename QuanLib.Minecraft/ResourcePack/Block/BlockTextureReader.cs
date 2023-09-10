@@ -14,13 +14,13 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 {
     public static class BlockTextureReader
     {
-        public static BlockTextureManager Load(ResourceEntryManager entrys, IEnumerable<BlockState> blacklist)
+        public static BlockTextureManager Load(ResourceEntryManager resources, IEnumerable<BlockState> blacklist)
         {
-            if (entrys is null)
-                throw new ArgumentNullException(nameof(entrys));
+            if (resources is null)
+                throw new ArgumentNullException(nameof(resources));
 
             Dictionary<string, BlockTexture> result = new();
-            ConcurrentDictionary<string, JObject> blockStates = GetBlockStates(entrys);
+            ConcurrentDictionary<string, JObject> blockStates = GetBlockStates(resources);
             foreach (var blockState in blockStates)
             {
                 if (!blockState.Value.TryGetValue("variants", out var variants))
@@ -31,7 +31,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                     if (variant is not JProperty variant_jpro ||
                         variant_jpro.Value is not JObject variant_jobj ||
                         !variant_jobj.TryGetValue("model", out var model) ||
-                        !entrys.TryGetModel(model.Value<string>(), out var model_jobj))
+                        !resources.TryGetModel(model.Value<string>(), out var model_jobj))
                         continue;
 
                     if (!model_jobj.TryGetValue("parent", out var parent) ||
@@ -72,12 +72,12 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         !textureMap.TryParseJObject(textures_jobj, out var textureInfo))
                         continue;
 
-                    if (!entrys.TryGetTexture(textureInfo.Xp, out var xpTexture) ||
-                        !entrys.TryGetTexture(textureInfo.Xm, out var xmTexture) ||
-                        !entrys.TryGetTexture(textureInfo.Yp, out var ypTexture) ||
-                        !entrys.TryGetTexture(textureInfo.Ym, out var ymTexture) ||
-                        !entrys.TryGetTexture(textureInfo.Zp, out var zpTexture) ||
-                        !entrys.TryGetTexture(textureInfo.Zm, out var zmTexture))
+                    if (!resources.TryGetTexture(textureInfo.Xp, out var xpTexture) ||
+                        !resources.TryGetTexture(textureInfo.Xm, out var xmTexture) ||
+                        !resources.TryGetTexture(textureInfo.Yp, out var ypTexture) ||
+                        !resources.TryGetTexture(textureInfo.Ym, out var ymTexture) ||
+                        !resources.TryGetTexture(textureInfo.Zp, out var zpTexture) ||
+                        !resources.TryGetTexture(textureInfo.Zm, out var zmTexture))
                         continue;
 
                     BlockType blockType = textureInfo.Type;
@@ -99,18 +99,18 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             return new(result);
         }
 
-        private static ConcurrentDictionary<string, JObject> GetBlockStates(ResourceEntryManager entrys)
+        private static ConcurrentDictionary<string, JObject> GetBlockStates(ResourceEntryManager resources)
         {
-            if (entrys is null)
-                throw new ArgumentNullException(nameof(entrys));
+            if (resources is null)
+                throw new ArgumentNullException(nameof(resources));
 
             ConcurrentDictionary<string, JObject> result = new();
             int total = 0;
             int count = 0;
-            foreach (var entry in entrys.Values)
+            foreach (var resource in resources.Values)
             {
-                total += entry.BlockStates.Count;
-                Parallel.ForEach(entry.BlockStates.Values, blockState =>
+                total += resource.BlockStates.Count;
+                Parallel.ForEach(resource.BlockStates.Values, blockState =>
                 {
                     string extension = ".json";
                     if (!blockState.Name.EndsWith(extension))
@@ -119,11 +119,11 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         return;
                     }
 
-                    string blockID = $"{entry.ModID}:{blockState.Name[..^extension.Length]}";
+                    string blockID = $"{resource.ModID}:{blockState.Name[..^extension.Length]}";
                     try
                     {
                         string text;
-                        lock (entry.BlockStates)
+                        lock (resource.BlockStates)
                         {
                             using Stream stream = blockState.Open();
                             text = stream.ToUtf8Text();

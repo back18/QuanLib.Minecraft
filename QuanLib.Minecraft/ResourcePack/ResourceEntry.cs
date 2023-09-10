@@ -21,6 +21,7 @@ namespace QuanLib.Minecraft.ResourcePack
             BlockTextures = new();
             ItemModels = new();
             ItemTextures = new();
+            Languages = new();
         }
 
         public string ModID { get; }
@@ -36,6 +37,8 @@ namespace QuanLib.Minecraft.ResourcePack
         public Dictionary<string, ZipArchiveEntry> ItemModels { get; }
 
         public Dictionary<string, ZipArchiveEntry> ItemTextures { get; }
+
+        public Dictionary<string, ZipArchiveEntry> Languages { get; }
 
         public bool IsEmpty => !BlockStates.Any() && !BlockModels.Any() && !BlockTextures.Any() && !ItemModels.Any() && !ItemTextures.Any();
     }
