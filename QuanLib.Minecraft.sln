@@ -5,15 +5,9 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft", "QuanLib.Minecraft\QuanLib.Minecraft.csproj", "{C95DC1A8-F28B-459D-9942-49F4CA1D6E5B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.BlockScreen", "QuanLib.Minecraft.BlockScreen\QuanLib.Minecraft.BlockScreen.csproj", "{3DFB849D-1543-45A3-8DAB-D30A5B8DF845}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.API", "QuanLib.Minecraft.API\QuanLib.Minecraft.API.csproj", "{659EE297-D27A-44C2-8A18-41CBDBE75C78}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.ConsoleTerminal", "MCBS.ConsoleTerminal\MCBS.ConsoleTerminal.csproj", "{D2A1F334-5A9D-4B72-8ACF-13459365C549}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.BlockScreen.BlockForms", "QuanLib.Minecraft.BlockScreen.BlockForms\QuanLib.Minecraft.BlockScreen.BlockForms.csproj", "{4A9742A4-7EE4-413E-9964-0810F6CBDDD5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.BlockScreen.SystemApplications", "QuanLib.Minecraft.BlockScreen.SystemApplications\QuanLib.Minecraft.BlockScreen.SystemApplications.csproj", "{AC07608F-A71F-4417-999D-019A812D3D59}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.API", "QuanLib.Minecraft.API\QuanLib.Minecraft.API.csproj", "{659EE297-D27A-44C2-8A18-41CBDBE75C78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Core", "..\QuanLib\QuanLib.Core\QuanLib.Core.csproj", "{3F20B684-5CB7-4781-9C9C-8216E62C639F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,26 +19,14 @@ Global
 		{C95DC1A8-F28B-459D-9942-49F4CA1D6E5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C95DC1A8-F28B-459D-9942-49F4CA1D6E5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C95DC1A8-F28B-459D-9942-49F4CA1D6E5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DFB849D-1543-45A3-8DAB-D30A5B8DF845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DFB849D-1543-45A3-8DAB-D30A5B8DF845}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DFB849D-1543-45A3-8DAB-D30A5B8DF845}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DFB849D-1543-45A3-8DAB-D30A5B8DF845}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2A1F334-5A9D-4B72-8ACF-13459365C549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2A1F334-5A9D-4B72-8ACF-13459365C549}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2A1F334-5A9D-4B72-8ACF-13459365C549}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2A1F334-5A9D-4B72-8ACF-13459365C549}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A9742A4-7EE4-413E-9964-0810F6CBDDD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A9742A4-7EE4-413E-9964-0810F6CBDDD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A9742A4-7EE4-413E-9964-0810F6CBDDD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A9742A4-7EE4-413E-9964-0810F6CBDDD5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC07608F-A71F-4417-999D-019A812D3D59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC07608F-A71F-4417-999D-019A812D3D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC07608F-A71F-4417-999D-019A812D3D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC07608F-A71F-4417-999D-019A812D3D59}.Release|Any CPU.Build.0 = Release|Any CPU
 		{659EE297-D27A-44C2-8A18-41CBDBE75C78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{659EE297-D27A-44C2-8A18-41CBDBE75C78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{659EE297-D27A-44C2-8A18-41CBDBE75C78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{659EE297-D27A-44C2-8A18-41CBDBE75C78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F20B684-5CB7-4781-9C9C-8216E62C639F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F20B684-5CB7-4781-9C9C-8216E62C639F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F20B684-5CB7-4781-9C9C-8216E62C639F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F20B684-5CB7-4781-9C9C-8216E62C639F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

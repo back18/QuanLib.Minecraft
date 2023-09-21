@@ -14,10 +14,4 @@
     <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="QuanLib.Core">
-      <HintPath>..\..\QuanLib\release\QuanLib.Core\QuanLib.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
