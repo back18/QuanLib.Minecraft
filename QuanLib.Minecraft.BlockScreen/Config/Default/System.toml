@@ -1,6 +1,3 @@
-#是否启用加速引擎
-EnableAccelerationEngine = true
-
 #崩溃时是否自动重启
 CrashAutoRestart = true
 

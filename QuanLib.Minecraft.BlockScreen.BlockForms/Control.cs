@@ -17,6 +17,7 @@ using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp.PixelFormats;
 using ImageFrame = QuanLib.Minecraft.BlockScreen.Frame.ImageFrame;
 using QuanLib.Core;
+using QuanLib.Minecraft.ResourcePack.Block;
 
 namespace QuanLib.Minecraft.BlockScreen.BlockForms
 {
@@ -1056,7 +1057,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
             if (TryGetBlockColor(blockID, out var color))
                 return color;
             else
-                return MinecraftResourcesManager.BlockTextureManager[BlockManager.Concrete.White].AverageColors[GetScreenPlane().NormalFacing];
+                return BlockTextureManager.Instance[BlockManager.Concrete.White].AverageColors[GetScreenPlane().NormalFacing];
         }
 
         public Rgba32 GetBlockColorOrDefault(string? blockID, string def)
@@ -1079,7 +1080,7 @@ namespace QuanLib.Minecraft.BlockScreen.BlockForms
                 color = Color.Transparent;
                 return true;
             }
-            else if (MinecraftResourcesManager.BlockTextureManager.TryGetValue(blockID, out var texture))
+            else if (BlockTextureManager.Instance.TryGetValue(blockID, out var texture))
             {
                 color = texture.AverageColors[GetScreenPlane().NormalFacing];
                 return true;

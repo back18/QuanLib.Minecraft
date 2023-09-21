@@ -18,6 +18,8 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         {
             if (resources is null)
                 throw new ArgumentNullException(nameof(resources));
+            if (blacklist is null)
+                throw new ArgumentNullException(nameof(blacklist));
 
             Dictionary<string, BlockTexture> result = new();
             ConcurrentDictionary<string, JObject> blockStates = GetBlockStates(resources);

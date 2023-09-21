@@ -1,9 +1,10 @@
-﻿#define TryCatch
+﻿//#define TryCatch
 
 using FFMediaToolkit;
 using log4net.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.API;
+using QuanLib.Minecraft.API.Instance;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.BlockScreen;
 using QuanLib.Minecraft.BlockScreen.BlockForms.Utility;
@@ -11,7 +12,9 @@ using QuanLib.Minecraft.BlockScreen.Config;
 using QuanLib.Minecraft.BlockScreen.Logging;
 using QuanLib.Minecraft.BlockScreen.Screens;
 using QuanLib.Minecraft.BlockScreen.SystemApplications;
+using QuanLib.Minecraft.Instance;
 using QuanLib.Minecraft.ResourcePack.Language;
+using System.Net;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal
@@ -22,28 +25,12 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            //MinecraftApiClient apiClient = new("127.0.0.1", 25595, "123456");
-            //Task.Run(() => apiClient.Start());
-            //Thread.Sleep(1000);
-            //var result1 = apiClient.SendLoginAsync("123456").Result;
-            //var result2 = apiClient.SendCommandAsync("list").Result;
-
-            TemplateText.TryParseLanguage("key", "已将世界的出生点设置为%s, %s, %s [%s]", out var result);
-
-
-
-
-
-
-
-
-
             Thread.CurrentThread.Name = "MainThread";
             ConfigManager.CreateIfNotExists();
             LOGGER.Info("Starting!");
 
             Terminal terminal = new();
-            Task terminalTask = Task.Run(() => terminal.Start());
+            terminal.Start();
 
 #if TryCatch
             try
@@ -55,7 +42,7 @@ namespace MCBS.ConsoleTerminal
                 MinecraftResourcesManager.LoadAll();
                 TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                    FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.Directory;
+                    FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.FullPath;
                 else
                     FFmpegLoader.FFmpegPath = "/usr/lib/";
 #if TryCatch
@@ -68,7 +55,7 @@ namespace MCBS.ConsoleTerminal
             }
 #endif
 
-            MinecraftServer server;
+            MinecraftInstance minecraftInstance;
             MCOS mcos;
 
 #if TryCatch
@@ -76,32 +63,41 @@ namespace MCBS.ConsoleTerminal
             {
 #endif
                 MinecraftConfig config = ConfigManager.MinecraftConfig;
-                switch (config.ServerMode)
+                switch (config.InstanceType)
                 {
-                    case MinecraftServerMode.RconConnect:
-                        LOGGER.Info($"将以RCON连接模式绑定到Minecraft服务器\n服务端路径: {config.ServerPath}\n服务器地址: {config.ServerAddress}");
-                        server = new RconConnectServer(config.ServerPath, config.ServerAddress);
+                    case InstanceTypes.CLIENT:
+                        if (config.MinecraftMode == InstanceKeys.MCAPI)
+                            minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword);
+                        else
+                            throw new InvalidOperationException();
                         break;
-                    case MinecraftServerMode.ManagedProcess:
-                        LOGGER.Info($"将以托管进程模式绑定到Minecraft服务器\n服务端路径: {config.ServerPath}\n服务器地址: {config.ServerAddress}\nJava路径: {config.JavaPath}\n 启动参数: {config.LaunchArguments}");
-                        server = new ManagedProcessServer(config.ServerPath, config.ServerAddress, new CustomServerLaunchArguments(config.JavaPath, config.LaunchArguments));
+                    case InstanceTypes.SERVER:
+                        minecraftInstance = config.MinecraftMode switch
+                        {
+                            InstanceKeys.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
+                            InstanceKeys.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                            InstanceKeys.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                            InstanceKeys.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
+                            _ => throw new InvalidOperationException(),
+                        };
                         break;
                     default:
                         throw new InvalidOperationException();
                 }
 
-                Task.Run(() => server.Start());
+                minecraftInstance.Start();
+                Thread.Sleep(1000);
 #if TryCatch
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("无法绑定到Minecraft服务器", ex);
+                LOGGER.Fatal("无法绑定到Minecraft实例", ex);
                 Exit();
                 return;
             }
 #endif
 
-            mcos = MCOS.Load(server);
+            mcos = MCOS.LoadInstance(minecraftInstance);
             mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Services.ServicesAppInfo());
             mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Desktop.DesktopAppInfo());
             mcos.ApplicationManager.Items.Add(new QuanLib.Minecraft.BlockScreen.SystemApplications.Settings.SettingsAppInfo());
@@ -117,6 +113,7 @@ namespace MCBS.ConsoleTerminal
             mcos.ApplicationManager.Items.Add(new Test02AppInfo());
             mcos.ApplicationManager.Items.Add(new Test03AppInfo());
             mcos.Start();
+            mcos.WaitForStop();
 
             Exit();
             return;
@@ -125,7 +122,7 @@ namespace MCBS.ConsoleTerminal
             {
                 terminal.Stop();
                 LOGGER.Info("按下回车键退出...");
-                terminalTask.Wait();
+                terminal.WaitForStop();
             }
         }
     }

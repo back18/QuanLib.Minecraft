@@ -1,7 +1,10 @@
-﻿using System;
+﻿using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,15 +25,21 @@ namespace QuanLib.Minecraft.API.Packet
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
 
-        public static async Task<ResponseData> SendBatchSetBlockAsync(this MinecraftApiClient client, IEnumerable<ISetBlockArgument> arguments)
+        public static async Task<ResponseData> SendBatchSetBlockAsync(this McapiClient client, IEnumerable<ISetBlockArgument> arguments)
         {
             RequestPacket request = CreateRequestPacket(arguments, client.GetNextID(), true);
-            ResponsePacket response = await client.SendRequestPacket(request);
+            ResponsePacket response = await client.SendRequestPacketAsync(request);
             response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
 
-        public class RequestData : BsonSerialize
+        public static async Task SendOnewayBatchSetBlockAsync(this McapiClient client, IEnumerable<ISetBlockArgument> arguments)
+        {
+            RequestPacket request = CreateRequestPacket(arguments, client.GetNextID(), false);
+            await client.SendRequestPacketAsync(request);
+        }
+
+        public class RequestData : ISerializable
         {
             public RequestData() { }
 
@@ -62,9 +71,16 @@ namespace QuanLib.Minecraft.API.Packet
             public string[]? Palette { get; set; }
 
             public int[]? Data { get; set; }
+
+            public byte[] Serialize()
+            {
+                using MemoryStream stream = new();
+                BsonSerializer.Serialize(new BsonBinaryWriter(stream), this);
+                return stream.ToArray();
+            }
         }
 
-        public class ResponseData : BsonSerialize
+        public class ResponseData
         {
             public int? TotalCount { get; set; }
 

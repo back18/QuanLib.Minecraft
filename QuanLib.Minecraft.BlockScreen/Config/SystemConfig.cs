@@ -16,13 +16,10 @@ namespace QuanLib.Minecraft.BlockScreen.Config
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
 ;
-            EnableAccelerationEngine = model.EnableAccelerationEngine;
             CrashAutoRestart = model.CrashAutoRestart;
             ServicesAppID = model.ServicesAppID;
             StartupChecklist = model.StartupChecklist;
         }
-
-        public bool EnableAccelerationEngine { get; }
 
         public bool CrashAutoRestart { get; }
 
@@ -67,8 +64,6 @@ namespace QuanLib.Minecraft.BlockScreen.Config
         public class Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
-            public bool EnableAccelerationEngine { get; set; }
 
             public bool CrashAutoRestart { get; set; }
 

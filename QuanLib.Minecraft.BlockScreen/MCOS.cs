@@ -1,4 +1,4 @@
-﻿#define TryCatch
+﻿//#define TryCatch
 
 using Newtonsoft.Json;
 using System;
@@ -21,31 +21,30 @@ using log4net.Core;
 using QuanLib.Minecraft.BlockScreen.Logging;
 using System.Runtime.CompilerServices;
 using QuanLib.Core;
+using QuanLib.Minecraft.Instance;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public class MCOS : ISwitchable, IDisposable
+    public class MCOS : UnmanagedRunnable
     {
         private static LogImpl LOGGER => LogUtil.MainLogger;
 
         static MCOS()
         {
-            _lock = new();
+            _slock = new();
             IsLoaded = false;
             MainDirectory = new(Path.GetFullPath("MCBS"));
         }
 
-        private MCOS(MinecraftServer minecraftServer)
+        private MCOS(MinecraftInstance minecraftInstance)
         {
-            MinecraftServer = minecraftServer ?? throw new ArgumentNullException(nameof(minecraftServer));
-            AccelerationEngine = new(ConfigManager.MinecraftConfig.ServerAddress, ConfigManager.MinecraftConfig.AccelerationEngineEventPort, ConfigManager.MinecraftConfig.AccelerationEngineDataPort);
+            MinecraftInstance = minecraftInstance ?? throw new ArgumentNullException(nameof(minecraftInstance));
             ApplicationManager = new();
             ScreenManager = new();
             ProcessManager = new();
             FormManager = new();
             InteractionManager = new();
 
-            EnableAccelerationEngine = ConfigManager.SystemConfig.EnableAccelerationEngine;
             FrameCount = 0;
             LagFrameCount = 0;
             FrameMinTime = TimeSpan.FromMilliseconds(50);
@@ -62,7 +61,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _Instance = this;
         }
 
-        private static readonly object _lock;
+        private static readonly object _slock;
 
         public static bool IsLoaded { get; private set; }
 
@@ -71,7 +70,7 @@ namespace QuanLib.Minecraft.BlockScreen
             get
             {
                 if (_Instance is null)
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("实例未加载");
                 return _Instance;
             }
         }
@@ -84,12 +83,6 @@ namespace QuanLib.Minecraft.BlockScreen
         internal readonly ConcurrentQueue<Action> TempTaskList;
 
         private readonly Stopwatch _stopwatch;
-
-        private bool _runing;
-
-        public bool Runing => _runing;
-
-        public bool EnableAccelerationEngine { get; private set; }
 
         public TimeSpan SystemRunningTime => _stopwatch.Elapsed;
 
@@ -105,9 +98,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public SystemTimer SystemTimer { get; }
 
-        public MinecraftServer MinecraftServer { get; }
-
-        public AccelerationEngine AccelerationEngine { get; }
+        public MinecraftInstance MinecraftInstance { get; }
 
         public ApplicationManager ApplicationManager { get; }
 
@@ -123,14 +114,17 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public IReadOnlyList<string> StartupChecklist { get; }
 
-        public static MCOS Load(MinecraftServer server)
+        public static MCOS LoadInstance(MinecraftInstance minecraftInstance)
         {
-            if (server is null)
-                throw new ArgumentNullException(nameof(server));
+            if (minecraftInstance is null)
+                throw new ArgumentNullException(nameof(minecraftInstance));
 
-            lock (_lock)
+            lock (_slock)
             {
-                _Instance ??= new(server);
+                if (_Instance is not null)
+                    throw new InvalidOperationException("试图重复加载单例实例");
+
+                _Instance ??= new(minecraftInstance);
                 IsLoaded = true;
                 return _Instance;
             }
@@ -141,41 +135,18 @@ namespace QuanLib.Minecraft.BlockScreen
             LOGGER.Info("开始初始化");
 
             LOGGER.Info("正在等待Minecraft服务器启动...");
-            MinecraftServer.WaitForConnected();
+            MinecraftInstance.WaitForConnection();
             LOGGER.Info("成功连接到Minecraft服务器");
-
-#if TryCatch
-            try
-            {
-#endif
-                if (EnableAccelerationEngine)
-                {
-                    LOGGER.Info($"加速引擎已启用，正在连接加速引擎服务器\n服务器地址:{AccelerationEngine.ServerAddress}\n事件端口:{AccelerationEngine.EventPort}\n数据端口:{AccelerationEngine.DataPort}");
-                    AccelerationEngine.Start();
-                    LOGGER.Info("已连接到加速引擎服务器");
-                }
-#if TryCatch
-            }
-            catch (Exception ex)
-            {
-                EnableAccelerationEngine = false;
-                LOGGER.Error("无法连接到加速引擎服务器，加速引擎已禁用", ex);
-            }
-#endif
 
             ScreenManager.Initialize();
             InteractionManager.Initialize();
-            MinecraftServer.CommandHelper.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
+            MinecraftInstance.CommandSender.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
 
             LOGGER.Info("初始化完成");
         }
 
-        public void Start()
+        protected override void Run()
         {
-            if (_runing)
-                return;
-
-            _runing = true;
             LOGGER.Info("系统已开始运行");
             Initialize();
             _stopwatch.Start();
@@ -186,7 +157,7 @@ namespace QuanLib.Minecraft.BlockScreen
             try
             {
 #endif
-                while (_runing)
+                while (IsRuning)
                 {
                     PreviousFrameTime = SystemRunningTime;
                     NextFrameTime = PreviousFrameTime + FrameMinTime;
@@ -221,9 +192,9 @@ namespace QuanLib.Minecraft.BlockScreen
             }
             catch (Exception ex)
             {
-                bool connect = MinecraftServer.PingServer(out _) && MinecraftServer.PingRcon(out _);
+                bool connection = MinecraftInstance.TestConnection();
 
-                if (!connect)
+                if (!connection)
                 {
                     LOGGER.Fatal("系统运行时遇到意外错误，并且无法继续连接到Minecraft服务器，系统即将终止运行", ex);
                 }
@@ -251,14 +222,32 @@ namespace QuanLib.Minecraft.BlockScreen
 #endif
 
             _stopwatch.Stop();
-            Dispose();
-            _runing = false;
             LOGGER.Info("系统已终止运行");
         }
 
-        public void Stop()
+        protected override void DisposeUnmanaged()
         {
-            _runing = false;
+            LOGGER.Info("开始释放非托管资源");
+
+            bool connection = MinecraftInstance.TestConnection();
+            if (!connection)
+            {
+                LOGGER.Warn("无法继续连接到Minecraft服务器，因此无法释放托管在Minecraft中的资源");
+                return;
+            }
+
+            foreach (var context in ScreenManager.Items.Values)
+            {
+                context.Screen.Fill();
+                context.Screen.UnloadScreenChunks();
+            }
+
+            foreach (var interaction in InteractionManager.Items.Values)
+            {
+                interaction.Dispose();
+            }
+
+            LOGGER.Info("非托管资源释放完成");
         }
 
         private TimeSpan HandleScreenScheduling()
@@ -505,33 +494,6 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             foreach (var id in StartupChecklist)
                 RunApplication(ApplicationManager.Items[id], rootForm);
-        }
-
-        public void Dispose()
-        {
-            LOGGER.Info("开始释放非托管资源");
-
-            bool connect = MinecraftServer.PingServer(out _) && MinecraftServer.PingRcon(out _);
-            if (!connect)
-            {
-                LOGGER.Warn("无法继续连接到Minecraft服务器，因此无法释放托管在Minecraft中的资源");
-                return;
-            }
-
-            foreach (var context in ScreenManager.Items.Values)
-            {
-                context.Screen.Fill();
-                context.Screen.UnloadScreenChunks();
-            }
-
-            foreach (var interaction in InteractionManager.Items.Values)
-            {
-                interaction.Dispose();
-            }
-
-            GC.SuppressFinalize(this);
-
-            LOGGER.Info("非托管资源释放完成");
         }
     }
 }

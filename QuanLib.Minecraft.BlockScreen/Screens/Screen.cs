@@ -1,5 +1,7 @@
 ﻿using QuanLib.Core.ExceptionHelper;
 using QuanLib.Minecraft.BlockScreen.Frame;
+using QuanLib.Minecraft.Command;
+using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -26,9 +28,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public Screen(BlockPos startPosition, int width, int height, Facing xFacing, Facing yFacing)
         {
-            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
-            ThrowHelper.TryThrowArgumentOutOfMinException(1, width, nameof(width));
-            ThrowHelper.TryThrowArgumentOutOfMinException(1, height, nameof(height));
+            ThrowHelper.ArgumentOutOfRange(-64, 319, startPosition.Y, "startPosition.Y");
+            ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
+            ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
 
             string xyFacing = xFacing.ToString() + yFacing.ToString();
             switch (xyFacing)
@@ -155,7 +157,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             _chunks = new();
 
-            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, EndPosition.Y, "EndPosition.Y");
+            ThrowHelper.ArgumentOutOfRange(-64, 319, EndPosition.Y, "EndPosition.Y");
         }
 
         private const string LIGHT_BLOCK = "minecraft:light";
@@ -219,11 +221,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
             if (blockID is null)
                 throw new ArgumentNullException(nameof(blockID));
 
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
                 {
-                    if (!command.TestBlcok(ToWorldPosition(new(x, y)), blockID))
+                    if (!sender.ConditionalBlock(ToWorldPosition(new(x, y)), blockID))
                         return false;
                 }
 
@@ -342,12 +344,12 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     throw new InvalidOperationException();
             }
 
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            if (command.TestBlcok(position1, LIGHT_BLOCK))
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            if (sender.ConditionalBlock(position1, LIGHT_BLOCK))
             {
                 return true;
             }
-            else if (command.TestBlcok(position2, LIGHT_BLOCK))
+            else if (sender.ConditionalBlock(position2, LIGHT_BLOCK))
             {
                 return true;
             }
@@ -369,13 +371,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 }
 
             foreach (var chunk in _chunks)
-                MCOS.Instance.MinecraftServer.CommandHelper.AddForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
+                MCOS.Instance.MinecraftInstance.CommandSender.AddForceloadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
         }
 
         public void UnloadScreenChunks()
         {
             foreach (var chunk in _chunks)
-                MCOS.Instance.MinecraftServer.CommandHelper.RemoveForceLoadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
+                MCOS.Instance.MinecraftInstance.CommandSender.RemoveForceloadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
 
             _chunks.Clear();
         }
@@ -496,8 +498,8 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public static Screen CreateScreen(BlockPos startPosition, BlockPos endPosition, Facing normalFacing)
         {
-            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, startPosition.Y, "startPosition.Y");
-            ThrowHelper.TryThrowArgumentOutOfRangeException(-64, 319, endPosition.Y, "endPosition.Y");
+            ThrowHelper.ArgumentOutOfRange(-64, 319, startPosition.Y, "startPosition.Y");
+            ThrowHelper.ArgumentOutOfRange(-64, 319, endPosition.Y, "endPosition.Y");
 
             Facing xFacing, yFacing;
             int width, height;
@@ -756,7 +758,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 return true;
             }
 
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             if (oldScreen.DefaultBackgroundBlcokID == newScreen.DefaultBackgroundBlcokID &&
                 oldScreen.StartPosition == oldScreen.StartPosition &&
                 oldScreen.XFacing == newScreen.XFacing &&
@@ -776,7 +778,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                         for (int x = oldScreen.Width; x < newScreen.Width; x++)
                             for (int y = 0; y < newScreen.Height; y++)
                             {
-                                if (!command.TestBlcok(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
+                                if (!sender.ConditionalBlock(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
                                     return false;
                             }
                     }
@@ -801,7 +803,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                             for (int x = 0; x < newScreen.Width; x++)
                             {
 
-                                if (!command.TestBlcok(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
+                                if (!sender.ConditionalBlock(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
                                     return false;
                             }
                     }

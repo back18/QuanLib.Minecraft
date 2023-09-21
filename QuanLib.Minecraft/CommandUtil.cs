@@ -9,6 +9,11 @@ namespace QuanLib.Minecraft
 {
     public static class CommandUtil
     {
+        public static string ToSetBlockCommand(this ISetBlockArgument argument)
+        {
+            return $"setblock {argument.Position.X} {argument.Position.Y} {argument.Position.Z} {argument.BlockID}";
+        }
+
         public static string ToCommandArgument(this Gamemode gamemode)
         {
             return gamemode switch

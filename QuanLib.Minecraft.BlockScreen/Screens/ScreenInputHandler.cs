@@ -15,6 +15,8 @@ using CoreRCON.Parsers.Standard;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Core;
+using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {
@@ -101,35 +103,39 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         public void HandleInput()
         {
             Screen screen = _owner;
-            ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+
+            Dictionary<string, EntityPos> playerPositions = sender.GetAllPlayerPosition();
+            Func<IVector3<double>, double> GetDistance = screen.NormalFacing switch
+            {
+                Facing.Xp or Facing.Xm => (positions) => Math.Abs(positions.X - screen.PlaneCoordinate),
+                Facing.Yp or Facing.Ym => (positions) => Math.Abs(positions.Y - screen.PlaneCoordinate),
+                Facing.Zp or Facing.Zm => (positions) => Math.Abs(positions.Z - screen.PlaneCoordinate),
+                _ => throw new InvalidOperationException(),
+            };
 
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
             BlockPos center = screen.CenterPosition;
             Vector3<double> start = new(center.X - length, center.Y - length, center.Z - length);
             Vector3<double> range = new(length * 2, length * 2, length * 2);
+            Bounds bounds = new(start, range);
+            List<(string name, double distance)> distances = new();
+            foreach (var playerPosition in playerPositions)
+            {
+                if (bounds.Contains(playerPosition.Value))
+                    distances.Add((playerPosition.Key, GetDistance(playerPosition.Value)));
+            }
 
-            Dictionary<string, IVector3<double>> players = command.GetRangePlayerPosition(start, range);
-            if (players.Count == 0)
+            if (distances.Count == 0)
             {
                 IdleTime++;
                 return;
             }
 
-            Func<IVector3<double>, double> GetDistance = screen.NormalFacing switch
-            {
-                Facing.Xp or Facing.Xm => (vector3) => Math.Abs(vector3.X - screen.PlaneCoordinate),
-                Facing.Yp or Facing.Ym => (vector3) => Math.Abs(vector3.Y - screen.PlaneCoordinate),
-                Facing.Zp or Facing.Zm => (vector3) => Math.Abs(vector3.Z - screen.PlaneCoordinate),
-                _ => throw new InvalidOperationException(),
-            };
-            List<(string name, double distance)> distances = new();
-            foreach (var player in players)
-                distances.Add((player.Key, GetDistance(player.Value)));
             var orderDistances = distances.OrderBy(item => item.distance);
-
-            foreach (var distance in orderDistances)
+            foreach (var orderDistance in orderDistances)
             {
-                if (HandlePlayer(distance.name))
+                if (HandlePlayer(orderDistance.name))
                 {
                     IdleTime = 0;
                     return;
@@ -143,13 +149,13 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         private bool HandlePlayer(string player)
         {
             Screen screen = _owner;
-            ServerCommandHelper command = MCOS.Instance.MinecraftServer.CommandHelper;
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
 
-            if (!command.TryGetPlayerSelectedItemSlot(player, out var slot))
+            if (!sender.TryGetPlayerSelectedItemSlot(player, out var slot))
                 return false;
 
-            command.TryGetPlayerItem(player, slot, out Item? mainItem);
-            command.TryGetPlayerDualWieldItem(player, out Item? dualItem);
+            sender.TryGetPlayerItem(player, slot, out Item? mainItem);
+            sender.TryGetPlayerDualWieldItem(player, out Item? dualItem);
 
             bool swap = false;
             if (mainItem is not null && (mainItem.ID == MOUSE_ITEM || mainItem.ID == TEXTEDITOR_ITEM))
@@ -168,7 +174,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                 return false;
             }
 
-            if (!command.TryGetEntityPosition(player, out var position) || !command.TryGetEntityRotation(player, out var rotation))
+            if (!sender.TryGetEntityPosition(player, out var position) || !sender.TryGetEntityRotation(player, out var rotation))
                 return false;
 
             if (!EntityPos.CheckPlaneReachability(position, rotation, screen.NormalFacing, screen.PlaneCoordinate))
@@ -182,7 +188,7 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(player))
             {
-                command.SendActionbarTitle(new GenericSelector(player), $"[屏幕输入模块] 错误：你没有权限控制屏幕", TextColor.Red);
+                sender.ShowActionbarTitle(player, "[屏幕输入模块] 错误：你没有权限控制屏幕", TextColor.Red);
                 return false;
             }
 
@@ -231,10 +237,11 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     }
                     else
                     {
-                        if (command.TryGetPlayerScoreboard(CurrentPlayer, ScreenConfig.RightClickObjective, out var score) && score > 0)
+                        int score = sender.GetPlayerScoreboard(CurrentPlayer, ScreenConfig.RightClickObjective);
+                        if (score > 0)
                         {
                             actions.Add(() => RightClick.Invoke(this, new(CurrentPosition)));
-                            command.SetPlayerScoreboard(CurrentPlayer, ScreenConfig.RightClickObjective, 0);
+                            sender.SetPlayerScoreboard(CurrentPlayer, ScreenConfig.RightClickObjective, 0);
                         }
                     }
                     break;
@@ -242,9 +249,9 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
                     if (IsInitialState)
                     {
                         if (string.IsNullOrEmpty(InitialText))
-                            command.SetPlayerHotbarItem(CurrentPlayer, mainItem.Slot, $"minecraft:writable_book{{pages:[]}}");
+                            sender.SetPlayerHotbarItem(CurrentPlayer, mainItem.Slot, $"minecraft:writable_book{{pages:[]}}");
                         else
-                            command.SetPlayerHotbarItem(CurrentPlayer, mainItem.Slot, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
+                            sender.SetPlayerHotbarItem(CurrentPlayer, mainItem.Slot, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
                         CurrentText = InitialText;
                         IsInitialState = false;
                     }

@@ -24,15 +24,15 @@ namespace QuanLib.Minecraft.API.Packet
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
 
-        public static async Task<ResponseData> SendLoginAsync(this MinecraftApiClient client, string password)
+        public static async Task<ResponseData> SendLoginAsync(this McapiClient client, string password)
         {
             RequestPacket request = CreateRequestPacket(password, client.GetNextID());
-            ResponsePacket response = await client.SendRequestPacket(request);
+            ResponsePacket response = await client.SendRequestPacketAsync(request);
             response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
 
-        public class ResponseData : BsonSerialize
+        public class ResponseData
         {
             public bool? IsSuccessful { get; set; }
 

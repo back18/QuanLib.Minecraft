@@ -220,11 +220,6 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
         public void WaitAllScreenPreviousOutputTask()
         {
-            //List<Task> tasks = new();
-            //foreach (var screen in ScreenList.Values)
-            //    tasks.Add(screen.Screen.OutputHandler.WaitPreviousAsync());
-            //Task.WaitAll(tasks.ToArray());
-
             _previous?.Wait();
         }
 
@@ -353,22 +348,22 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
 
             void ICollection<KeyValuePair<int, ScreenContext>>.Add(KeyValuePair<int, ScreenContext> item)
             {
-                ((ICollection<KeyValuePair<int, ScreenContext>>)_items).Add(item);
+                throw new NotSupportedException();
             }
 
             bool ICollection<KeyValuePair<int, ScreenContext>>.Remove(KeyValuePair<int, ScreenContext> item)
             {
-                return ((ICollection<KeyValuePair<int, ScreenContext>>)_items).Remove(item);
+                throw new NotSupportedException();
             }
 
             bool ICollection<KeyValuePair<int, ScreenContext>>.Contains(KeyValuePair<int, ScreenContext> item)
             {
-                return ((ICollection<KeyValuePair<int, ScreenContext>>)_items).Contains(item);
+                throw new NotSupportedException();
             }
 
             void ICollection<KeyValuePair<int, ScreenContext>>.CopyTo(KeyValuePair<int, ScreenContext>[] array, int arrayIndex)
             {
-                ((ICollection<KeyValuePair<int, ScreenContext>>)_items).CopyTo(array, arrayIndex);
+                throw new NotSupportedException();
             }
 
             void IDictionary<int, ScreenContext>.Add(int key, ScreenContext value)

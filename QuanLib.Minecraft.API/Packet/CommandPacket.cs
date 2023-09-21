@@ -24,12 +24,18 @@ namespace QuanLib.Minecraft.API.Packet
             return Encoding.UTF8.GetString(responsePacket.Data);
         }
 
-        public static async Task<string> SendCommandAsync(this MinecraftApiClient client, string command)
+        public static async Task<string> SendCommandAsync(this McapiClient client, string command)
         {
             RequestPacket request = CreateRequestPacket(command, client.GetNextID(), true);
-            ResponsePacket response = await client.SendRequestPacket(request);
+            ResponsePacket response = await client.SendRequestPacketAsync(request);
             response.ValidateStatusCode();
             return ParseResponsePacket(response);
+        }
+
+        public static async Task SendOnewayCommandAsync(this McapiClient client, string command)
+        {
+            RequestPacket request = CreateRequestPacket(command, client.GetNextID(), false);
+            await client.SendRequestPacketAsync(request);
         }
     }
 }

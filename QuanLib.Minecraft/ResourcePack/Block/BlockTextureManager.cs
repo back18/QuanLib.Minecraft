@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.DirectoryManagers;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -16,6 +15,12 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 {
     public class BlockTextureManager : IReadOnlyDictionary<string, BlockTexture>
     {
+        static BlockTextureManager()
+        {
+            _slock = new();
+            IsLoaded = false;
+        }
+
         internal BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
             _items = items ?? throw new ArgumentNullException(nameof(items));
@@ -52,6 +57,21 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             }
         }
 
+        private static readonly object _slock;
+
+        public static bool IsLoaded { get; private set; }
+
+        public static BlockTextureManager Instance
+        {
+            get
+            {
+                if (_Instance is null)
+                    throw new InvalidOperationException("实例未加载");
+                return _Instance;
+            }
+        }
+        private static BlockTextureManager? _Instance;
+
         private readonly Dictionary<string, BlockTexture> _items;
 
         private readonly Dictionary<Facing, Dictionary<Rgba32, BlockTexture>> _map;
@@ -63,6 +83,24 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         public IEnumerable<BlockTexture> Values => _items.Values;
 
         public int Count => _items.Count;
+
+        public static BlockTextureManager LoadInstance(ResourceEntryManager resources, IEnumerable<BlockState> blacklist)
+        {
+            if (resources is null)
+                throw new ArgumentNullException(nameof(resources));
+            if (blacklist is null)
+                throw new ArgumentNullException(nameof(blacklist));
+
+            lock (_slock)
+            {
+                if (_Instance is not null)
+                    throw new InvalidOperationException("试图重复加载单例实例");
+
+                _Instance = BlockTextureReader.Load(resources, blacklist);
+                IsLoaded = true;
+                return _Instance;
+            }
+        }
 
         public BlockTexture? MatchBlockTexture(Facing facing, Rgba32 rgba32)
         {
@@ -94,201 +132,6 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             pixel.ToRgba32(ref rgba32);
             return MatchBlockTexture(facing, rgba32);
         }
-
-        //public static BlockTextureManager LoadDirectory(string directory, IEnumerable<string> blacklist)
-        //{
-        //    if (string.IsNullOrEmpty(directory))
-        //        throw new ArgumentException($"“{nameof(directory)}”不能为 null 或空。", nameof(directory));
-        //    if (!Directory.Exists(directory))
-        //        throw new DirectoryNotFoundException(nameof(directory));
-
-        //    ResourcePackDirectory resourcePack = new(directory);
-        //    string[] blockStates = Directory.GetFiles(resourcePack.BlockStates, "*.json");
-        //    Dictionary<string, JObject> modelsCache = new();
-        //    Dictionary<string, Image<Rgba32>> imagesCache = new();
-        //    Dictionary<string, BlockTexture> result = new();
-        //    foreach (var blockState in blockStates)
-        //    {
-        //        JObject jobj1 = JObject.Parse(File.ReadAllText(blockState));
-        //        if (jobj1.TryGetValue("variants", out var variants))
-        //        {
-        //            foreach (var variant in variants)
-        //            {
-        //                if (variant is JProperty variant_jpro &&
-        //                    variant_jpro.Value is JObject variant_jobj &&
-        //                    variant_jobj.TryGetValue("model", out var model) &&
-        //                    TryGetName(model, out var name))
-        //                {
-        //                    JObject jobj2 = GetModel(name);
-        //                    if (jobj2.TryGetValue("parent", out var parent) && jobj2.TryGetValue("textures", out var textures) && textures is JObject textures_jobj)
-        //                    {
-        //                        string? value = parent.Value<string>();
-        //                        BlockType type;
-        //                        string xp, xm, yp, ym, zp, zm;
-        //                        switch (value)
-        //                        {
-        //                            case "minecraft:block/cube_all":
-        //                                {
-        //                                    if (textures_jobj.TryGetValue("all", out var all) && TryGetName(all, out var allName))
-        //                                    {
-        //                                        xp = allName;
-        //                                        xm = allName;
-        //                                        yp = allName;
-        //                                        ym = allName;
-        //                                        zp = allName;
-        //                                        zm = allName;
-        //                                    }
-        //                                    else
-        //                                        continue;
-        //                                    type = BlockType.CubeAll;
-        //                                    break;
-        //                                }
-
-        //                            case "minecraft:block/cube":
-        //                                {
-        //                                    if (textures_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
-        //                                        textures_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
-        //                                        textures_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
-        //                                        textures_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
-        //                                        textures_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
-        //                                        textures_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
-        //                                    {
-        //                                        xp = eastName;
-        //                                        xm = westName;
-        //                                        yp = upName;
-        //                                        ym = downName;
-        //                                        zp = southName;
-        //                                        zm = northName;
-        //                                    }
-        //                                    else
-        //                                        continue;
-        //                                    type = BlockType.Cube;
-        //                                    break;
-        //                                }
-        //                            case "minecraft:block/cube_column":
-        //                                {
-        //                                    if (textures_jobj.TryGetValue("side", out var side) && TryGetName(side, out var sideName) &&
-        //                                        textures_jobj.TryGetValue("end", out var end) && TryGetName(end, out var endName))
-        //                                    {
-        //                                        xp = sideName;
-        //                                        xm = sideName;
-        //                                        yp = endName;
-        //                                        ym = endName;
-        //                                        zp = sideName;
-        //                                        zm = sideName;
-        //                                    }
-        //                                    else
-        //                                        continue;
-        //                                    type = BlockType.CubeColumn;
-        //                                    break;
-        //                                }
-        //                            case "minecraft:block/cube_bottom_top":
-        //                                {
-        //                                    if (textures_jobj.TryGetValue("side", out var side) && TryGetName(side, out var sideName) &&
-        //                                        textures_jobj.TryGetValue("top", out var top) && TryGetName(top, out var topName) &&
-        //                                        textures_jobj.TryGetValue("bottom", out var bottom) && TryGetName(bottom, out var bottomName))
-        //                                    {
-        //                                        xp = sideName;
-        //                                        xm = sideName;
-        //                                        yp = topName;
-        //                                        ym = bottomName;
-        //                                        zp = sideName;
-        //                                        zm = sideName;
-        //                                    }
-        //                                    else
-        //                                        continue;
-        //                                    type = BlockType.CubeBottomTop;
-        //                                    break;
-        //                                }
-        //                            case "block/block":
-        //                                {
-        //                                    if (textures_jobj.TryGetValue("east", out var east) && TryGetName(east, out var eastName) &&
-        //                                        textures_jobj.TryGetValue("west", out var west) && TryGetName(west, out var westName) &&
-        //                                        textures_jobj.TryGetValue("up", out var up) && TryGetName(up, out var upName) &&
-        //                                        textures_jobj.TryGetValue("down", out var down) && TryGetName(down, out var downName) &&
-        //                                        textures_jobj.TryGetValue("south", out var south) && TryGetName(south, out var southName) &&
-        //                                        textures_jobj.TryGetValue("north", out var north) && TryGetName(north, out var northName))
-        //                                    {
-        //                                        xp = eastName;
-        //                                        xm = westName;
-        //                                        yp = upName;
-        //                                        ym = downName;
-        //                                        zp = southName;
-        //                                        zm = northName;
-        //                                    }
-        //                                    else
-        //                                        continue;
-        //                                    type = BlockType.Block;
-        //                                    break;
-        //                                }
-        //                            default:
-        //                                continue;
-        //                        }
-
-        //                        string id = "minecraft:" + Path.GetFileNameWithoutExtension(blockState);
-        //                        if (!string.IsNullOrEmpty(variant_jpro.Name))
-        //                            id += $"[{variant_jpro.Name}]";
-        //                        bool disable = false;
-        //                        foreach (var black in blacklist)
-        //                        {
-        //                            if (id.StartsWith(black))
-        //                            {
-        //                                disable = true;
-        //                                break;
-        //                            }
-        //                        }
-        //                        if (disable)
-        //                            continue;
-
-        //                        Dictionary<Facing, Image<Rgba32>> images = new()
-        //                        {
-        //                            { Facing.Xp, GetImage(xp) },
-        //                            { Facing.Xm, GetImage(xm) },
-        //                            { Facing.Yp, GetImage(yp) },
-        //                            { Facing.Ym, GetImage(ym) },
-        //                            { Facing.Zp, GetImage(zp) },
-        //                            { Facing.Zm, GetImage(zm) }
-        //                        };
-
-        //                        result.Add(id, new(id, type, images));
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return new(result);
-
-        //    bool TryGetName(JToken jToken, [MaybeNullWhen(false)] out string result)
-        //    {
-        //        result = jToken.Value<string>()?.Split('/')[^1];
-        //        return result is not null;
-        //    }
-
-        //    JObject GetModel(string name)
-        //    {
-        //        if (modelsCache.TryGetValue(name, out var model))
-        //            return model;
-        //        else
-        //        {
-        //            JObject jobj = JObject.Parse(File.ReadAllText(Path.Combine(resourcePack.Models.Block, name + ".json")));
-        //            modelsCache.Add(name, jobj);
-        //            return jobj;
-        //        }
-        //    }
-
-        //    Image<Rgba32> GetImage(string name)
-        //    {
-        //        if (imagesCache.TryGetValue(name, out var image))
-        //            return image;
-        //        else
-        //        {
-        //            image = Image.Load<Rgba32>(File.ReadAllBytes(Path.Combine(resourcePack.Textures.Block, name + ".png")));
-        //            imagesCache.Add(name, image);
-        //            return image;
-        //        }
-        //    }
-        //}
 
         public void BuildMapCache(Facing facing)
         {

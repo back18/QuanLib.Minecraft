@@ -61,9 +61,7 @@ namespace QuanLib.Minecraft.BlockScreen.Config
 
         public static void CreateIfNotExists()
         {
-            if (!Directory.Exists(MCOS.MainDirectory.Configs.Directory))
-                Directory.CreateDirectory(MCOS.MainDirectory.Configs.Directory);
-
+            MCOS.MainDirectory.Configs.CreateIfNotExists();
             CreateIfNotExists(MCOS.MainDirectory.Configs.Log4Net, "QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml");
             CreateIfNotExists(MCOS.MainDirectory.Configs.Minecraft, "QuanLib.Minecraft.BlockScreen.Config.Default.Minecraft.toml");
             CreateIfNotExists(MCOS.MainDirectory.Configs.System, "QuanLib.Minecraft.BlockScreen.Config.Default.System.toml");

@@ -146,8 +146,7 @@ namespace QuanLib.Minecraft.BlockScreen
             {
                 lock (VideoDecoder)
                 {
-                    if (!VideoDecoder.Runing)
-                        Task.Run(() => VideoDecoder.Start());
+                    VideoDecoder.Start();
                 }
 
                 if (EnableAudio)

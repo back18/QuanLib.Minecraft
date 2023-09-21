@@ -95,22 +95,22 @@ namespace QuanLib.Minecraft.BlockScreen
             }
             void ICollection<KeyValuePair<string, ApplicationInfo>>.Add(KeyValuePair<string, ApplicationInfo> item)
             {
-                ((ICollection<KeyValuePair<string, ApplicationInfo>>)_items).Add(item);
+                throw new NotSupportedException();
             }
 
             bool ICollection<KeyValuePair<string, ApplicationInfo>>.Remove(KeyValuePair<string, ApplicationInfo> item)
             {
-                return ((ICollection<KeyValuePair<string, ApplicationInfo>>)_items).Remove(item);
+                throw new NotSupportedException();
             }
 
             bool ICollection<KeyValuePair<string, ApplicationInfo>>.Contains(KeyValuePair<string, ApplicationInfo> item)
             {
-                return ((ICollection<KeyValuePair<string, ApplicationInfo>>)_items).Contains(item);
+                throw new NotSupportedException();
             }
 
             void ICollection<KeyValuePair<string, ApplicationInfo>>.CopyTo(KeyValuePair<string, ApplicationInfo>[] array, int arrayIndex)
             {
-                ((ICollection<KeyValuePair<string, ApplicationInfo>>)_items).CopyTo(array, arrayIndex);
+                throw new NotSupportedException();
             }
 
             void IDictionary<string, ApplicationInfo>.Add(string key, ApplicationInfo value)

@@ -24,6 +24,8 @@ namespace QuanLib.Minecraft.Snbt.Data
             Timestamp = timestamp;
         }
 
+        public static readonly InteractionData Empty = new(Guid.Empty, 0);
+
         public Guid Player { get; }
 
         public long Timestamp { get; }

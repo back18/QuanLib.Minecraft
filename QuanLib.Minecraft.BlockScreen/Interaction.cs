@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using QuanLib.Minecraft.Command;
+using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Minecraft.Vector;
@@ -29,18 +31,18 @@ namespace QuanLib.Minecraft.BlockScreen
             _entity = EntityUUID.ToString();
             _file = Path.Combine(_dir, _player + ".json");
 
-            _ = SaveJsonAsync();
+            _task = SaveJsonAsync();
         }
 
         private readonly string _player;
 
         private readonly string _entity;
 
-        private static readonly string _dir = MCOS.MainDirectory.Saves.Interactions.Directory;
+        private static readonly string _dir = MCOS.MainDirectory.Saves.Interactions.FullPath;
 
         private readonly string _file;
 
-        private Task? _task;
+        private Task _task;
 
         public InteractionState InteractionState { get; private set; }
 
@@ -62,14 +64,13 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Handle()
         {
-            Test();
+            ConditionalEntity();
             switch (InteractionState)
             {
                 case InteractionState.Active:
                     ReadLeftRightKeys();
                     SyncPosition();
-                    _task?.Wait();
-                    _ = SaveJsonAsync();
+                    _task = SaveJsonAsync();
                     break;
                 case InteractionState.Offline:
                     Dispose();
@@ -81,10 +82,10 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public bool Test()
+        public bool ConditionalEntity()
         {
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            bool result = command.TestEntity(new GenericSelector(_player)) && command.TestEntity(new GenericSelector(_entity));
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            bool result = sender.ConditionalEntity(_player) && sender.ConditionalEntity(_entity);
             if (!result && InteractionState == InteractionState.Active)
                 InteractionState = InteractionState.Offline;
             return result;
@@ -92,20 +93,20 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public bool SyncPosition()
         {
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            if (!command.TryGetEntityPosition(_player, out var position))
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            if (!sender.TryGetEntityPosition(_player, out var position))
                 return false;
 
             Position = position;
-            return command.TelePort(new GenericSelector(_entity), Position);
+            return sender.TelePort(_entity, Position) > 0;
         }
 
         public void ReadLeftRightKeys()
         {
             IsLeftClick = false;
             IsRightClick = false;
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            LeftRightKeys keys = command.GetInteractionData(_entity);
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            LeftRightKeys keys = sender.GetInteractionData(_entity);
 
             if (keys.LeftClick.Timestamp > LeftClickTimestamp)
             {
@@ -121,67 +122,65 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public async Task SaveJsonAsync()
+        private async Task SaveJsonAsync()
         {
             _task?.Wait();
             if (!Directory.Exists(_dir))
                 Directory.CreateDirectory(_dir);
-            _task = File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(ToJson()));
-            await _task;
+            await File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(ToJson()));
         }
 
-        public void DaleteJson()
+        private void DaleteJson()
         {
             if (File.Exists(_file))
                 File.Delete(_file);
         }
 
-        public Json ToJson()
+        private Json ToJson()
         {
             return new(_player, _entity, new double[] { Position.X, Position.Y, Position.Z });
+        }
+
+        public void Dispose()
+        {
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            BlockPos blockPos = Position.ToBlockPos();
+            sender.AddForceloadChunk(blockPos);
+            sender.KillEntity(_entity);
+            sender.RemoveForceloadChunk(blockPos);
+            DaleteJson();
+            InteractionState = InteractionState.Closed;
+            GC.SuppressFinalize(this);
         }
 
         public static bool TryCreate(string player, [MaybeNullWhen(false)] out Interaction result)
         {
             if (string.IsNullOrEmpty(player))
-                goto err;
+                goto fail;
 
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
 
-            if (!command.TryGetEntityUUID(player, out var playerUUID))
-                goto err;
+            if (!sender.TryGetEntityUuid(player, out var playerUUID))
+                goto fail;
 
-            if (!command.TryGetEntityPosition(player, out var position))
-                goto err;
+            if (!sender.TryGetEntityPosition(player, out var position))
+                goto fail;
 
-            if (command.TestEntity(new GenericSelector($"@e[type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1]")))
-                goto err;
+            if (sender.ConditionalEntity($"@e[limit=1,type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1,sort=nearest]"))
+                goto fail;
 
-            if (!command.SummonEntity(INTERACTION_ID, position, INTERACTION_NBT))
-                goto err;
+            if (!sender.SummonEntity(position, INTERACTION_ID, INTERACTION_NBT))
+                goto fail;
 
-            string snbt = command.GetAllEntitySbnt($"@e[type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..0.1]", "UUID");
-            if (!MinecraftUtil.TryParseUUIDSbnt(snbt, out var entityUUID))
-                goto err;
+            if (!sender.TryGetEntityUuid($"@e[limit=1,type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1,sort=nearest]", out var entityUUID))
+                goto fail;
 
             result = new(player, playerUUID, entityUUID, position);
             return true;
 
-            err:
+            fail:
             result = null;
             return false;
-        }
-
-        public void Dispose()
-        {
-            var command = MCOS.Instance.MinecraftServer.CommandHelper;
-            BlockPos blockPos = Position.ToBlockPos();
-            command.AddForceLoadChunk(blockPos);
-            command.KillEntity(new GenericSelector(_entity));
-            command.RemoveForceLoadChunk(blockPos);
-            DaleteJson();
-            InteractionState = InteractionState.Closed;
-            GC.SuppressFinalize(this);
         }
 
         public class Json

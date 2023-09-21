@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen
 {
-    public class VideoDecoder : ISwitchable
+    public class VideoDecoder : UnmanagedRunnable
     {
         public VideoDecoder(VideoStream video, Facing facing, Size size) : this(video, facing, VideoFrame.DefaultResizeOptions)
         {
@@ -39,7 +39,6 @@ namespace QuanLib.Minecraft.BlockScreen
             _frames = new();
             _semaphore = new(1);
             _pause = false;
-            _runing = false;
         }
 
         private readonly ConcurrentQueue<Task<VideoFrame?>> _frames;
@@ -49,10 +48,6 @@ namespace QuanLib.Minecraft.BlockScreen
         private readonly SemaphoreSlim _semaphore;
 
         private bool _pause;
-
-        private bool _runing;
-
-        public bool Runing => _runing;
 
         public int MaxFrames { get; set; }
 
@@ -75,13 +70,9 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public double FrameInterval { get; }
 
-        public void Start()
+        protected override void Run()
         {
-            if (_runing)
-                return;
-
-            _runing = true;
-            while (_runing)
+            while (IsRuning)
             {
                 if (_frames.Count >= MaxFrames)
                     Thread.Sleep(10);
@@ -89,7 +80,7 @@ namespace QuanLib.Minecraft.BlockScreen
                 {
                     while (_pause)
                         Thread.Yield();
-                    if (!_runing)
+                    if (!IsRuning)
                         break;
 
                     lock (_frames)
@@ -120,10 +111,9 @@ namespace QuanLib.Minecraft.BlockScreen
             }
         }
 
-        public void Stop()
+        protected override void DisposeUnmanaged()
         {
             _pause = true;
-            _runing = false;
             Clear();
             _pause = false;
         }
@@ -141,7 +131,7 @@ namespace QuanLib.Minecraft.BlockScreen
         {
             while (true)
             {
-                if (!_runing)
+                if (!IsRuning)
                 {
                     result = null;
                     return false;

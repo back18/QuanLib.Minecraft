@@ -40,7 +40,7 @@ namespace QuanLib.Minecraft.BlockScreen
             _DefaultFont = BdfFont.Load(Path.Combine(MCOS.MainDirectory.SystemResources.Fonts.DefaultFont));
             LOGGER.Info($"默认字体文件加载完成，高度:{DefaultFont.Height} 半角宽度:{DefaultFont.HalfWidth} 全角宽度:{DefaultFont.FullWidth} 字符数量:{DefaultFont.Count}");
 
-            _CursorManager = CursorManager.Load(MCOS.MainDirectory.SystemResources.Cursors.Directory);
+            _CursorManager = CursorManager.Load(MCOS.MainDirectory.SystemResources.Cursors.FullPath);
             LOGGER.Info($"光标文件加载完成");
         }
     }

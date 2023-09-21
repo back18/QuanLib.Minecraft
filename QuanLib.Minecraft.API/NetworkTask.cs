@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,30 +12,36 @@ namespace QuanLib.Minecraft.API
 {
     public class NetworkTask
     {
-        public NetworkTask(RequestPacket request, Task send)
+        public NetworkTask(TcpClient tcpClient, RequestPacket request)
         {
-            _semaphore = new(0);
-            State = NetworkTaskState.Sending;
+            _sendSemaphore = new(0);
+            _receiveSemaphore = new(0);
+            State = NetworkTaskState.Notsent;
 
+            _tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
             _request = request ?? throw new ArgumentNullException(nameof(request));
-            _send = send ?? throw new ArgumentNullException(nameof(send));
-            _receive = WaitForReceivAsync();
+            _sendTask = WaitForSendAsync();
+            _receiveTask = WaitForReceiveAsync();
 
             if (!_request.NeedResponse)
             {
-                _semaphore.Release();
-                _receive.ContinueWith((task) =>
+                _receiveSemaphore.Release();
+                _receiveTask.ContinueWith((task) =>
                 {
                     State = NetworkTaskState.Completed;
                 });
             }
         }
 
-        private readonly SemaphoreSlim _semaphore;
+        private readonly SemaphoreSlim _sendSemaphore;
 
-        private readonly Task _send;
+        private readonly SemaphoreSlim _receiveSemaphore;
 
-        private readonly Task _receive;
+        private readonly Task _sendTask;
+
+        private readonly Task _receiveTask;
+
+        private readonly TcpClient _tcpClient;
 
         private readonly RequestPacket _request;
 
@@ -45,19 +53,22 @@ namespace QuanLib.Minecraft.API
 
         public int DataPacketID => _request.ID;
 
-        internal void Complete(ResponsePacket response)
+        internal void Send()
+        {
+            _sendSemaphore.Release();
+        }
+
+        internal void Receive(ResponsePacket response)
         {
             if (response is null)
                 throw new ArgumentNullException(nameof(response));
             if (response.ID != _request.ID)
                 throw new InvalidOperationException("请求数据包与响应数据包的ID不一致");
 
-            if (State != NetworkTaskState.Sending && State != NetworkTaskState.Receiving)
-                return;
-
+            _sendTask.Wait();
             _response = response;
-            _semaphore.Release();
-            _receive.ContinueWith((task) =>
+            _receiveSemaphore.Release();
+            _receiveTask.ContinueWith((task) =>
             {
                 State = NetworkTaskState.Completed;
             });
@@ -65,18 +76,26 @@ namespace QuanLib.Minecraft.API
 
         public async Task<ResponsePacket?> WaitForCompleteAsync()
         {
-            await _send;
-            await _receive;
+            await _sendTask;
+            await _receiveTask;
             return _response;
         }
 
-        private async Task WaitForReceivAsync()
+        private async Task WaitForSendAsync()
         {
-            await _send;
+            byte[] datapacket = _request.Serialize();
+            await _sendSemaphore.WaitAsync();
+            State = NetworkTaskState.Sending;
+            await _tcpClient.GetStream().WriteAsync(datapacket);
+        }
+
+        private async Task WaitForReceiveAsync()
+        {
+            await _sendTask;
             State = NetworkTaskState.Receiving;
             int millisecondsTimeout = 30 * 1000;
             Stopwatch stopwatch = Stopwatch.StartNew();
-            await _semaphore.WaitAsync(millisecondsTimeout);
+            await _receiveSemaphore.WaitAsync(millisecondsTimeout);
             stopwatch.Stop();
             if (stopwatch.ElapsedMilliseconds >= millisecondsTimeout)
                 State = NetworkTaskState.Timeout;

@@ -41,10 +41,10 @@ namespace QuanLib.Minecraft.API.Packet
             {
                 case StatusCodeType.ClientError:
                     data = Data.DeserializeBson<ErrorResponseData>();
-                    throw new ApiClientException(StatusCode, data.ErrorType, data.ErrorMessage);
+                    throw new McapiClientException(StatusCode, data.ErrorType, data.ErrorMessage);
                 case StatusCodeType.ServerError:
                     data = Data.DeserializeBson<ErrorResponseData>();
-                    throw new ApiServerException(StatusCode, data.ErrorType, data.ErrorMessage);
+                    throw new McapiServerException(StatusCode, data.ErrorType, data.ErrorMessage);
             }
         }
 
@@ -76,7 +76,7 @@ namespace QuanLib.Minecraft.API.Packet
             public int? StatusCode { get; set; }
         }
 
-        public class ErrorResponseData : BsonSerialize
+        public class ErrorResponseData
         {
             public string? ErrorType { get; set; }
 

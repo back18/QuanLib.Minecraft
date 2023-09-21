@@ -15,14 +15,14 @@ namespace QuanLib.Minecraft.ResourcePack.Language
     {
         public const string DEFAULT_LANGUAGE = "en_us";
 
-        public static LanguageManager Load(ResourceEntryManager resources, string language)     //TODO 原版语言文件加载
+        public static LanguageManager Load(ResourceEntryManager resources, string language, string? minecraftLanguageFilePath = null)
         {
             if (resources is null)
                 throw new ArgumentNullException(nameof(resources));
             if (string.IsNullOrEmpty(language))
                 throw new ArgumentException($"“{nameof(language)}”不能为 null 或空。", nameof(language));
 
-            ConcurrentDictionary<string, TemplateText> result = new();
+            ConcurrentDictionary<string, TextTemplate> result = new();
             int total = 0;
             int count = 0;
             foreach (var resource in resources.Values)
@@ -33,6 +33,16 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                 Dictionary<string, string>? defaultDictionary = TryParseJson(defaultEntry);
                 if (defaultDictionary is null)
                     continue;
+
+                if (resource.ModID == "minecraft" && !string.IsNullOrEmpty(minecraftLanguageFilePath))
+                {
+                    Dictionary<string, string>? vanillaLanguageDictionary = TryParseJson(minecraftLanguageFilePath);
+                    if (vanillaLanguageDictionary is not null)
+                    {
+                        foreach (var item in vanillaLanguageDictionary)
+                            defaultDictionary[item.Key] = item.Value;
+                    }
+                }
 
                 if (language != DEFAULT_LANGUAGE && resource.Languages.TryGetValue(language + ".json", out var languageEntry))
                 {
@@ -51,8 +61,8 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                 total += defaultDictionary.Count;
                 Parallel.ForEach(defaultDictionary, item =>
                 {
-                    if (TemplateText.TryParseLanguage(item.Key, item.Value, out var text))
-                        result.TryAdd(text.Key, text);
+                    if (TextTemplate.TryParse(item.Value, out var template))
+                        result.TryAdd(item.Key, template);
                     Interlocked.Increment(ref count);
                 });
             }
@@ -73,6 +83,21 @@ namespace QuanLib.Minecraft.ResourcePack.Language
             try
             {
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static Dictionary<string, string>? TryParseJson(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+
+            try
+            {
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path));
             }
             catch
             {

@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using QuanLib.Minecraft.Command.Model;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
 using QuanLib.Minecraft.Snbt.Data;
@@ -14,6 +15,7 @@ using static Nett.TomlObjectFactory;
 
 namespace QuanLib.Minecraft
 {
+    [Obsolete("改用 CommandSender 与 CommandManager", true)]
     public class ServerCommandHelper
     {
         public ServerCommandHelper(RCON rcon)
@@ -499,7 +501,7 @@ namespace QuanLib.Minecraft
                 result = default;
                 return false;
             }
-            return MinecraftUtil.TryParseUUIDSbnt(snbt, out result);
+            return MinecraftUtil.TryParseUuidSbnt(snbt, out result);
         }
 
         public virtual bool TryGetEntityHealth(string target, out float result)
@@ -548,7 +550,7 @@ namespace QuanLib.Minecraft
 
             Dictionary<string, string> result = new();
             PlayerList list = GetPlayerList();
-            if (list.Players.Count == 0)
+            if (list.List.Count == 0)
                 return result;
 
             string command = $"execute as {target} run data get entity @s";
@@ -559,7 +561,7 @@ namespace QuanLib.Minecraft
                 return result;
 
             List<int> indexs = new();
-            foreach (var player in list.Players)
+            foreach (var player in list.List)
             {
                 int index = output.IndexOf(player + " has the following");
                 if (index != -1)

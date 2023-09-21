@@ -8,6 +8,8 @@ namespace QuanLib.Minecraft.API
 {
     public enum NetworkTaskState
     {
+        Notsent,
+
         Sending,
 
         Receiving,

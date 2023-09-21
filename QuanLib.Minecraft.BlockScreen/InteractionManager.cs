@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Minecraft.BlockScreen.Event;
 using QuanLib.Minecraft.BlockScreen.Logging;
+using QuanLib.Minecraft.Command;
+using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Minecraft.Vector;
@@ -40,7 +42,7 @@ namespace QuanLib.Minecraft.BlockScreen
 
         public void Initialize()
         {
-            string dir = MCOS.MainDirectory.Saves.Interactions.Directory;
+            string dir = MCOS.MainDirectory.Saves.Interactions.FullPath;
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
@@ -53,10 +55,10 @@ namespace QuanLib.Minecraft.BlockScreen
                     Interaction.Json json = JsonConvert.DeserializeObject<Interaction.Json>(File.ReadAllText(file)) ?? throw new FormatException();
                     EntityPos position = new(json.Position[0], json.Position[1], json.Position[2]);
                     BlockPos blockPos = position.ToBlockPos();
-                    var command = MCOS.Instance.MinecraftServer.CommandHelper;
-                    command.AddForceLoadChunk(blockPos);
-                    command.KillEntity(new GenericSelector(json.EntityUUID));
-                    command.RemoveForceLoadChunk(blockPos);
+                    CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+                    sender.AddForceloadChunk(blockPos);
+                    sender.KillEntity(json.EntityUUID);
+                    sender.RemoveForceloadChunk(blockPos);
                     File.Delete(file);
                     LOGGER.Info($"玩家[{json.PlayerUUID}]的交互实体已回收");
                 }

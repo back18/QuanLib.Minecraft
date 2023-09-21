@@ -14,7 +14,7 @@ using Level = QuanLib.CommandLine.Level;
 
 namespace MCBS.ConsoleTerminal
 {
-    public class Terminal : ISwitchable
+    public class Terminal : RunnableBase
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
 
@@ -22,28 +22,18 @@ namespace MCBS.ConsoleTerminal
         {
             CommandSystem = new(new(Level.Root));
             RegisterCommands();
-
-            _runing = false;
         }
-
-        private bool _runing;
-
-        public bool Runing => _runing;
 
         public CommandSystem CommandSystem { get; }
 
-        public void Start()
+        protected override void Run()
         {
-            if (_runing)
-                return;
-            _runing = true;
-
             LOGGER.Info("命令行终端已开始运行");
 
-            while (_runing)
+            while (IsRuning)
             {
                 string? input = Console.ReadLine();
-                if (_runing == false)
+                if (!IsRuning)
                 {
                     break;
                 }
@@ -68,19 +58,19 @@ namespace MCBS.ConsoleTerminal
                     case "mcconsole":
                     case "mcc":
                         Console.WriteLine("【MCBS控制台】已进入Minecraft控制台");
-                        LogUtil.DisableConsoleOutput();
-                        MCOS.Instance.MinecraftServer.EnableConsoleOutput();
-                        while (true)
-                        {
-                            string? input2 = Console.ReadLine();
-                            if (string.IsNullOrEmpty(input2))
-                                break;
+                        //LogUtil.DisableConsoleOutput();
+                        //MCOS.Instance.MinecraftServer.EnableConsoleOutput();
+                        //while (true)
+                        //{
+                        //    string? input2 = Console.ReadLine();
+                        //    if (string.IsNullOrEmpty(input2))
+                        //        break;
 
-                            string output2 = MCOS.Instance.MinecraftServer.CommandHelper.SendCommand(input2);
-                            Console.WriteLine(output2);
-                        }
-                        MCOS.Instance.MinecraftServer.DisableConsoleOutput();
-                        LogUtil.EnableConsoleOutput();
+                        //    string output2 = MCOS.Instance.MinecraftServer.CommandHelper.SendCommand(input2);
+                        //    Console.WriteLine(output2);
+                        //}
+                        //MCOS.Instance.MinecraftServer.DisableConsoleOutput();
+                        //LogUtil.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出Minecraft控制台");
                         break;
                     case "commandsystem":
@@ -134,10 +124,9 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":
-                        if (MCOS.Instance.Runing)
+                        if (MCOS.Instance.IsRuning)
                         {
                             MCOS.Instance.Stop();
-                            _runing = false;
                         }
                         else
                         {
@@ -150,13 +139,7 @@ namespace MCBS.ConsoleTerminal
                 }
             }
 
-            _runing = false;
             LOGGER.Info("命令行终端已终止运行");
-        }
-
-        public void Stop()
-        {
-            _runing = false;
         }
 
         private void RegisterCommands()

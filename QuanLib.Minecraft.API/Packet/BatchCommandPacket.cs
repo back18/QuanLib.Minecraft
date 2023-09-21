@@ -23,15 +23,21 @@ namespace QuanLib.Minecraft.API.Packet
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
 
-        public static async Task<string[]> SendBatchCommandAsync(this MinecraftApiClient client, string[] commands)
+        public static async Task<string[]> SendBatchCommandAsync(this McapiClient client, string[] commands)
         {
             RequestPacket request = CreateRequestPacket(commands, client.GetNextID(), true);
-            ResponsePacket response = await client.SendRequestPacket(request);
+            ResponsePacket response = await client.SendRequestPacketAsync(request);
             response.ValidateStatusCode();
             return ParseResponsePacket(response).Results ?? Array.Empty<string>();
         }
 
-        public class RequestData : BsonSerialize
+        public static async Task SendOnewayBatchCommandAsync(this McapiClient client, string[] commands)
+        {
+            RequestPacket request = CreateRequestPacket(commands, client.GetNextID(), false);
+            await client.SendRequestPacketAsync(request);
+        }
+
+        public class RequestData : ISerializable
         {
             public RequestData()
             {
@@ -43,9 +49,16 @@ namespace QuanLib.Minecraft.API.Packet
             }
 
             public string[]? Commands { get; set; }
+
+            public byte[] Serialize()
+            {
+                using MemoryStream stream = new();
+                BsonSerializer.Serialize(new BsonBinaryWriter(stream), this);
+                return stream.ToArray();
+            }
         }
 
-        public class ResponseData : BsonSerialize
+        public class ResponseData
         {
             public ResponseData() { }
 

@@ -8,20 +8,19 @@ namespace QuanLib.Minecraft
 {
     public class PlayerList
     {
-        public PlayerList(int onlinePlayers, int maxPlayers, IReadOnlyList<string> players)
+        public PlayerList(int onlinePlayers, int maxPlayers, IReadOnlyList<string> list)
         {
             OnlinePlayers = onlinePlayers;
             MaxPlayers = maxPlayers;
-            Players = players;
+            List = list ?? throw new ArgumentNullException(nameof(list));
         }
 
-        public PlayerList(int onlinePlayers, int maxPlayers, IEnumerable<string> players) :
-            this(onlinePlayers, maxPlayers, players?.ToList().AsReadOnly() ?? throw new ArgumentNullException(nameof(players))) { }
+        public static readonly PlayerList Empty = new(0, 0, Array.Empty<string>());
 
         public int OnlinePlayers { get; }
 
         public int MaxPlayers { get; }
 
-        public IReadOnlyList<string> Players { get; }
+        public IReadOnlyList<string> List { get; }
     }
 }

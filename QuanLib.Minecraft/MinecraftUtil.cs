@@ -164,7 +164,7 @@ namespace QuanLib.Minecraft
             return false;
         }
 
-        public static bool TryParseUUIDSbnt(string s, out Guid result)
+        public static bool TryParseUuidSbnt(string s, out Guid result)
         {
             MatchCollection matches = Regex.Matches(s, @"-?\d+");
 

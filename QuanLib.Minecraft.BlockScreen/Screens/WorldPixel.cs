@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.BlockScreen.Screens
 {
-    public class WorldPixel : Pixel
+    public class WorldPixel : Pixel, ISetBlockArgument
     {
         public WorldPixel(BlockPos position, string blockID) : base(blockID)
         {
@@ -15,10 +15,5 @@ namespace QuanLib.Minecraft.BlockScreen.Screens
         }
 
         public BlockPos Position { get; }
-
-        public string ToSetBlock()
-        {
-            return $"setblock {Position.X} {Position.Y} {Position.Z} {BlockID}";
-        }
     }
 }
