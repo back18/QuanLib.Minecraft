@@ -20,13 +20,13 @@ namespace QuanLib.Minecraft
             UUID = uuid;
         }
 
-        public PlayerUUID(Json json)
+        public PlayerUUID(Model model)
         {
-            if (json is null)
-                throw new ArgumentNullException(nameof(json));
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-            Name = json.Name;
-            UUID = json.UUID;
+            Name = model.name;
+            UUID = model.uuid;
         }
 
         [JsonProperty("name")]
@@ -35,19 +35,13 @@ namespace QuanLib.Minecraft
         [JsonProperty("uuid")]
         public string UUID { get; }
 
-        public class Json
+        public class Model
         {
-            public Json(string name, string uUID)
-            {
-                Name = name;
-                UUID = uUID;
-            }
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public string name { get; set; }
 
-            [JsonProperty("name")]
-            public string Name { get; set; }
-
-            [JsonProperty("uuid")]
-            public string UUID { get; set; }
+            public string uuid { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
 }

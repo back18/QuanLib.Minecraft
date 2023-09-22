@@ -1,21 +1,20 @@
-﻿using QuanLib.Minecraft.Snbt;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Data
+namespace QuanLib.Minecraft.Snbt.Model
 {
     public class InteractionData
     {
-        public InteractionData(Nbt nbt)
+        public InteractionData(Model model)
         {
-            if (nbt is null)
-                throw new ArgumentNullException(nameof(nbt));
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-            Player = SnbtSerializer.ToGuid(nbt.player);
-            Timestamp = nbt.timestamp;
+            Player = SnbtSerializer.ToGuid(model.player);
+            Timestamp = model.timestamp;
         }
 
         public InteractionData(Guid player, long timestamp)
@@ -30,12 +29,13 @@ namespace QuanLib.Minecraft.Snbt.Data
 
         public long Timestamp { get; }
 
-        public class Nbt
+        public class Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
             public int[] player { get; set; }
 
             public long timestamp { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
 }

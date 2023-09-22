@@ -1,47 +1,46 @@
-﻿using QuanLib.Minecraft.Snbt;
-using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Data
+namespace QuanLib.Minecraft.Snbt.Model
 {
     public class PlayerEntity : MobEntity
     {
-        public PlayerEntity(Nbt nbt) : base(nbt)
+        public PlayerEntity(Model model) : base(model)
         {
-            Abilities = nbt.abilities;
-            DataVersion = nbt.DataVersion;
-            Dimension = nbt.Dimension;
-            EnderItems = nbt.EnderItems;
-            EnteredNetherPosition = nbt.EnteredNetherPosition;
-            FoodExhaustionLevel = nbt.foodExhaustionLevel;
-            FoodLevel = nbt.foodLevel;
-            FoodSaturationLevel = nbt.foodSaturationLevel;
-            FoodTickTimer = nbt.foodTickTimer;
-            Inventory = nbt.Inventory;
-            LastDeathLocation = nbt.LastDeathLocation;
-            PlayerGameType = nbt.playerGameType;
-            PreviousPlayerGameType = nbt.previousPlayerGameType;
-            RecipeBook = nbt.recipeBook;
-            RootVehicle = nbt.RootVehicle;
-            Score = nbt.Score;
-            SeenCredits = nbt.seenCredits;
-            SelectedItemSlot = nbt.SelectedItemSlot;
-            SleepTimer = nbt.SleepTimer;
-            ShoulderEntityLeft = nbt.ShoulderEntityLeft;
-            ShoulderEntityRight = nbt.ShoulderEntityRight;
-            SpawnAngle = nbt.SpawnAngle;
-            SpawnDimension = nbt.SpawnDimension;
-            SpawnForced = nbt.SpawnForced;
-            Spawn = new(nbt.SpawnX, nbt.SpawnY, nbt.SpawnZ);
-            WardenSpawnTracker = nbt.warden_spawn_tracker;
-            XpLevel = nbt.XpLevel;
-            XpP = nbt.XpP;
-            XpSeed = nbt.XpSeed;
-            XpTotal = nbt.XpTotal;
+            Abilities = model.abilities;
+            DataVersion = model.DataVersion;
+            Dimension = model.Dimension;
+            EnderItems = model.EnderItems;
+            EnteredNetherPosition = model.EnteredNetherPosition;
+            FoodExhaustionLevel = model.foodExhaustionLevel;
+            FoodLevel = model.foodLevel;
+            FoodSaturationLevel = model.foodSaturationLevel;
+            FoodTickTimer = model.foodTickTimer;
+            Inventory = model.Inventory;
+            LastDeathLocation = model.LastDeathLocation;
+            PlayerGameType = model.playerGameType;
+            PreviousPlayerGameType = model.previousPlayerGameType;
+            RecipeBook = model.recipeBook;
+            RootVehicle = model.RootVehicle;
+            Score = model.Score;
+            SeenCredits = model.seenCredits;
+            SelectedItemSlot = model.SelectedItemSlot;
+            SleepTimer = model.SleepTimer;
+            ShoulderEntityLeft = model.ShoulderEntityLeft;
+            ShoulderEntityRight = model.ShoulderEntityRight;
+            SpawnAngle = model.SpawnAngle;
+            SpawnDimension = model.SpawnDimension;
+            SpawnForced = model.SpawnForced;
+            Spawn = new(model.SpawnX, model.SpawnY, model.SpawnZ);
+            WardenSpawnTracker = model.warden_spawn_tracker;
+            XpLevel = model.XpLevel;
+            XpP = model.XpP;
+            XpSeed = model.XpSeed;
+            XpTotal = model.XpTotal;
         }
 
         public object? Abilities { get; }
@@ -104,10 +103,9 @@ namespace QuanLib.Minecraft.Snbt.Data
 
         public int XpTotal { get; }
 
-        public new class Nbt : MobEntity.Nbt
+        public new class Model : MobEntity.Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
             public object? abilities { get; set; }
 
             public int DataVersion { get; set; }
@@ -171,6 +169,7 @@ namespace QuanLib.Minecraft.Snbt.Data
             public int XpSeed { get; set; }
 
             public int XpTotal { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
 }

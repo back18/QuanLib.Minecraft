@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Data
+namespace QuanLib.Minecraft.Snbt.Model
 {
     public class Item
     {
-        public Item(Nbt nbt)
+        public Item(Model model)
         {
-            if (nbt is null)
-                throw new ArgumentNullException(nameof(nbt));
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-            Count = nbt.Count;
-            ID = nbt.id;
-            Slot = nbt.Slot;
-            Tag = nbt.tag;
+            Count = model.Count;
+            ID = model.id;
+            Slot = model.Slot;
+            Tag = model.tag;
         }
 
         public Item(sbyte count, string iD, sbyte slot, Dictionary<string, object>? tag = null)
@@ -45,7 +45,7 @@ namespace QuanLib.Minecraft.Snbt.Data
             return string.Equals(item1?.ID, item2?.ID);
         }
 
-        public class Nbt
+        public class Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
             public sbyte Count { get; set; }
@@ -55,6 +55,7 @@ namespace QuanLib.Minecraft.Snbt.Data
             public sbyte Slot { get; set; }
 
             public Dictionary<string, object>? tag { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
 }

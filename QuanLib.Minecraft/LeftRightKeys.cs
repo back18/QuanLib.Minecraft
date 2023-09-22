@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Snbt.Data;
+﻿using QuanLib.Minecraft.Snbt.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

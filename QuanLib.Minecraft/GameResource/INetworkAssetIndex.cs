@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft
+namespace QuanLib.Minecraft.GameResource
 {
-    public interface IStandardInputCommandSender : ICommandSender
+    public interface INetworkAssetIndex
     {
-
+        public string Url { get; }
     }
 }

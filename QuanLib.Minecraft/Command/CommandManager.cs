@@ -1,7 +1,6 @@
 ﻿using QuanLib.Minecraft.Command.Model;
 using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Selectors;
-using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Minecraft.Snbt;
 using QuanLib.Minecraft.Vector;
 using System;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using QuanLib.Minecraft.Snbt.Model;
 
 namespace QuanLib.Minecraft.Command
 {
@@ -316,7 +316,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                result = new(SnbtSerializer.DeserializeObject<Item.Nbt>(snbt));
+                result = new(SnbtSerializer.DeserializeObject<Item.Model>(snbt));
                 if (SnbtCache.SelectedItemSlot.ContainsKey(target))
                     SnbtCache.SelectedItem[target] = result;
                 else if (slot == -106)
@@ -349,11 +349,11 @@ namespace QuanLib.Minecraft.Command
 
             InteractionData leftData, rightData;
             if (TryGetEntitySnbt(sender, target, "attack", out var left))
-                leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(left));
+                leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Model>(left));
             else
                 leftData = InteractionData.Empty;
             if (TryGetEntitySnbt(sender, target, "interaction", out var right))
-                rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(right));
+                rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Model>(right));
             else
                 rightData = InteractionData.Empty;
 

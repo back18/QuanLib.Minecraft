@@ -1,39 +1,38 @@
-﻿using QuanLib.Minecraft.Snbt;
-using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Data
+namespace QuanLib.Minecraft.Snbt.Model
 {
     public class Entity
     {
-        public Entity(Nbt nbt)
+        public Entity(Model model)
         {
-            if (nbt is null)
-                throw new ArgumentNullException(nameof(nbt));
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
 
-            Air = nbt.Air;
-            CustomName = nbt.CustomName;
-            CustomNameVisible = nbt.CustomNameVisible;
-            FallDistance = nbt.FallDistance;
-            Fire = nbt.Fire;
-            Glowing = nbt.Glowing;
-            HasVisualFire = nbt.HasVisualFire;
-            Invulnerable = nbt.Invulnerable;
-            Motion = SnbtSerializer.ToVector3(nbt.Motion);
-            NoGravity = nbt.NoGravity is null ? null : nbt.NoGravity.Value;
-            OnGround = nbt.OnGround;
-            Passengers = nbt.Passengers;
-            PortalCooldown = nbt.PortalCooldown;
-            Pos = SnbtSerializer.ToVector3(nbt.Pos);
-            Rotation = SnbtSerializer.ToRotation(nbt.Rotation);
-            Silent = nbt.Silent;
-            Tags = nbt.Tags;
-            TicksFrozen = nbt.TicksFrozen;
-            UUID = SnbtSerializer.ToGuid(nbt.UUID);
+            Air = model.Air;
+            CustomName = model.CustomName;
+            CustomNameVisible = model.CustomNameVisible;
+            FallDistance = model.FallDistance;
+            Fire = model.Fire;
+            Glowing = model.Glowing;
+            HasVisualFire = model.HasVisualFire;
+            Invulnerable = model.Invulnerable;
+            Motion = SnbtSerializer.ToVector3(model.Motion);
+            NoGravity = model.NoGravity is null ? null : model.NoGravity.Value;
+            OnGround = model.OnGround;
+            Passengers = model.Passengers;
+            PortalCooldown = model.PortalCooldown;
+            Pos = SnbtSerializer.ToVector3(model.Pos);
+            Rotation = SnbtSerializer.ToRotation(model.Rotation);
+            Silent = model.Silent;
+            Tags = model.Tags;
+            TicksFrozen = model.TicksFrozen;
+            UUID = SnbtSerializer.ToGuid(model.UUID);
         }
 
         public short Air { get; }
@@ -74,10 +73,9 @@ namespace QuanLib.Minecraft.Snbt.Data
 
         public Guid UUID { get; }
 
-        public class Nbt
+        public class Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
             public short Air { get; set; }
 
             public string? CustomName { get; set; }
@@ -115,6 +113,7 @@ namespace QuanLib.Minecraft.Snbt.Data
             public int? TicksFrozen { get; set; }
 
             public int[] UUID { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
 }

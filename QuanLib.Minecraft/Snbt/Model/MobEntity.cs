@@ -1,27 +1,26 @@
-﻿using QuanLib.Minecraft.Snbt;
-using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Data
+namespace QuanLib.Minecraft.Snbt.Model
 {
     public class MobEntity : Entity
     {
-        public MobEntity(Nbt nbt) : base(nbt)
+        public MobEntity(Model model) : base(model)
         {
-            AbsorptionAmount = nbt.AbsorptionAmount;
-            ActiveEffects = nbt.ActiveEffects;
-            Attributes = nbt.Attributes;
-            Brain = nbt.Brain;
-            DeathTime = nbt.DeathTime;
-            FallFlying = nbt.FallFlying;
-            Health = nbt.Health;
-            HurtByTimestamp = nbt.HurtByTimestamp;
-            HurtTime = nbt.HurtTime;
-            Sleeping = new(nbt.SleepingX, nbt.SleepingY, nbt.SleepingZ);
+            AbsorptionAmount = model.AbsorptionAmount;
+            ActiveEffects = model.ActiveEffects;
+            Attributes = model.Attributes;
+            Brain = model.Brain;
+            DeathTime = model.DeathTime;
+            FallFlying = model.FallFlying;
+            Health = model.Health;
+            HurtByTimestamp = model.HurtByTimestamp;
+            HurtTime = model.HurtTime;
+            Sleeping = new(model.SleepingX, model.SleepingY, model.SleepingZ);
         }
 
         public float AbsorptionAmount { get; }
@@ -44,10 +43,9 @@ namespace QuanLib.Minecraft.Snbt.Data
 
         public BlockPos Sleeping { get; }
 
-        public new class Nbt : Entity.Nbt
+        public new class Model : Entity.Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
             public float AbsorptionAmount { get; set; }
 
             public object[]? ActiveEffects { get; set; }
@@ -71,6 +69,7 @@ namespace QuanLib.Minecraft.Snbt.Data
             public int SleepingY { get; set; }
 
             public int SleepingZ { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
 }

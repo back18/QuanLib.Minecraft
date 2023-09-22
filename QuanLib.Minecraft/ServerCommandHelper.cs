@@ -2,7 +2,7 @@
 using QuanLib.Minecraft.Command.Model;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
-using QuanLib.Minecraft.Snbt.Data;
+using QuanLib.Minecraft.Snbt.Model;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -364,7 +364,7 @@ namespace QuanLib.Minecraft
                 throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
 
             string output = SendCommand("data get entity " + name);
-            return new(SnbtSerializer.DeserializeObject<PlayerEntity.Nbt>(SplitEntitySnbt(output)));
+            return new(SnbtSerializer.DeserializeObject<PlayerEntity.Model>(SplitEntitySnbt(output)));
         }
 
         public virtual bool TryGetPlayerEntityData(string name, [MaybeNullWhen(false)] out PlayerEntity result)
@@ -376,7 +376,7 @@ namespace QuanLib.Minecraft
             if (output.StartsWith("No entity was found"))
                 goto err;
 
-            result = new(SnbtSerializer.DeserializeObject<PlayerEntity.Nbt>(SplitEntitySnbt(output)));
+            result = new(SnbtSerializer.DeserializeObject<PlayerEntity.Model>(SplitEntitySnbt(output)));
             return true;
 
             err:
@@ -423,7 +423,7 @@ namespace QuanLib.Minecraft
             else if (snbt.StartsWith("Found no elements matching Inventory"))
                 goto err;
 
-            result = new(SnbtSerializer.DeserializeObject<Item.Nbt>(snbt));
+            result = new(SnbtSerializer.DeserializeObject<Item.Model>(snbt));
             return true;
 
             err:
@@ -521,11 +521,11 @@ namespace QuanLib.Minecraft
 
             InteractionData leftData, rightData;
             if (TryGetEntitySnbt(target, "attack", out var left))
-                leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(left));
+                leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Model>(left));
             else
                 leftData = new(Guid.Empty, 0);
             if (TryGetEntitySnbt(target, "interaction", out var right))
-                rightData = rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Nbt>(right));
+                rightData = rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Model>(right));
             else
                 rightData = new(Guid.Empty, 0);
 
@@ -669,7 +669,7 @@ namespace QuanLib.Minecraft
             Dictionary<string, Item> result = new();
             foreach (var item in items)
             {
-                result.Add(item.Key, new(SnbtSerializer.DeserializeObject<Item.Nbt>(item.Value)));
+                result.Add(item.Key, new(SnbtSerializer.DeserializeObject<Item.Model>(item.Value)));
             }
             return result;
         }
@@ -680,7 +680,7 @@ namespace QuanLib.Minecraft
             Dictionary<string, Item> result = new();
             foreach (var item in items)
             {
-                result.Add(item.Key, new(SnbtSerializer.DeserializeObject<Item.Nbt>(item.Value)));
+                result.Add(item.Key, new(SnbtSerializer.DeserializeObject<Item.Model>(item.Value)));
             }
             return result;
         }
