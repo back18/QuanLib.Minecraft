@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
 using QuanLib.Minecraft.Command.Sender;
-using QuanLib.Minecraft.DirectoryManagers;
+using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;
 using System.Collections.Generic;

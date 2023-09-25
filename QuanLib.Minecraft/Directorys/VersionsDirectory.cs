@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.DirectoryManagers
+namespace QuanLib.Minecraft.Directorys
 {
-    public class ConfigDirectory : DirectoryManager
+    public class VersionsDirectory : DirectoryManager
     {
-        public ConfigDirectory(string directory) : base(directory)
+        public VersionsDirectory(string directory) : base(directory)
         {
         }
     }

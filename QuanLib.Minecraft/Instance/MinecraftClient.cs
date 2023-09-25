@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.DirectoryManagers;
+﻿using QuanLib.Minecraft.Directorys;
 using System;
 using System.Collections.Generic;
 using System.Linq;
