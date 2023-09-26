@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,10 @@ namespace QuanLib.Minecraft.GameResource
             if (string.IsNullOrEmpty(url))
                 throw new ArgumentException($"“{nameof(url)}”不能为 null 或空。", nameof(url));
 
-            using HttpClient httpClient = new();
             url = downloadProvider?.RedirectUrl(url) ?? url;
+            HttpClientHandler clientHandler = new();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using HttpClient httpClient = new(clientHandler);
             return await httpClient.GetByteArrayAsync(url);
         }
 
