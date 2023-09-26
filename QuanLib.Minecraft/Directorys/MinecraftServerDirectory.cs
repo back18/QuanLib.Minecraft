@@ -11,43 +11,35 @@ namespace QuanLib.Minecraft.Directorys
     {
         public MinecraftServerDirectory(string directory) : base(directory)
         {
-            World = new(Combine("world"));
-            BannedIps = new(Combine("banned-ips.json"));
-            BannedPlayers = new(Combine("banned-players.json"));
-            Eula = new(Combine("eula.txt"));
-            Ops = new(Combine("ops.json"));
-            ServerProperties = new(Combine("server.properties"));
-            Whitelist = new(Combine("whitelist.json"));
+            WorldDir = AddDirectory<WorldDirectory>("world");
+            BannedIpsFile = Combine("banned-ips.json");
+            BannedPlayersFile = Combine("banned-players.json");
+            EulaFile = Combine("eula.txt");
+            OpsFile = Combine("ops.json");
+            ServerPropertiesFile = Combine("server.properties");
+            WhitelistFile = Combine("whitelist.json");
         }
 
-        public WorldDirectory World { get; }
+        public WorldDirectory WorldDir { get; }
 
-        public string BannedIps { get; }
+        public string BannedIpsFile { get; }
 
-        public string BannedPlayers { get; }
+        public string BannedPlayersFile { get; }
 
-        public string Eula { get; }
+        public string EulaFile { get; }
 
-        public string Ops { get; }
+        public string OpsFile { get; }
 
-        public string ServerProperties { get; }
+        public string ServerPropertiesFile { get; }
 
-        public string Whitelist { get; }
+        public string WhitelistFile { get; }
 
-        public Dictionary<string, string> ReadServerProperties()
+        public override WorldDirectory? GetActiveWorldDirectory()
         {
-            Dictionary<string, string> result = new();
-            string[] lines = File.ReadAllLines(ServerProperties);
-            foreach (string line in lines)
-            {
-                if (line.StartsWith('#'))
-                    continue;
-                string[] kv = line.Split('=');
-                if (kv.Length < 2)
-                    continue;
-                result.Add(kv[0], kv[1]);
-            }
-            return result;
+            if (WorldDir.IsLocked())
+                return WorldDir;
+            else
+                return null;
         }
     }
 }

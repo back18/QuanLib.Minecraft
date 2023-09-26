@@ -30,5 +30,10 @@ namespace QuanLib.Minecraft.Directorys
         public ModsDirectory ModsDir { get; }
 
         public VersionsDirectory VersionsDir { get; }
+
+        public virtual WorldDirectory? GetActiveWorldDirectory()
+        {
+            return null
+        }
     }
 }

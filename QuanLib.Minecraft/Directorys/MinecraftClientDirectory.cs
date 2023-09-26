@@ -11,6 +11,14 @@ namespace QuanLib.Minecraft.Directorys
     {
         public MinecraftClientDirectory(string directory) : base(directory)
         {
+            SavesDir = AddDirectory<SavesDirectory>("saves");
+        }
+
+        public SavesDirectory SavesDir { get; }
+
+        public override WorldDirectory? GetActiveWorldDirectory()
+        {
+            return SavesDir.GetActiveWorldDirectory();
         }
     }
 }

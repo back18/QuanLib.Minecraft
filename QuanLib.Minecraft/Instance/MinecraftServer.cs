@@ -19,9 +19,9 @@ namespace QuanLib.Minecraft.Instance
             ServerAddress = IPAddress.Parse(serverAddress);
             ServerDirectory = new(serverPath);
 
-            if (!File.Exists(ServerDirectory.ServerProperties))
-                throw new FileNotFoundException("服务器配置文件不存在", ServerDirectory.ServerProperties);
-            string text = File.ReadAllText(ServerDirectory.ServerProperties);
+            if (!File.Exists(ServerDirectory.ServerPropertiesFile))
+                throw new FileNotFoundException("服务器配置文件不存在", ServerDirectory.ServerPropertiesFile);
+            string text = File.ReadAllText(ServerDirectory.ServerPropertiesFile);
             Dictionary<string, string> dictionary = ServerProperties.Parse(text);
             ServerProperties = new(dictionary);
 

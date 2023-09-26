@@ -11,6 +11,25 @@ namespace QuanLib.Minecraft.Directorys
     {
         public WorldDirectory(string directory) : base(directory)
         {
+            SessionLockFile = Combine("session.lock");
+        }
+
+        public string SessionLockFile { get; }
+
+        public bool IsLocked()
+        {
+            if (File.Exists(SessionLockFile))
+                return false;
+
+            try
+            {
+                using FileStream fileStream = new(SessionLockFile, FileMode.Open, FileAccess.Read, FileShare.None);
+                return false;
+            }
+            catch
+            {
+                return true;
+            }
         }
     }
 }
