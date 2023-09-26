@@ -11,24 +11,24 @@ namespace QuanLib.Minecraft.Directorys
     {
         public MinecraftDirectory(string directory) : base(directory)
         {
-            Config = new(Combine("config"));
-            CrashReports = new(Combine("crash-reports"));
-            Libraries = new(Combine("libraries"));
-            Logs = new(Combine("logs"));
-            Mods = new(Combine("mods"));
-            Versions = new(Combine("versions"));
+            ConfigDir = AddDirectory<ConfigDirectory>("config");
+            CrashReportsDir = AddDirectory<CrashReportsDirectory>("crash-reports");
+            LibrariesDir = AddDirectory<LibrariesDirectory>("libraries");
+            LogsDir = AddDirectory<LogsDirectory>("logs");
+            ModsDir = AddDirectory<ModsDirectory>("mods");
+            VersionsDir = AddDirectory<VersionsDirectory>("versions");
         }
 
-        public ConfigDirectory Config { get; }
+        public ConfigDirectory ConfigDir { get; }
 
-        public CrashReportsDirectory CrashReports { get; }
+        public CrashReportsDirectory CrashReportsDir { get; }
 
-        public LibrariesDirectory Libraries { get; }
+        public LibrariesDirectory LibrariesDir { get; }
 
-        public LogsDirectory Logs { get; }
+        public LogsDirectory LogsDir { get; }
 
-        public ModsDirectory Mods { get; }
+        public ModsDirectory ModsDir { get; }
 
-        public VersionsDirectory Versions { get; }
+        public VersionsDirectory VersionsDir { get; }
     }
 }

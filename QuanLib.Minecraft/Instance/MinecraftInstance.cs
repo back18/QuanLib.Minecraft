@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.Instance
 
             MinecraftPath = minecraftPath;
             MinecraftDirectory = new(MinecraftPath);
-            LogFileListener = new(MinecraftDirectory.Logs.Latest);
+            LogFileListener = new(MinecraftDirectory.LogsDir.LatestFile);
             LogParser = new(LogFileListener);
         }
 

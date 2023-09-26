@@ -12,8 +12,8 @@ namespace QuanLib.Minecraft.Directorys
         public ResourcePackDirectory(string directory) : base(directory)
         {
             BlockStates = Combine("blockstates");
-            Models = new(Combine("models"));
-            Textures = new(Combine("textures"));
+            Models = AddDirectory<ModelsDirectory>("models");
+            Textures = AddDirectory<TexturesDirectory>("textures");
         }
 
         public string BlockStates { get; }
@@ -26,26 +26,26 @@ namespace QuanLib.Minecraft.Directorys
         {
             public ModelsDirectory(string directory) : base(directory)
             {
-                Block = new(Combine("block"));
-                Item = new(Combine("item"));
+                BlockDir = AddDirectory<DirectoryManager>("block");
+                ItemDir = AddDirectory<DirectoryManager>("item");
             }
 
-            public string Block { get; }
+            public DirectoryManager BlockDir { get; }
 
-            public string Item { get; }
+            public DirectoryManager ItemDir { get; }
         }
 
         public class TexturesDirectory : DirectoryManager
         {
             public TexturesDirectory(string directory) : base(directory)
             {
-                Block = new(Combine("block"));
-                Item = new(Combine("item"));
+                BlockDir = AddDirectory<DirectoryManager>("block");
+                ItemDir = AddDirectory<DirectoryManager>("item");
             }
 
-            public string Block { get; }
+            public DirectoryManager BlockDir { get; }
 
-            public string Item { get; }
+            public DirectoryManager ItemDir { get; }
         }
     }
 }

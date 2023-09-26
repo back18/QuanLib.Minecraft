@@ -11,9 +11,9 @@ namespace QuanLib.Minecraft.Directorys
     {
         public LogsDirectory(string directory) : base(directory)
         {
-            Latest = new(Combine("latest.log"));
+            LatestFile = Combine("latest.log");
         }
 
-        public string Latest { get; }
+        public string LatestFile { get; }
     }
 }
