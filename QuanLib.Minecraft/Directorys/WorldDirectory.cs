@@ -18,7 +18,7 @@ namespace QuanLib.Minecraft.Directorys
 
         public bool IsLocked()
         {
-            if (File.Exists(SessionLockFile))
+            if (!File.Exists(SessionLockFile))
                 return false;
 
             try
