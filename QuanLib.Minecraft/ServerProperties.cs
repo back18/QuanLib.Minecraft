@@ -1,6 +1,8 @@
-﻿using System;
+﻿using QuanLib.Core.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,64 +10,6 @@ namespace QuanLib.Minecraft
 {
     public class ServerProperties
     {
-        public const string DEFAULT_PROPERTIES = @"enable-jmx-monitoring=false
-rcon.port=25575
-level-seed=
-gamemode=survival
-enable-command-block=false
-enable-query=false
-generator-settings={}
-enforce-secure-profile=true
-level-name=world
-motd=A Minecraft Server
-query.port=25565
-pvp=true
-generate-structures=true
-max-chained-neighbor-updates=1000000
-difficulty=easy
-network-compression-threshold=256
-max-tick-time=60000
-require-resource-pack=false
-use-native-transport=true
-max-players=20
-online-mode=true
-enable-status=true
-allow-flight=false
-initial-disabled-packs=
-broadcast-rcon-to-ops=true
-view-distance=10
-server-ip=
-resource-pack-prompt=
-allow-nether=true
-server-port=25565
-enable-rcon=false
-sync-chunk-writes=true
-op-permission-level=4
-prevent-proxy-connections=false
-hide-online-players=false
-resource-pack=
-entity-broadcast-range-percentage=100
-simulation-distance=10
-rcon.password=
-player-idle-timeout=0
-force-gamemode=false
-rate-limit=0
-hardcore=false
-white-list=false
-broadcast-console-to-ops=true
-spawn-npcs=true
-spawn-animals=true
-log-ips=true
-function-permission-level=2
-initial-enabled-packs=vanilla
-level-type=minecraft\:normal
-text-filtering-config=
-spawn-monsters=true
-enforce-whitelist=false
-spawn-protection=16
-resource-pack-sha1=
-max-world-size=29999984";
-
         public const string ENABLE_JMX_MONITORING = "enable-jmx-monitoring";
         public const string RCON_PORT = "rcon.port";
         public const string LEVEL_SEED = "level-seed";
@@ -126,7 +70,10 @@ max-world-size=29999984";
 
         static ServerProperties()
         {
-            Dictionary<string, string> dictionary = Parse(DEFAULT_PROPERTIES);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".SystemResource.server.properties") ?? throw new InvalidOperationException();
+            string text = stream.ToUtf8Text();
+            Dictionary<string, string> dictionary = Parse(text);
             DefaultProperties = new(dictionary, false);
         }
 
