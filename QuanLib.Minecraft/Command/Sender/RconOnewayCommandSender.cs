@@ -36,6 +36,8 @@ namespace QuanLib.Minecraft.Command.Sender
             _id = -1;
 
             IsConnected = false;
+
+            WaitForResponseCallback += OnWaitForResponseCallback;
         }
 
         private readonly IPAddress _address;
@@ -57,6 +59,10 @@ namespace QuanLib.Minecraft.Command.Sender
         private int _id;
 
         public bool IsConnected { get; private set; }
+
+        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
+
+        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
 
         protected override void Run()
         {
@@ -222,12 +228,14 @@ namespace QuanLib.Minecraft.Command.Sender
         {
             _task?.Wait();
             _clients[GetNextIndex()].SendPacket(ToPacket(GetNextID(), 2, "time query gametime"));
+            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         public async Task WaitForResponseAsync()
         {
             _task?.Wait();
             await _clients[GetNextIndex()].SendPacketAsync(ToPacket(GetNextID(), 2, "time query gametime"));
+            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         private int GetNextID()

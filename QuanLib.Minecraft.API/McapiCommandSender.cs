@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.API.Packet;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Sender;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace QuanLib.Minecraft.API
         {
             MinecraftApiClient = minecraftApiClient ?? throw new ArgumentNullException(nameof(minecraftApiClient));
             _semaphore = new(1);
+
+            WaitForResponseCallback += OnWaitForResponseCallback;
         }
 
         private readonly SemaphoreSlim _semaphore;
@@ -21,6 +24,10 @@ namespace QuanLib.Minecraft.API
         private Task? _task;
 
         public McapiClient MinecraftApiClient { get; }
+
+        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
+
+        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
 
         public string SendCommand(string command)
         {
@@ -218,12 +225,14 @@ namespace QuanLib.Minecraft.API
         {
             _task?.Wait();
             MinecraftApiClient.SendCommandAsync("time query gametime").Wait();
+            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         public async Task WaitForResponseAsync()
         {
             _task?.Wait();
             await MinecraftApiClient.SendCommandAsync("time query gametime");
+            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,17 @@ namespace QuanLib.Minecraft.Command.Sender
         {
             RCON = rcon ?? throw new ArgumentNullException(nameof(rcon));
             _semaphore = new(1);
+
+            WaitForResponseCallback += OnWaitForResponseCallback;
         }
 
         private readonly SemaphoreSlim _semaphore;
 
         public RCON RCON { get; }
+
+        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
+
+        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
 
         public string SendCommand(string command)
         {
@@ -110,11 +117,13 @@ namespace QuanLib.Minecraft.Command.Sender
         public void WaitForResponse()
         {
             RCON.SendCommandAsync("time query gametime").Wait();
+            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         public async Task WaitForResponseAsync()
         {
             await RCON.SendCommandAsync("time query gametime");
+            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
     }
 }
