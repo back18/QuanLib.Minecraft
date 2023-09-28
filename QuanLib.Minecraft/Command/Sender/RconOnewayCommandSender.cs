@@ -1,4 +1,6 @@
-﻿using QuanLib.Core;
+﻿using log4net.Core;
+using log4net.Repository.Hierarchy;
+using QuanLib.Core;
 using QuanLib.Core.ExceptionHelper;
 using System;
 using System.Collections;
@@ -18,7 +20,7 @@ namespace QuanLib.Minecraft.Command.Sender
 {
     public class RconOnewayCommandSender : UnmanagedRunnable, IOnewayCommandSender
     {
-        public RconOnewayCommandSender(IPAddress address, ushort port, string password, int clientCount = 6)
+        public RconOnewayCommandSender(IPAddress address, ushort port, string password, Func<Type, LogImpl> logger, int clientCount = 6) : base(logger)
         {
             if (address is null)
                 throw new ArgumentNullException(nameof(address));
@@ -26,6 +28,7 @@ namespace QuanLib.Minecraft.Command.Sender
                 throw new ArgumentException($"“{nameof(password)}”不能为 null 或空。", nameof(password));
             ThrowHelper.ArgumentOutOfMin(0, clientCount, nameof(clientCount));
 
+            _logger = logger;
             _address = address;
             _port = port;
             _password = password;
@@ -39,6 +42,8 @@ namespace QuanLib.Minecraft.Command.Sender
 
             WaitForResponseCallback += OnWaitForResponseCallback;
         }
+
+        private readonly Func<Type, LogImpl> _logger;
 
         private readonly IPAddress _address;
 
@@ -69,8 +74,8 @@ namespace QuanLib.Minecraft.Command.Sender
             Task[] tasks = new Task[_clientCount];
             for (int i = 0; i < _clientCount; i++)
             {
-                RconClient client = new(_address, _port, _password);
-                client.Start();
+                RconClient client = new(_address, _port, _password, _logger);
+                client.Start("RconClient Thread #" + i);
                 _clients.Add(client);
                 tasks[i] = client.WaitForStopAsync();
             }
@@ -310,7 +315,7 @@ namespace QuanLib.Minecraft.Command.Sender
 
         private class RconClient : UnmanagedRunnable
         {
-            public RconClient(IPAddress address, ushort port, string password)
+            public RconClient(IPAddress address, ushort port, string password, Func<Type, LogImpl> logger) : base(logger)
             {
                 if (address is null)
                     throw new ArgumentNullException(nameof(address));

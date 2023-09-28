@@ -1,4 +1,5 @@
-﻿using QuanLib.Core;
+﻿using log4net.Core;
+using QuanLib.Core;
 using QuanLib.Core.Event;
 using QuanLib.Core.FileListeners;
 using QuanLib.Minecraft.Event;
@@ -14,7 +15,7 @@ namespace QuanLib.Minecraft.MinecraftLogs
 {
     public class PollingLogFileListener : PollingTextFileListener, ILogListener
     {
-        public PollingLogFileListener(string path) : base(path, GetEncoding())
+        public PollingLogFileListener(string path, Func<Type, LogImpl> logger) : base(path, GetEncoding(), logger)
         {
             _temp = new();
             _count = 0;

@@ -1,4 +1,5 @@
-﻿using QuanLib.Core;
+﻿using log4net.Core;
+using QuanLib.Core;
 using QuanLib.Core.Event;
 using QuanLib.Core.ExceptionHelper;
 using QuanLib.Core.FileListeners;
@@ -16,7 +17,7 @@ namespace QuanLib.Minecraft
 {
     public class ServerProcess : UnmanagedRunnable
     {
-        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments)
+        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, Func<Type, LogImpl> logger) : base(logger)
         {
             LaunchArguments = launchArguments ?? throw new ArgumentNullException(nameof(launchArguments));
 

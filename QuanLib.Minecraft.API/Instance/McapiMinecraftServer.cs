@@ -1,6 +1,8 @@
-﻿using QuanLib.Core;
+﻿using log4net.Core;
+using QuanLib.Core;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Instance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.API.Instance
 {
-    public class McapiMinecraftServer : Minecraft.Instance.MinecraftServer, IMcapiInstance
+    public class McapiMinecraftServer : MinecraftServer, IMcapiInstance
     {
-        public McapiMinecraftServer(string serverPath, string serverAddress, ushort mcapiPort, string mcapiPassword) : base(serverPath, serverAddress)
+        public McapiMinecraftServer(string serverPath, string serverAddress, ushort mcapiPort, string mcapiPassword, Func<Type, LogImpl> logger) : base(serverPath, serverAddress, logger)
         {
             if (string.IsNullOrEmpty(mcapiPassword))
                 throw new ArgumentException($"“{nameof(mcapiPassword)}”不能为 null 或空。", nameof(mcapiPassword));
 
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;
-            McapiClient = new(ServerAddress, McapiPort);
+            McapiClient = new(ServerAddress, McapiPort, logger);
             McapiCommandSender = new(McapiClient);
             CommandSender = new(McapiCommandSender, McapiCommandSender);
         }
@@ -37,8 +39,8 @@ namespace QuanLib.Minecraft.API.Instance
 
         protected override void Run()
         {
-            LogFileListener.Start();
-            McapiClient.Start();
+            LogFileListener.Start("LogFileListener Thread");
+            McapiClient.Start("McapiClient Thread");
             McapiClient.LoginAsync(McapiPassword).Wait();
 
             Task.WaitAll(LogFileListener.WaitForStopAsync(), McapiClient.WaitForStopAsync());

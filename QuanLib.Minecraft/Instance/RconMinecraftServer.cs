@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using log4net.Core;
 using QuanLib.Core;
 using QuanLib.Minecraft.Command.Sender;
 using System;
@@ -11,7 +12,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public class RconMinecraftServer : MinecraftServer, IRconInstance
     {
-        public RconMinecraftServer(string serverPath, string serverAddress) : base(serverPath, serverAddress)
+        public RconMinecraftServer(string serverPath, string serverAddress, Func<Type, LogImpl> logger) : base(serverPath, serverAddress, logger)
         {
             if (!ServerProperties.EnableRcon)
                 throw new InvalidOperationException($"需要在 server.properties 中将 {ServerProperties.ENABLE_RCON} 设置为 true");
@@ -24,7 +25,7 @@ namespace QuanLib.Minecraft.Instance
             RconPassword = ServerProperties.RconPassword;
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
-            OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword);
+            OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, logger);
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);
         }
 
@@ -44,8 +45,8 @@ namespace QuanLib.Minecraft.Instance
 
         protected override void Run()
         {
-            LogFileListener.Start();
-            OnewayCommandSender.Start();
+            LogFileListener.Start("LogFileListener Thread");
+            OnewayCommandSender.Start("RconOnewayCommandSender Thread");
             RCON.ConnectAsync().Wait();
 
             Task.WaitAll(LogFileListener.WaitForStopAsync(), OnewayCommandSender.WaitForStopAsync());

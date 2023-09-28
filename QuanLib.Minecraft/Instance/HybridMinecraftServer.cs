@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using log4net.Core;
 using QuanLib.Core;
 using QuanLib.Minecraft.Command.Sender;
 using System;
@@ -12,7 +13,7 @@ namespace QuanLib.Minecraft.Instance
     public class HybridMinecraftServer : MinecraftServer, IHybridInstance
     {
 
-        public HybridMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments) : base(serverPath, serverAddress)
+        public HybridMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, Func<Type, LogImpl> logger) : base(serverPath, serverAddress, logger)
         {
             if (!ServerProperties.EnableRcon)
                 throw new InvalidOperationException($"需要在 server.properties 中将 {ServerProperties.ENABLE_RCON} 设置为 true");
@@ -26,8 +27,8 @@ namespace QuanLib.Minecraft.Instance
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
 
-            ServerProcess = new(ServerDirectory.FullPath, launchArguments);
-            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput);
+            ServerProcess = new(ServerDirectory.FullPath, launchArguments, logger);
+            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, logger);
             OnewayCommandSender = new(ServerConsole);
 
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);
@@ -53,9 +54,9 @@ namespace QuanLib.Minecraft.Instance
 
         protected override void Run()
         {
-            LogFileListener.Start();
-            ServerProcess.Start();
-            ServerConsole.Start();
+            LogFileListener.Start("LogFileListener Thread");
+            ServerProcess.Start("ServerProcess Thread");
+            ServerConsole.Start("ServerConsole Thread");
             RCON.ConnectAsync().Wait();
 
             Task.WaitAll(LogFileListener.WaitForStopAsync(), ServerProcess.WaitForStopAsync());

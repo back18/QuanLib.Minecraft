@@ -1,4 +1,5 @@
-﻿using QuanLib.Core;
+﻿using log4net.Core;
+using QuanLib.Core;
 using QuanLib.Minecraft.Command.Sender;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace QuanLib.Minecraft.Instance
 {
     public class ConsoleMinecraftServer : MinecraftServer, IConsoleInstance
     {
-        public ConsoleMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments) : base(serverPath, serverAddress)
+        public ConsoleMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, Func<Type, LogImpl> logger) : base(serverPath, serverAddress, logger)
         {
-            ServerProcess = new(ServerDirectory.FullPath, launchArguments);
-            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput);
+            ServerProcess = new(ServerDirectory.FullPath, launchArguments, logger);
+            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, logger);
             ConsoleCommandSender = new(ServerConsole);
             CommandSender = new(ConsoleCommandSender, ConsoleCommandSender);
         }
@@ -30,9 +31,9 @@ namespace QuanLib.Minecraft.Instance
 
         protected override void Run()
         {
-            LogFileListener.Start();
-            ServerProcess.Start();
-            ServerConsole.Start();
+            LogFileListener.Start("LogFileListener Thread");
+            ServerProcess.Start("ServerProcess Thread");
+            ServerConsole.Start("ServerConsole Thread");
 
             Task.WaitAll(LogFileListener.WaitForStopAsync(), ServerProcess.WaitForStopAsync());
         }
