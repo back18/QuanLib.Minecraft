@@ -1,5 +1,5 @@
 ﻿using CoreRCON;
-using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command.Senders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

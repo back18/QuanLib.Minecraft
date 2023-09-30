@@ -1,7 +1,7 @@
 ﻿using log4net.Core;
 using QuanLib.Core;
 using QuanLib.Minecraft.API.Packet;
-using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance;
 using System;
 using System.Collections.Generic;

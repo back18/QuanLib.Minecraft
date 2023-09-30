@@ -1,8 +1,8 @@
 ﻿using log4net.Core;
 using QuanLib.Core;
-using QuanLib.Core.Event;
+using QuanLib.Core.Events;
 using QuanLib.Core.FileListeners;
-using QuanLib.Minecraft.Event;
+using QuanLib.Minecraft.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

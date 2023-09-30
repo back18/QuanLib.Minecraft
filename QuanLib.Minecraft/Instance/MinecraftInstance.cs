@@ -1,6 +1,6 @@
 ﻿using log4net.Core;
 using QuanLib.Core;
-using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;

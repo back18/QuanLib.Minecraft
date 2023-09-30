@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
 using QuanLib.Core.FileListeners;
-using QuanLib.Minecraft.Event;
+using QuanLib.Minecraft.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Core.Extension;
+using QuanLib.Core.Extensions;
 using QuanLib.Minecraft.ResourcePack.Block.BlockTextureMaps;
 using QuanLib.Minecraft.Vector;
 using System;

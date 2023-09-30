@@ -1,6 +1,6 @@
 ﻿using log4net.Core;
 using QuanLib.Core;
-using QuanLib.Core.Event;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;
 using System.Collections.Generic;

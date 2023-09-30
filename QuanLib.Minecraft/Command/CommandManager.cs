@@ -1,6 +1,4 @@
-﻿using QuanLib.Minecraft.Command.Model;
-using QuanLib.Minecraft.Command.Sender;
-using QuanLib.Minecraft.Selectors;
+﻿using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
 using QuanLib.Minecraft.Vector;
 using System;
@@ -11,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using QuanLib.Minecraft.Snbt.Model;
+using QuanLib.Minecraft.Command.Models;
+using QuanLib.Minecraft.Command.Senders;
 
 namespace QuanLib.Minecraft.Command
 {

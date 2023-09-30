@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
-using QuanLib.Core.Event;
-using QuanLib.Minecraft.Event;
+using QuanLib.Core.Events;
+using QuanLib.Minecraft.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
