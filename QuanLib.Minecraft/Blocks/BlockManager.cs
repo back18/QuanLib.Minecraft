@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Block
+namespace QuanLib.Minecraft.Blocks
 {
     public static class BlockManager
     {

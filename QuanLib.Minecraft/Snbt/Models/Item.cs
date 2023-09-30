@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Model
+namespace QuanLib.Minecraft.Snbt.Models
 {
     public class Item
     {

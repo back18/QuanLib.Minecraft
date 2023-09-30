@@ -1,7 +1,6 @@
 ﻿using log4net.Core;
 using log4net.Repository.Hierarchy;
 using QuanLib.Core;
-using QuanLib.Core.ExceptionHelper;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;

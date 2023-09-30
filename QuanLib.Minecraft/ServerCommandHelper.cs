@@ -2,7 +2,7 @@
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Snbt;
-using QuanLib.Minecraft.Snbt.Model;
+using QuanLib.Minecraft.Snbt.Models;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;

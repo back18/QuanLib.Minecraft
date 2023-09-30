@@ -1,7 +1,6 @@
 ﻿using log4net.Core;
 using MongoDB.Bson.Serialization;
 using QuanLib.Core;
-using QuanLib.Core.ExceptionHelper;
 using QuanLib.Minecraft.API.Events;
 using QuanLib.Minecraft.API.Packet;
 using System;

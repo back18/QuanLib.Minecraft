@@ -1,5 +1,4 @@
-﻿using QuanLib.Core.ExceptionHelper;
-using QuanLib.Minecraft.Command.Senders;
+﻿using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.ResourcePack.Language;
 using System;
 using System.Collections.Generic;
