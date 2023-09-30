@@ -71,39 +71,49 @@ namespace QuanLib.Minecraft.API
             int current = 0;
             bool initial = true;
             stream.ReadTimeout = Timeout.Infinite;
-            while (IsRuning)
+
+            try
             {
-                int length = stream.Read(buffer, 0, Math.Min(total - current, buffer.Length));
-
-                current += length;
-                if (initial)
+                while (IsRuning)
                 {
-                    stream.ReadTimeout = 30 * 1000;
+                    int length = stream.Read(buffer, 0, Math.Min(total - current, buffer.Length));
 
-                    if (current < 4)
+                    current += length;
+                    if (initial)
+                    {
+                        stream.ReadTimeout = 30 * 1000;
+
+                        if (current < 4)
+                            continue;
+
+                        total = BitConverter.ToInt32(buffer, 0);
+                        if (total < 4)
+                            throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
+
+                        initial = false;
+                    }
+
+                    cache.Write(buffer, 0, length);
+
+                    if (current < total)
                         continue;
 
-                    total = BitConverter.ToInt32(buffer, 0);
-                    if (total < 4)
-                        throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
+                    HandleDataPacket(cache.ToArray());
 
-                    initial = false;
+                    cache.Dispose();
+                    cache = new();
+                    total = buffer.Length;
+                    current = 0;
+                    initial = true;
+                    stream.ReadTimeout = Timeout.Infinite;
                 }
-
-                cache.Write(buffer, 0, length);
-
-                if (current < total)
-                    continue;
-
-                HandleDataPacket(cache.ToArray());
-
-                cache.Dispose();
-                cache = new();
-                total = buffer.Length;
-                current = 0;
-                initial = true;
-                stream.ReadTimeout = Timeout.Infinite;
             }
+            catch
+            {
+                if (IsRuning)
+                    throw;
+            }
+        
         }
 
         protected override void DisposeUnmanaged()
