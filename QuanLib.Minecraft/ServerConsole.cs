@@ -41,7 +41,7 @@ namespace QuanLib.Minecraft
 
         protected override void Run()
         {
-            while (IsRuning && !_reader.EndOfStream)
+            while (IsRunning && !_reader.EndOfStream)
             {
                 string? line = _reader.ReadLine();
                 if (line is null)

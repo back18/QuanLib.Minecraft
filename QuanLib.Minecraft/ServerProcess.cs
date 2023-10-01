@@ -73,7 +73,7 @@ namespace QuanLib.Minecraft
         protected override void Run()
         {
             StartCount = 0;
-            while (IsRuning)
+            while (IsRunning)
             {
                 if (StartCount > 0)
                     ServerProcessRestart.Invoke(this, EventArgs.Empty);

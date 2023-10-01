@@ -345,7 +345,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
             protected override void Run()
             {
-                while (IsRuning)
+                while (IsRunning)
                 {
                     _send.Wait();
 

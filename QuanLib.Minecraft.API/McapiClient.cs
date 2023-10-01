@@ -74,7 +74,7 @@ namespace QuanLib.Minecraft.API
 
             try
             {
-                while (IsRuning)
+                while (IsRunning)
                 {
                     int length = stream.Read(buffer, 0, Math.Min(total - current, buffer.Length));
 
@@ -110,7 +110,7 @@ namespace QuanLib.Minecraft.API
             }
             catch
             {
-                if (IsRuning)
+                if (IsRunning)
                     throw;
             }
         
