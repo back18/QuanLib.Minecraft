@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace QuanLib.Minecraft
 {
     public class SimpleServerLaunchArguments : ServerLaunchArguments
     {
-        public SimpleServerLaunchArguments(string javaPath, string launchTarget, int xms = 0, int xmx = 0, bool enableGui = false, IEnumerable<string>? addonArgs = null)
+        public SimpleServerLaunchArguments(string javaPath, string launchTarget, int xms = 0, int xmx = 0, bool enableGui = false, IList<string>? addonArgs = null)
             : base(javaPath)
         {
             if (string.IsNullOrWhiteSpace(launchTarget))
@@ -18,7 +19,7 @@ namespace QuanLib.Minecraft
             Xms = xms;
             Xmx = xmx;
             EnableGui = enableGui;
-            AddonArgs = addonArgs?.ToList()?.AsReadOnly();
+            AddonArgs = addonArgs is null ? null : new(addonArgs);
         }
 
         public string LaunchTarget { get; }
@@ -29,7 +30,7 @@ namespace QuanLib.Minecraft
 
         public bool EnableGui { get; }
 
-        public IReadOnlyList<string>? AddonArgs { get; }
+        public ReadOnlyCollection<string>? AddonArgs { get; }
 
         public override string GetArguments()
         {

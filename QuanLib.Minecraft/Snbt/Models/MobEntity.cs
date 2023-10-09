@@ -1,6 +1,7 @@
 ﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,8 +13,8 @@ namespace QuanLib.Minecraft.Snbt.Models
         public MobEntity(Model model) : base(model)
         {
             AbsorptionAmount = model.AbsorptionAmount;
-            ActiveEffects = model.ActiveEffects;
-            Attributes = model.Attributes;
+            ActiveEffects = model.ActiveEffects is null ? null : new(model.ActiveEffects);
+            Attributes = new(model.Attributes);
             Brain = model.Brain;
             DeathTime = model.DeathTime;
             FallFlying = model.FallFlying;
@@ -25,9 +26,9 @@ namespace QuanLib.Minecraft.Snbt.Models
 
         public float AbsorptionAmount { get; }
 
-        public IReadOnlyList<object>? ActiveEffects { get; }
+        public ReadOnlyCollection<object>? ActiveEffects { get; }
 
-        public IReadOnlyList<object> Attributes { get; }
+        public ReadOnlyCollection<object> Attributes { get; }
 
         public object Brain { get; }
 

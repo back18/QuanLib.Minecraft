@@ -1,6 +1,7 @@
 ﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,13 +15,13 @@ namespace QuanLib.Minecraft.Snbt.Models
             Abilities = model.abilities;
             DataVersion = model.DataVersion;
             Dimension = model.Dimension;
-            EnderItems = model.EnderItems;
+            EnderItems = new(model.EnderItems);
             EnteredNetherPosition = model.EnteredNetherPosition;
             FoodExhaustionLevel = model.foodExhaustionLevel;
             FoodLevel = model.foodLevel;
             FoodSaturationLevel = model.foodSaturationLevel;
             FoodTickTimer = model.foodTickTimer;
-            Inventory = model.Inventory;
+            Inventory = new(model.Inventory);
             LastDeathLocation = model.LastDeathLocation;
             PlayerGameType = model.playerGameType;
             PreviousPlayerGameType = model.previousPlayerGameType;
@@ -49,7 +50,7 @@ namespace QuanLib.Minecraft.Snbt.Models
 
         public string Dimension { get; }
 
-        public IReadOnlyList<object> EnderItems { get; }
+        public ReadOnlyCollection<object> EnderItems { get; }
 
         public object? EnteredNetherPosition { get; }
 
@@ -61,7 +62,7 @@ namespace QuanLib.Minecraft.Snbt.Models
 
         public int FoodTickTimer { get; }
 
-        public IReadOnlyList<object> Inventory { get; }
+        public ReadOnlyCollection<object> Inventory { get; }
 
         public object LastDeathLocation { get; }
 

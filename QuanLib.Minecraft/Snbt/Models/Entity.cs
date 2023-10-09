@@ -1,6 +1,7 @@
 ﻿using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,12 +26,12 @@ namespace QuanLib.Minecraft.Snbt.Models
             Motion = SnbtSerializer.ToVector3(model.Motion);
             NoGravity = model.NoGravity is null ? null : model.NoGravity.Value;
             OnGround = model.OnGround;
-            Passengers = model.Passengers;
+            Passengers = model.Passengers is null ? null : new(model.Passengers);
             PortalCooldown = model.PortalCooldown;
             Pos = SnbtSerializer.ToVector3(model.Pos);
             Rotation = SnbtSerializer.ToRotation(model.Rotation);
             Silent = model.Silent;
-            Tags = model.Tags;
+            Tags = model.Tags is null ? null : new(model.Tags);
             TicksFrozen = model.TicksFrozen;
             UUID = SnbtSerializer.ToGuid(model.UUID);
         }
@@ -57,7 +58,7 @@ namespace QuanLib.Minecraft.Snbt.Models
 
         public bool OnGround { get; }
 
-        public IReadOnlyList<Entity>? Passengers { get; }
+        public ReadOnlyCollection<Entity>? Passengers { get; }
 
         public int PortalCooldown { get; }
 
@@ -67,7 +68,7 @@ namespace QuanLib.Minecraft.Snbt.Models
 
         public bool? Silent { get; }
 
-        public string[]? Tags { get; }
+        public ReadOnlyCollection<string>? Tags { get; }
 
         public int? TicksFrozen { get; }
 
