@@ -1,4 +1,5 @@
-﻿using log4net.Core;
+﻿using CoreRCON;
+using log4net.Core;
 using QuanLib.Core;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Senders;
@@ -52,12 +53,19 @@ namespace QuanLib.Minecraft.API.Instance
             McapiClient.Stop();
         }
 
-        public override bool TestConnection()
+        public override bool TestConnectivity()
         {
-            Task<bool> server = NetworkUtil.TestTcpConnectionAsync(ServerAddress, ServerPort);
-            Task<bool> mcapi = NetworkUtil.TestTcpConnectionAsync(ServerAddress, McapiPort);
+            Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
+            Task<bool> mcapi = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, McapiPort);
             Task.WaitAll(server, mcapi);
             return server.Result && mcapi.Result;
+        }
+
+        public override async Task<bool> TestConnectivityAsync()
+        {
+            Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
+            Task<bool> mcapi = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, McapiPort);
+            return await server && await mcapi;
         }
     }
 }

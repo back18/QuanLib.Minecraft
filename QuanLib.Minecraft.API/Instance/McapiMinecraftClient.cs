@@ -58,9 +58,14 @@ namespace QuanLib.Minecraft.API.Instance
             McapiClient.Stop();
         }
 
-        public override bool TestConnection()
+        public override bool TestConnectivity()
         {
-            return NetworkUtil.TestTcpConnection(ServerAddress, McapiPort);
+            return NetworkUtil.TestTcpConnectivity(ServerAddress, McapiPort);
+        }
+
+        public override async Task<bool> TestConnectivityAsync()
+        {
+            return await NetworkUtil.TestTcpConnectivityAsync(ServerAddress, McapiPort);
         }
     }
 }

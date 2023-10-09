@@ -45,9 +45,14 @@ namespace QuanLib.Minecraft.Instance
             ServerConsole.Stop();
         }
 
-        public override bool TestConnection()
+        public override bool TestConnectivity()
         {
-            return NetworkUtil.TestTcpConnection(ServerAddress, ServerPort);
+            return NetworkUtil.TestTcpConnectivity(ServerAddress, ServerPort);
+        }
+
+        public override async Task<bool> TestConnectivityAsync()
+        {
+            return await NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
         }
     }
 }

@@ -38,13 +38,23 @@ namespace QuanLib.Minecraft.Instance
 
         public abstract CommandSender CommandSender { get; }
 
-        public abstract bool TestConnection();
+        public abstract bool TestConnectivity();
+
+        public abstract Task<bool> TestConnectivityAsync();
 
         public virtual void WaitForConnection()
         {
-            while (!TestConnection())
+            while (!TestConnectivity())
             {
                 Thread.Sleep(1000);
+            }
+        }
+
+        public virtual async Task WaitForConnectionAsync()
+        {
+            while ((await TestConnectivityAsync()) == false)
+            {
+                await Task.Delay(1000);
             }
         }
     }

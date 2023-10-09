@@ -59,12 +59,19 @@ namespace QuanLib.Minecraft.Instance
             RCON.Dispose();
         }
 
-        public override bool TestConnection()
+        public override bool TestConnectivity()
         {
-            Task<bool> server = NetworkUtil.TestTcpConnectionAsync(ServerAddress, ServerPort);
-            Task<bool> rcon = NetworkUtil.TestTcpConnectionAsync(ServerAddress, RconPort);
+            Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
+            Task<bool> rcon = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, RconPort);
             Task.WaitAll(server, rcon);
             return server.Result && rcon.Result;
+        }
+
+        public override async Task<bool> TestConnectivityAsync()
+        {
+            Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
+            Task<bool> rcon = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, RconPort);
+            return await server && await rcon;
         }
     }
 }
