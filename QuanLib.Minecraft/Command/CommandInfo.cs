@@ -9,11 +9,17 @@ namespace QuanLib.Minecraft.Command
 {
     public class CommandInfo
     {
-        public CommandInfo(string input, string output)
+        public CommandInfo(DateTime sendingTime, DateTime receivingTime, string input, string output)
         {
-            Input = input ?? throw new ArgumentNullException(nameof(input));
-            Output = output ?? throw new ArgumentNullException(nameof(output));
+            SendingTime = sendingTime;
+            ReceivingTime = receivingTime;
+            Input = input;
+            Output = output;
         }
+
+        public DateTime SendingTime { get; }
+
+        public DateTime ReceivingTime { get; }
 
         public string Input { get; }
 

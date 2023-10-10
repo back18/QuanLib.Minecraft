@@ -28,16 +28,20 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public string SendCommand(string command)
         {
+            DateTime sendingTime = DateTime.Now;
             string output = TwowaySender.SendCommand(command);
-            CommandInfo commandInfo = new(command, output);
+            DateTime receivingTime = DateTime.Now;
+            CommandInfo commandInfo = new(sendingTime, receivingTime, command, output);
             CommandSent.Invoke(this, new(commandInfo));
             return output;
         }
 
         public async Task<string> SendCommandAsync(string command)
         {
+            DateTime sendingTime = DateTime.Now;
             string output = await TwowaySender.SendCommandAsync(command);
-            CommandInfo commandInfo = new(command, output);
+            DateTime receivingTime = DateTime.Now;
+            CommandInfo commandInfo = new(sendingTime, receivingTime, command, output);
             CommandSent.Invoke(this, new(commandInfo));
             return output;
         }
