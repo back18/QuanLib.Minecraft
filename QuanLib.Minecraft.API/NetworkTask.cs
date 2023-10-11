@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.API.Packet;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.API.Packet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,7 @@ namespace QuanLib.Minecraft.API
 {
     public class NetworkTask
     {
-        public NetworkTask(TcpClient tcpClient, RequestPacket request)
+        public NetworkTask(TcpClient tcpClient, RequestPacket request, Synchronized synchronized)
         {
             _sendSemaphore = new(0);
             _receiveSemaphore = new(0);
@@ -20,6 +21,7 @@ namespace QuanLib.Minecraft.API
 
             _tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
             _request = request ?? throw new ArgumentNullException(nameof(request));
+            _synchronized = synchronized ?? throw new ArgumentNullException(nameof(synchronized));
             _sendTask = WaitForSendAsync();
             _receiveTask = WaitForReceiveAsync();
 
@@ -46,6 +48,8 @@ namespace QuanLib.Minecraft.API
         private readonly RequestPacket _request;
 
         private ResponsePacket? _response;
+
+        private readonly Synchronized _synchronized;
 
         public NetworkTaskState State { get; private set; }
 
@@ -86,7 +90,7 @@ namespace QuanLib.Minecraft.API
             byte[] datapacket = _request.Serialize();
             await _sendSemaphore.WaitAsync();
             State = NetworkTaskState.Sending;
-            await _tcpClient.GetStream().WriteAsync(datapacket);
+            await _synchronized.InvokeAsync(() => _tcpClient.GetStream().WriteAsync(datapacket));
         }
 
         private async Task WaitForReceiveAsync()

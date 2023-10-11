@@ -13,41 +13,19 @@ namespace QuanLib.Minecraft.Command.Senders
         public ConsoleCommandSender(ServerConsole serverConsole)
         {
             ServerConsole = serverConsole ?? throw new ArgumentNullException(nameof(serverConsole));
-            _semaphore = new(1);
-
-            WaitForResponseCallback += OnWaitForResponseCallback;
+            _synchronized = new();
         }
 
-        private readonly SemaphoreSlim _semaphore;
-
-        private Task? _task;
+        private readonly Synchronized _synchronized;
 
         public ServerConsole ServerConsole { get; }
-
-        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
-
-        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
 
         public string SendCommand(string command)
         {
             if (string.IsNullOrEmpty(command))
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
-            _semaphore.Wait();
-            try
-            {
-                _task?.Wait();
-                _task = null;
-                return ServerConsole.SendCommandAsync(command).Result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return _synchronized.Invoke(() => ServerConsole.SendCommandAsync(command).Result);
         }
 
         public async Task<string> SendCommandAsync(string command)
@@ -55,21 +33,7 @@ namespace QuanLib.Minecraft.Command.Senders
             if (string.IsNullOrEmpty(command))
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
-            _semaphore.Wait();
-            try
-            {
-                _task?.Wait();
-                _task = null;
-                return await ServerConsole.SendCommandAsync(command);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return await _synchronized.Invoke(() => ServerConsole.SendCommandAsync(command));
         }
 
         public string[] SendBatchCommand(IEnumerable<string> commands)
@@ -77,23 +41,13 @@ namespace QuanLib.Minecraft.Command.Senders
             if (commands is null)
                 throw new ArgumentNullException(nameof(commands));
 
-            List<string> result = new();
-            _semaphore.Wait();
-            try
+            return _synchronized.Invoke(() =>
             {
-                WaitForResponse();
+                List<string> result = new();
                 foreach (string command in commands)
                     result.Add(ServerConsole.SendCommandAsync(command).Result);
                 return result.ToArray();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            });
         }
 
         public async Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands)
@@ -101,22 +55,14 @@ namespace QuanLib.Minecraft.Command.Senders
             if (commands is null)
                 throw new ArgumentNullException(nameof(commands));
 
-            List<string> result = new();
-            await _semaphore.WaitAsync();
-            try
+            return await _synchronized.InvokeAsync(() => FuncAsync(commands));
+
+            async Task<string[]> FuncAsync(IEnumerable<string> commands)
             {
-                await WaitForResponseAsync();
+                List<string> result = new();
                 foreach (string command in commands)
                     result.Add(await ServerConsole.SendCommandAsync(command));
                 return result.ToArray();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
             }
         }
 
@@ -125,21 +71,7 @@ namespace QuanLib.Minecraft.Command.Senders
             if (string.IsNullOrEmpty(command))
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
-            _semaphore.Wait();
-            try
-            {
-                _task?.Wait();
-                _task = null;
-                ServerConsole.WriteLine(command);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _synchronized.Invoke(() => ServerConsole.WriteLine(command));
         }
 
         public async Task SendOnewayCommandAsync(string command)
@@ -147,21 +79,7 @@ namespace QuanLib.Minecraft.Command.Senders
             if (string.IsNullOrEmpty(command))
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
-            await _semaphore.WaitAsync();
-            try
-            {
-                _task?.Wait();
-                _task = ServerConsole.WriteLineAsync(command);
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            await _synchronized.Invoke(() => ServerConsole.WriteLineAsync(command));
         }
 
         public void SendOnewayBatchCommand(IEnumerable<string> commands)
@@ -170,21 +88,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(commands));
 
             string function = ToFunction(commands);
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                ServerConsole.WriteLine(function);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _synchronized.Invoke(() => ServerConsole.WriteLine(function));
         }
 
         public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
@@ -193,21 +97,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(commands));
 
             string function = ToFunction(commands);
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                _task = ServerConsole.WriteLineAsync(function);
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            await _synchronized.InvokeAsync(() => ServerConsole.WriteLineAsync(function));
         }
 
         public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
@@ -216,21 +106,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(arguments));
 
             string function = ToFunction(arguments);
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                ServerConsole.WriteLine(function);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _synchronized.Invoke(() => ServerConsole.WriteLine(function));
         }
 
         public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
@@ -239,35 +115,17 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(arguments));
 
             string function = ToFunction(arguments);
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                _task = ServerConsole.WriteLineAsync(function);
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            await _synchronized.InvokeAsync(() => ServerConsole.WriteLineAsync(function));
         }
 
         public void WaitForResponse()
         {
-            _task?.Wait();
             ServerConsole.SendCommandAsync("time query gametime").Wait();
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         public async Task WaitForResponseAsync()
         {
-            _task?.Wait();
             await ServerConsole.SendCommandAsync("time query gametime");
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         private static string ToFunction(IEnumerable<string> commands)

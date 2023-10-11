@@ -33,13 +33,11 @@ namespace QuanLib.Minecraft.Command.Senders
             _password = password;
             _clientCount = clientCount;
             _clients = new();
-            _semaphore = new(1);
+            _synchronized = new();
             _index = 0;
             _id = -1;
 
             IsConnected = false;
-
-            WaitForResponseCallback += OnWaitForResponseCallback;
         }
 
         private readonly Func<Type, LogImpl> _logger;
@@ -54,19 +52,13 @@ namespace QuanLib.Minecraft.Command.Senders
 
         private readonly List<RconClient> _clients;
 
-        private readonly SemaphoreSlim _semaphore;
-
-        private Task? _task;
+        private readonly Synchronized _synchronized;
 
         private int _index;
 
         private int _id;
 
         public bool IsConnected { get; private set; }
-
-        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
-
-        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
 
         protected override void Run()
         {
@@ -95,21 +87,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
             byte[] packet = ToPacket(GetNextIndex(), 2, command);
-            _semaphore.Wait();
-            try
-            {
-                _task?.Wait();
-                _task = null;
-                _clients[GetNextIndex()].SendPacket(packet);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _synchronized.Invoke(() => _clients[GetNextIndex()].SendPacket(packet));
         }
 
         public async Task SendOnewayCommandAsync(string command)
@@ -118,22 +96,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
             byte[] packet = ToPacket(GetNextIndex(), 2, command);
-            await _semaphore.WaitAsync();
-            try
-            {
-                _task?.Wait();
-                _task = _clients[GetNextIndex()].SendPacketAsync(packet);
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-
+            await _synchronized.InvokeAsync(() => _clients[GetNextIndex()].SendPacketAsync(packet));
         }
 
         public void SendOnewayBatchCommand(IEnumerable<string> commands)
@@ -142,21 +105,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(commands));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(commands);
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                Task.WaitAll(HandleAllCommand(packets));
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
         }
 
         public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
@@ -165,21 +114,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(commands));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(commands);
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                _task = Task.WhenAll(HandleAllCommand(packets));
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
         }
 
         public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
@@ -188,21 +123,7 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(arguments));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                Task.WaitAll(HandleAllCommand(packets));
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
         }
 
         public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
@@ -211,35 +132,17 @@ namespace QuanLib.Minecraft.Command.Senders
                 throw new ArgumentNullException(nameof(arguments));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                _task = Task.WhenAll(HandleAllCommand(packets));
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
         }
 
         public void WaitForResponse()
         {
-            _task?.Wait();
             _clients[GetNextIndex()].SendPacket(ToPacket(GetNextID(), 2, "time query gametime"));
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         public async Task WaitForResponseAsync()
         {
-            _task?.Wait();
             await _clients[GetNextIndex()].SendPacketAsync(ToPacket(GetNextID(), 2, "time query gametime"));
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         private int GetNextID()

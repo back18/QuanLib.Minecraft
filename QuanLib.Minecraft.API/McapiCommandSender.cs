@@ -2,6 +2,7 @@
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Senders;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,226 +14,99 @@ namespace QuanLib.Minecraft.API
     {
         public McapiCommandSender(McapiClient minecraftApiClient)
         {
-            MinecraftApiClient = minecraftApiClient ?? throw new ArgumentNullException(nameof(minecraftApiClient));
-            _semaphore = new(1);
-
-            WaitForResponseCallback += OnWaitForResponseCallback;
+            McapiClient = minecraftApiClient ?? throw new ArgumentNullException(nameof(minecraftApiClient));
         }
 
-        private readonly SemaphoreSlim _semaphore;
-
-        private Task? _task;
-
-        public McapiClient MinecraftApiClient { get; }
-
-        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
-
-        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
+        public McapiClient McapiClient { get; }
 
         public string SendCommand(string command)
         {
-            _semaphore.Wait();
-            try
-            {
-                _task?.Wait();
-                _task = null;
-                return MinecraftApiClient.SendCommandAsync(command).Result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (string.IsNullOrEmpty(command))
+                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+
+            return McapiClient.SendCommandAsync(command).Result;
         }
 
         public async Task<string> SendCommandAsync(string command)
         {
-            await _semaphore.WaitAsync();
-            try
-            {
-                _task?.Wait();
-                Task<string> task = MinecraftApiClient.SendCommandAsync(command);
-                _task = task;
-                return await task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (string.IsNullOrEmpty(command))
+                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+
+            return await McapiClient.SendCommandAsync(command);
         }
 
         public string[] SendBatchCommand(IEnumerable<string> commands)
         {
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                return MinecraftApiClient.SendBatchCommandAsync(commands.ToArray()).Result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (commands is null)
+                throw new ArgumentNullException(nameof(commands));
+
+            return McapiClient.SendBatchCommandAsync(commands.ToArray()).Result;
         }
 
         public async Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands)
         {
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                Task<string[]> task = MinecraftApiClient.SendBatchCommandAsync(commands.ToArray());
-                _task = task;
-                return await task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (commands is null)
+                throw new ArgumentNullException(nameof(commands));
+
+            return await McapiClient.SendBatchCommandAsync(commands.ToArray());
         }
 
         public void SendOnewayCommand(string command)
         {
-            _semaphore.Wait();
-            try
-            {
-                _task?.Wait();
-                _task = null;
-                MinecraftApiClient.SendOnewayCommandAsync(command).Wait();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (string.IsNullOrEmpty(command))
+                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+
+            McapiClient.SendOnewayCommandAsync(command).Wait();
         }
 
         public async Task SendOnewayCommandAsync(string command)
         {
-            await _semaphore.WaitAsync();
-            try
-            {
-                _task?.Wait();
-                _task = MinecraftApiClient.SendOnewayCommandAsync(command);
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (string.IsNullOrEmpty(command))
+                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+
+            await McapiClient.SendOnewayCommandAsync(command);
         }
 
         public void SendOnewayBatchCommand(IEnumerable<string> commands)
         {
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                MinecraftApiClient.SendOnewayBatchCommandAsync(commands.ToArray()).Wait();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (commands is null)
+                throw new ArgumentNullException(nameof(commands));
+
+            McapiClient.SendOnewayBatchCommandAsync(commands.ToArray()).Wait();
         }
 
         public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
         {
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                _task = MinecraftApiClient.SendOnewayBatchCommandAsync(commands.ToArray());
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (commands is null)
+                throw new ArgumentNullException(nameof(commands));
+
+            await McapiClient.SendOnewayBatchCommandAsync(commands.ToArray());
         }
 
         public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
         {
-            _semaphore.Wait();
-            try
-            {
-                WaitForResponse();
-                _task = null;
-                MinecraftApiClient.SendBatchSetBlockAsync(arguments).Wait();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (arguments is null)
+                throw new ArgumentNullException(nameof(arguments));
+
+            McapiClient.SendBatchSetBlockAsync(arguments).Wait();
         }
 
         public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
         {
-            await _semaphore.WaitAsync();
-            try
-            {
-                await WaitForResponseAsync();
-                _task = MinecraftApiClient.SendBatchSetBlockAsync(arguments);
-                await _task;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            if (arguments is null)
+                throw new ArgumentNullException(nameof(arguments));
+
+            await McapiClient.SendBatchSetBlockAsync(arguments);
         }
 
         public void WaitForResponse()
         {
-            _task?.Wait();
-            MinecraftApiClient.SendCommandAsync("time query gametime").Wait();
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
+            McapiClient.SendCommandAsync("time query gametime").Wait();
         }
 
         public async Task WaitForResponseAsync()
         {
-            _task?.Wait();
-            await MinecraftApiClient.SendCommandAsync("time query gametime");
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
+            await McapiClient.SendCommandAsync("time query gametime");
         }
     }
 }

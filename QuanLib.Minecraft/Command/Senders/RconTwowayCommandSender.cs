@@ -13,37 +13,19 @@ namespace QuanLib.Minecraft.Command.Senders
         public RconTwowayCommandSender(RCON rcon)
         {
             RCON = rcon ?? throw new ArgumentNullException(nameof(rcon));
-            _semaphore = new(1);
-
-            WaitForResponseCallback += OnWaitForResponseCallback;
+            _synchronized = new();
         }
 
-        private readonly SemaphoreSlim _semaphore;
+        private readonly Synchronized _synchronized;
 
         public RCON RCON { get; }
-
-        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
-
-        protected virtual void OnWaitForResponseCallback(ICommandSender sender, EventArgs e) { }
 
         public string SendCommand(string command)
         {
             if (string.IsNullOrEmpty(command))
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
-            _semaphore.Wait();
-            try
-            {
-                return RCON.SendCommandAsync(command).Result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return _synchronized.Invoke(() => RCON.SendCommandAsync(command).Result);
         }
 
         public async Task<string> SendCommandAsync(string command)
@@ -51,19 +33,7 @@ namespace QuanLib.Minecraft.Command.Senders
             if (string.IsNullOrEmpty(command))
                 throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
 
-            await _semaphore.WaitAsync();
-            try
-            {
-                return await RCON.SendCommandAsync(command);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return await _synchronized.Invoke(() => RCON.SendCommandAsync(command));
         }
 
         public string[] SendBatchCommand(IEnumerable<string> commands)
@@ -71,23 +41,13 @@ namespace QuanLib.Minecraft.Command.Senders
             if (commands is null)
                 throw new ArgumentNullException(nameof(commands));
 
-            List<string> result = new();
-            _semaphore.Wait();
-            try
+            return _synchronized.Invoke(() =>
             {
-                WaitForResponse();
+                List<string> result = new();
                 foreach (string command in commands)
                     result.Add(RCON.SendCommandAsync(command).Result);
                 return result.ToArray();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            });
         }
 
         public async Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands)
@@ -95,35 +55,25 @@ namespace QuanLib.Minecraft.Command.Senders
             if (commands is null)
                 throw new ArgumentNullException(nameof(commands));
 
-            List<string> result = new();
-            await _semaphore.WaitAsync();
-            try
+            return await _synchronized.InvokeAsync(() => FuncAsync(commands));
+
+            async Task<string[]> FuncAsync(IEnumerable<string> commands)
             {
-                await WaitForResponseAsync();
+                List<string> result = new();
                 foreach (string command in commands)
                     result.Add(await RCON.SendCommandAsync(command));
                 return result.ToArray();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _semaphore.Release();
             }
         }
 
         public void WaitForResponse()
         {
             RCON.SendCommandAsync("time query gametime").Wait();
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
 
         public async Task WaitForResponseAsync()
         {
             await RCON.SendCommandAsync("time query gametime");
-            WaitForResponseCallback.Invoke(this, EventArgs.Empty);
         }
     }
 }

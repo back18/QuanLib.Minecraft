@@ -26,6 +26,7 @@ namespace QuanLib.Minecraft.API
             _packetid = 0;
             _tasks = new();
             _client = new();
+            _synchronized = new();
 
             ReceivedPacket += OnReceivedPacket;
             Connected += OnConnected;
@@ -40,6 +41,8 @@ namespace QuanLib.Minecraft.API
         private readonly Dictionary<int, NetworkTask> _tasks;
 
         private readonly TcpClient _client;
+
+        private readonly Synchronized _synchronized;
 
         public event EventHandler<McapiClient, ResponsePacketEventArgs> ReceivedPacket;
 
@@ -128,7 +131,7 @@ namespace QuanLib.Minecraft.API
             if (!request.NeedResponse)
                 throw new ArgumentException("request.NeedResponse is false", nameof(request));
 
-            NetworkTask task = new(_client, request);
+            NetworkTask task = new(_client, request, _synchronized);
             _tasks.Add(request.ID, task);
             task.Send();
             ResponsePacket? response = await task.WaitForCompleteAsync();

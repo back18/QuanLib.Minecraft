@@ -9,8 +9,6 @@ namespace QuanLib.Minecraft.Command.Senders
 {
     public interface ICommandSender
     {
-        public event EventHandler<ICommandSender, EventArgs> WaitForResponseCallback;
-
         public void WaitForResponse();
 
         public Task WaitForResponseAsync();
