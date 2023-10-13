@@ -13,15 +13,14 @@ namespace QuanLib.Minecraft.API
 {
     public class NetworkTask
     {
-        public NetworkTask(TcpClient tcpClient, RequestPacket request, Synchronized synchronized)
+        public NetworkTask(McapiClient mcapiClient, RequestPacket request)
         {
             _sendSemaphore = new(0);
             _receiveSemaphore = new(0);
             State = NetworkTaskState.Notsent;
 
-            _tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
+            _mcapiClient = mcapiClient ?? throw new ArgumentNullException(nameof(mcapiClient));
             _request = request ?? throw new ArgumentNullException(nameof(request));
-            _synchronized = synchronized ?? throw new ArgumentNullException(nameof(synchronized));
             _sendTask = WaitForSendAsync();
             _receiveTask = WaitForReceiveAsync();
 
@@ -43,13 +42,11 @@ namespace QuanLib.Minecraft.API
 
         private readonly Task _receiveTask;
 
-        private readonly TcpClient _tcpClient;
+        private readonly McapiClient _mcapiClient;
 
         private readonly RequestPacket _request;
 
         private ResponsePacket? _response;
-
-        private readonly Synchronized _synchronized;
 
         public NetworkTaskState State { get; private set; }
 
@@ -90,7 +87,7 @@ namespace QuanLib.Minecraft.API
             byte[] datapacket = _request.Serialize();
             await _sendSemaphore.WaitAsync();
             State = NetworkTaskState.Sending;
-            await _synchronized.InvokeAsync(() => _tcpClient.GetStream().WriteAsync(datapacket));
+            await _mcapiClient.ThreadSafeWriteAsync(datapacket);
         }
 
         private async Task WaitForReceiveAsync()

@@ -88,7 +88,7 @@ namespace QuanLib.Minecraft.API
             if (arguments is null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            McapiClient.SendBatchSetBlockAsync(arguments).Wait();
+            McapiClient.SendOnewayBatchSetBlockAsync(arguments).Wait();
         }
 
         public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
@@ -96,7 +96,7 @@ namespace QuanLib.Minecraft.API
             if (arguments is null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            await McapiClient.SendBatchSetBlockAsync(arguments);
+            await McapiClient.SendOnewayBatchSetBlockAsync(arguments);
         }
 
         public void WaitForResponse()

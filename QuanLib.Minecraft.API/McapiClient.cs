@@ -4,9 +4,11 @@ using QuanLib.Core;
 using QuanLib.Minecraft.API.Events;
 using QuanLib.Minecraft.API.Packet;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,7 +40,7 @@ namespace QuanLib.Minecraft.API
 
         private int _packetid;
 
-        private readonly Dictionary<int, NetworkTask> _tasks;
+        private readonly ConcurrentDictionary<int, NetworkTask> _tasks;
 
         private readonly TcpClient _client;
 
@@ -53,7 +55,7 @@ namespace QuanLib.Minecraft.API
             if (_tasks.TryGetValue(e.ResponsePacket.ID, out var task))
             {
                 task.Receive(e.ResponsePacket);
-                _tasks.Remove(e.ResponsePacket.ID);
+                _tasks.TryRemove(e.ResponsePacket.ID, out _);
             }
             else
             {
@@ -65,24 +67,25 @@ namespace QuanLib.Minecraft.API
 
         protected override void Run()
         {
-            _client.Connect(_address, _port);
-            Connected.Invoke(this, EventArgs.Empty);
-            NetworkStream stream = _client.GetStream();
-            byte[] buffer = new byte[4096];
             MemoryStream cache = new();
-            int total = buffer.Length;
+            byte[] buffer = new byte[4096];
+            int total = 0;
             int current = 0;
-            bool initial = true;
-            stream.ReadTimeout = Timeout.Infinite;
 
             try
             {
+                _client.Connect(_address, _port);
+                NetworkStream stream = _client.GetStream();
+                stream.ReadTimeout = Timeout.Infinite;
+                Connected.Invoke(this, EventArgs.Empty);
+
                 while (IsRunning)
                 {
-                    int length = stream.Read(buffer, 0, Math.Min(total - current, buffer.Length));
+                    int length = total == 0 ? 4 : Math.Min(total - current, buffer.Length);
+                    int readLength = stream.Read(buffer, 0, length);
 
-                    current += length;
-                    if (initial)
+                    current += readLength;
+                    if (total == 0)
                     {
                         stream.ReadTimeout = 30 * 1000;
 
@@ -91,12 +94,12 @@ namespace QuanLib.Minecraft.API
 
                         total = BitConverter.ToInt32(buffer, 0);
                         if (total < 4)
-                            throw new IOException($"读取数据包时出现错误：数据包长度标识不能小于4");
-
-                        initial = false;
+                            throw new IOException($"数据包长度{total}小于最小长度4");
                     }
 
-                    cache.Write(buffer, 0, length);
+                    cache.Write(buffer, 0, readLength);
+
+                    //Console.WriteLine($"总长度{total}，已读取长度{current}");
 
                     if (current < total)
                         continue;
@@ -105,9 +108,8 @@ namespace QuanLib.Minecraft.API
 
                     cache.Dispose();
                     cache = new();
-                    total = buffer.Length;
+                    total = 0;
                     current = 0;
-                    initial = true;
                     stream.ReadTimeout = Timeout.Infinite;
                 }
             }
@@ -116,7 +118,6 @@ namespace QuanLib.Minecraft.API
                 if (IsRunning)
                     throw;
             }
-        
         }
 
         protected override void DisposeUnmanaged()
@@ -131,8 +132,8 @@ namespace QuanLib.Minecraft.API
             if (!request.NeedResponse)
                 throw new ArgumentException("request.NeedResponse is false", nameof(request));
 
-            NetworkTask task = new(_client, request, _synchronized);
-            _tasks.Add(request.ID, task);
+            NetworkTask task = new(this, request);
+            _tasks.TryAdd(request.ID, task);
             task.Send();
             ResponsePacket? response = await task.WaitForCompleteAsync();
             if (response is null)
@@ -152,7 +153,8 @@ namespace QuanLib.Minecraft.API
             if (request.NeedResponse)
                 throw new ArgumentException("request.NeedResponse is true", nameof(request));
 
-            await _client.GetStream().WriteAsync(request.Serialize());
+            byte[] datapacket = request.Serialize();
+            await ThreadSafeWriteAsync(datapacket);
         }
 
         public async Task<bool> LoginAsync(string password)
@@ -178,11 +180,23 @@ namespace QuanLib.Minecraft.API
             {
                 ReceivedPacket.Invoke(this, new(response));
             }
+            else
+            {
+
+            }
         }
 
         public int GetNextID()
         {
             return Interlocked.Decrement(ref _packetid);
+        }
+
+        internal async ValueTask ThreadSafeWriteAsync(byte[] datapacket)
+        {
+            if (datapacket is null)
+                throw new ArgumentNullException(nameof(datapacket));
+
+            await _synchronized.InvokeAsync(() => _client.GetStream().WriteAsync(datapacket));
         }
     }
 }

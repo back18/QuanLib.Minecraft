@@ -36,7 +36,7 @@ namespace QuanLib.Minecraft.API.Packet
         public static async Task SendOnewayBatchSetBlockAsync(this McapiClient client, IEnumerable<ISetBlockArgument> arguments)
         {
             RequestPacket request = CreateRequestPacket(arguments, client.GetNextID(), false);
-            await client.SendRequestPacketAsync(request);
+            await client.SendOnewayRequestPacketAsync(request);
         }
 
         public class RequestData : ISerializable
