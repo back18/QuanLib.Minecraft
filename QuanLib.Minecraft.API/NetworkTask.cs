@@ -13,13 +13,13 @@ namespace QuanLib.Minecraft.API
 {
     public class NetworkTask
     {
-        public NetworkTask(McapiClient mcapiClient, RequestPacket request)
+        public NetworkTask(Func<byte[], ValueTask> write, RequestPacket request)
         {
             _sendSemaphore = new(0);
             _receiveSemaphore = new(0);
             State = NetworkTaskState.Notsent;
 
-            _mcapiClient = mcapiClient ?? throw new ArgumentNullException(nameof(mcapiClient));
+            _write = write ?? throw new ArgumentNullException(nameof(write));
             _request = request ?? throw new ArgumentNullException(nameof(request));
             _sendTask = WaitForSendAsync();
             _receiveTask = WaitForReceiveAsync();
@@ -42,7 +42,7 @@ namespace QuanLib.Minecraft.API
 
         private readonly Task _receiveTask;
 
-        private readonly McapiClient _mcapiClient;
+        private readonly Func<byte[], ValueTask> _write;
 
         private readonly RequestPacket _request;
 
@@ -87,7 +87,7 @@ namespace QuanLib.Minecraft.API
             byte[] datapacket = _request.Serialize();
             await _sendSemaphore.WaitAsync();
             State = NetworkTaskState.Sending;
-            await _mcapiClient.ThreadSafeWriteAsync(datapacket);
+            await _write.Invoke(datapacket);
         }
 
         private async Task WaitForReceiveAsync()

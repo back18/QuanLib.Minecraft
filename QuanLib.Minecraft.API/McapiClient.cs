@@ -132,7 +132,7 @@ namespace QuanLib.Minecraft.API
             if (!request.NeedResponse)
                 throw new ArgumentException("request.NeedResponse is false", nameof(request));
 
-            NetworkTask task = new(this, request);
+            NetworkTask task = new(ThreadSafeWriteAsync, request);
             _tasks.TryAdd(request.ID, task);
             task.Send();
             ResponsePacket? response = await task.WaitForCompleteAsync();
@@ -188,7 +188,7 @@ namespace QuanLib.Minecraft.API
 
         public int GetNextID()
         {
-            return Interlocked.Decrement(ref _packetid);
+            return Interlocked.Increment(ref _packetid);
         }
 
         internal async ValueTask ThreadSafeWriteAsync(byte[] datapacket)
