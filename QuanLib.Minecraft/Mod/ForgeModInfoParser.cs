@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Mod
 {
-    public class FabricModInfoReader : ModInfoReader
+    public class ForgeModInfoParser : ModInfoParser
     {
-        public override bool TryRead(Stream stream, [MaybeNullWhen(false)] out ModInfo result)
+        public override bool TryParse(Stream stream, [MaybeNullWhen(false)] out ModInfo result)
         {
             throw new NotImplementedException();
         }
