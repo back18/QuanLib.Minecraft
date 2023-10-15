@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Mod
     {
         public FabricModInfo(Model model)
         {
-            NullValidator.TryThrowException(model, nameof(model));
+            NullValidator.ValidateObject(model, nameof(model));
 
             ID = model.id;
             Name = model.name;

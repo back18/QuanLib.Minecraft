@@ -22,5 +22,10 @@ namespace QuanLib.Minecraft.Mod
         public abstract string License { get; }
 
         public abstract string Icon { get; }
+
+        public override string ToString()
+        {
+            return $"{ID}-{ModLoaderType}-{Version}";
+        }
     }
 }

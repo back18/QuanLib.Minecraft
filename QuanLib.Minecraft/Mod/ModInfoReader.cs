@@ -12,14 +12,11 @@ namespace QuanLib.Minecraft.Mod
 {
     public static class ModInfoReader
     {
-        private const string FORGE_MODINFO = "META-INF/mods.toml";
-        private const string FABRIC_MODINFO = "fabric.mod.json";
-
         static ModInfoReader()
         {
             _parsers = new()
             {
-                { ModLoaderType.Forge, new FabricModInfoParser() },
+                { ModLoaderType.Forge, new ForgeModInfoParser() },
                 { ModLoaderType.Fabric, new FabricModInfoParser() }
             };
         }
@@ -72,41 +69,17 @@ namespace QuanLib.Minecraft.Mod
             if (zipPack is null)
                 goto fail;
 
-            if (zipPack.TryGetValue(FORGE_MODINFO, out var forgeEntry))
+            foreach (var parse in _parsers.Values)
             {
-                return TryParseInfo(ModLoaderType.Forge, forgeEntry, out result);
+                if (zipPack.ContainsKey(parse.ModInfoPath))
+                    return parse.TryParse(zipPack, out result);
             }
-            else if (zipPack.TryGetValue(FABRIC_MODINFO, out var fabricEntry))
-            {
-                return TryParseInfo(ModLoaderType.Fabric, fabricEntry, out result);
-            }
-            else
-            {
-                goto fail;
-            }
+
+            goto fail;
 
             fail:
             result = null;
             return false;
-        }
-
-        public static bool TryParseInfo(ModLoaderType type, ZipArchiveEntry entry, [MaybeNullWhen(false)] out ModInfo result)
-        {
-            using Stream stream = entry.Open();
-            return TryReadInfo(type, stream, out result);
-        }
-
-        public static bool TryReadInfo(ModLoaderType type, Stream stream, [MaybeNullWhen(false)] out ModInfo result)
-        {
-            if (_parsers.TryGetValue(type, out var reader) && reader.TryParse(stream, out result))
-            {
-                return true;
-            }
-            else
-            {
-                result = null;
-                return false;
-            }
         }
     }
 }

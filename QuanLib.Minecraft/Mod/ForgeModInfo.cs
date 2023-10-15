@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Mod
     {
         public ForgeModInfo(Model model)
         {
-            NullValidator.TryThrowException(model, nameof(model));
-            if (model.mods.Length == 0)
-                throw new ArgumentException("mods数据为空", nameof(model));
-            ModModel modModel = model.mods[0];
-            NullValidator.TryThrowException(modModel, nameof(model) + ".mods[0]");
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
+
+            NullValidator.ValidateObject(model, nameof(model));
+            string name = nameof(model) + ".mods[0]";
+            ModModel? modModel = model.mods.FirstOrDefault() ?? throw new ArgumentException($"“{name}”不能为 null 或空。", name);
+            NullValidator.ValidateObject(modModel, name);
 
             ID = modModel.modId;
             Name = modModel.displayName;

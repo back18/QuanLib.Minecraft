@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Core.IO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace QuanLib.Minecraft.Mod
 {
     public abstract class ModInfoParser
     {
-        public abstract bool TryParse(Stream stream, [MaybeNullWhen(false)] out ModInfo result);
+        public abstract string ModInfoPath { get; }
+
+        public abstract bool TryParse(ZipPack zipPack, [MaybeNullWhen(false)] out ModInfo result);
     }
 }
