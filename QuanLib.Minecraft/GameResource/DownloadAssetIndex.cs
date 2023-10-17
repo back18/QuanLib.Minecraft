@@ -10,9 +10,6 @@ namespace QuanLib.Minecraft.GameResource
     {
         public DownloadAssetIndex(Model model) : base(model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
-
             Path = model.path;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using QuanLib.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +14,7 @@ namespace QuanLib.Minecraft.GameResource
     {
         public AssetList(Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            NullValidator.ValidateObject(model, nameof(model));
 
             _items = new();
             _items = model.objects.ToDictionary(item => item.Key, item => new AssetIndex(item.Value));
@@ -29,7 +29,7 @@ namespace QuanLib.Minecraft.GameResource
         public int Count => _items.Count;
 
         public AssetIndex this[string key] => _items[key];
-        
+
         public static async Task<AssetList> DownloadAsync(string url)
         {
             if (string.IsNullOrEmpty(url))

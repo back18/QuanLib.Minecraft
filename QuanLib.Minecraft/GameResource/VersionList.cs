@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using QuanLib.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace QuanLib.Minecraft.GameResource
     {
         public VersionList(Model model)
         {
+            NullValidator.ValidateObject(model, nameof(model));
+
             LatestVersion = new(model.latest);
             _items = model.versions.ToDictionary(item => item.id, versionModel => new VersionIndex(versionModel));
         }

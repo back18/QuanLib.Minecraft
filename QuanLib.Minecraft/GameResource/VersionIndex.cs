@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,7 @@ namespace QuanLib.Minecraft.GameResource
     {
         public VersionIndex(Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            NullValidator.ValidateObject(model, nameof(model));
 
             ID = model.id;
             Type = model.type;

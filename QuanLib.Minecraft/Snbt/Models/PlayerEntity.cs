@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -107,6 +108,8 @@ namespace QuanLib.Minecraft.Snbt.Models
         public new class Model : MobEntity.Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+
+            [Nullable]
             public object? abilities { get; set; }
 
             public int DataVersion { get; set; }
@@ -115,6 +118,7 @@ namespace QuanLib.Minecraft.Snbt.Models
 
             public object[] EnderItems { get; set; }
 
+            [Nullable]
             public object? EnteredNetherPosition { get; set; }
 
             public float foodExhaustionLevel { get; set; }
@@ -135,6 +139,7 @@ namespace QuanLib.Minecraft.Snbt.Models
 
             public object recipeBook { get; set; }
 
+            [Nullable]
             public object? RootVehicle { get; set; }
 
             public int Score { get; set; }
@@ -151,8 +156,10 @@ namespace QuanLib.Minecraft.Snbt.Models
 
             public float SpawnAngle { get; set; }
 
+            [Nullable]
             public string? SpawnDimension { get; set; }
 
+            [Nullable]
             public bool? SpawnForced { get; set; }
 
             public int SpawnX { get; set; }

@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,8 +48,10 @@ namespace QuanLib.Minecraft.Snbt.Models
         public new class Model : Entity.Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+
             public float AbsorptionAmount { get; set; }
 
+            [Nullable]
             public object[]? ActiveEffects { get; set; }
 
             public object[] Attributes { get; set; }
@@ -70,6 +73,7 @@ namespace QuanLib.Minecraft.Snbt.Models
             public int SleepingY { get; set; }
 
             public int SleepingZ { get; set; }
+
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }

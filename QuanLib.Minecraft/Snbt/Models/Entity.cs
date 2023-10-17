@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,8 +13,7 @@ namespace QuanLib.Minecraft.Snbt.Models
     {
         public Entity(Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            NullValidator.ValidateObject(model, nameof(model));
 
             Air = model.Air;
             CustomName = model.CustomName;
@@ -77,28 +77,35 @@ namespace QuanLib.Minecraft.Snbt.Models
         public class Model
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+
             public short Air { get; set; }
 
+            [Nullable]
             public string? CustomName { get; set; }
 
+            [Nullable]
             public bool? CustomNameVisible { get; set; }
 
             public float FallDistance { get; set; }
 
             public short Fire { get; set; }
 
+            [Nullable]
             public bool? Glowing { get; set; }
 
+            [Nullable]
             public bool? HasVisualFire { get; set; }
 
             public bool Invulnerable { get; set; }
 
             public double[] Motion { get; set; }
 
+            [Nullable]
             public bool? NoGravity { get; set; }
 
             public bool OnGround { get; set; }
 
+            [Nullable]
             public Entity[]? Passengers { get; set; }
 
             public int PortalCooldown { get; set; }
@@ -107,13 +114,17 @@ namespace QuanLib.Minecraft.Snbt.Models
 
             public float[] Rotation { get; set; }
 
+            [Nullable]
             public bool? Silent { get; set; }
 
+            [Nullable]
             public string[]? Tags { get; set; }
 
+            [Nullable]
             public int? TicksFrozen { get; set; }
 
             public int[] UUID { get; set; }
+
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }
