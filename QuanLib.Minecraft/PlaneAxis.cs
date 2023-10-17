@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft
 {
     /// <summary>
-    /// 表示三维中的平面
+    /// 表示三维中的平面轴
     /// </summary>
-    public enum Plane
+    public enum PlaneAxis
     {
         XY,
 
