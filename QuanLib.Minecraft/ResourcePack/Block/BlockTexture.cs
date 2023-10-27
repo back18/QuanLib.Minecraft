@@ -1,6 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,46 +11,23 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 {
     public class BlockTexture
     {
-        public BlockTexture(string blockID, BlockType blockType, IReadOnlyDictionary<Facing, Image<Rgba32>> textures)
+        public BlockTexture(string blockID, BlockType blockType, IDictionary<Facing, Image<Rgba32>> images)
         {
             if (string.IsNullOrEmpty(blockID))
                 throw new ArgumentException($"“{nameof(blockID)}”不能为 null 或空。", nameof(blockID));
+            if (images is null)
+                throw new ArgumentNullException(nameof(images));
 
             BlockID = blockID;
             BlockType = blockType;
-            Textures = textures ?? throw new ArgumentNullException(nameof(textures));
-            Dictionary<Facing, Rgba32> averageColors = new();
-            foreach (var image in textures)
-                averageColors.Add(image.Key, GetAverageColors(image.Value));
-            AverageColors = averageColors;
+            Textures = new(images.ToDictionary(item => item.Key, item => new Texture(item.Value)));
         }
 
         public string BlockID { get; }
 
         public BlockType BlockType { get; }
 
-        public IReadOnlyDictionary<Facing, Image<Rgba32>> Textures { get; }
-
-        public IReadOnlyDictionary<Facing, Rgba32> AverageColors { get; }
-
-        private static Rgba32 GetAverageColors(Image<Rgba32> texture)
-        {
-            int r = 0, g = 0, b = 0, a = 0;
-            for (int x = 0; x < texture.Width; x++)
-                for (int y = 0; y < texture.Height; y++)
-                {
-                    r += texture[x, y].R;
-                    g += texture[x, y].G;
-                    b += texture[x, y].B;
-                    a += texture[x, y].A;
-                }
-            int size = texture.Width * texture.Height;
-            r /= size;
-            g /= size;
-            b /= size;
-            a /= size;
-            return new((byte)r, (byte)g, (byte)b, (byte)a);
-        }
+        public ReadOnlyDictionary<Facing, Texture> Textures { get; }
 
         public override string ToString()
         {

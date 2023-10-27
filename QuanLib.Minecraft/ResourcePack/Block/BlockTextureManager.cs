@@ -38,21 +38,21 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             {
                 if (texture.BlockType == BlockType.CubeAll)
                 {
-                    _map[Facing.Xp][texture.AverageColors[Facing.Xp]] = texture;
-                    _map[Facing.Xm][texture.AverageColors[Facing.Xm]] = texture;
-                    _map[Facing.Yp][texture.AverageColors[Facing.Yp]] = texture;
-                    _map[Facing.Ym][texture.AverageColors[Facing.Ym]] = texture;
-                    _map[Facing.Zp][texture.AverageColors[Facing.Zp]] = texture;
-                    _map[Facing.Zm][texture.AverageColors[Facing.Zm]] = texture;
+                    _map[Facing.Xp][texture.Textures[Facing.Xp].AverageColor] = texture;
+                    _map[Facing.Xm][texture.Textures[Facing.Xm].AverageColor] = texture;
+                    _map[Facing.Yp][texture.Textures[Facing.Yp].AverageColor] = texture;
+                    _map[Facing.Ym][texture.Textures[Facing.Ym].AverageColor] = texture;
+                    _map[Facing.Zp][texture.Textures[Facing.Zp].AverageColor] = texture;
+                    _map[Facing.Zm][texture.Textures[Facing.Zm].AverageColor] = texture;
                 }
                 else
                 {
-                    _map[Facing.Xp].TryAdd(texture.AverageColors[Facing.Xp], texture);
-                    _map[Facing.Xm].TryAdd(texture.AverageColors[Facing.Xm], texture);
-                    _map[Facing.Yp].TryAdd(texture.AverageColors[Facing.Yp], texture);
-                    _map[Facing.Ym].TryAdd(texture.AverageColors[Facing.Ym], texture);
-                    _map[Facing.Zp].TryAdd(texture.AverageColors[Facing.Zp], texture);
-                    _map[Facing.Zm].TryAdd(texture.AverageColors[Facing.Zm], texture);
+                    _map[Facing.Xp].TryAdd(texture.Textures[Facing.Xp].AverageColor, texture);
+                    _map[Facing.Xm].TryAdd(texture.Textures[Facing.Xm].AverageColor, texture);
+                    _map[Facing.Yp].TryAdd(texture.Textures[Facing.Yp].AverageColor, texture);
+                    _map[Facing.Ym].TryAdd(texture.Textures[Facing.Ym].AverageColor, texture);
+                    _map[Facing.Zp].TryAdd(texture.Textures[Facing.Zp].AverageColor, texture);
+                    _map[Facing.Zm].TryAdd(texture.Textures[Facing.Zm].AverageColor, texture);
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             float distance = float.MaxValue;
             foreach (var texture in _items.Values)
             {
-                float newDistance = Vector4.DistanceSquared(vector4, texture.AverageColors[facing].ToVector4());
+                float newDistance = Vector4.DistanceSquared(vector4, texture.Textures[facing].AverageColor.ToVector4());
                 if (newDistance < distance)
                 {
                     distance = newDistance;
@@ -149,7 +149,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                     float distance = float.MaxValue;
                     foreach (var texture in _items.Values)
                     {
-                        float newDistance = Vector4.DistanceSquared(vector4, texture.AverageColors[facing].ToVector4());
+                        float newDistance = Vector4.DistanceSquared(vector4, texture.Textures[facing].AverageColor.ToVector4());
                         if (newDistance < distance)
                         {
                             distance = newDistance;
