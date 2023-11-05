@@ -24,37 +24,6 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         internal BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
             _items = items ?? throw new ArgumentNullException(nameof(items));
-
-            _map = new()
-            {
-                { Facing.Xp, new() },
-                { Facing.Xm, new() },
-                { Facing.Yp, new() },
-                { Facing.Ym, new() },
-                { Facing.Zp, new() },
-                { Facing.Zm, new() }
-            };
-            foreach (var texture in _items.Values)
-            {
-                if (texture.BlockType == BlockType.CubeAll)
-                {
-                    _map[Facing.Xp][texture.Textures[Facing.Xp].AverageColor] = texture;
-                    _map[Facing.Xm][texture.Textures[Facing.Xm].AverageColor] = texture;
-                    _map[Facing.Yp][texture.Textures[Facing.Yp].AverageColor] = texture;
-                    _map[Facing.Ym][texture.Textures[Facing.Ym].AverageColor] = texture;
-                    _map[Facing.Zp][texture.Textures[Facing.Zp].AverageColor] = texture;
-                    _map[Facing.Zm][texture.Textures[Facing.Zm].AverageColor] = texture;
-                }
-                else
-                {
-                    _map[Facing.Xp].TryAdd(texture.Textures[Facing.Xp].AverageColor, texture);
-                    _map[Facing.Xm].TryAdd(texture.Textures[Facing.Xm].AverageColor, texture);
-                    _map[Facing.Yp].TryAdd(texture.Textures[Facing.Yp].AverageColor, texture);
-                    _map[Facing.Ym].TryAdd(texture.Textures[Facing.Ym].AverageColor, texture);
-                    _map[Facing.Zp].TryAdd(texture.Textures[Facing.Zp].AverageColor, texture);
-                    _map[Facing.Zm].TryAdd(texture.Textures[Facing.Zm].AverageColor, texture);
-                }
-            }
         }
 
         private static readonly object _slock;
@@ -73,8 +42,6 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         private static BlockTextureManager? _Instance;
 
         private readonly Dictionary<string, BlockTexture> _items;
-
-        private readonly Dictionary<Facing, Dictionary<Rgba32, BlockTexture>> _map;
 
         public BlockTexture this[string index] => _items[index];
 
@@ -99,105 +66,6 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                 _Instance = BlockTextureReader.Load(resources, blacklist);
                 IsLoaded = true;
                 return _Instance;
-            }
-        }
-
-        public BlockTexture? MatchBlockTexture(Facing facing, Rgba32 rgba32)
-        {
-            if (_map[facing].TryGetValue(rgba32, out BlockTexture? result))
-                return result;
-            Vector4 vector4 = rgba32.ToVector4();
-            float distance = float.MaxValue;
-            foreach (var texture in _items.Values)
-            {
-                float newDistance = Vector4.DistanceSquared(vector4, texture.Textures[facing].AverageColor.ToVector4());
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    result = texture;
-                }
-            }
-
-            if (result is not null)
-            {
-                lock (_map[facing])
-                    _map[facing].TryAdd(rgba32, result);
-            }
-            return result;
-        }
-
-        public BlockTexture? MatchBlockTexture<T>(Facing facing, T pixel) where T : IPixel
-        {
-            Rgba32 rgba32 = new();
-            pixel.ToRgba32(ref rgba32);
-            return MatchBlockTexture(facing, rgba32);
-        }
-
-        public void BuildMapCache(Facing facing)
-        {
-            ConcurrentDictionary<Rgba32, BlockTexture> result = new();
-
-            Rgba32 rgba = new(0, 0, 0, 255);
-            int max = 256 * 256 * 256;
-            int count = 0;
-            Parallel.For(0, max, (i) =>
-            {
-                if (TryGetNextRgba32(out var next))
-                {
-                    BlockTexture? temp = null;
-                    Vector4 vector4 = next.ToVector4();
-                    float distance = float.MaxValue;
-                    foreach (var texture in _items.Values)
-                    {
-                        float newDistance = Vector4.DistanceSquared(vector4, texture.Textures[facing].AverageColor.ToVector4());
-                        if (newDistance < distance)
-                        {
-                            distance = newDistance;
-                            temp = texture;
-                        }
-                    }
-                    if (temp is not null)
-                        result.TryAdd(next, temp);
-                }
-                Interlocked.Increment(ref count);
-            });
-
-            _map[facing] = result.ToDictionary(kv => kv.Key, kv => kv.Value);
-
-            while (count < max)
-                Thread.Sleep(10);
-
-            bool TryGetNextRgba32(out Rgba32 next)
-            {
-                lock (result)
-                {
-                    if (rgba.R < 255)
-                    {
-                        rgba.R++;
-                        next = rgba;
-                        return true;
-                    }
-                    else if (rgba.G < 255)
-                    {
-                        rgba.R = 0;
-                        rgba.G++;
-                        next = rgba;
-                        return true;
-                    }
-                    else if (rgba.B < 255)
-                    {
-                        rgba.R = 0;
-                        rgba.G = 0;
-                        rgba.B++;
-                        next = rgba;
-                        return true;
-                    }
-                    else
-                    {
-                        next = rgba = default;
-                        return false;
-                    }
-                }
             }
         }
 
