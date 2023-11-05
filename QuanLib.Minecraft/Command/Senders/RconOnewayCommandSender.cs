@@ -176,13 +176,12 @@ namespace QuanLib.Minecraft.Command.Senders
         private ConcurrentBag<byte[]> ToPacketBag(IEnumerable<string> commands)
         {
             ConcurrentBag<byte[]> result = new();
-            Parallel.ForEach(commands, command =>
+            ParallelLoopResult parallelLoopResult = Parallel.ForEach(commands, command =>
             {
                 result.Add(ToPacket(GetNextID(), 2, command));
             });
 
-            int total = commands.Count();
-            while (result.Count < total)
+            while (!parallelLoopResult.IsCompleted)
                 Thread.Yield();
 
             return result;
@@ -191,13 +190,12 @@ namespace QuanLib.Minecraft.Command.Senders
         private ConcurrentBag<byte[]> ToPacketBag(IEnumerable<ISetBlockArgument> arguments)
         {
             ConcurrentBag<byte[]> result = new();
-            Parallel.ForEach(arguments, argument =>
+            ParallelLoopResult parallelLoopResult = Parallel.ForEach(arguments, argument =>
             {
                 result.Add(ToPacket(GetNextID(), 2, argument.ToSetBlockCommand()));
             });
 
-            int total = arguments.Count();
-            while (result.Count < total)
+            while (!parallelLoopResult.IsCompleted)
                 Thread.Yield();
 
             return result;
