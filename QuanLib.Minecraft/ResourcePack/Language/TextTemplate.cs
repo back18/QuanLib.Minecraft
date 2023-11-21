@@ -123,7 +123,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                     @explicit = true;
 
                 placeholders.Add(match.Value);
-                return "(.+)";
+                return @"([\s\S]+)";
             });
 
             int[] orders = new int[placeholders.Count];
@@ -150,7 +150,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                 }
 
                 int index = 0;
-                format = Regex.Replace(pattern, "\\(\\.\\+\\)", match => $"{{{orders[index++]}}}");
+                format = Regex.Replace(pattern, @"\(\[\\s\\S\]\+\)", match => $"{{{orders[index++]}}}");
             }
             else
             {
