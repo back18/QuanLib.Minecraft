@@ -24,8 +24,7 @@ namespace QuanLib.Minecraft.GameResource
 
         public AssetIndex(string hash, int size)
         {
-            if (string.IsNullOrEmpty(hash))
-                throw new ArgumentException($"“{nameof(hash)}”不能为 null 或空。", nameof(hash));
+            ArgumentException.ThrowIfNullOrEmpty(hash, nameof(hash));
 
             Hash = hash;
             Size = size;

@@ -34,8 +34,7 @@ namespace QuanLib.Minecraft.GameResource
 
         public static async Task<VersionList> DownloadAsync(string url)
         {
-            if (string.IsNullOrEmpty(url))
-                throw new ArgumentException($"“{nameof(url)}”不能为 null 或空。", nameof(url));
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 
             byte[] bytes = await DownloadUtil.DownloadBytesAsync(url);
             string text = Encoding.UTF8.GetString(bytes);

@@ -10,8 +10,7 @@ namespace QuanLib.Minecraft.ResourcePack
     {
         public ResourcePath(string modID)
         {
-            if (string.IsNullOrEmpty(modID))
-                throw new ArgumentException($"“{nameof(modID)}”不能为 null 或空。", nameof(modID));
+            ArgumentException.ThrowIfNullOrEmpty(modID, nameof(modID));
 
             BlockStates = $"assets/{modID}/blockstates/";
             BlockModels = $"assets/{modID}/models/block/";

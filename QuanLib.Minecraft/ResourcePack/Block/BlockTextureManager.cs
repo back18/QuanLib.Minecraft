@@ -23,7 +23,9 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         internal BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
-            _items = items ?? throw new ArgumentNullException(nameof(items));
+            ArgumentNullException.ThrowIfNull(items, nameof(items));
+
+            _items = items;
         }
 
         private static readonly object _slock;
@@ -53,10 +55,8 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         public static BlockTextureManager LoadInstance(ResourceEntryManager resources, IEnumerable<BlockState> blacklist)
         {
-            if (resources is null)
-                throw new ArgumentNullException(nameof(resources));
-            if (blacklist is null)
-                throw new ArgumentNullException(nameof(blacklist));
+            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
+            ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
 
             lock (_slock)
             {

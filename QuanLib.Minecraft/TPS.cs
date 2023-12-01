@@ -25,8 +25,7 @@ namespace QuanLib.Minecraft
 
         public static bool TryParse(string s, [MaybeNullWhen(false)] out TPS result)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(s, nameof(s));
 
             string pattern1 = @"Mean tick time: (\d+\.\d+) ms\. Mean TPS: (\d+\.\d+)";
             Match match1 = Regex.Match(s, pattern1);

@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft.ResourcePack
     {
         public ResourceEntry(string modID)
         {
-            if (string.IsNullOrEmpty(modID))
-                throw new ArgumentException($"“{nameof(modID)}”不能为 null 或空。", nameof(modID));
+            ArgumentException.ThrowIfNullOrEmpty(modID, nameof(modID));
 
             ModID = modID;
             Path = new(modID);

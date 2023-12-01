@@ -17,8 +17,7 @@ namespace QuanLib.Minecraft.Instance
     {
         protected MinecraftInstance(string minecraftPath, Func<Type, LogImpl> logger) : base(logger)
         {
-            if (string.IsNullOrEmpty(minecraftPath))
-                throw new ArgumentException($"“{nameof(minecraftPath)}”不能为 null 或空。", nameof(minecraftPath));
+            ArgumentException.ThrowIfNullOrEmpty(minecraftPath, nameof(minecraftPath));
 
             MinecraftPath = minecraftPath;
             MinecraftDirectory = new(MinecraftPath);

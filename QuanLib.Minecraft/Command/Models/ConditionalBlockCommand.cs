@@ -19,8 +19,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, int x, int y, int z, string blockID)
         {
-            if (string.IsNullOrEmpty(blockID))
-                throw new ArgumentException($"“{nameof(blockID)}”不能为 null 或空。", nameof(blockID));
+            ArgumentException.ThrowIfNullOrEmpty(blockID, nameof(blockID));
 
             return base.TrySendCommand(sender, new object[] { x, y, z, blockID }, out _);
         }

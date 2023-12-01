@@ -13,12 +13,9 @@ namespace QuanLib.Minecraft.ResourcePack.Language
     {
         private TextTemplate(string pattern, string format, int[] orders)
         {
-            if (string.IsNullOrEmpty(pattern))
-                throw new ArgumentException($"“{nameof(pattern)}”不能为 null 或空。", nameof(pattern));
-            if (string.IsNullOrEmpty(format))
-                throw new ArgumentException($"“{nameof(format)}”不能为 null 或空。", nameof(format));
-            if (orders is null)
-                throw new ArgumentNullException(nameof(orders));
+            ArgumentException.ThrowIfNullOrEmpty(pattern, nameof(pattern));
+            ArgumentException.ThrowIfNullOrEmpty(format, nameof(format));
+            ArgumentNullException.ThrowIfNull(orders, nameof(orders));
 
             PatternText = pattern;
             FormatText = format;
@@ -101,8 +98,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         public static TextTemplate Parse(string s)
         {
-            if (string.IsNullOrEmpty(s))
-                throw new ArgumentException($"“{nameof(s)}”不能为 null 或空。", nameof(s));
+            ArgumentException.ThrowIfNullOrEmpty(s, nameof(s));
 
             if (TryParse(s, out var template))
                 return template;

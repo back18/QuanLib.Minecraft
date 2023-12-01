@@ -19,7 +19,9 @@ namespace QuanLib.Minecraft
     {
         public ServerCommandHelper(RCON rcon)
         {
-            _rcon = rcon ?? throw new ArgumentNullException(nameof(rcon));
+            ArgumentNullException.ThrowIfNull(rcon, nameof(rcon));
+
+            _rcon = rcon;
             _semaphore = new(1);
         }
 
@@ -124,10 +126,8 @@ namespace QuanLib.Minecraft
 
         public virtual bool TelePort(Selector source, Selector target)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (target is null)
-                throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(target, nameof(target));
 
             string output = SendCommand($"tp {source} {target}");
             if (output.StartsWith("No entity was found"))
@@ -142,8 +142,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool TelePort(Selector source, double x, double y, double z)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
 
             string output = SendCommand($"tp {source} {x} {y} {z}");
             if (output.StartsWith("No entity was found"))
@@ -158,8 +157,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool TelePort(Selector source, IVector3<double> target)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
 
             string output = SendCommand($"tp {source} {target.X} {target.Y} {target.Z}");
             if (output.StartsWith("No entity was found"))
@@ -174,8 +172,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool TestBlcok(int x, int y, int z, string id)
         {
-            if (id is null)
-                throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
 
             string output = SendCommand($"execute if block {x} {y} {z} {id}");
             if (output.StartsWith("Test passed"))
@@ -186,8 +183,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool TestBlcok(IVector3<int> pos, string id)
         {
-            if (id is null)
-                throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
 
             string output = SendCommand($"execute if block {pos.X} {pos.Y} {pos.Z} {id}");
 
@@ -199,8 +195,7 @@ namespace QuanLib.Minecraft
 
         public virtual int TestEntityCount(Selector target)
         {
-            if (target is null)
-                throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(target, nameof(target));
 
             string output = SendCommand($"execute if entity {target}");
             if (int.TryParse(output.Split(' ')[^1], out int value))
@@ -216,8 +211,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool SetBlock(int x, int y, int z, string id)
         {
-            if (id is null)
-                throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
 
             string output = SendCommand($"setblock {x} {y} {z} {id}");
 
@@ -229,8 +223,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool SetBlock(IVector3<int> pos, string id)
         {
-            if (id is null)
-                throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
 
             string output = SendCommand($"setblock {pos.X} {pos.Y} {pos.Z} {id}");
 
@@ -242,8 +235,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool SummonEntity(string id, double x, double y, double z, string? nbt = null)
         {
-            if (id is null)
-                throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
 
             string command = $"summon {id} {x} {y} {z}";
             if (!string.IsNullOrEmpty(nbt))
@@ -258,8 +250,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool SummonEntity(string id, IVector3<double> pos, string? nbt = null)
         {
-            if (id is null)
-                throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
 
             string command = $"summon {id} {pos.X} {pos.Y} {pos.Z}";
             if (!string.IsNullOrEmpty(nbt))
@@ -274,8 +265,7 @@ namespace QuanLib.Minecraft
 
         public virtual bool KillEntity(Selector target)
         {
-            if (target is null)
-                throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(target, nameof(target));
 
             string output = SendCommand($"kill {target}");
             if (output.StartsWith("Killed"))
@@ -359,8 +349,7 @@ namespace QuanLib.Minecraft
 
         public virtual PlayerEntity GetPlayerEntityData(string name)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
             string output = SendCommand("data get entity " + name);
             return new(SnbtSerializer.DeserializeObject<PlayerEntity.Model>(SplitEntitySnbt(output)));
@@ -459,10 +448,8 @@ namespace QuanLib.Minecraft
 
         public virtual bool SetPlayerHotbarItem(string name, int slot, string itemID)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
-            if (string.IsNullOrEmpty(itemID))
-                throw new ArgumentException($"“{nameof(itemID)}”不能为 null 或空。", nameof(itemID));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(itemID, nameof(itemID));
 
             itemID = itemID.Replace("\\", "\\\\");
             string output = SendCommand($"item replace entity {name} hotbar.{slot} with {itemID}");
@@ -515,8 +502,7 @@ namespace QuanLib.Minecraft
 
         public virtual LeftRightKeys GetInteractionData(string target)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             InteractionData leftData, rightData;
             if (TryGetEntitySnbt(target, "attack", out var left))
@@ -533,8 +519,7 @@ namespace QuanLib.Minecraft
 
         public virtual string GetAllEntitySbnt(string target, string? path)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             string command = $"execute as {target} run data get entity @s";
             if (!string.IsNullOrEmpty(path))
@@ -544,8 +529,7 @@ namespace QuanLib.Minecraft
 
         public virtual Dictionary<string, string> GetAllPlayerSbnt(string target, string? path)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             Dictionary<string, string> result = new();
             PlayerList list = GetPlayerList();
@@ -764,10 +748,8 @@ namespace QuanLib.Minecraft
 
         public virtual bool SetPlayerScoreboard(string playerName, string scoreboardName, int score)
         {
-            if (string.IsNullOrEmpty(playerName))
-                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
-            if (string.IsNullOrEmpty(scoreboardName))
-                throw new ArgumentException($"“{nameof(scoreboardName)}”不能为 null 或空。", nameof(scoreboardName));
+            ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
+            ArgumentException.ThrowIfNullOrEmpty(scoreboardName, nameof(scoreboardName));
 
             string output = SendCommand($"scoreboard players set {playerName} {scoreboardName} {score}");
             if (output.StartsWith("Set"))
@@ -819,16 +801,14 @@ namespace QuanLib.Minecraft
 
         private static string ToTarget(string at, IVector3<double> centre, int radius)
         {
-            if (string.IsNullOrEmpty(at))
-                throw new ArgumentException($"“{nameof(at)}”不能为 null 或空。", nameof(at));
+            ArgumentException.ThrowIfNullOrEmpty(at, nameof(at));
 
             return $"@{at}[x={centre.X},y={centre.Y},z={centre.Z},distance=..{radius}]";
         }
 
         private static string ToTarget(string at, IVector3<double> start, IVector3<double> end)
         {
-            if (string.IsNullOrEmpty(at))
-                throw new ArgumentException($"“{nameof(at)}”不能为 null 或空。", nameof(at));
+            ArgumentException.ThrowIfNullOrEmpty(at, nameof(at));
 
             return $"@{at}[x={start.X},y={start.Y},z={start.Z},dx={end.X},dy={end.Y},dz={end.Z}]";
         }

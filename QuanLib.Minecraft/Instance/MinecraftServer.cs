@@ -14,8 +14,7 @@ namespace QuanLib.Minecraft.Instance
     {
         protected MinecraftServer(string serverPath, string serverAddress, Func<Type, LogImpl> logger) : base(serverPath, logger)
         {
-            if (string.IsNullOrEmpty(serverAddress))
-                throw new ArgumentException($"“{nameof(serverAddress)}”不能为 null 或空。", nameof(serverAddress));
+            ArgumentException.ThrowIfNullOrEmpty(serverAddress, nameof(serverAddress));
 
             ServerAddress = IPAddress.Parse(serverAddress);
             ServerDirectory = new(serverPath);

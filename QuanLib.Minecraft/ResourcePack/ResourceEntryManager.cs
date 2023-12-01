@@ -50,8 +50,7 @@ namespace QuanLib.Minecraft.ResourcePack
 
         internal void Overwrite(ResourceEntry resourceEntry)
         {
-            if (resourceEntry is null)
-                throw new ArgumentNullException(nameof(resourceEntry));
+            ArgumentNullException.ThrowIfNull(resourceEntry, nameof(resourceEntry));
 
             if (resourceEntry.IsEmpty)
                 return;

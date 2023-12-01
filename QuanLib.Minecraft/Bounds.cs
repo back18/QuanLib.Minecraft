@@ -23,8 +23,7 @@ namespace QuanLib.Minecraft
 
         public readonly bool Contains<T>(T position) where T : IVector3<double>
         {
-            if (position is null)
-                throw new ArgumentNullException(nameof(position));
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             Vector3<double> start = StartPosition;
             Vector3<double> end = EndPosition;

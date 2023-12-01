@@ -70,8 +70,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool SetBlock<T>(this CommandSender sender, T position, string blockID) where T : IVector3<int>
         {
-            if (position is null)
-                throw new ArgumentNullException(nameof(position));
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             return SetBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockID);
         }
@@ -86,8 +85,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool SummonEntity<T>(this CommandSender sender, T position, string entityID, string? nbt = null) where T : IVector3<double>
         {
-            if (position is null)
-                throw new ArgumentNullException(nameof(position));
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             if (string.IsNullOrEmpty(nbt))
                 return SummonCommand.TrySendCommand(sender, position.X, position.Y, position.Z, entityID);
@@ -112,8 +110,7 @@ namespace QuanLib.Minecraft.Command
 
         public static int TelePort<T>(this CommandSender sender, string source, T position) where T : IVector3<double>
         {
-            if (position is null)
-                throw new ArgumentNullException(nameof(position));
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             return TelePortLocationCommand.TrySendCommand(sender, source, position.X, position.Y, position.Z, out var result) ? result : 0;
         }
@@ -125,8 +122,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool ConditionalBlock<T>(this CommandSender sender, T position, string blockID) where T : IVector3<int>
         {
-            if (position is null)
-                throw new ArgumentNullException(nameof(position));
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             return ConditionalBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockID);
         }
@@ -155,8 +151,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool TryGetEntityPosition(this CommandSender sender, string target, out EntityPos result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             lock (SnbtCache.Position)
             {
@@ -182,8 +177,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool TryGetEntityRotation(this CommandSender sender, string target, out Rotation result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             lock (SnbtCache.Rotation)
             {
@@ -210,8 +204,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool TryGetEntityUuid(this CommandSender sender, string target, out Guid result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             lock (SnbtCache.Uuid)
             {
@@ -238,8 +231,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool TryGetEntityHealth(this CommandSender sender, string target, out float result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             lock (SnbtCache.Health)
             {
@@ -266,8 +258,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool TryGetPlayerSelectedItemSlot(this CommandSender sender, string target, out int result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             lock (SnbtCache.SelectedItemSlot)
             {
@@ -294,8 +285,7 @@ namespace QuanLib.Minecraft.Command
 
         public static bool TryGetPlayerItem(this CommandSender sender, string target, int slot, [MaybeNullWhen(false)] out Item result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             lock (SnbtCache.SelectedItemSlot)
             {
@@ -344,8 +334,7 @@ namespace QuanLib.Minecraft.Command
 
         public static LeftRightKeys GetInteractionData(this CommandSender sender, string target)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             InteractionData leftData, rightData;
             if (TryGetEntitySnbt(sender, target, "attack", out var left))
@@ -366,8 +355,7 @@ namespace QuanLib.Minecraft.Command
 
         public static Dictionary<string, EntityPos> GetAllEntityPosition(this CommandSender sender, IEnumerable<string> targets)
         {
-            if (targets is null)
-                throw new ArgumentNullException(nameof(targets));
+            ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
             Dictionary<string, EntityPos> result = new();
             foreach (var target in targets)
@@ -381,8 +369,7 @@ namespace QuanLib.Minecraft.Command
 
         public static Dictionary<string, Rotation> GetAllEntityRotation(this CommandSender sender, IEnumerable<string> targets)
         {
-            if (targets is null)
-                throw new ArgumentNullException(nameof(targets));
+            ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
             Dictionary<string, Rotation> result = new();
             foreach (var target in targets)
@@ -396,8 +383,7 @@ namespace QuanLib.Minecraft.Command
 
         public static Dictionary<string, Guid> GetAllEntityUuid(this CommandSender sender, IEnumerable<string> targets)
         {
-            if (targets is null)
-                throw new ArgumentNullException(nameof(targets));
+            ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
             Dictionary<string, Guid> result = new();
             foreach (var target in targets)
@@ -411,8 +397,7 @@ namespace QuanLib.Minecraft.Command
 
         public static Dictionary<string, float> GetAllEntityHealth(this CommandSender sender, IEnumerable<string> targets)
         {
-            if (targets is null)
-                throw new ArgumentNullException(nameof(targets));
+            ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
             Dictionary<string, float> result = new();
             foreach (var target in targets)
@@ -426,8 +411,7 @@ namespace QuanLib.Minecraft.Command
 
         public static Dictionary<string, Item> GetAllPlayerSelectedItem(this CommandSender sender, IEnumerable<string> targets)
         {
-            if (targets is null)
-                throw new ArgumentNullException(nameof(targets));
+            ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
             Dictionary<string, Item> result = new();
             foreach (var target in targets)
@@ -441,8 +425,7 @@ namespace QuanLib.Minecraft.Command
 
         public static Dictionary<string, Item> GetAllPlayerDualWieldItem(this CommandSender sender, IEnumerable<string> targets)
         {
-            if (targets is null)
-                throw new ArgumentNullException(nameof(targets));
+            ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
             Dictionary<string, Item> result = new();
             foreach (var target in targets)

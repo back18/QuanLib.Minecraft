@@ -14,8 +14,11 @@ namespace QuanLib.Minecraft
     {
         public PlayerLoginInfo(string name, IPAddress ip, ushort port, int id, EntityPos position)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            IP = ip ?? throw new ArgumentNullException(nameof(ip));
+            ArgumentNullException.ThrowIfNull(name, nameof(name));
+            ArgumentNullException.ThrowIfNull(ip, nameof(ip));
+
+            Name = name;
+            IP = ip;
             Port = port;
             ID = id;
             Position = position;

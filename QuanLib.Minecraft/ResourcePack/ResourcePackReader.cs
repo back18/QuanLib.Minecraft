@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft.ResourcePack
     {
         public static ResourceEntryManager Load(params string[] packs)
         {
-            if (packs is null)
-                throw new ArgumentNullException(nameof(packs));
+            ArgumentNullException.ThrowIfNull(packs, nameof(packs));
 
             ResourceEntryManager result = new();
             foreach (string pack in packs)

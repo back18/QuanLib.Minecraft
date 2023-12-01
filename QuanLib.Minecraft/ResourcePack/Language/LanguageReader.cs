@@ -17,10 +17,8 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         public static LanguageManager Load(ResourceEntryManager resources, string language, string? minecraftLanguageFilePath = null)
         {
-            if (resources is null)
-                throw new ArgumentNullException(nameof(resources));
-            if (string.IsNullOrEmpty(language))
-                throw new ArgumentException($"“{nameof(language)}”不能为 null 或空。", nameof(language));
+            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
+            ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
 
             ConcurrentDictionary<string, TextTemplate> result = new();
             int total = 0;
@@ -75,8 +73,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         private static Dictionary<string, string>? TryParseJson(ZipArchiveEntry entry)
         {
-            if (entry is null)
-                throw new ArgumentNullException(nameof(entry));
+            ArgumentNullException.ThrowIfNull(entry, nameof(entry));
 
             using Stream stream = entry.Open();
             string text = stream.ToUtf8Text();
@@ -92,8 +89,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         private static Dictionary<string, string>? TryParseJson(string path)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
             try
             {

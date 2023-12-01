@@ -17,8 +17,7 @@ namespace QuanLib.Minecraft.API.Packet
 
         public static ResponseData ParseResponsePacket(ResponsePacket responsePacket)
         {
-            if (responsePacket is null)
-                throw new ArgumentNullException(nameof(responsePacket));
+            ArgumentNullException.ThrowIfNull(responsePacket, nameof(responsePacket));
 
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
@@ -45,7 +44,9 @@ namespace QuanLib.Minecraft.API.Packet
 
             public RequestData(string[] commands)
             {
-                Commands = commands ?? throw new ArgumentNullException(nameof(commands));
+                ArgumentNullException.ThrowIfNull(commands, nameof(commands));
+
+                Commands = commands;
             }
 
             public string[]? Commands { get; set; }
@@ -64,7 +65,9 @@ namespace QuanLib.Minecraft.API.Packet
 
             public ResponseData(string[] results)
             {
-                Results = results ?? throw new ArgumentNullException(nameof(results));
+                ArgumentNullException.ThrowIfNull(results, nameof(results));
+
+                Results = results;
             }
 
             public string[]? Results { get; set; }

@@ -16,8 +16,7 @@ namespace QuanLib.Minecraft.API.Instance
     {
         public McapiMinecraftServer(string serverPath, string serverAddress, ushort mcapiPort, string mcapiPassword, Func<Type, LogImpl> logger) : base(serverPath, serverAddress, logger)
         {
-            if (string.IsNullOrEmpty(mcapiPassword))
-                throw new ArgumentException($"“{nameof(mcapiPassword)}”不能为 null 或空。", nameof(mcapiPassword));
+            ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
 
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;

@@ -15,8 +15,7 @@ namespace QuanLib.Minecraft.GameResource
 
         public NetworkAssetIndex(string hash, int size, string url) : base(hash, size)
         {
-            if (string.IsNullOrEmpty(url))
-                throw new ArgumentException($"“{nameof(url)}”不能为 null 或空。", nameof(url));
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 
             Url = url;
         }

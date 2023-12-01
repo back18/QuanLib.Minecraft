@@ -19,8 +19,7 @@ namespace QuanLib.Minecraft.API.Packet
 
         public static ResponseData ParseResponsePacket(ResponsePacket responsePacket)
         {
-            if (responsePacket is null)
-                throw new ArgumentNullException(nameof(responsePacket));
+            ArgumentNullException.ThrowIfNull(responsePacket, nameof(responsePacket));
 
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
@@ -45,8 +44,7 @@ namespace QuanLib.Minecraft.API.Packet
 
             public RequestData(IEnumerable<ISetBlockArgument> arguments)
             {
-                if (arguments is null)
-                    throw new ArgumentNullException(nameof(arguments));
+                ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
                 List<string> palette = new();
                 List<int> data = new(arguments.Count() * 4);

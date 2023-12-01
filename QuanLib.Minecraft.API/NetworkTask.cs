@@ -15,12 +15,15 @@ namespace QuanLib.Minecraft.API
     {
         public NetworkTask(Func<byte[], ValueTask> write, RequestPacket request)
         {
+            ArgumentNullException.ThrowIfNull(write, nameof(write));
+            ArgumentNullException.ThrowIfNull(request, nameof(request));
+
             _sendSemaphore = new(0);
             _receiveSemaphore = new(0);
             State = NetworkTaskState.Notsent;
 
-            _write = write ?? throw new ArgumentNullException(nameof(write));
-            _request = request ?? throw new ArgumentNullException(nameof(request));
+            _write = write;
+            _request = request;
             _sendTask = WaitForSendAsync();
             _receiveTask = WaitForReceiveAsync();
 
@@ -61,8 +64,7 @@ namespace QuanLib.Minecraft.API
 
         internal void Receive(ResponsePacket response)
         {
-            if (response is null)
-                throw new ArgumentNullException(nameof(response));
+            ArgumentNullException.ThrowIfNull(response, nameof(response));
             if (response.ID != _request.ID)
                 throw new InvalidOperationException("请求数据包与响应数据包的ID不一致");
 

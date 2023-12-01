@@ -21,10 +21,8 @@ namespace QuanLib.Minecraft.Command.Senders
     {
         public RconOnewayCommandSender(IPAddress address, ushort port, string password, Func<Type, LogImpl> logger, int clientCount = 6) : base(logger)
         {
-            if (address is null)
-                throw new ArgumentNullException(nameof(address));
-            if (string.IsNullOrEmpty(password))
-                throw new ArgumentException($"“{nameof(password)}”不能为 null 或空。", nameof(password));
+            ArgumentNullException.ThrowIfNull(address, nameof(address));
+            ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
             ThrowHelper.ArgumentOutOfMin(0, clientCount, nameof(clientCount));
 
             _logger = logger;
@@ -83,8 +81,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public void SendOnewayCommand(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             byte[] packet = ToPacket(GetNextIndex(), 2, command);
             _synchronized.Invoke(() => _clients[GetNextIndex()].SendPacket(packet));
@@ -92,8 +89,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task SendOnewayCommandAsync(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             byte[] packet = ToPacket(GetNextIndex(), 2, command);
             await _synchronized.InvokeAsync(() => _clients[GetNextIndex()].SendPacketAsync(packet));
@@ -101,8 +97,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public void SendOnewayBatchCommand(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(commands);
             _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
@@ -110,8 +105,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(commands);
             await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
@@ -119,8 +113,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
         {
-            if (arguments is null)
-                throw new ArgumentNullException(nameof(arguments));
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
             _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
@@ -128,8 +121,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
         {
-            if (arguments is null)
-                throw new ArgumentNullException(nameof(arguments));
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
             ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
             await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
@@ -217,10 +209,8 @@ namespace QuanLib.Minecraft.Command.Senders
         {
             public RconClient(IPAddress address, ushort port, string password, Func<Type, LogImpl> logger) : base(logger)
             {
-                if (address is null)
-                    throw new ArgumentNullException(nameof(address));
-                if (string.IsNullOrEmpty(password))
-                    throw new ArgumentException($"“{nameof(password)}”不能为 null 或空。", nameof(password));
+                ArgumentNullException.ThrowIfNull(address, nameof(address));
+                ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
 
                 _client = new();
                 _client.Connect(address, port);

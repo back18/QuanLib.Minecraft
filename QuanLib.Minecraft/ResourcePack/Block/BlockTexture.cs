@@ -13,10 +13,8 @@ namespace QuanLib.Minecraft.ResourcePack.Block
     {
         public BlockTexture(string blockID, BlockType blockType, IDictionary<Facing, Image<Rgba32>> images)
         {
-            if (string.IsNullOrEmpty(blockID))
-                throw new ArgumentException($"“{nameof(blockID)}”不能为 null 或空。", nameof(blockID));
-            if (images is null)
-                throw new ArgumentNullException(nameof(images));
+            ArgumentException.ThrowIfNullOrEmpty(blockID, nameof(blockID));
+            ArgumentNullException.ThrowIfNull(images, nameof(images));
 
             BlockID = blockID;
             BlockType = blockType;

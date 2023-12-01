@@ -12,7 +12,9 @@ namespace QuanLib.Minecraft.Command.Senders
     {
         public ConsoleCommandSender(ServerConsole serverConsole)
         {
-            ServerConsole = serverConsole ?? throw new ArgumentNullException(nameof(serverConsole));
+            ArgumentNullException.ThrowIfNull(serverConsole, nameof(serverConsole));
+
+            ServerConsole = serverConsole;
             _synchronized = new();
         }
 
@@ -22,24 +24,21 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public string SendCommand(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             return _synchronized.Invoke(() => ServerConsole.SendCommandAsync(command).Result);
         }
 
         public async Task<string> SendCommandAsync(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             return await _synchronized.Invoke(() => ServerConsole.SendCommandAsync(command));
         }
 
         public string[] SendBatchCommand(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             return _synchronized.Invoke(() =>
             {
@@ -52,8 +51,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             return await _synchronized.InvokeAsync(() => FuncAsync(commands));
 
@@ -68,24 +66,21 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public void SendOnewayCommand(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             _synchronized.Invoke(() => ServerConsole.WriteLine(command));
         }
 
         public async Task SendOnewayCommandAsync(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             await _synchronized.Invoke(() => ServerConsole.WriteLineAsync(command));
         }
 
         public void SendOnewayBatchCommand(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             string function = ToFunction(commands);
             _synchronized.Invoke(() => ServerConsole.WriteLine(function));
@@ -93,8 +88,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             string function = ToFunction(commands);
             await _synchronized.InvokeAsync(() => ServerConsole.WriteLineAsync(function));
@@ -102,8 +96,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
         {
-            if (arguments is null)
-                throw new ArgumentNullException(nameof(arguments));
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
             string function = ToFunction(arguments);
             _synchronized.Invoke(() => ServerConsole.WriteLine(function));
@@ -111,8 +104,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
         {
-            if (arguments is null)
-                throw new ArgumentNullException(nameof(arguments));
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
             string function = ToFunction(arguments);
             await _synchronized.InvokeAsync(() => ServerConsole.WriteLineAsync(function));

@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft.GameResource
     {
         public static async Task<byte[]> DownloadBytesAsync(string url, DownloadProvider? downloadProvider = null)
         {
-            if (string.IsNullOrEmpty(url))
-                throw new ArgumentException($"“{nameof(url)}”不能为 null 或空。", nameof(url));
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 
             url = downloadProvider?.RedirectUrl(url) ?? url;
             HttpClientHandler clientHandler = new();
@@ -23,10 +22,8 @@ namespace QuanLib.Minecraft.GameResource
 
         public static async Task DownloadFileAsync(string path, string url, DownloadProvider? downloadProvider = null)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
-            if (string.IsNullOrEmpty(url))
-                throw new ArgumentException($"“{nameof(url)}”不能为 null 或空。", nameof(url));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 
             byte[] bytes = await DownloadBytesAsync(url, downloadProvider);
             await File.WriteAllBytesAsync(path, bytes);

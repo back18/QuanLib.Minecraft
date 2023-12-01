@@ -16,8 +16,11 @@ namespace QuanLib.Minecraft
     {
         public ServerConsole(StreamReader reader, StreamWriter writer, Func<Type, LogImpl> logger) : base(logger)
         {
-            _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(reader, nameof(reader));
+            ArgumentNullException.ThrowIfNull(writer, nameof(writer));
+
+            _reader = reader;
+            _writer = writer;
 
             ReadLine += OnReadLine;
         }
@@ -123,8 +126,7 @@ namespace QuanLib.Minecraft
 
         public async Task<string> SendCommandAsync(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             if (_task is not null)
                 await _task.WaitForCompleteAsync();
@@ -140,11 +142,14 @@ namespace QuanLib.Minecraft
         {
             public ConsoleTask(string input, Task send)
             {
+                ArgumentNullException.ThrowIfNull(input, nameof(input));
+                ArgumentNullException.ThrowIfNull(send, nameof(send));
+
                 _semaphore = new(0);
                 State = ConsoleTaskState.Sending;
 
-                _input = input ?? throw new ArgumentNullException(nameof(input));
-                _send = send ?? throw new ArgumentNullException(nameof(send));
+                _input = input;
+                _send = send;
                 _receive = WaitForReceiveAsync();
             }
 
@@ -164,8 +169,7 @@ namespace QuanLib.Minecraft
 
             internal void Complete(string output)
             {
-                if (output is null)
-                    throw new ArgumentNullException(nameof(output));
+                ArgumentNullException.ThrowIfNull(output, nameof(output));
 
                 if (State != ConsoleTaskState.Sending && State != ConsoleTaskState.Receiving)
                     return;

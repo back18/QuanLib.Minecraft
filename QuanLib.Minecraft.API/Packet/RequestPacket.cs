@@ -14,8 +14,7 @@ namespace QuanLib.Minecraft.API.Packet
     {
         public RequestPacket(string key, string type, byte[] data, int id, bool needResponse) : base(type, data, id)
         {
-            if (string.IsNullOrEmpty(key))
-                throw new ArgumentException($"“{nameof(key)}”不能为 null 或空。", nameof(key));
+            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
             Key = key;
             NeedResponse = needResponse;

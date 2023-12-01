@@ -15,8 +15,7 @@ namespace QuanLib.Minecraft.GameResource
 
         public DownloadAssetIndex(string hash, int size, string url, string path) : base(hash, size, url)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
             Path = path;
         }

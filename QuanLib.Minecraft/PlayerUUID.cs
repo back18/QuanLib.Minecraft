@@ -11,10 +11,8 @@ namespace QuanLib.Minecraft
     {
         public PlayerUUID(string name, string uuid)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
-            if (string.IsNullOrEmpty(uuid))
-                throw new ArgumentException($"“{nameof(uuid)}”不能为 null 或空。", nameof(uuid));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(uuid, nameof(uuid));
 
             Name = name;
             UUID = uuid;
@@ -22,8 +20,7 @@ namespace QuanLib.Minecraft
 
         public PlayerUUID(Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
 
             Name = model.name;
             UUID = model.uuid;

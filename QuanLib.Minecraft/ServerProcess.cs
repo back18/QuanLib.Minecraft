@@ -15,7 +15,10 @@ namespace QuanLib.Minecraft
     {
         public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, Func<Type, LogImpl> logger) : base(logger)
         {
-            LaunchArguments = launchArguments ?? throw new ArgumentNullException(nameof(launchArguments));
+            ArgumentException.ThrowIfNullOrEmpty(serverPath, nameof(serverPath));
+            ArgumentNullException.ThrowIfNull(launchArguments, nameof(launchArguments));
+
+            LaunchArguments = launchArguments;
 
             AutoRestart = false;
             StartCount = 0;

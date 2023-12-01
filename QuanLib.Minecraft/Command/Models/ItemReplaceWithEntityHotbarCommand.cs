@@ -26,10 +26,8 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, string target, int hotbar, string itemID, out int result)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
-            if (string.IsNullOrEmpty(itemID))
-                throw new ArgumentException($"“{nameof(itemID)}”不能为 null 或空。", nameof(itemID));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(itemID, nameof(itemID));
 
             itemID = itemID.Replace("\\", "\\\\");
             return base.TrySendCommand(sender, new object[] { target, hotbar, itemID }, out result);

@@ -20,8 +20,7 @@ namespace QuanLib.Minecraft.GameResource
 
         public virtual string ToAssetUrl(string hash)
         {
-            if (string.IsNullOrEmpty(hash))
-                throw new ArgumentException($"“{nameof(hash)}”不能为 null 或空。", nameof(hash));
+            ArgumentException.ThrowIfNullOrEmpty(hash, nameof(hash));
             ThrowHelper.StringLengthOutOfMin(2, hash, nameof(hash));
 
             return $"{AssetBaseUrl}{hash[..2]}/{hash}";

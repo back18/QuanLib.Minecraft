@@ -20,8 +20,7 @@ namespace QuanLib.Minecraft.API
     {
         public McapiClient(IPAddress address, ushort port, Func<Type, LogImpl> logger) : base(logger)
         {
-            if (address is null)
-                throw new ArgumentNullException(nameof(address));
+            ArgumentNullException.ThrowIfNull(address, nameof(address));
 
             _address = address;
             _port = port;
@@ -127,8 +126,7 @@ namespace QuanLib.Minecraft.API
 
         public async Task<ResponsePacket> SendRequestPacketAsync(RequestPacket request)
         {
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
+            ArgumentNullException.ThrowIfNull(request, nameof(request));
             if (!request.NeedResponse)
                 throw new ArgumentException("request.NeedResponse is false", nameof(request));
 
@@ -148,8 +146,7 @@ namespace QuanLib.Minecraft.API
 
         public async Task SendOnewayRequestPacketAsync(RequestPacket request)
         {
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
+            ArgumentNullException.ThrowIfNull(request, nameof(request));
             if (request.NeedResponse)
                 throw new ArgumentException("request.NeedResponse is true", nameof(request));
 
@@ -159,8 +156,7 @@ namespace QuanLib.Minecraft.API
 
         public async Task<bool> LoginAsync(string password)
         {
-            if (string.IsNullOrEmpty(password))
-                throw new ArgumentException($"“{nameof(password)}”不能为 null 或空。", nameof(password));
+            ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
 
             SemaphoreSlim semaphore = new(0);
             Connected += Release;
@@ -193,8 +189,7 @@ namespace QuanLib.Minecraft.API
 
         internal async ValueTask ThreadSafeWriteAsync(byte[] datapacket)
         {
-            if (datapacket is null)
-                throw new ArgumentNullException(nameof(datapacket));
+            ArgumentNullException.ThrowIfNull(datapacket, nameof(datapacket));
 
             await _synchronized.InvokeAsync(() => _client.GetStream().WriteAsync(datapacket));
         }

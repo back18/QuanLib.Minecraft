@@ -13,8 +13,7 @@ namespace QuanLib.Minecraft.MinecraftLogs
     {
         public MinecraftLog(string log)
         {
-            if (log is null)
-                throw new ArgumentNullException(nameof(log));
+            ArgumentNullException.ThrowIfNull(log, nameof(log));
 
             string separator = ": ";
             int index = log.IndexOf(separator);

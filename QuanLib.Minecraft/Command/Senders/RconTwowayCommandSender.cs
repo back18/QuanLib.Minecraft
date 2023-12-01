@@ -12,7 +12,9 @@ namespace QuanLib.Minecraft.Command.Senders
     {
         public RconTwowayCommandSender(RCON rcon)
         {
-            RCON = rcon ?? throw new ArgumentNullException(nameof(rcon));
+            ArgumentNullException.ThrowIfNull(rcon, nameof(rcon));
+
+            RCON = rcon;
             _synchronized = new();
         }
 
@@ -22,24 +24,21 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public string SendCommand(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             return _synchronized.Invoke(() => RCON.SendCommandAsync(command).Result);
         }
 
         public async Task<string> SendCommandAsync(string command)
         {
-            if (string.IsNullOrEmpty(command))
-                throw new ArgumentException($"“{nameof(command)}”不能为 null 或空。", nameof(command));
+            ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             return await _synchronized.Invoke(() => RCON.SendCommandAsync(command));
         }
 
         public string[] SendBatchCommand(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             return _synchronized.Invoke(() =>
             {
@@ -52,8 +51,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public async Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands)
         {
-            if (commands is null)
-                throw new ArgumentNullException(nameof(commands));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
             return await _synchronized.InvokeAsync(() => FuncAsync(commands));
 

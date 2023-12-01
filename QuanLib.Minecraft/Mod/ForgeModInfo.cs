@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft.Mod
     {
         public ForgeModInfo(Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
 
             NullValidator.ValidateObject(model, nameof(model));
             string name = nameof(model) + ".mods[0]";

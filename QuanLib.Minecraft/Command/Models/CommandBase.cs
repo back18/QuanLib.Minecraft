@@ -17,8 +17,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public virtual bool TrySendCommand(CommandSender sender, object[] inargs, [MaybeNullWhen(false)] out string[] outargs)
         {
-            if (sender is null)
-                throw new ArgumentNullException(nameof(sender));
+            ArgumentNullException.ThrowIfNull(sender, nameof(sender));
 
             if (!Input.TryFormat(inargs, out var input))
                 goto fail;

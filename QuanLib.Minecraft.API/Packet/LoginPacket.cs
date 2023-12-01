@@ -10,16 +10,14 @@ namespace QuanLib.Minecraft.API.Packet
     {
         public static RequestPacket CreateRequestPacket(string password, int id)
         {
-            if (string.IsNullOrEmpty(password))
-                throw new ArgumentException($"“{nameof(password)}”不能为 null 或空。", nameof(password));
+            ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
 
             return new(PacketKey.Login, PacketType.String, Encoding.UTF8.GetBytes(password), id, true);
         }
 
         public static ResponseData ParseResponsePacket(ResponsePacket responsePacket)
         {
-            if (responsePacket is null)
-                throw new ArgumentNullException(nameof(responsePacket));
+            ArgumentNullException.ThrowIfNull(responsePacket, nameof(responsePacket));
 
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }

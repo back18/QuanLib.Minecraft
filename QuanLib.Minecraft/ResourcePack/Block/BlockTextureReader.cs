@@ -16,10 +16,8 @@ namespace QuanLib.Minecraft.ResourcePack.Block
     {
         public static BlockTextureManager Load(ResourceEntryManager resources, IEnumerable<BlockState> blacklist)
         {
-            if (resources is null)
-                throw new ArgumentNullException(nameof(resources));
-            if (blacklist is null)
-                throw new ArgumentNullException(nameof(blacklist));
+            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
+            ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
 
             Dictionary<string, BlockTexture> result = new();
             ConcurrentDictionary<string, JObject> blockStates = GetBlockStates(resources);
@@ -103,8 +101,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         private static ConcurrentDictionary<string, JObject> GetBlockStates(ResourceEntryManager resources)
         {
-            if (resources is null)
-                throw new ArgumentNullException(nameof(resources));
+            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
 
             ConcurrentDictionary<string, JObject> result = new();
             int total = 0;

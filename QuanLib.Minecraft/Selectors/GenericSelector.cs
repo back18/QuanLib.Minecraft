@@ -10,8 +10,7 @@ namespace QuanLib.Minecraft.Selectors
     {
         public GenericSelector(string target)
         {
-            if (string.IsNullOrEmpty(target))
-                throw new ArgumentException($"“{nameof(target)}”不能为 null 或空。", nameof(target));
+            ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
             Target = target;
         }

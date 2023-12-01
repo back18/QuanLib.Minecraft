@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft.Snbt
     {
         public SnbtPropertyAttribute(string propertyName)
         {
-            if (string.IsNullOrEmpty(propertyName))
-                throw new ArgumentException($"“{nameof(propertyName)}”不能为 null 或空。", nameof(propertyName));
+            ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
 
             PropertyName = propertyName;
         }

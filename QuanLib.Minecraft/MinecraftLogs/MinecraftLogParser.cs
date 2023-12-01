@@ -15,7 +15,9 @@ namespace QuanLib.Minecraft.MinecraftLogs
     {
         public MinecraftLogParser(ILogListener listener)
         {
-            LogListener = listener ?? throw new ArgumentNullException(nameof(listener));
+            ArgumentNullException.ThrowIfNull(listener, nameof(listener));
+
+            LogListener = listener;
             IsBound = false;
 
             Starting += OnStarting;

@@ -16,8 +16,7 @@ namespace QuanLib.Minecraft.GameResource
 
         public static async Task DownloadFileAsync(this IDownloadAssetIndex source, string rootPath, DownloadProvider? downloadProvider = null)
         {
-            if (string.IsNullOrEmpty(rootPath))
-                throw new ArgumentException($"“{nameof(rootPath)}”不能为 null 或空。", nameof(rootPath));
+            ArgumentException.ThrowIfNullOrEmpty(rootPath, nameof(rootPath));
 
             string path = Path.Combine(rootPath, source.Path);
             await DownloadUtil.DownloadFileAsync(path, source.Url, downloadProvider);

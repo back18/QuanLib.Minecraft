@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft.Selectors
     {
         public TargetArgument(T value, bool invert = false)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
 
             MinValue = value;
             MaxValue = value;
@@ -21,8 +20,11 @@ namespace QuanLib.Minecraft.Selectors
 
         public TargetArgument(T minValue, T maxValue, bool invert = false)
         {
-            MinValue = minValue ?? throw new ArgumentNullException(nameof(minValue));
-            MaxValue = maxValue ?? throw new ArgumentNullException(nameof(maxValue));
+            ArgumentNullException.ThrowIfNull(maxValue, nameof(maxValue));
+            ArgumentNullException.ThrowIfNull(minValue, nameof(minValue));
+
+            MinValue = minValue;
+            MaxValue = maxValue;
             Invert = invert;
         }
 
@@ -39,8 +41,7 @@ namespace QuanLib.Minecraft.Selectors
 
         public string ToString(string name)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
             string? minValue, maxValue;
             if (MinValue is Gamemode minGamemode && MaxValue is Gamemode maxGamemode)

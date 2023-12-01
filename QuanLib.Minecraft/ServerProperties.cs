@@ -79,8 +79,7 @@ namespace QuanLib.Minecraft
 
         public ServerProperties(IDictionary<string, string> dictionary, bool applyDefault = true)
         {
-            if (dictionary is null)
-                throw new ArgumentNullException(nameof(dictionary));
+            ArgumentNullException.ThrowIfNull(dictionary, nameof(dictionary));
 
             if (applyDefault)
             {

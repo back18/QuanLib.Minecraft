@@ -12,8 +12,11 @@ namespace QuanLib.Minecraft.Command.Senders
     {
         public CommandSender(ITwowayCommandSender twowaySender, IOnewayCommandSender onewaySender)
         {
-            TwowaySender = twowaySender ?? throw new ArgumentNullException(nameof(twowaySender));
-            OnewaySender = onewaySender ?? throw new ArgumentNullException(nameof(onewaySender));
+            ArgumentNullException.ThrowIfNull(twowaySender, nameof(twowaySender));
+            ArgumentNullException.ThrowIfNull(onewaySender, nameof(onewaySender));
+
+            TwowaySender = twowaySender;
+            OnewaySender = onewaySender;
 
             CommandSent += OnCommandSent;
         }

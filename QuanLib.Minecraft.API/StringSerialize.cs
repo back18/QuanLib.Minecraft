@@ -15,7 +15,9 @@ namespace QuanLib.Minecraft.API
 
         protected StringSerialize(Encoding encoding)
         {
-            Encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding, nameof(encoding));
+
+            Encoding = encoding;
         }
 
         public virtual Encoding Encoding { get; }

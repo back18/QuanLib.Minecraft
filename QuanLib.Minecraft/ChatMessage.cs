@@ -10,8 +10,11 @@ namespace QuanLib.Minecraft
     {
         public ChatMessage(string sender, string message)
         {
-            Sender = sender ?? throw new ArgumentNullException(nameof(sender));
-            Message = message ?? throw new ArgumentNullException(nameof(message));
+            ArgumentNullException.ThrowIfNull(sender, nameof(sender));
+            ArgumentNullException.ThrowIfNull(message, nameof(message));
+
+            Sender = sender;
+            Message = message;
         }
 
         public string Sender { get; }

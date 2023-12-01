@@ -11,8 +11,7 @@ namespace QuanLib.Minecraft
     {
         public PropertiesAttribute(string name)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
             Name = name;
         }

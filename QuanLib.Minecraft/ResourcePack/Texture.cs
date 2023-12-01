@@ -10,7 +10,9 @@ namespace QuanLib.Minecraft.ResourcePack
     {
         public Texture(Image<Rgba32> image)
         {
-            _image = image ?? throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
+
+            _image = image;
             AverageColor = GetAverageColor(image);
         }
 

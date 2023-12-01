@@ -19,10 +19,10 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         internal LanguageManager(Dictionary<string, TextTemplate> item, string language)
         {
-            if (string.IsNullOrEmpty(language))
-                throw new ArgumentException($"“{nameof(language)}”不能为 null 或空。", nameof(language));
+            ArgumentNullException.ThrowIfNull(item, nameof(item));
+            ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
 
-            _items = item ?? throw new ArgumentNullException(nameof(item));
+            _items = item;
             Language = language;
         }
 
@@ -55,10 +55,8 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         public static LanguageManager LoadInstance(ResourceEntryManager resources, string language, string? minecraftLanguageFilePath = null)
         {
-            if (resources is null)
-                throw new ArgumentNullException(nameof(resources));
-            if (string.IsNullOrEmpty(language))
-                throw new ArgumentException($"“{nameof(language)}”不能为 null 或空。", nameof(language));
+            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
+            ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
 
             lock (_slock)
             {

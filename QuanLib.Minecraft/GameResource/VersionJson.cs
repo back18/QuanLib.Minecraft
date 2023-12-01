@@ -11,15 +11,16 @@ namespace QuanLib.Minecraft.GameResource
     {
         public VersionJson(JObject jobj)
         {
-            _jobj = jobj ?? throw new ArgumentNullException(nameof(jobj));
+            ArgumentNullException.ThrowIfNull(jobj, nameof(jobj));
+
+            _jobj = jobj;
         }
 
         private readonly JObject _jobj;
 
         public static async Task<VersionJson> DownloadAsync(string url)
         {
-            if (string.IsNullOrEmpty(url))
-                throw new ArgumentException($"“{nameof(url)}”不能为 null 或空。", nameof(url));
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 
             byte[] bytes = await DownloadUtil.DownloadBytesAsync(url);
             string text = Encoding.UTF8.GetString(bytes);

@@ -18,10 +18,8 @@ namespace QuanLib.Minecraft.API.Packet
     {
         protected DataPacket(string type, byte[] data, int id)
         {
-            if (string.IsNullOrEmpty(type))
-                throw new ArgumentException($"“{nameof(type)}”不能为 null 或空。", nameof(type));
-            if (data is null)
-                throw new ArgumentNullException(nameof(data));
+            ArgumentException.ThrowIfNullOrEmpty(type, nameof(type));
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             Type = type;
             Data = data;
@@ -30,8 +28,7 @@ namespace QuanLib.Minecraft.API.Packet
 
         protected DataPacket(ModelBase model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
 
             List<ValidationResult> results = new();
             if (!Validator.TryValidateObject(model, new(model), results, true))
@@ -64,8 +61,7 @@ namespace QuanLib.Minecraft.API.Packet
 
         protected static byte[] Serialize<T>(T model) where T : ModelBase
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
 
             using MemoryStream stream = new();
             BsonSerializer.Serialize(new BsonBinaryWriter(stream), model);

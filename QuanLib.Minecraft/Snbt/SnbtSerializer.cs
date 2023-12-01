@@ -34,10 +34,8 @@ namespace QuanLib.Minecraft.Snbt
 
         private static object DeserializeObject(NbtCompound nbtCompound, Type type)
         {
-            if (nbtCompound is null)
-                throw new ArgumentNullException(nameof(nbtCompound));
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(nbtCompound, nameof(nbtCompound));
+            ArgumentNullException.ThrowIfNull(type, nameof(type));
 
             object obj = Activator.CreateInstance(type) ?? throw new NullReferenceException();
 
@@ -112,8 +110,7 @@ namespace QuanLib.Minecraft.Snbt
 
         public static Dictionary<string, object> DeserializeDictionary(NbtCompound nbtCompound)
         {
-            if (nbtCompound is null)
-                throw new ArgumentNullException(nameof(nbtCompound));
+            ArgumentNullException.ThrowIfNull(nbtCompound, nameof(nbtCompound));
 
             Dictionary<string, object> result = new();
             foreach (var item in nbtCompound)
@@ -155,8 +152,7 @@ namespace QuanLib.Minecraft.Snbt
 
         public static Guid ToGuid(int[] value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
             if (value.Length != 4)
                 throw new ArgumentException("UUID数组长度必须为4");
 
@@ -184,8 +180,7 @@ namespace QuanLib.Minecraft.Snbt
 
         public static Vector3<T> ToVector3<T>(T[] value) where T : struct
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
             if (value.Length != 3)
                 throw new ArgumentException("三维向量数组长度必须为3");
 
@@ -194,8 +189,7 @@ namespace QuanLib.Minecraft.Snbt
 
         public static Vector2<T> ToVector2<T>(T[] value) where T : struct
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
             if (value.Length != 2)
                 throw new ArgumentException("二维向量数组长度必须为2");
 
@@ -204,8 +198,7 @@ namespace QuanLib.Minecraft.Snbt
 
         public static Rotation ToRotation(float[] value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
             if (value.Length != 2)
                 throw new ArgumentException("Rotation数组长度必须为2");
 

@@ -10,8 +10,7 @@ namespace QuanLib.Minecraft
     {
         public static Dictionary<string, string> Parse(string text)
         {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text));
+            ArgumentNullException.ThrowIfNull(text, nameof(text));
 
             Dictionary<string, string> dictionary = new();
             if (string.IsNullOrEmpty(text))

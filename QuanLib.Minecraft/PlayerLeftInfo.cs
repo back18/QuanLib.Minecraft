@@ -10,8 +10,11 @@ namespace QuanLib.Minecraft
     {
         public PlayerLeftInfo(string name, string reason)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            Reason = reason ?? throw new ArgumentNullException(nameof(reason));
+            ArgumentNullException.ThrowIfNull(name, nameof(name));
+            ArgumentNullException.ThrowIfNull(reason, nameof(reason));
+
+            Name = name;
+            Reason = reason;
         }
 
         public string Name { get; }
