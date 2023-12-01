@@ -12,8 +12,7 @@ namespace QuanLib.Minecraft
         public SimpleServerLaunchArguments(string javaPath, string launchTarget, int xms = 0, int xmx = 0, bool enableGui = false, IList<string>? addonArgs = null)
             : base(javaPath)
         {
-            if (string.IsNullOrWhiteSpace(launchTarget))
-                throw new ArgumentException($"“{nameof(launchTarget)}”不能为 null 或空白。", nameof(launchTarget));
+            ArgumentException.ThrowIfNullOrWhiteSpace(launchTarget, nameof(launchTarget));
 
             LaunchTarget = launchTarget;
             Xms = xms;

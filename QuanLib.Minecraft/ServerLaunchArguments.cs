@@ -10,8 +10,7 @@ namespace QuanLib.Minecraft
     {
         protected ServerLaunchArguments(string javaPath)
         {
-            if (string.IsNullOrWhiteSpace(javaPath))
-                throw new ArgumentException($"“{nameof(javaPath)}”不能为 null 或空白。", nameof(javaPath));
+            ArgumentException.ThrowIfNullOrWhiteSpace(javaPath, nameof(javaPath));
 
             JavaPath = javaPath;
         }

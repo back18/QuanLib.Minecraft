@@ -24,8 +24,7 @@ namespace QuanLib.Minecraft.Snbt
 
         public static object DeserializeObject(string snbt, Type type)
         {
-            if (string.IsNullOrWhiteSpace(snbt))
-                throw new ArgumentException($"“{nameof(snbt)}”不能为 null 或空白。", nameof(snbt));
+            ArgumentException.ThrowIfNullOrWhiteSpace(snbt, nameof(snbt));
 
             NbtCompoundParser parser = new();
             NbtCompound compound = parser.Parse(snbt);

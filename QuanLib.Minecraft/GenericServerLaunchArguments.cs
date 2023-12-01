@@ -10,8 +10,7 @@ namespace QuanLib.Minecraft
     {
         public GenericServerLaunchArguments(string javaPath, string arguments) : base(javaPath)
         {
-            if (string.IsNullOrWhiteSpace(arguments))
-                throw new ArgumentException($"“{nameof(arguments)}”不能为 null 或空白。", nameof(arguments));
+            ArgumentException.ThrowIfNullOrWhiteSpace(arguments, nameof(arguments));
 
             Arguments = arguments;
         }
