@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance;
@@ -14,7 +13,7 @@ namespace QuanLib.Minecraft.API.Instance
 {
     public class McapiMinecraftClient : MinecraftClient, IMcapiInstance
     {
-        public McapiMinecraftClient(string clientPath, string serverAddress, ushort mcapiPort, string mcapiPassword, Func<Type, LogImpl> logger) : base(clientPath, logger)
+        public McapiMinecraftClient(string clientPath, string serverAddress, ushort mcapiPort, string mcapiPassword, ILogbuilder? logbuilder = null) : base(clientPath, logbuilder)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverAddress, nameof(serverAddress));
             ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
@@ -22,7 +21,7 @@ namespace QuanLib.Minecraft.API.Instance
             ServerAddress = IPAddress.Parse(serverAddress);
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;
-            McapiClient = new(ServerAddress, McapiPort, logger);
+            McapiClient = new(ServerAddress, McapiPort, logbuilder);
             McapiCommandSender = new(McapiClient);
             CommandSender = new(McapiCommandSender, McapiCommandSender);
         }

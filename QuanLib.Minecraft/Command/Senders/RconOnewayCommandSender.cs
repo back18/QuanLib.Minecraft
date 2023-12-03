@@ -1,6 +1,4 @@
-﻿using log4net.Core;
-using log4net.Repository.Hierarchy;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -19,13 +17,13 @@ namespace QuanLib.Minecraft.Command.Senders
 {
     public class RconOnewayCommandSender : UnmanagedRunnable, IOnewayCommandSender
     {
-        public RconOnewayCommandSender(IPAddress address, ushort port, string password, Func<Type, LogImpl> logger, int clientCount = 6) : base(logger)
+        public RconOnewayCommandSender(IPAddress address, ushort port, string password, int clientCount = 6, ILogbuilder? logbuilder = null) : base(logbuilder)
         {
             ArgumentNullException.ThrowIfNull(address, nameof(address));
             ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
             ThrowHelper.ArgumentOutOfMin(0, clientCount, nameof(clientCount));
 
-            _logger = logger;
+            _logbuilder = logbuilder;
             _address = address;
             _port = port;
             _password = password;
@@ -38,7 +36,7 @@ namespace QuanLib.Minecraft.Command.Senders
             IsConnected = false;
         }
 
-        private readonly Func<Type, LogImpl> _logger;
+        private readonly ILogbuilder? _logbuilder;
 
         private readonly IPAddress _address;
 
@@ -63,7 +61,7 @@ namespace QuanLib.Minecraft.Command.Senders
             Task[] tasks = new Task[_clientCount];
             for (int i = 0; i < _clientCount; i++)
             {
-                RconClient client = new(_address, _port, _password, _logger);
+                RconClient client = new(_address, _port, _password, _logbuilder);
                 client.Start("RconClient Thread #" + i);
                 _clients.Add(client);
                 tasks[i] = client.WaitForStopAsync();
@@ -207,7 +205,7 @@ namespace QuanLib.Minecraft.Command.Senders
 
         private class RconClient : UnmanagedRunnable
         {
-            public RconClient(IPAddress address, ushort port, string password, Func<Type, LogImpl> logger) : base(logger)
+            public RconClient(IPAddress address, ushort port, string password, ILogbuilder? logbuilder = null) : base(logbuilder)
             {
                 ArgumentNullException.ThrowIfNull(address, nameof(address));
                 ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));

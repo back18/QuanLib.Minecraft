@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using MongoDB.Bson.Serialization;
+﻿using MongoDB.Bson.Serialization;
 using QuanLib.Core;
 using QuanLib.Minecraft.API.Events;
 using QuanLib.Minecraft.API.Packet;
@@ -18,7 +17,7 @@ namespace QuanLib.Minecraft.API
 {
     public class McapiClient : UnmanagedRunnable
     {
-        public McapiClient(IPAddress address, ushort port, Func<Type, LogImpl> logger) : base(logger)
+        public McapiClient(IPAddress address, ushort port, ILogbuilder? logbuilder = null) : base(logbuilder)
         {
             ArgumentNullException.ThrowIfNull(address, nameof(address));
 

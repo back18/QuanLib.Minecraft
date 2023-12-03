@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ namespace QuanLib.Minecraft
 {
     public class ServerProcess : UnmanagedRunnable
     {
-        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, Func<Type, LogImpl> logger) : base(logger)
+        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, ILogbuilder? logbuilder = null) : base(logbuilder)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverPath, nameof(serverPath));
             ArgumentNullException.ThrowIfNull(launchArguments, nameof(launchArguments));

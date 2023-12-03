@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace QuanLib.Minecraft.RCON
 {
     public class RconClient : UnmanagedRunnable
     {
-        public RconClient(Func<Type, LogImpl> logger) : base(logger)
+        public RconClient(ILogbuilder? logbuilder = null) : base(logbuilder)
         {
         }
 

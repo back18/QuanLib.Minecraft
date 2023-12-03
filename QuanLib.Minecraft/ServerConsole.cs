@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;
@@ -14,7 +13,7 @@ namespace QuanLib.Minecraft
 {
     public class ServerConsole : RunnableBase
     {
-        public ServerConsole(StreamReader reader, StreamWriter writer, Func<Type, LogImpl> logger) : base(logger)
+        public ServerConsole(StreamReader reader, StreamWriter writer, ILogbuilder? logbuilder = null) : base(logbuilder)
         {
             ArgumentNullException.ThrowIfNull(reader, nameof(reader));
             ArgumentNullException.ThrowIfNull(writer, nameof(writer));

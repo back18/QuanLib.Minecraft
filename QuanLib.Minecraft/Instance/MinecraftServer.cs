@@ -1,4 +1,4 @@
-﻿using log4net.Core;
+﻿using QuanLib.Core;
 using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;
@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftServer : MinecraftInstance
     {
-        protected MinecraftServer(string serverPath, string serverAddress, Func<Type, LogImpl> logger) : base(serverPath, logger)
+        protected MinecraftServer(string serverPath, string serverAddress, ILogbuilder? logbuilder = null) : base(serverPath, logbuilder)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverAddress, nameof(serverAddress));
 

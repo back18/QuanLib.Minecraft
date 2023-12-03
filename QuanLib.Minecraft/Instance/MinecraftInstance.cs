@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Models;
 using QuanLib.Minecraft.Command.Senders;
@@ -15,13 +14,13 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftInstance : UnmanagedRunnable
     {
-        protected MinecraftInstance(string minecraftPath, Func<Type, LogImpl> logger) : base(logger)
+        protected MinecraftInstance(string minecraftPath, ILogbuilder? logbuilder = null) : base(logbuilder)
         {
             ArgumentException.ThrowIfNullOrEmpty(minecraftPath, nameof(minecraftPath));
 
             MinecraftPath = minecraftPath;
             MinecraftDirectory = new(MinecraftPath);
-            LogFileListener = new(MinecraftDirectory.LogsDir.LatestFile, logger);
+            LogFileListener = new(MinecraftDirectory.LogsDir.LatestFile, logbuilder);
             LogParser = new(LogFileListener);
         }
 

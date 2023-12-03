@@ -1,4 +1,4 @@
-﻿using log4net.Core;
+﻿using QuanLib.Core;
 using QuanLib.Minecraft.Directorys;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftClient : MinecraftInstance
     {
-        protected MinecraftClient(string clientPath, Func<Type, LogImpl> logger) : base(clientPath, logger)
+        protected MinecraftClient(string clientPath, ILogbuilder? logbuilder = null) : base(clientPath, logbuilder)
         {
             ClientDirectory = new(clientPath);
         }
