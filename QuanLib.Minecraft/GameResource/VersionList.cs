@@ -32,16 +32,6 @@ namespace QuanLib.Minecraft.GameResource
 
         public LatestVersion LatestVersion { get; }
 
-        public static async Task<VersionList> DownloadAsync(string url)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
-
-            byte[] bytes = await DownloadUtil.DownloadBytesAsync(url);
-            string text = Encoding.UTF8.GetString(bytes);
-            var model = JsonConvert.DeserializeObject<VersionList.Model>(text) ?? throw new FormatException();
-            return new(model);
-        }
-
         public bool ContainsKey(string key)
         {
             return _items.ContainsKey(key);

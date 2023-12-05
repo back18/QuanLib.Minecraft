@@ -30,16 +30,6 @@ namespace QuanLib.Minecraft.GameResource
 
         public AssetIndex this[string key] => _items[key];
 
-        public static async Task<AssetList> DownloadAsync(string url)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
-
-            byte[] bytes = await DownloadUtil.DownloadBytesAsync(url);
-            string text = Encoding.UTF8.GetString(bytes);
-            var model = JsonConvert.DeserializeObject<AssetList.Model>(text) ?? throw new FormatException();
-            return new(model);
-        }
-
         public bool ContainsKey(string key)
         {
             return _items.ContainsKey(key);

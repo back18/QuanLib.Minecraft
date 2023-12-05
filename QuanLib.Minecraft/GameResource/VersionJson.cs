@@ -18,16 +18,6 @@ namespace QuanLib.Minecraft.GameResource
 
         private readonly JObject _jobj;
 
-        public static async Task<VersionJson> DownloadAsync(string url)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
-
-            byte[] bytes = await DownloadUtil.DownloadBytesAsync(url);
-            string text = Encoding.UTF8.GetString(bytes);
-            JObject jobj = JObject.Parse(text);
-            return new(jobj);
-        }
-
         public NetworkAssetIndex? GetIndexFile()
         {
             if (_jobj["assetIndex"] is not JObject jobj)
