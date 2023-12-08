@@ -94,19 +94,19 @@ namespace QuanLib.Minecraft.Command.Senders
             await _synchronized.InvokeAsync(() => ServerConsole.WriteLineAsync(function));
         }
 
-        public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
+        public void SendOnewayBatchSetBlock(IEnumerable<WorldBlock> blocks)
         {
-            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
-            string function = ToFunction(arguments);
+            string function = ToFunction(blocks);
             _synchronized.Invoke(() => ServerConsole.WriteLine(function));
         }
 
-        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
+        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<WorldBlock> blocks)
         {
-            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
-            string function = ToFunction(arguments);
+            string function = ToFunction(blocks);
             await _synchronized.InvokeAsync(() => ServerConsole.WriteLineAsync(function));
         }
 
@@ -132,21 +132,11 @@ namespace QuanLib.Minecraft.Command.Senders
             return sb.ToString();
         }
 
-        private static string ToFunction(IEnumerable<ISetBlockArgument> arguments)
+        private static string ToFunction(IEnumerable<WorldBlock> blocks)
         {
-            StringBuilder sb = new(arguments.Count() * 32);
-            foreach (var argument in arguments)
-            {
-                sb.Append("setblock ");
-                sb.Append(argument.Position.X);
-                sb.Append(' ');
-                sb.Append(argument.Position.Y);
-                sb.Append(' ');
-                sb.Append(argument.Position.Z);
-                sb.Append(' ');
-                sb.Append(argument.BlockID);
-                sb.Append('\n');
-            }
+            StringBuilder sb = new(blocks.Count() * 32);
+            foreach (var block in blocks)
+                sb.AppendFormat("setblock {0} {1} {2} {3}\n", block.Position.X, block.Position.Y, block.Position.Z, block.BlockID);
             sb.Length--;
             return sb.ToString();
         }

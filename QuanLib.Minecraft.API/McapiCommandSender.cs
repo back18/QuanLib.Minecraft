@@ -77,18 +77,18 @@ namespace QuanLib.Minecraft.API
             await McapiClient.SendOnewayBatchCommandAsync(commands.ToArray());
         }
 
-        public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
+        public void SendOnewayBatchSetBlock(IEnumerable<WorldBlock> blocks)
         {
-            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
-            McapiClient.SendOnewayBatchSetBlockAsync(arguments).Wait();
+            McapiClient.SendOnewayBatchSetBlockAsync(blocks).Wait();
         }
 
-        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
+        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<WorldBlock> blocks)
         {
-            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
-            await McapiClient.SendOnewayBatchSetBlockAsync(arguments);
+            await McapiClient.SendOnewayBatchSetBlockAsync(blocks);
         }
 
         public void WaitForResponse()

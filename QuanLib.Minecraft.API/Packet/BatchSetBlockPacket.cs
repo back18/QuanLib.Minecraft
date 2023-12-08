@@ -12,9 +12,9 @@ namespace QuanLib.Minecraft.API.Packet
 {
     public static class BatchSetBlockPacket
     {
-        public static RequestPacket CreateRequestPacket(IEnumerable<ISetBlockArgument> arguments, int id, bool needResponse = true)
+        public static RequestPacket CreateRequestPacket(IEnumerable<WorldBlock> blocks, int id, bool needResponse = true)
         {
-            return new(PacketKey.BatchSetBlock, PacketType.BSON, new RequestData(arguments).Serialize(), id, needResponse);
+            return new(PacketKey.BatchSetBlock, PacketType.BSON, new RequestData(blocks).Serialize(), id, needResponse);
         }
 
         public static ResponseData ParseResponsePacket(ResponsePacket responsePacket)
@@ -24,17 +24,17 @@ namespace QuanLib.Minecraft.API.Packet
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
 
-        public static async Task<ResponseData> SendBatchSetBlockAsync(this McapiClient client, IEnumerable<ISetBlockArgument> arguments)
+        public static async Task<ResponseData> SendBatchSetBlockAsync(this McapiClient client, IEnumerable<WorldBlock> blocks)
         {
-            RequestPacket request = CreateRequestPacket(arguments, client.GetNextID(), true);
+            RequestPacket request = CreateRequestPacket(blocks, client.GetNextID(), true);
             ResponsePacket response = await client.SendRequestPacketAsync(request);
             response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
 
-        public static async Task SendOnewayBatchSetBlockAsync(this McapiClient client, IEnumerable<ISetBlockArgument> arguments)
+        public static async Task SendOnewayBatchSetBlockAsync(this McapiClient client, IEnumerable<WorldBlock> blocks)
         {
-            RequestPacket request = CreateRequestPacket(arguments, client.GetNextID(), false);
+            RequestPacket request = CreateRequestPacket(blocks, client.GetNextID(), false);
             await client.SendOnewayRequestPacketAsync(request);
         }
 
@@ -42,13 +42,13 @@ namespace QuanLib.Minecraft.API.Packet
         {
             public RequestData() { }
 
-            public RequestData(IEnumerable<ISetBlockArgument> arguments)
+            public RequestData(IEnumerable<WorldBlock> blocks)
             {
-                ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+                ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
                 List<string> palette = new();
-                List<int> data = new(arguments.Count() * 4);
-                foreach (ISetBlockArgument argument in arguments)
+                List<int> data = new(blocks.Count() * 4);
+                foreach (WorldBlock argument in blocks)
                 {
                     int index = palette.IndexOf(argument.BlockID);
                     if (index == -1)

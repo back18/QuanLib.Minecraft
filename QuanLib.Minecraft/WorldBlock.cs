@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
 {
-    public interface ISetBlockArgument
+    public readonly struct WorldBlock(BlockPos position, string blockID)
     {
-        public BlockPos Position { get; }
+        public BlockPos Position { get; } = position;
 
-        public string BlockID { get; }
+        public string BlockID { get; } = blockID;
     }
 }

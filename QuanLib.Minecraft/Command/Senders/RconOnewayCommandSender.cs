@@ -109,19 +109,19 @@ namespace QuanLib.Minecraft.Command.Senders
             await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
         }
 
-        public void SendOnewayBatchSetBlock(IEnumerable<ISetBlockArgument> arguments)
+        public void SendOnewayBatchSetBlock(IEnumerable<WorldBlock> blocks)
         {
-            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
-            ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
+            ConcurrentBag<byte[]> packets = ToPacketBag(blocks);
             _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
         }
 
-        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<ISetBlockArgument> arguments)
+        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<WorldBlock> blocks)
         {
-            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
 
-            ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
+            ConcurrentBag<byte[]> packets = ToPacketBag(blocks);
             await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
         }
 
@@ -177,12 +177,12 @@ namespace QuanLib.Minecraft.Command.Senders
             return result;
         }
 
-        private ConcurrentBag<byte[]> ToPacketBag(IEnumerable<ISetBlockArgument> arguments)
+        private ConcurrentBag<byte[]> ToPacketBag(IEnumerable<WorldBlock> blocks)
         {
             ConcurrentBag<byte[]> result = new();
-            ParallelLoopResult parallelLoopResult = Parallel.ForEach(arguments, argument =>
+            ParallelLoopResult parallelLoopResult = Parallel.ForEach(blocks, block =>
             {
-                result.Add(ToPacket(GetNextID(), 2, argument.ToSetBlockCommand()));
+                result.Add(ToPacket(GetNextID(), 2, block.ToSetBlockCommand()));
             });
 
             while (!parallelLoopResult.IsCompleted)
