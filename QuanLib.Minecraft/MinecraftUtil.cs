@@ -61,34 +61,6 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static string ToChineseString(this Facing facing)
-        {
-            return facing switch
-            {
-                Facing.Xp => "东",
-                Facing.Xm => "西",
-                Facing.Yp => "上",
-                Facing.Ym => "下",
-                Facing.Zp => "南",
-                Facing.Zm => "北",
-                _ => throw new InvalidOperationException(),
-            };
-        }
-
-        public static string ToEnglishString(this Facing facing)
-        {
-            return facing switch
-            {
-                Facing.Xp => "east",
-                Facing.Xm => "west",
-                Facing.Yp => "up",
-                Facing.Ym => "down",
-                Facing.Zp => "south",
-                Facing.Zm => "north",
-                _ => throw new InvalidOperationException(),
-            };
-        }
-
         public static ChunkPos BlockPos2ChunkPos(IVector3<int> blockPos)
         {
             return new ChunkPos
