@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
-using QuanLib.Core.IO;
+using QuanLib.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;

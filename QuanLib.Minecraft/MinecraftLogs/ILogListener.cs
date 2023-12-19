@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Core.IO;
+using QuanLib.IO;
 using QuanLib.Minecraft.Events;
 using System;
 using System.Collections.Generic;

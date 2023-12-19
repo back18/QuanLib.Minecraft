@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using QuanLib.Core.Extensions;
-using QuanLib.Core.IO;
+using QuanLib.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.API", "Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Core", "..\QuanLib\QuanLib.Core\QuanLib.Core.csproj", "{3F20B684-5CB7-4781-9C9C-8216E62C639F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.RCON", "QuanLib.Minecraft.RCON\QuanLib.Minecraft.RCON.csproj", "{CFC257EE-8094-4F73-AA04-07CD1C7D086B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.RCON", "QuanLib.Minecraft.RCON\QuanLib.Minecraft.RCON.csproj", "{CFC257EE-8094-4F73-AA04-07CD1C7D086B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.IO", "..\QuanLib\QuanLib.IO\QuanLib.IO.csproj", "{66FEC611-B66C-479E-A62D-458BFA635046}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CFC257EE-8094-4F73-AA04-07CD1C7D086B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFC257EE-8094-4F73-AA04-07CD1C7D086B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFC257EE-8094-4F73-AA04-07CD1C7D086B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66FEC611-B66C-479E-A62D-458BFA635046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FEC611-B66C-479E-A62D-458BFA635046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66FEC611-B66C-479E-A62D-458BFA635046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66FEC611-B66C-479E-A62D-458BFA635046}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

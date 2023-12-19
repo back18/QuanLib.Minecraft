@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\QuanLib\QuanLib.Core\QuanLib.Core.csproj" />
+    <ProjectReference Include="..\..\QuanLib\QuanLib.IO\QuanLib.IO.csproj" />
   </ItemGroup>
 
 </Project>
