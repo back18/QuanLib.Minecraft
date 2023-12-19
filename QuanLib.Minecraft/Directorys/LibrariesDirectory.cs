@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Directorys
 {
-    public class LibrariesDirectory : DirectoryManager
+    public class LibrariesDirectory : DirectoryBase
     {
         public LibrariesDirectory(string directory) : base(directory)
         {

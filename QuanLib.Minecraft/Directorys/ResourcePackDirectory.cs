@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Directorys
 {
-    public class ResourcePackDirectory : DirectoryManager
+    public class ResourcePackDirectory : DirectoryBase
     {
         public ResourcePackDirectory(string directory) : base(directory)
         {
@@ -22,30 +22,30 @@ namespace QuanLib.Minecraft.Directorys
 
         public TexturesDirectory Textures { get; }
 
-        public class ModelsDirectory : DirectoryManager
+        public class ModelsDirectory : DirectoryBase
         {
             public ModelsDirectory(string directory) : base(directory)
             {
-                BlockDir = AddDirectory<DirectoryManager>("block");
-                ItemDir = AddDirectory<DirectoryManager>("item");
+                BlockDir = AddDirectory<DirectoryBase>("block");
+                ItemDir = AddDirectory<DirectoryBase>("item");
             }
 
-            public DirectoryManager BlockDir { get; }
+            public DirectoryBase BlockDir { get; }
 
-            public DirectoryManager ItemDir { get; }
+            public DirectoryBase ItemDir { get; }
         }
 
-        public class TexturesDirectory : DirectoryManager
+        public class TexturesDirectory : DirectoryBase
         {
             public TexturesDirectory(string directory) : base(directory)
             {
-                BlockDir = AddDirectory<DirectoryManager>("block");
-                ItemDir = AddDirectory<DirectoryManager>("item");
+                BlockDir = AddDirectory<DirectoryBase>("block");
+                ItemDir = AddDirectory<DirectoryBase>("item");
             }
 
-            public DirectoryManager BlockDir { get; }
+            public DirectoryBase BlockDir { get; }
 
-            public DirectoryManager ItemDir { get; }
+            public DirectoryBase ItemDir { get; }
         }
     }
 }
