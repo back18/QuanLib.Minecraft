@@ -16,13 +16,13 @@
 
   <ItemGroup>
     <PackageReference Include="CoreRCON" Version="5.2.1" />
-    <PackageReference Include="Nett" Version="0.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\QuanLib\QuanLib.IO\QuanLib.IO.csproj" />
+    <ProjectReference Include="..\..\QuanLib\QuanLib.NettToolkit\QuanLib.NettToolkit.csproj" />
   </ItemGroup>
 
 </Project>

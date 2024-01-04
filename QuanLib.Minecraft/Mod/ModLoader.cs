@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Mod
 {
-    public enum ModLoaderType
+    public enum ModLoader
     {
         Forge,
 

@@ -9,23 +9,21 @@ namespace QuanLib.Minecraft.Mod
 {
     public abstract class ModInfo
     {
-        public abstract ModLoaderType ModLoaderType { get; }
+        public abstract ModLoader ModLoader { get; }
 
-        public abstract string ID { get; }
+        public abstract string ModId { get; }
 
-        public abstract string Name { get; }
+        public abstract string ModName { get; }
 
         public abstract string Description { get; }
 
         public abstract string Version { get; }
 
-        public abstract string License { get; }
-
-        public abstract string Icon { get; }
+        public abstract string LogoFile { get; }
 
         public override string ToString()
         {
-            return $"{ID}-{ModLoaderType}-{Version}";
+            return $"{ModLoader} - {ModId} ({Version})";
         }
     }
 }

@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft
 
                 string key = line[..index];
                 string value = line[(index + 1)..];
-                dictionary.Add(key, value);
+                dictionary.TryAdd(key, value);
             }
 
             return dictionary;
