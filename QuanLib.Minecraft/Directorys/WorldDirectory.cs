@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.Directorys
 
             try
             {
-                using FileStream fileStream = new(SessionLockFile, FileMode.Open, FileAccess.Read, FileShare.None);
+                using FileStream fileStream = File.OpenRead(SessionLockFile);
                 return false;
             }
             catch
