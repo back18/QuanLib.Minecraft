@@ -41,7 +41,7 @@ namespace QuanLib.Minecraft
             return facing switch
             {
                 Facing.Xp => Facing.Xm,
-                Facing.Xm => Facing.Yp,
+                Facing.Xm => Facing.Xp,
                 Facing.Yp => Facing.Ym,
                 Facing.Ym => Facing.Yp,
                 Facing.Zp => Facing.Zm,

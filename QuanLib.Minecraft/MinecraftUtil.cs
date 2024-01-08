@@ -1,4 +1,6 @@
-﻿using QuanLib.Minecraft.Snbt;
+﻿using Newtonsoft.Json.Linq;
+using QuanLib.Minecraft.Snbt;
+using QuanLib.Minecraft.Snbt.Models;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -7,27 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static Nett.TomlObjectFactory;
 
 namespace QuanLib.Minecraft
 {
     public static class MinecraftUtil
     {
-        public static Facing ToReverse(this Facing facing)
-        {
-            return facing switch
-            {
-                Facing.Xp => Facing.Xm,
-                Facing.Xm => Facing.Xp,
-                Facing.Yp => Facing.Ym,
-                Facing.Ym => Facing.Yp,
-                Facing.Zp => Facing.Zm,
-                Facing.Zm => Facing.Zp,
-                _ => throw new InvalidOperationException(),
-            };
-        }
-
-        public static MinecraftColor ToReverse(this MinecraftColor color)
+        public static MinecraftColor Reverse(this MinecraftColor color)
         {
             int colorID = (int)color;
             if (colorID < 8)
@@ -182,6 +169,33 @@ namespace QuanLib.Minecraft
             err:
             result = null;
             return false;
+        }
+
+        public static string GetItemName(Item item)
+        {
+            ArgumentNullException.ThrowIfNull(item, nameof(item));
+
+            if (item.Tag is not null &&
+                item.Tag.TryGetValue("display", out var display) &&
+                display is Dictionary<string, object> displayTag &&
+                displayTag.TryGetValue("Name", out var name) &&
+                name is string nameString)
+            {
+                try
+                {
+                    JObject nameJson = JObject.Parse(nameString);
+                    if (nameJson.TryGetValue("text", out var text) && text is JValue textValue && textValue.Value is string textString)
+                    {
+                        return textString;
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+
+            return item.ID;
         }
     }
 }
