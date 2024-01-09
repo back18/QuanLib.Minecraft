@@ -1,11 +1,13 @@
-﻿using System;
+﻿using QuanLib.Minecraft.API;
+using QuanLib.Minecraft.Instance.Senders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.API.Instance
+namespace QuanLib.Minecraft.Instance
 {
     public interface IMcapiInstance
     {

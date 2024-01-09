@@ -1,4 +1,5 @@
 ﻿using QuanLib.Core;
+using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Senders;
 using System;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.API
+namespace QuanLib.Minecraft.Instance.Senders
 {
     public class McapiCommandSender : ITwowayCommandSender, IOnewayCommandSender
     {

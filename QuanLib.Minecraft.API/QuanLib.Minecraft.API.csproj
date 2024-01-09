@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj" />
+    <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
   </ItemGroup>
 
 </Project>

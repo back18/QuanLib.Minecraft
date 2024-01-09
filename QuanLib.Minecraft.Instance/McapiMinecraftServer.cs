@@ -1,15 +1,14 @@
-﻿using CoreRCON;
-using QuanLib.Core;
-using QuanLib.Minecraft.API.Packet;
+﻿using QuanLib.Core;
+using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.Instance;
+using QuanLib.Minecraft.Instance.Senders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.API.Instance
+namespace QuanLib.Minecraft.Instance
 {
     public class McapiMinecraftServer : MinecraftServer, IMcapiInstance
     {
