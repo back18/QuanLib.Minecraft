@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.GameResource
+namespace QuanLib.Minecraft.Downloading
 {
     public class DownloadAssetIndex : NetworkAssetIndex
     {
