@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Tags
+namespace QuanLib.Minecraft.SNBT.Tags
 {
     public abstract class NbtTag
     {

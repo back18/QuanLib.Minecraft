@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Models
+namespace QuanLib.Minecraft.SNBT.Models
 {
     public class Entity
     {
@@ -23,17 +23,17 @@ namespace QuanLib.Minecraft.Snbt.Models
             Glowing = model.Glowing;
             HasVisualFire = model.HasVisualFire;
             Invulnerable = model.Invulnerable;
-            Motion = SnbtSerializer.ToVector3(model.Motion);
+            Motion = SnbtUtil.ToVector3(model.Motion);
             NoGravity = model.NoGravity is null ? null : model.NoGravity.Value;
             OnGround = model.OnGround;
             Passengers = model.Passengers is null ? null : new(model.Passengers);
             PortalCooldown = model.PortalCooldown;
-            Pos = SnbtSerializer.ToVector3(model.Pos);
-            Rotation = SnbtSerializer.ToRotation(model.Rotation);
+            Pos = SnbtUtil.ToVector3(model.Pos);
+            Rotation = SnbtUtil.ToRotation(model.Rotation);
             Silent = model.Silent;
             Tags = model.Tags is null ? null : new(model.Tags);
             TicksFrozen = model.TicksFrozen;
-            UUID = SnbtSerializer.ToGuid(model.UUID);
+            UUID = SnbtUtil.ToGuid(model.UUID);
         }
 
         public short Air { get; }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.Snbt.Parsers;
-using QuanLib.Minecraft.Snbt.Tags;
+using QuanLib.Minecraft.SNBT.Parsers;
+using QuanLib.Minecraft.SNBT.Tags;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt
+namespace QuanLib.Minecraft.SNBT
 {
     public static class SnbtSerializer
     {
@@ -147,61 +147,6 @@ namespace QuanLib.Minecraft.Snbt
 
                 return value;
             }
-        }
-
-        public static Guid ToGuid(int[] value)
-        {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-            if (value.Length != 4)
-                throw new ArgumentException("UUID数组长度必须为4");
-
-            byte[] i0 = BitConverter.GetBytes(value[0]);
-
-            byte[] i1 = BitConverter.GetBytes(value[1]);
-            byte b0 = i1[0];
-            byte b1 = i1[1];
-            i1[0] = i1[2];
-            i1[1] = i1[3];
-            i1[2] = b0;
-            i1[3] = b1;
-
-            byte[] i2 = BitConverter.GetBytes(value[2]);
-            Array.Reverse(i2);
-
-            byte[] i3 = BitConverter.GetBytes(value[3]);
-            Array.Reverse(i3);
-
-            return new Guid(i0.Concat(i1).Concat(i2).Concat(i3).ToArray());
-        }
-
-        public static bool ToBool(sbyte value)
-            => value != 0;
-
-        public static Vector3<T> ToVector3<T>(T[] value) where T : struct
-        {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-            if (value.Length != 3)
-                throw new ArgumentException("三维向量数组长度必须为3");
-
-            return new(value[0], value[1], value[2]);
-        }
-
-        public static Vector2<T> ToVector2<T>(T[] value) where T : struct
-        {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-            if (value.Length != 2)
-                throw new ArgumentException("二维向量数组长度必须为2");
-
-            return new(value[0], value[1]);
-        }
-
-        public static Rotation ToRotation(float[] value)
-        {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
-            if (value.Length != 2)
-                throw new ArgumentException("Rotation数组长度必须为2");
-
-            return new(value[0], value[1]);
         }
     }
 }

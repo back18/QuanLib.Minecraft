@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Models
+namespace QuanLib.Minecraft.SNBT.Models
 {
     public class InteractionData
     {
@@ -13,7 +13,7 @@ namespace QuanLib.Minecraft.Snbt.Models
         {
             NullValidator.ValidateObject(model, nameof(model));
 
-            Player = SnbtSerializer.ToGuid(model.player);
+            Player = SnbtUtil.ToGuid(model.player);
             Timestamp = model.timestamp;
         }
 

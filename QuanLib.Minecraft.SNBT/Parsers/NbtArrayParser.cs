@@ -1,9 +1,9 @@
-﻿using QuanLib.Minecraft.Snbt.Tags;
+﻿using QuanLib.Minecraft.SNBT.Tags;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Parsers
+namespace QuanLib.Minecraft.SNBT.Parsers
 {
     public class NbtArrayParser : StringParser<NbtArray>
     {

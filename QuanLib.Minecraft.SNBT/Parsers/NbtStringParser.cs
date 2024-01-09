@@ -1,11 +1,11 @@
-﻿using QuanLib.Minecraft.Snbt.Converters;
-using QuanLib.Minecraft.Snbt.Tags;
+﻿using QuanLib.Minecraft.SNBT.Converters;
+using QuanLib.Minecraft.SNBT.Tags;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Parsers
+namespace QuanLib.Minecraft.SNBT.Parsers
 {
     public class NbtStringParser : StringParser<NbtStringParser.ParseResult>
     {

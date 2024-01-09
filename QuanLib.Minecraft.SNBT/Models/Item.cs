@@ -1,11 +1,12 @@
-﻿using QuanLib.Core;
+﻿using Newtonsoft.Json.Linq;
+using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Models
+namespace QuanLib.Minecraft.SNBT.Models
 {
     public class Item
     {
@@ -34,6 +35,31 @@ namespace QuanLib.Minecraft.Snbt.Models
         public sbyte Slot { get; }
 
         public Dictionary<string, object>? Tag { get; }
+
+        public string GetItemName()
+        {
+            if (Tag is not null &&
+                Tag.TryGetValue("display", out var display) &&
+                display is Dictionary<string, object> displayTag &&
+                displayTag.TryGetValue("Name", out var name) &&
+                name is string nameString)
+            {
+                try
+                {
+                    JObject nameJson = JObject.Parse(nameString);
+                    if (nameJson.TryGetValue("text", out var text) && text is JValue textValue && textValue.Value is string textString)
+                    {
+                        return textString;
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+
+            return ID;
+        }
 
         public override string ToString()
         {

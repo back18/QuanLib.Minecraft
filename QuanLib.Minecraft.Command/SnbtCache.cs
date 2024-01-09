@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Snbt.Models;
+using QuanLib.Minecraft.SNBT.Models;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;

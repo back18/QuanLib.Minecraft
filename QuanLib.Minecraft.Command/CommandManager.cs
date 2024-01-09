@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Snbt;
+﻿using QuanLib.Minecraft.SNBT;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Command.Models;
-using QuanLib.Minecraft.Snbt.Models;
+using QuanLib.Minecraft.SNBT.Models;
 using QuanLib.Minecraft.Command.Senders;
 
 namespace QuanLib.Minecraft.Command
@@ -162,7 +162,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                if (MinecraftUtil.TryParseEntityPosSbnt(snbt, out result))
+                if (SnbtUtil.TryParseEntityPosSbnt(snbt, out result))
                 {
                     SnbtCache.Position[target] = result;
                     return true;
@@ -188,7 +188,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                if (MinecraftUtil.TryParseRotationSbnt(snbt, out result))
+                if (SnbtUtil.TryParseRotationSbnt(snbt, out result))
                 {
                     SnbtCache.Rotation[target] = result;
                     return true;
@@ -215,7 +215,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                if (MinecraftUtil.TryParseUuidSbnt(snbt, out result))
+                if (SnbtUtil.TryParseUuidSbnt(snbt, out result))
                 {
                     SnbtCache.Uuid[target] = result;
                     return true;

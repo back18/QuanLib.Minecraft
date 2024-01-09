@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Converters
+namespace QuanLib.Minecraft.SNBT.Converters
 {
     public abstract class ConverterRule
     {

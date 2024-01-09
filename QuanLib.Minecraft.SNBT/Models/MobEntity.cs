@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Snbt.Models
+namespace QuanLib.Minecraft.SNBT.Models
 {
     public class MobEntity : Entity
     {

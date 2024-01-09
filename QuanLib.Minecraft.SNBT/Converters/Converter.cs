@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using C = System.Convert;
 
-namespace QuanLib.Minecraft.Snbt.Converters
+namespace QuanLib.Minecraft.SNBT.Converters
 {
     /// <summary>
     /// This class only exists because <see cref="System.Convert"/> is terrible.

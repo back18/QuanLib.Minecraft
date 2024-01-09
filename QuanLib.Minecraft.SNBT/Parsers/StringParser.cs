@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace QuanLib.Minecraft.Snbt.Parsers
+namespace QuanLib.Minecraft.SNBT.Parsers
 {
     public abstract class StringParser<T>
     {

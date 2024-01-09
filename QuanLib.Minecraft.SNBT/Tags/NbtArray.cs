@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Tags
+namespace QuanLib.Minecraft.SNBT.Tags
 {
     public class NbtArray : NbtTag, IList<NbtTag>
     {

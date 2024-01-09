@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Tags
+namespace QuanLib.Minecraft.SNBT.Tags
 {
     public class NbtCompound : NbtTag, IDictionary<string, NbtTag>
     {

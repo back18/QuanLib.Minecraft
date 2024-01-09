@@ -1,9 +1,9 @@
-﻿using QuanLib.Minecraft.Snbt.Converters;
+﻿using QuanLib.Minecraft.SNBT.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuanLib.Minecraft.Snbt.Tags
+namespace QuanLib.Minecraft.SNBT.Tags
 {
     /// <summary>
     /// Base class for primitives:
