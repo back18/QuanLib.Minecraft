@@ -13,7 +13,7 @@ namespace QuanLib.Minecraft.ResourcePack
         {
             ArgumentException.ThrowIfNullOrEmpty(modID, nameof(modID));
 
-            ModID = modID;
+            ModId = modID;
             Path = new(modID);
             BlockStates = new();
             BlockModels = new();
@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.ResourcePack
             Languages = new();
         }
 
-        public string ModID { get; }
+        public string ModId { get; }
 
         public ResourcePath Path { get; }
 

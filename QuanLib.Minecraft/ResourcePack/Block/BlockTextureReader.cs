@@ -118,7 +118,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         return;
                     }
 
-                    string blockID = $"{resource.ModID}:{blockState.Name[..^extension.Length]}";
+                    string blockID = $"{resource.ModId}:{blockState.Name[..^extension.Length]}";
                     try
                     {
                         string text;

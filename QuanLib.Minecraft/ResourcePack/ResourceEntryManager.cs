@@ -55,7 +55,7 @@ namespace QuanLib.Minecraft.ResourcePack
             if (resourceEntry.IsEmpty)
                 return;
 
-            if (_items.TryGetValue(resourceEntry.ModID, out var result))
+            if (_items.TryGetValue(resourceEntry.ModId, out var result))
             {
                 foreach (var blockState in resourceEntry.BlockStates)
                     result.BlockStates[blockState.Key] = blockState.Value;
@@ -77,7 +77,7 @@ namespace QuanLib.Minecraft.ResourcePack
             }
             else
             {
-                _items.Add(resourceEntry.ModID, resourceEntry);
+                _items.Add(resourceEntry.ModId, resourceEntry);
             }
         }
 

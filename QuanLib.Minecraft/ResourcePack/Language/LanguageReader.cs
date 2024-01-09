@@ -32,7 +32,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                 if (defaultDictionary is null)
                     continue;
 
-                if (resource.ModID == "minecraft" && !string.IsNullOrEmpty(minecraftLanguageFilePath))
+                if (resource.ModId == "minecraft" && !string.IsNullOrEmpty(minecraftLanguageFilePath))
                 {
                     Dictionary<string, string>? vanillaLanguageDictionary = TryParseJson(minecraftLanguageFilePath);
                     if (vanillaLanguageDictionary is not null)
