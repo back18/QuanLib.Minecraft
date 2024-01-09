@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.CommandSenders;
+using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;

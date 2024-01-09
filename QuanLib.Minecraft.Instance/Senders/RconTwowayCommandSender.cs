@@ -1,6 +1,6 @@
 ﻿using CoreRCON;
 using QuanLib.Core;
-using QuanLib.Minecraft.CommandSenders;
+using QuanLib.Minecraft.Command.Senders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,12 +1,12 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Events;
+using QuanLib.Minecraft.Command.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.CommandSenders
+namespace QuanLib.Minecraft.Command.Senders
 {
     public class CommandSender
     {

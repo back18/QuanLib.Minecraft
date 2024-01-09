@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Selectors
+namespace QuanLib.Minecraft.Command.Selectors
 {
     public enum Target
     {

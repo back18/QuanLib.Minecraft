@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Command.Models;
 using QuanLib.Minecraft.Snbt.Models;
-using QuanLib.Minecraft.CommandSenders;
+using QuanLib.Minecraft.Command.Senders;
 
 namespace QuanLib.Minecraft.Command
 {

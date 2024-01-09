@@ -1,11 +1,11 @@
-﻿using QuanLib.Minecraft.Selectors;
+﻿using QuanLib.Minecraft.Command.Selectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft
+namespace QuanLib.Minecraft.Command
 {
     public static class CommandUtil
     {

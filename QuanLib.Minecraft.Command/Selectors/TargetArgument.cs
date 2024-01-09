@@ -1,10 +1,11 @@
-﻿using System;
+﻿using QuanLib.Minecraft.Command;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Selectors
+namespace QuanLib.Minecraft.Command.Selectors
 {
     public class TargetArgument<T> where T : notnull
     {
