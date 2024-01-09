@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Instance.Senders
+namespace QuanLib.Minecraft.Instance.CommandSenders
 {
     public class ConsoleCommandSender : ITwowayCommandSender, IOnewayCommandSender
     {

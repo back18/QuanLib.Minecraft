@@ -15,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace QuanLib.Minecraft.Instance.Senders
+namespace QuanLib.Minecraft.Instance.CommandSenders
 {
     public class RconOnewayCommandSender : UnmanagedRunnable, IOnewayCommandSender
     {
