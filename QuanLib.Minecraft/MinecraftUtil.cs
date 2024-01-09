@@ -48,6 +48,35 @@ namespace QuanLib.Minecraft
             };
         }
 
+        public static BlockPos OffsetPosition(this BlockPos position, Facing facing, int offset)
+        {
+            switch (facing)
+            {
+                case Facing.Xp:
+                    position.X += offset;
+                    break;
+                case Facing.Xm:
+                    position.X -= offset;
+                    break;
+                case Facing.Yp:
+                    position.Y += offset;
+                    break;
+                case Facing.Ym:
+                    position.Y -= offset;
+                    break;
+                case Facing.Zp:
+                    position.Z += offset;
+                    break;
+                case Facing.Zm:
+                    position.Z -= offset;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            return position;
+        }
+
         public static ChunkPos BlockPos2ChunkPos(IVector3<int> blockPos)
         {
             return new ChunkPos
