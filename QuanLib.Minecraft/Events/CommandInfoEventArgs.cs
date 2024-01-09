@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Command;
+﻿using QuanLib.Minecraft.CommandSenders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

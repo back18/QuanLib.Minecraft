@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Command
+namespace QuanLib.Minecraft.CommandSenders
 {
     public class CommandInfo
     {
