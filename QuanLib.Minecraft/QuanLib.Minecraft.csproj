@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\QuanLib\QuanLib.IO\QuanLib.IO.csproj" />
-    <ProjectReference Include="..\..\QuanLib\QuanLib.NettToolkit\QuanLib.NettToolkit.csproj" />
   </ItemGroup>
 
 </Project>
