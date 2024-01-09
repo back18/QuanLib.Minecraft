@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
 using QuanLib.Minecraft.ResourcePack.Block.BlockTextureMaps;
-using QuanLib.Minecraft.Vector;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
 using QuanLib.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections;
 using System.Collections.Generic;

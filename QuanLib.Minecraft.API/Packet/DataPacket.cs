@@ -1,7 +1,5 @@
 ﻿using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
-using SixLabors.ImageSharp.Memory;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
