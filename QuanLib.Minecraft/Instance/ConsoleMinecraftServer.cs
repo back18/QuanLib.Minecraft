@@ -1,5 +1,6 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.CommandSenders;
+using QuanLib.Minecraft.Instance.Senders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

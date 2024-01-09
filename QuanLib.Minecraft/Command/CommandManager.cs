@@ -1,5 +1,4 @@
-﻿using QuanLib.Minecraft.Selectors;
-using QuanLib.Minecraft.Snbt;
+﻿using QuanLib.Minecraft.Snbt;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
@@ -7,10 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using QuanLib.Minecraft.Command.Models;
-using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Snbt.Models;
+using QuanLib.Minecraft.CommandSenders;
 
 namespace QuanLib.Minecraft.Command
 {

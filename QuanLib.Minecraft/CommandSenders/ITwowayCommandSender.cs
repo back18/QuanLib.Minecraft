@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Command.Senders
+namespace QuanLib.Minecraft.CommandSenders
 {
     public interface ITwowayCommandSender : ICommandSender
     {

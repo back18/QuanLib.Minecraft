@@ -1,12 +1,13 @@
 ﻿using CoreRCON;
 using QuanLib.Core;
+using QuanLib.Minecraft.CommandSenders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Command.Senders
+namespace QuanLib.Minecraft.Instance.Senders
 {
     public class RconTwowayCommandSender : ITwowayCommandSender
     {

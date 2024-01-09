@@ -1,4 +1,6 @@
 ﻿using QuanLib.Core;
+using QuanLib.Minecraft.Command;
+using QuanLib.Minecraft.CommandSenders;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -13,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace QuanLib.Minecraft.Command.Senders
+namespace QuanLib.Minecraft.Instance.Senders
 {
     public class RconOnewayCommandSender : UnmanagedRunnable, IOnewayCommandSender
     {

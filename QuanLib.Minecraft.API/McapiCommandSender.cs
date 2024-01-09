@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
 using QuanLib.Minecraft.API.Packet;
-using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.CommandSenders;
 using System;
 using System.Collections;
 using System.Collections.Generic;

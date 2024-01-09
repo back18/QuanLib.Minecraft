@@ -1,7 +1,7 @@
 ﻿using QuanLib.Core;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Models;
-using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.CommandSenders;
 using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.MinecraftLogs;
 using System;
