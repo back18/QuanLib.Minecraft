@@ -15,17 +15,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.IO", "..\QuanLib\Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.NettToolkit", "..\QuanLib\QuanLib.NettToolkit\QuanLib.NettToolkit.csproj", "{1485F194-2347-4899-9B5F-2260D4165070}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.Mod", "QuanLib.Minecraft.Mod\QuanLib.Minecraft.Mod.csproj", "{3151FA8D-6C56-4780-A141-9EF166DB0B80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Mod", "QuanLib.Minecraft.Mod\QuanLib.Minecraft.Mod.csproj", "{3151FA8D-6C56-4780-A141-9EF166DB0B80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.Instance", "QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj", "{E72A47A4-EF1B-4E87-8878-7E5E7877EFB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Instance", "QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj", "{E72A47A4-EF1B-4E87-8878-7E5E7877EFB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.Command", "QuanLib.Minecraft.Command\QuanLib.Minecraft.Command.csproj", "{ED537330-3DCF-4132-91F4-411D4C5427FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Command", "QuanLib.Minecraft.Command\QuanLib.Minecraft.Command.csproj", "{ED537330-3DCF-4132-91F4-411D4C5427FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.Downloading", "QuanLib.Minecraft.Downloading\QuanLib.Minecraft.Downloading.csproj", "{0DF3472A-66AC-4AC2-BE31-DF85A5771493}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Downloading", "QuanLib.Minecraft.Downloading\QuanLib.Minecraft.Downloading.csproj", "{0DF3472A-66AC-4AC2-BE31-DF85A5771493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.ResourcePack", "QuanLib.Minecraft.ResourcePack\QuanLib.Minecraft.ResourcePack.csproj", "{FE53051C-507E-461C-8DC2-56273BADC712}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.ResourcePack", "QuanLib.Minecraft.ResourcePack\QuanLib.Minecraft.ResourcePack.csproj", "{FE53051C-507E-461C-8DC2-56273BADC712}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.SNBT", "QuanLib.Minecraft.SNBT\QuanLib.Minecraft.SNBT.csproj", "{27E58EAA-57DE-4A61-8902-FEE5644FB2F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.SNBT", "QuanLib.Minecraft.SNBT\QuanLib.Minecraft.SNBT.csproj", "{27E58EAA-57DE-4A61-8902-FEE5644FB2F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.Logging", "QuanLib.Minecraft.Logging\QuanLib.Minecraft.Logging.csproj", "{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{27E58EAA-57DE-4A61-8902-FEE5644FB2F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27E58EAA-57DE-4A61-8902-FEE5644FB2F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27E58EAA-57DE-4A61-8902-FEE5644FB2F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

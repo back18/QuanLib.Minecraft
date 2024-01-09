@@ -1,7 +1,7 @@
 ﻿using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.IO;
-using QuanLib.Minecraft.Events;
+using QuanLib.Minecraft.Logging.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.MinecraftLogs
+namespace QuanLib.Minecraft.Logging
 {
     public class PollingLogFileListener : PollingTextFileListener, ILogListener
     {

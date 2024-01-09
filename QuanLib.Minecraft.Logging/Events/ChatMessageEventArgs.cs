@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.Events
+namespace QuanLib.Minecraft.Logging.Events
 {
     public class ChatMessageEventArgs : EventArgs
     {

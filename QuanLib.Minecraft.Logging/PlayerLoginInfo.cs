@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft
+namespace QuanLib.Minecraft.Logging
 {
     public class PlayerLoginInfo
     {

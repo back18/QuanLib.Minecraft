@@ -1,7 +1,7 @@
 ﻿using QuanLib.Core;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Directorys;
-using QuanLib.Minecraft.MinecraftLogs;
+using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;

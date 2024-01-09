@@ -1,6 +1,5 @@
 ﻿using QuanLib.Core;
 using QuanLib.Core.Events;
-using QuanLib.Minecraft.MinecraftLogs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +12,8 @@ namespace QuanLib.Minecraft
 {
     public class ServerConsole : RunnableBase
     {
+        private const string SEPARATOR = ": ";
+
         public ServerConsole(StreamReader reader, StreamWriter writer, ILogbuilder? logbuilder = null) : base(logbuilder)
         {
             ArgumentNullException.ThrowIfNull(reader, nameof(reader));
@@ -36,8 +37,14 @@ namespace QuanLib.Minecraft
         {
             if (_task is not null)
             {
-                MinecraftLog log = new(e.Text);
-                _task.Complete(log.Message);
+                string message;
+                int index = e.Text.IndexOf(SEPARATOR);
+                if (index == -1)
+                    message = e.Text;
+                else
+                    message = e.Text[(index + SEPARATOR.Length)..];
+
+                _task.Complete(message);
             }
         }
 

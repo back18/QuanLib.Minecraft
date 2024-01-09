@@ -7,17 +7,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace QuanLib.Minecraft.MinecraftLogs
+namespace QuanLib.Minecraft.Logging
 {
     public class MinecraftLog
     {
+        private const string SEPARATOR = ": ";
+
         public MinecraftLog(string log)
         {
             ArgumentNullException.ThrowIfNull(log, nameof(log));
 
-            string separator = ": ";
-            int index = log.IndexOf(separator);
-
+            int index = log.IndexOf(SEPARATOR);
             if (index == -1)
             {
                 Info = string.Empty;
@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.MinecraftLogs
             else
             {
                 Info = log[..index];
-                Message = log[(index + separator.Length)..];
+                Message = log[(index + SEPARATOR.Length)..];
             }
 
             if (Info.Contains("DEBUG"))

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\QuanLib.Minecraft.API\QuanLib.Minecraft.API.csproj" />
     <ProjectReference Include="..\QuanLib.Minecraft.Command\QuanLib.Minecraft.Command.csproj" />
+    <ProjectReference Include="..\QuanLib.Minecraft.Logging\QuanLib.Minecraft.Logging.csproj" />
   </ItemGroup>
 
 </Project>
