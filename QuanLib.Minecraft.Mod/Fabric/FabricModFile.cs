@@ -50,8 +50,7 @@ namespace QuanLib.Minecraft.Mod.Fabric
             string text = stream.ToUtf8Text();
             text = JsonFormatter.Format(text);
 
-            FabricModInfo.DataModel modInfoModel = FabricModInfo.DataModel.CreateDefault();
-            JsonConvert.PopulateObject(text, modInfoModel);
+            FabricModInfo.DataModel modInfoModel = JsonConvert.DeserializeObject<FabricModInfo.DataModel>(text) ?? throw new FormatException();
             return FabricModInfo.FromDataModel(modInfoModel);
         }
 
