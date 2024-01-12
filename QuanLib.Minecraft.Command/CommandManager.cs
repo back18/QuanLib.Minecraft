@@ -1,14 +1,14 @@
-﻿using QuanLib.Minecraft.SNBT;
-using QuanLib.Minecraft.Vector;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Command.Models;
-using QuanLib.Minecraft.SNBT.Models;
+using QuanLib.Minecraft.NBT.Models;
 using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.NBT;
+using QuanLib.Minecraft.Vector;
 
 namespace QuanLib.Minecraft.Command
 {
@@ -162,7 +162,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                if (SnbtUtil.TryParseEntityPosSbnt(snbt, out result))
+                if (NbtUtil.TryParseEntityPosSbnt(snbt, out result))
                 {
                     SnbtCache.Position[target] = result;
                     return true;
@@ -188,7 +188,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                if (SnbtUtil.TryParseRotationSbnt(snbt, out result))
+                if (NbtUtil.TryParseRotationSbnt(snbt, out result))
                 {
                     SnbtCache.Rotation[target] = result;
                     return true;
@@ -215,7 +215,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                if (SnbtUtil.TryParseUuidSbnt(snbt, out result))
+                if (NbtUtil.TryParseUuidSbnt(snbt, out result))
                 {
                     SnbtCache.Uuid[target] = result;
                     return true;
@@ -304,7 +304,7 @@ namespace QuanLib.Minecraft.Command
                     return false;
                 }
 
-                result = new(SnbtSerializer.DeserializeObject<Item.Model>(snbt));
+                result = new(NbtConvert.DeserializeObject<Item.Model>(snbt));
                 if (SnbtCache.SelectedItemSlot.ContainsKey(target))
                     SnbtCache.SelectedItem[target] = result;
                 else if (slot == -106)
@@ -336,11 +336,11 @@ namespace QuanLib.Minecraft.Command
 
             InteractionData leftData, rightData;
             if (TryGetEntitySnbt(sender, target, "attack", out var left))
-                leftData = new(SnbtSerializer.DeserializeObject<InteractionData.Model>(left));
+                leftData = new(NbtConvert.DeserializeObject<InteractionData.Model>(left));
             else
                 leftData = InteractionData.Empty;
             if (TryGetEntitySnbt(sender, target, "interaction", out var right))
-                rightData = new(SnbtSerializer.DeserializeObject<InteractionData.Model>(right));
+                rightData = new(NbtConvert.DeserializeObject<InteractionData.Model>(right));
             else
                 rightData = InteractionData.Empty;
 
