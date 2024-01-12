@@ -13,9 +13,11 @@ namespace QuanLib.Minecraft.NBT
 {
     public static partial class NbtConvert
     {
-        private readonly static Type _objectType = typeof(object);
-        private readonly static Type _boolType = typeof(bool);
-        private readonly static Type _dictionaryType = typeof(Dictionary<string, object>);
+        private static readonly Type _voidType = typeof(void);
+        private static readonly Type _objectType = typeof(object);
+        private static readonly Type _boolType = typeof(bool);
+        private static readonly Type _sbyteType = typeof(sbyte);
+        private static readonly Type _dictionaryType = typeof(Dictionary<string, object>);
 
         public static T DeserializeObject<T>(string snbt)
         {
@@ -74,8 +76,13 @@ namespace QuanLib.Minecraft.NBT
             }
             else
             {
-                if (tag is ByteTag byteTag && type == _boolType)
-                    return byteTag.Bool;
+                if (tag is ByteTag byteTag)
+                {
+                    if (type == _sbyteType)
+                        return byteTag.SignedValue;
+                    if (type == _boolType)
+                        return byteTag.Bool;
+                }
 
                 object value = tag.AsValue() ?? throw new ArgumentException($"无法序列化 {tag.Type} 类型的NBT标签");
                 Type valueType = value.GetType();
@@ -104,24 +111,30 @@ namespace QuanLib.Minecraft.NBT
                 else if (childTag is ListTag listTag1)
                 {
                     Type elementType = listTag1.ChildType.TypeOf();
+
+                    Array array;
                     if (listTag1.Count == 0)
                     {
-                        result.Add(childTag.Name, Array.CreateInstance(elementType, 0));
-                        continue;
-                    }
-
-                    Array array = Array.CreateInstance(elementType, listTag1.Count);
-                    for (int i = 0; i < listTag1.Count; i++)
-                    {
-                        Tag tag = listTag1[i];
-
-                        object value;
-                        if (tag is CompoundTag compoundTag2)
-                            value = DeserializeDictionary(compoundTag2);
+                        if (elementType == _voidType)
+                            array = Array.Empty<object>();
                         else
-                            value = DeserializeObject(tag, elementType);
+                            array = Array.CreateInstance(elementType, 0);
+                    }
+                    else
+                    {
+                        array = Array.CreateInstance(elementType, listTag1.Count);
+                        for (int i = 0; i < listTag1.Count; i++)
+                        {
+                            Tag tag = listTag1[i];
 
-                        array.SetValue(value, i);
+                            object value;
+                            if (tag is CompoundTag compoundTag2)
+                                value = DeserializeDictionary(compoundTag2);
+                            else
+                                value = DeserializeObject(tag, elementType);
+
+                            array.SetValue(value, i);
+                        }
                     }
 
                     result.Add(childTag.Name, array);
