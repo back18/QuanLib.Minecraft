@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
 using QuanLib.IO;
 using QuanLib.Minecraft.Mod.Forge.JarMetadata;
-using QuanLib.NettToolkit;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -52,8 +51,7 @@ namespace QuanLib.Minecraft.Mod.Forge
 
             using Stream stream = entry.Open();
             TomlTable tomlTable = Toml.ReadStream(stream);
-            ForgeModFileInfo.DataModel fileInfoModel = ForgeModFileInfo.DataModel.CreateDefault();
-            TomlConvert.PopulateObject(tomlTable, fileInfoModel);
+            ForgeModFileInfo.DataModel fileInfoModel = tomlTable.Get<ForgeModFileInfo.DataModel>();
 
             foreach (var modInfoModel in fileInfoModel.mods)
             {
@@ -111,10 +109,9 @@ namespace QuanLib.Minecraft.Mod.Forge
             var dependencies = tomlTable.GetValueAs<TomlTableArray>("dependencies")?.Items.FirstOrDefault()?.GetValueAs<TomlTableArray>(modInfoModel.modId);
             if (dependencies is not null)
             {
-                foreach (var tomlObject in dependencies.Items)
+                foreach (var item in dependencies.Items)
                 {
-                    ForgeModVersion.DataModel ModVersionModel = ForgeModVersion.DataModel.CreateDefault();
-                    TomlConvert.PopulateObject(tomlObject, ModVersionModel);
+                    ForgeModVersion.DataModel ModVersionModel = item.Get<ForgeModVersion.DataModel>();
                     modInfoModel.dependencies.Add(ModVersionModel);
                 }
             }

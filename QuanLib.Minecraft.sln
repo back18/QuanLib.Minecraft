@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.RCON", "Q
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.IO", "..\QuanLib\QuanLib.IO\QuanLib.IO.csproj", "{66FEC611-B66C-479E-A62D-458BFA635046}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.NettToolkit", "..\QuanLib\QuanLib.NettToolkit\QuanLib.NettToolkit.csproj", "{1485F194-2347-4899-9B5F-2260D4165070}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Mod", "QuanLib.Minecraft.Mod\QuanLib.Minecraft.Mod.csproj", "{3151FA8D-6C56-4780-A141-9EF166DB0B80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Instance", "QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj", "{E72A47A4-EF1B-4E87-8878-7E5E7877EFB0}"
@@ -27,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.ResourceP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.SNBT", "QuanLib.Minecraft.SNBT\QuanLib.Minecraft.SNBT.csproj", "{27E58EAA-57DE-4A61-8902-FEE5644FB2F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.Logging", "QuanLib.Minecraft.Logging\QuanLib.Minecraft.Logging.csproj", "{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Logging", "QuanLib.Minecraft.Logging\QuanLib.Minecraft.Logging.csproj", "{3C440E57-F22B-425A-AD4A-9BF9FA9B5330}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLib.Minecraft.NBT", "QuanLib.Minecraft.NBT\QuanLib.Minecraft.NBT.csproj", "{C9E81EC1-EC3C-4909-BA72-E23677B03784}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.NBT", "QuanLib.Minecraft.NBT\QuanLib.Minecraft.NBT.csproj", "{C9E81EC1-EC3C-4909-BA72-E23677B03784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +55,6 @@ Global
 		{66FEC611-B66C-479E-A62D-458BFA635046}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66FEC611-B66C-479E-A62D-458BFA635046}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66FEC611-B66C-479E-A62D-458BFA635046}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1485F194-2347-4899-9B5F-2260D4165070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1485F194-2347-4899-9B5F-2260D4165070}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1485F194-2347-4899-9B5F-2260D4165070}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1485F194-2347-4899-9B5F-2260D4165070}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3151FA8D-6C56-4780-A141-9EF166DB0B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3151FA8D-6C56-4780-A141-9EF166DB0B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3151FA8D-6C56-4780-A141-9EF166DB0B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
