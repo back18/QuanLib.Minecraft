@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class TelePortEntityCommand : CountCommandBase
     {
-        public TelePortEntityCommand()
+        public TelePortEntityCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.teleport.success.entity.multiple"];
+            Output = languageManager["commands.teleport.success.entity.single"];
             Input = TextTemplate.Parse("%s tp %s");
-            Output = LanguageManager.Instance["commands.teleport.success.entity.single"];
-            CountOutput = LanguageManager.Instance["commands.teleport.success.entity.multiple"];
         }
 
         public override TextTemplate Input { get; }

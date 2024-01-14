@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ItemReplaceWithEntityHotbarCommand : CountCommandBase
     {
-        public ItemReplaceWithEntityHotbarCommand()
+        public ItemReplaceWithEntityHotbarCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.item.entity.set.success.multiple"];
+            Output = languageManager["commands.item.entity.set.success.single"];
             Input = TextTemplate.Parse("item replace entity %s hotbar.%s with %s");
-            Output = LanguageManager.Instance["commands.item.entity.set.success.single"];
-            CountOutput = LanguageManager.Instance["commands.item.entity.set.success.multiple"];
         }
 
         public override TextTemplate Input { get; }

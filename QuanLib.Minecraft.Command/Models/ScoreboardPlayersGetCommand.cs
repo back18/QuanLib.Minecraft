@@ -11,10 +11,12 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ScoreboardPlayersGetCommand : CommandBase<int>
     {
-        public ScoreboardPlayersGetCommand()
+        public ScoreboardPlayersGetCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.scoreboard.players.get.success"];
             Input = TextTemplate.Parse("scoreboard players get %s %s");
-            Output = LanguageManager.Instance["commands.scoreboard.players.get.success"];
         }
 
         public override TextTemplate Input { get; }

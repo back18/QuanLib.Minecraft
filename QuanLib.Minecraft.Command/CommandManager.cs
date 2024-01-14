@@ -9,35 +9,66 @@ using QuanLib.Minecraft.NBT.Models;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.NBT;
 using QuanLib.Minecraft.Vector;
+using QuanLib.Minecraft.ResourcePack.Language;
 
 namespace QuanLib.Minecraft.Command
 {
     public static class CommandManager
     {
-        public static readonly ListCommand ListCommand = new();
-        public static readonly TimeQueryDayCommand TimeQueryDayCommand = new();
-        public static readonly TimeQueryDaytimeCommand TimeQueryDaytimeCommand = new();
-        public static readonly TimeQueryGametimeCommand TimeQueryGametimeCommand = new();
-        public static readonly SetBlockCommand SetBlockCommand = new();
-        public static readonly SummonCommand SummonCommand = new();
-        public static readonly SummonHaveNbtCommand SummonHaveNbtCommand = new();
-        public static readonly KillCommand KillCommand = new();
-        public static readonly TelePortEntityCommand TelePortEntityCommand = new();
-        public static readonly TelePortLocationCommand TelePortLocationCommand = new();
-        public static readonly ConditionalBlockCommand ConditionalBlockCommand = new();
-        public static readonly ConditionalEntityCommand ConditionalEntityCommand = new();
-        public static readonly DataGetEntityCommand DataGetEntityCommand = new();
-        public static readonly DataGetEntityHavePathCommand DataGetEntityHavePathCommand = new();
-        public static readonly ItemReplaceWithEntityHotbarCommand ItemReplaceWithEntityHotbarCommand = new();
-        public static readonly TellrawCommand TellrawCommand = new();
-        public static readonly TitleTitleCommand TitleTitleCommand = new();
-        public static readonly TitleSubTitleCommand TitleSubTitleCommand = new();
-        public static readonly TitleActionbarCommand TitleActionbarCommand = new();
-        public static readonly TitleTimesCommand TitleTimesCommand = new();
-        public static readonly ScoreboardPlayersGetCommand ScoreboardPlayersGetCommand = new();
-        public static readonly ScoreboardPlayersSetCommand ScoreboardPlayersSetCommand = new();
-        public static readonly ForceloadAddCommand ForceloadAddCommand = new();
-        public static readonly ForceloadRemoveCommand ForceloadRemoveCommand = new();
+        static CommandManager()
+        {
+            LanguageManager languageManager = LanguageManager.Instance;
+
+            ListCommand = new(languageManager);
+            TimeQueryDayCommand = new(languageManager);
+            TimeQueryDaytimeCommand = new(languageManager);
+            TimeQueryGametimeCommand = new(languageManager);
+            SetBlockCommand = new(languageManager);
+            SummonCommand = new(languageManager);
+            SummonHaveNbtCommand = new(languageManager);
+            KillCommand = new(languageManager);
+            TelePortEntityCommand = new(languageManager);
+            TelePortLocationCommand = new(languageManager);
+            ConditionalBlockCommand = new(languageManager);
+            ConditionalEntityCommand = new(languageManager);
+            DataGetEntityCommand = new(languageManager);
+            DataGetEntityHavePathCommand = new(languageManager);
+            ItemReplaceWithEntityHotbarCommand = new(languageManager);
+            TellrawCommand = new();
+            TitleTitleCommand = new(languageManager);
+            TitleSubTitleCommand = new(languageManager);
+            TitleActionbarCommand = new(languageManager);
+            TitleTimesCommand = new(languageManager);
+            ScoreboardPlayersGetCommand = new(languageManager);
+            ScoreboardPlayersSetCommand = new(languageManager);
+            ForceloadAddCommand = new(languageManager);
+            ForceloadRemoveCommand = new(languageManager);
+        }
+
+        public static readonly ListCommand ListCommand;
+        public static readonly TimeQueryDayCommand TimeQueryDayCommand;
+        public static readonly TimeQueryDaytimeCommand TimeQueryDaytimeCommand;
+        public static readonly TimeQueryGametimeCommand TimeQueryGametimeCommand;
+        public static readonly SetBlockCommand SetBlockCommand;
+        public static readonly SummonCommand SummonCommand;
+        public static readonly SummonHaveNbtCommand SummonHaveNbtCommand;
+        public static readonly KillCommand KillCommand;
+        public static readonly TelePortEntityCommand TelePortEntityCommand;
+        public static readonly TelePortLocationCommand TelePortLocationCommand;
+        public static readonly ConditionalBlockCommand ConditionalBlockCommand;
+        public static readonly ConditionalEntityCommand ConditionalEntityCommand;
+        public static readonly DataGetEntityCommand DataGetEntityCommand;
+        public static readonly DataGetEntityHavePathCommand DataGetEntityHavePathCommand;
+        public static readonly ItemReplaceWithEntityHotbarCommand ItemReplaceWithEntityHotbarCommand;
+        public static readonly TellrawCommand TellrawCommand;
+        public static readonly TitleTitleCommand TitleTitleCommand;
+        public static readonly TitleSubTitleCommand TitleSubTitleCommand;
+        public static readonly TitleActionbarCommand TitleActionbarCommand;
+        public static readonly TitleTimesCommand TitleTimesCommand;
+        public static readonly ScoreboardPlayersGetCommand ScoreboardPlayersGetCommand;
+        public static readonly ScoreboardPlayersSetCommand ScoreboardPlayersSetCommand;
+        public static readonly ForceloadAddCommand ForceloadAddCommand;
+        public static readonly ForceloadRemoveCommand ForceloadRemoveCommand;
 
         public static SnbtCache SnbtCache { get; } = new(TimeSpan.FromMilliseconds(50));
 

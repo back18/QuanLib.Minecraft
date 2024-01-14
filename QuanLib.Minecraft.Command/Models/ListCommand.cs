@@ -11,10 +11,12 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ListCommand : CommandBase<PlayerList>
     {
-        public ListCommand()
+        public ListCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.list.players"];
             Input = TextTemplate.Parse("list");
-            Output = LanguageManager.Instance["commands.list.players"];
         }
 
         public override TextTemplate Input { get; }

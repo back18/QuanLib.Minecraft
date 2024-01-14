@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class TimeQueryGametimeCommand : TimeQueryCommandBase
     {
-        public TimeQueryGametimeCommand()
+        public TimeQueryGametimeCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("time query gametime");
         }

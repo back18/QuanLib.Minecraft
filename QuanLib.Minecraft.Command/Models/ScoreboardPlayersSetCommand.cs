@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ScoreboardPlayersSetCommand : CountCommandBase
     {
-        public ScoreboardPlayersSetCommand()
+        public ScoreboardPlayersSetCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.scoreboard.players.set.success.multiple"];
+            Output = languageManager["commands.scoreboard.players.set.success.single"];
             Input = TextTemplate.Parse("scoreboard players set %s %s %s");
-            Output = LanguageManager.Instance["commands.scoreboard.players.set.success.single"];
-            CountOutput = LanguageManager.Instance["commands.scoreboard.players.set.success.multiple"];
         }
 
         public override TextTemplate Input { get; }

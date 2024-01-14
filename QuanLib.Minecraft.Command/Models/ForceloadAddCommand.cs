@@ -10,10 +10,12 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ForceloadAddCommand : CommandBase
     {
-        public ForceloadAddCommand()
+        public ForceloadAddCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.forceload.added.single"];
             Input = TextTemplate.Parse("forceload add %s %s");
-            Output = LanguageManager.Instance["commands.forceload.added.single"];
         }
 
         public override TextTemplate Input { get; }

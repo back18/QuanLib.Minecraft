@@ -10,9 +10,11 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public abstract class DataGetEntityCommandBase : CommandBase<string>
     {
-        public DataGetEntityCommandBase()
+        public DataGetEntityCommandBase(LanguageManager languageManager)
         {
-            Output = LanguageManager.Instance["commands.data.entity.query"];
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.data.entity.query"];
         }
 
         public override TextTemplate Output { get; }

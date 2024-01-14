@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ConditionalEntityCommand : ConditionalCountCommandBase
     {
-        public ConditionalEntityCommand()
+        public ConditionalEntityCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("execute if entity %s");
         }

@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class SummonHaveNbtCommand : SummonCommandBase
     {
-        public SummonHaveNbtCommand()
+        public SummonHaveNbtCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("summon %s %s %s %s %s");
         }

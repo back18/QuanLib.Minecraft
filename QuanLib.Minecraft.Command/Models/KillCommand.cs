@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class KillCommand : CountCommandBase
     {
-        public KillCommand()
+        public KillCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.kill.success.multiple"];
+            Output = languageManager["commands.kill.success.single"];
             Input = TextTemplate.Parse("kill %s");
-            Output = LanguageManager.Instance["commands.kill.success.single"];
-            CountOutput = LanguageManager.Instance["commands.kill.success.multiple"];
         }
 
         public override TextTemplate Input { get; }

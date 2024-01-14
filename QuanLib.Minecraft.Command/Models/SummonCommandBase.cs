@@ -9,9 +9,11 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public abstract class SummonCommandBase : CommandBase
     {
-        protected SummonCommandBase()
+        protected SummonCommandBase(LanguageManager languageManager)
         {
-            Output = LanguageManager.Instance["commands.summon.success"];
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.summon.success"];
         }
 
         public override TextTemplate Output { get; }

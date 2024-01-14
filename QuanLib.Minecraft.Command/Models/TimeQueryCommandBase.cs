@@ -11,9 +11,11 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public abstract class TimeQueryCommandBase : CommandBase<int>
     {
-        protected TimeQueryCommandBase()
+        protected TimeQueryCommandBase(LanguageManager languageManager)
         {
-            Output = LanguageManager.Instance["commands.time.query"];
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.time.query"];
         }
 
         public override TextTemplate Output { get; }

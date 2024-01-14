@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class SummonCommand : SummonCommandBase
     {
-        public SummonCommand()
+        public SummonCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("summon %s %s %s %s");
         }

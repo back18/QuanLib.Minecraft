@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class DataGetEntityCommand : DataGetEntityCommandBase
     {
-        public DataGetEntityCommand()
+        public DataGetEntityCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("data get entity %s");
         }

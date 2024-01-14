@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class TitleActionbarCommand : CountCommandBase
     {
-        public TitleActionbarCommand()
+        public TitleActionbarCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.title.show.actionbar.multiple"];
+            Output = languageManager["commands.title.show.actionbar.single"];
             Input = TextTemplate.Parse("title %s actionbar %s");
-            Output = LanguageManager.Instance["commands.title.show.actionbar.single"];
-            CountOutput = LanguageManager.Instance["commands.title.show.actionbar.multiple"];
         }
 
         public override TextTemplate Input { get; }

@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class TitleTimesCommand : CountCommandBase
     {
-        public TitleTimesCommand()
+        public TitleTimesCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.title.times.multiple"];
+            Output = languageManager["commands.title.times.single"];
             Input = TextTemplate.Parse("title %s times %s %s %s");
-            Output = LanguageManager.Instance["commands.title.times.single"];
-            CountOutput = LanguageManager.Instance["commands.title.times.multiple"];
         }
 
         public override TextTemplate Input { get; }

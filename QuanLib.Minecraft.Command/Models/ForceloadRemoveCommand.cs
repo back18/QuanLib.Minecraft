@@ -10,10 +10,12 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ForceloadRemoveCommand : CommandBase
     {
-        public ForceloadRemoveCommand()
+        public ForceloadRemoveCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.forceload.removed.single"];
             Input = TextTemplate.Parse("forceload remove %s %s");
-            Output = LanguageManager.Instance["commands.forceload.removed.single"];
         }
 
         public override TextTemplate Input { get; }

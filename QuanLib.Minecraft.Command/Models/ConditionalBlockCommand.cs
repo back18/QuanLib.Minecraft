@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class ConditionalBlockCommand : ConditionalCommandBase
     {
-        public ConditionalBlockCommand()
+        public ConditionalBlockCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("execute if block %s %s %s %s");
         }

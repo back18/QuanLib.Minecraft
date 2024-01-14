@@ -10,10 +10,12 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class SetBlockCommand : CommandBase
     {
-        public SetBlockCommand()
+        public SetBlockCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.setblock.success"];
             Input = TextTemplate.Parse("setblock %s %s %s %s");
-            Output = LanguageManager.Instance["commands.setblock.success"];
         }
 
         public override TextTemplate Input { get; }

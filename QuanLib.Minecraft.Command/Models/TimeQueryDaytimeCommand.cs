@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class TimeQueryDaytimeCommand : TimeQueryCommandBase
     {
-        public TimeQueryDaytimeCommand()
+        public TimeQueryDaytimeCommand(LanguageManager languageManager) : base(languageManager)
         {
             Input = TextTemplate.Parse("time query daytime");
         }

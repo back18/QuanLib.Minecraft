@@ -10,9 +10,11 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public abstract class ConditionalCountCommandBase : CommandBase<int>
     {
-        protected ConditionalCountCommandBase()
+        protected ConditionalCountCommandBase(LanguageManager languageManager)
         {
-            Output = LanguageManager.Instance["commands.execute.conditional.pass_count"];
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            Output = languageManager["commands.execute.conditional.pass_count"];
         }
 
         public override TextTemplate Output { get; }

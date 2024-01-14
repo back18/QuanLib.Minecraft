@@ -11,11 +11,13 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public class TitleSubTitleCommand : CountCommandBase
     {
-        public TitleSubTitleCommand()
+        public TitleSubTitleCommand(LanguageManager languageManager)
         {
+            ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
+
+            CountOutput = languageManager["commands.title.show.subtitle.multiple"];
+            Output = languageManager["commands.title.show.subtitle.single"];
             Input = TextTemplate.Parse("title %s subtitle %s");
-            Output = LanguageManager.Instance["commands.title.show.subtitle.single"];
-            CountOutput = LanguageManager.Instance["commands.title.show.subtitle.multiple"];
         }
 
         public override TextTemplate Input { get; }
