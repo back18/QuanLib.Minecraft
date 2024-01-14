@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ScoreboardPlayersSetCommand : CountCommandBase
+    public class ScoreboardPlayersSetCommand : MultipleCommandBase
     {
         public ScoreboardPlayersSetCommand(LanguageManager languageManager)
         {
             ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
 
-            CountOutput = languageManager["commands.scoreboard.players.set.success.multiple"];
+            MultipleOutput = languageManager["commands.scoreboard.players.set.success.multiple"];
             Output = languageManager["commands.scoreboard.players.set.success.single"];
             Input = TextTemplate.Parse("scoreboard players set %s %s %s");
         }
@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override TextTemplate CountOutput { get; }
+        public override TextTemplate MultipleOutput { get; }
 
         public bool TrySendCommand(CommandSender sender, string target, string objective, int score, out int result)
         {

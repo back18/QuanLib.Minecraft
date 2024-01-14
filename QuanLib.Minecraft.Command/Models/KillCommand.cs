@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class KillCommand : CountCommandBase
+    public class KillCommand : MultipleCommandBase
     {
         public KillCommand(LanguageManager languageManager)
         {
             ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
 
-            CountOutput = languageManager["commands.kill.success.multiple"];
+            MultipleOutput = languageManager["commands.kill.success.multiple"];
             Output = languageManager["commands.kill.success.single"];
             Input = TextTemplate.Parse("kill %s");
         }
@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override TextTemplate CountOutput { get; }
+        public override TextTemplate MultipleOutput { get; }
 
         public bool TrySendCommand(CommandSender sender, string target, out int result)
         {

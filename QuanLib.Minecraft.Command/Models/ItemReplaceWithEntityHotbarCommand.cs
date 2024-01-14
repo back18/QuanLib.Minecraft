@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ItemReplaceWithEntityHotbarCommand : CountCommandBase
+    public class ItemReplaceWithEntityHotbarCommand : MultipleCommandBase
     {
         public ItemReplaceWithEntityHotbarCommand(LanguageManager languageManager)
         {
             ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
 
-            CountOutput = languageManager["commands.item.entity.set.success.multiple"];
+            MultipleOutput = languageManager["commands.item.entity.set.success.multiple"];
             Output = languageManager["commands.item.entity.set.success.single"];
             Input = TextTemplate.Parse("item replace entity %s hotbar.%s with %s");
         }
@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override TextTemplate CountOutput { get; }
+        public override TextTemplate MultipleOutput { get; }
 
         public bool TrySendCommand(CommandSender sender, string target, int hotbar, string itemID, out int result)
         {

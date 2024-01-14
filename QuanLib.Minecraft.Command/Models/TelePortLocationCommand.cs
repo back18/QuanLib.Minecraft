@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TelePortLocationCommand : CountCommandBase
+    public class TelePortLocationCommand : MultipleCommandBase
     {
         public TelePortLocationCommand(LanguageManager languageManager)
         {
             ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
 
-            CountOutput = languageManager["commands.teleport.success.location.multiple"];
+            MultipleOutput = languageManager["commands.teleport.success.location.multiple"];
             Output = languageManager["commands.teleport.success.location.single"];
             Input = TextTemplate.Parse("tp %s %s %s %s");
         }
@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override TextTemplate CountOutput { get; }
+        public override TextTemplate MultipleOutput { get; }
 
         public bool TrySendCommand(CommandSender sender, string source, double x, double y, double z, out int result)
         {

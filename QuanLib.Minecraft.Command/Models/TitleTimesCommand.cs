@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TitleTimesCommand : CountCommandBase
+    public class TitleTimesCommand : MultipleCommandBase
     {
         public TitleTimesCommand(LanguageManager languageManager)
         {
             ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
 
-            CountOutput = languageManager["commands.title.times.multiple"];
+            MultipleOutput = languageManager["commands.title.times.multiple"];
             Output = languageManager["commands.title.times.single"];
             Input = TextTemplate.Parse("title %s times %s %s %s");
         }
@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override TextTemplate CountOutput { get; }
+        public override TextTemplate MultipleOutput { get; }
 
         public bool TrySendCommand(CommandSender sender, string target, int fadeIn, int stay, int fadeOut, out int result)
         {

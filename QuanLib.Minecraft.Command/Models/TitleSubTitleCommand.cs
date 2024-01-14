@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TitleSubTitleCommand : CountCommandBase
+    public class TitleSubTitleCommand : MultipleCommandBase
     {
         public TitleSubTitleCommand(LanguageManager languageManager)
         {
             ArgumentNullException.ThrowIfNull(languageManager, nameof(languageManager));
 
-            CountOutput = languageManager["commands.title.show.subtitle.multiple"];
+            MultipleOutput = languageManager["commands.title.show.subtitle.multiple"];
             Output = languageManager["commands.title.show.subtitle.single"];
             Input = TextTemplate.Parse("title %s subtitle %s");
         }
@@ -24,7 +24,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override TextTemplate CountOutput { get; }
+        public override TextTemplate MultipleOutput { get; }
 
         public bool TrySendCommand(CommandSender sender, string target, string message, out int result)
         {

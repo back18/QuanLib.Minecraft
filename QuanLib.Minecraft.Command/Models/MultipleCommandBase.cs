@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public abstract class CountCommandBase : CommandBase<int>
+    public abstract class MultipleCommandBase : CommandBase<int>
     {
-        public abstract TextTemplate CountOutput { get; }
+        public abstract TextTemplate MultipleOutput { get; }
 
         public override bool TrySendCommand(CommandSender sender, object[] inargs, [MaybeNullWhen(false)] out string[] outargs)
         {
@@ -21,7 +21,7 @@ namespace QuanLib.Minecraft.Command.Models
                 goto fail;
 
             string output = sender.SendCommand(input);
-            if (!Output.TryMatch(output, out outargs) && !CountOutput.TryMatch(output, out outargs))
+            if (!Output.TryMatch(output, out outargs) && !MultipleOutput.TryMatch(output, out outargs))
                 goto fail;
 
             fail:
