@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.IO.Zip;
+using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
@@ -27,17 +28,17 @@ namespace QuanLib.Minecraft.ResourcePack
 
         public ResourcePath Path { get; }
 
-        public Dictionary<string, ZipArchiveEntry> BlockStates { get; }
+        public Dictionary<string, ZipItem> BlockStates { get; }
 
-        public Dictionary<string, ZipArchiveEntry> BlockModels { get; }
+        public Dictionary<string, ZipItem> BlockModels { get; }
 
-        public Dictionary<string, ZipArchiveEntry> BlockTextures { get; }
+        public Dictionary<string, ZipItem> BlockTextures { get; }
 
-        public Dictionary<string, ZipArchiveEntry> ItemModels { get; }
+        public Dictionary<string, ZipItem> ItemModels { get; }
 
-        public Dictionary<string, ZipArchiveEntry> ItemTextures { get; }
+        public Dictionary<string, ZipItem> ItemTextures { get; }
 
-        public Dictionary<string, ZipArchiveEntry> Languages { get; }
+        public Dictionary<string, ZipItem> Languages { get; }
 
         public bool IsEmpty => !BlockStates.Any() && !BlockModels.Any() && !BlockTextures.Any() && !ItemModels.Any() && !ItemTextures.Any();
     }

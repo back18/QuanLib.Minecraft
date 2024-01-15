@@ -125,8 +125,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         string text;
                         lock (resource.BlockStates)
                         {
-                            using Stream stream = blockState.Open();
-                            text = stream.ToUtf8Text();
+                            text = blockState.ReadAllText();
                         }
                         result.TryAdd(blockID, JObject.Parse(text));
                     }

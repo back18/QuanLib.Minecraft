@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
-using QuanLib.IO;
+using QuanLib.IO.Zip;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -106,23 +106,23 @@ namespace QuanLib.Minecraft.ResourcePack
             if (!_items.TryGetValue(modid, out var entry))
                 goto err;
 
-            ZipArchiveEntry? modelEntry = null;
+            ZipItem? item = null;
             switch (type)
             {
                 case "block":
-                    entry.BlockModels.TryGetValue(name, out modelEntry);
+                    entry.BlockModels.TryGetValue(name, out item);
                         break;
                 case "item":
-                    entry.ItemModels.TryGetValue(name, out modelEntry);
+                    entry.ItemModels.TryGetValue(name, out item);
                     break;
             }
 
-            if (modelEntry is null)
+            if (item is null)
                 goto err;
 
             try
             {
-                using Stream stream = modelEntry.Open();
+                using Stream stream = item.OpenStream();
                 result = JObject.Parse(stream.ToUtf8Text());
                 _models.Add(modelID, result);
                 return true;
@@ -160,23 +160,23 @@ namespace QuanLib.Minecraft.ResourcePack
             if (!_items.TryGetValue(modid, out var entry))
                 goto err;
 
-            ZipArchiveEntry? modelEntry = null;
+            ZipItem? item = null;
             switch (type)
             {
                 case "block":
-                    entry.BlockTextures.TryGetValue(name, out modelEntry);
+                    entry.BlockTextures.TryGetValue(name, out item);
                     break;
                 case "item":
-                    entry.ItemTextures.TryGetValue(name, out modelEntry);
+                    entry.ItemTextures.TryGetValue(name, out item);
                     break;
             }
 
-            if (modelEntry is null)
+            if (item is null)
                 goto err;
 
             try
             {
-                using Stream stream = modelEntry.Open();
+                using Stream stream = item.OpenStream();
                 result = Image.Load<Rgba32>(stream);
                 _textures.Add(modelID, result);
                 return true;

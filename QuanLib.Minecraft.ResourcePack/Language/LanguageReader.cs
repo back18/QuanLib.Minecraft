@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using QuanLib.Core.Extensions;
+using QuanLib.IO.Zip;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,10 +25,10 @@ namespace QuanLib.Minecraft.ResourcePack.Language
             int count = 0;
             foreach (var resource in resources.Values)
             {
-                if (!resource.Languages.TryGetValue(DEFAULT_LANGUAGE + ".json", out var defaultEntry))
+                if (!resource.Languages.TryGetValue(DEFAULT_LANGUAGE + ".json", out var defaultItem))
                     continue;
 
-                Dictionary<string, string>? defaultDictionary = TryParseJson(defaultEntry);
+                Dictionary<string, string>? defaultDictionary = TryParseJson(defaultItem);
                 if (defaultDictionary is null)
                     continue;
 
@@ -41,9 +42,9 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                     }
                 }
 
-                if (language != DEFAULT_LANGUAGE && resource.Languages.TryGetValue(language + ".json", out var languageEntry))
+                if (language != DEFAULT_LANGUAGE && resource.Languages.TryGetValue(language + ".json", out var languageItem))
                 {
-                    Dictionary<string, string>? languageDictionary = TryParseJson(languageEntry);
+                    Dictionary<string, string>? languageDictionary = TryParseJson(languageItem);
                     if (languageDictionary is not null)
                     {
                         foreach (var item in languageDictionary)
@@ -70,14 +71,13 @@ namespace QuanLib.Minecraft.ResourcePack.Language
             return new(result.ToDictionary(kv => kv.Key, kv => kv.Value), language);
         }
 
-        private static Dictionary<string, string>? TryParseJson(ZipArchiveEntry entry)
+        private static Dictionary<string, string>? TryParseJson(ZipItem zipItem)
         {
-            ArgumentNullException.ThrowIfNull(entry, nameof(entry));
+            ArgumentNullException.ThrowIfNull(zipItem, nameof(zipItem));
 
-            using Stream stream = entry.Open();
-            string text = stream.ToUtf8Text();
             try
             {
+                string text = zipItem.ReadAllText();
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
             }
             catch

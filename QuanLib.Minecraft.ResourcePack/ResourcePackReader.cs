@@ -1,4 +1,4 @@
-﻿using QuanLib.IO;
+﻿using QuanLib.IO.Zip;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,31 +18,50 @@ namespace QuanLib.Minecraft.ResourcePack
             {
                 ZipPack zipPack = new(pack);
                 result.ZipPacks.Add(zipPack);
-                foreach (string modid in zipPack.GetDirectorys("assets"))
+                foreach (string directory in zipPack.GetDirectoryPaths("assets"))
                 {
-                    ResourceEntry entry = new(modid);
+                    ResourceEntry entry = new(Path.GetFileName(directory));
 
-                    foreach (var blockState in zipPack.GetFiles(entry.Path.BlockStates))
-                        entry.BlockStates.Add(blockState.Name, blockState);
+                    foreach (var file in zipPack.GetFilePaths(entry.Path.BlockStates))
+                    {
+                        ZipItem zipItem = zipPack.GetFile(file);
+                        entry.BlockStates.Add(zipItem.Name, zipItem);
+                    }
 
-                    foreach (var blockModel in zipPack.GetFiles(entry.Path.BlockModels))
-                        entry.BlockModels.Add(blockModel.Name, blockModel);
+                    foreach (var file in zipPack.GetFilePaths(entry.Path.BlockModels))
+                    {
+                        ZipItem zipItem = zipPack.GetFile(file);
+                        entry.BlockModels.Add(zipItem.Name, zipItem);
+                    }
 
-                    foreach (var blockTexture in zipPack.GetFiles(entry.Path.BlockTextures))
-                        entry.BlockTextures.Add(blockTexture.Name, blockTexture);
+                    foreach (var file in zipPack.GetFilePaths(entry.Path.BlockTextures))
+                    {
+                        ZipItem zipItem = zipPack.GetFile(file);
+                        entry.BlockTextures.Add(zipItem.Name, zipItem);
+                    }
 
-                    foreach (var itemModel in zipPack.GetFiles(entry.Path.ItemModels))
-                        entry.ItemModels.Add(itemModel.Name, itemModel);
+                    foreach (var file in zipPack.GetFilePaths(entry.Path.ItemModels))
+                    {
+                        ZipItem zipItem = zipPack.GetFile(file);
+                        entry.ItemModels.Add(zipItem.Name, zipItem);
+                    }
 
-                    foreach (var itemTexture in zipPack.GetFiles(entry.Path.ItemTextures))
-                        entry.ItemTextures.Add(itemTexture.Name, itemTexture);
+                    foreach (var file in zipPack.GetFilePaths(entry.Path.ItemTextures))
+                    {
+                        ZipItem zipItem = zipPack.GetFile(file);
+                        entry.ItemTextures.Add(zipItem.Name, zipItem);
+                    }
 
-                    foreach (var language in zipPack.GetFiles(entry.Path.Languages))
-                        entry.Languages.Add(language.Name, language);
+                    foreach (var file in zipPack.GetFilePaths(entry.Path.Languages))
+                    {
+                        ZipItem zipItem = zipPack.GetFile(file);
+                        entry.Languages.Add(zipItem.Name, zipItem);
+                    }
 
                     result.Overwrite(entry);
                 }
             }
+
             return result;
         }
     }
