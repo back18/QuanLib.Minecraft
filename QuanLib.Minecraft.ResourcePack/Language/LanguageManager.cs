@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using QuanLib.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,14 +9,8 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.ResourcePack.Language
 {
-    public class LanguageManager : IReadOnlyDictionary<string, TextTemplate>
+    public class LanguageManager : IReadOnlyDictionary<string, TextTemplate>, ISingleton<LanguageManager, LanguageManager.InstantiateArgs>
     {
-        static LanguageManager()
-        {
-            _slock = new();
-            IsLoaded = false;
-        }
-
         internal LanguageManager(Dictionary<string, TextTemplate> item, string language)
         {
             ArgumentNullException.ThrowIfNull(item, nameof(item));
@@ -26,19 +20,11 @@ namespace QuanLib.Minecraft.ResourcePack.Language
             Language = language;
         }
 
-        private static readonly object _slock;
+        private static readonly object _slock = new();
 
-        public static bool IsLoaded { get; private set; }
+        public static bool IsInstanceLoaded => _Instance is not null;
 
-        public static LanguageManager Instance
-        {
-            get
-            {
-                if (_Instance is null)
-                    throw new InvalidOperationException("实例未加载");
-                return _Instance;
-            }
-        }
+        public static LanguageManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static LanguageManager? _Instance;
 
         private readonly Dictionary<string, TextTemplate> _items;
@@ -53,18 +39,16 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         public string Language { get; }
 
-        public static LanguageManager LoadInstance(ResourceEntryManager resources, string language)
+        public static LanguageManager LoadInstance(InstantiateArgs instantiateArgs)
         {
-            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
-            ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
+            ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
 
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                _Instance = LanguageReader.Load(resources, language);
-                IsLoaded = true;
+                _Instance = LanguageReader.Load(instantiateArgs.ResourceEntryManager, instantiateArgs.Language);
                 return _Instance;
             }
         }
@@ -87,6 +71,22 @@ namespace QuanLib.Minecraft.ResourcePack.Language
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)_items).GetEnumerator();
+        }
+
+        public class InstantiateArgs : Core.InstantiateArgs
+        {
+            public InstantiateArgs(ResourceEntryManager resourceEntryManager, string language)
+            {
+                ArgumentNullException.ThrowIfNull(resourceEntryManager, nameof(resourceEntryManager));
+                ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
+
+                ResourceEntryManager = resourceEntryManager;
+                Language = language;
+            }
+
+            public ResourceEntryManager ResourceEntryManager { get; }
+
+            public string Language { get; }
         }
     }
 }

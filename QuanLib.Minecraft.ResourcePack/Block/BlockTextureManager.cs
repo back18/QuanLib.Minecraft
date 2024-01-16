@@ -1,26 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
-using SixLabors.ImageSharp.ColorSpaces;
-using SixLabors.ImageSharp.PixelFormats;
+﻿using QuanLib.Core;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.ResourcePack.Block
 {
-    public class BlockTextureManager : IReadOnlyDictionary<string, BlockTexture>
+    public class BlockTextureManager : IReadOnlyDictionary<string, BlockTexture>, ISingleton<BlockTextureManager, BlockTextureManager.InstantiateArgs>
     {
-        static BlockTextureManager()
-        {
-            _slock = new();
-            IsLoaded = false;
-        }
-
         internal BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
@@ -28,19 +18,11 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             _items = items;
         }
 
-        private static readonly object _slock;
+        private static readonly object _slock = new();
 
-        public static bool IsLoaded { get; private set; }
+        public static bool IsInstanceLoaded => _Instance is not null;
 
-        public static BlockTextureManager Instance
-        {
-            get
-            {
-                if (_Instance is null)
-                    throw new InvalidOperationException("实例未加载");
-                return _Instance;
-            }
-        }
+        public static BlockTextureManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static BlockTextureManager? _Instance;
 
         private readonly Dictionary<string, BlockTexture> _items;
@@ -53,18 +35,16 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         public int Count => _items.Count;
 
-        public static BlockTextureManager LoadInstance(ResourceEntryManager resources, IEnumerable<BlockState> blacklist)
+        public static BlockTextureManager LoadInstance(InstantiateArgs instantiateArgs)
         {
-            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
-            ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
+            ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
 
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                _Instance = BlockTextureReader.Load(resources, blacklist);
-                IsLoaded = true;
+                _Instance = BlockTextureReader.Load(instantiateArgs.ResourceEntryManager, instantiateArgs.Blacklist);
                 return _Instance;
             }
         }
@@ -99,6 +79,22 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)_items).GetEnumerator();
+        }
+
+        public class InstantiateArgs : Core.InstantiateArgs
+        {
+            public InstantiateArgs(ResourceEntryManager resourceEntryManager, IEnumerable<BlockState> blacklist)
+            {
+                ArgumentNullException.ThrowIfNull(resourceEntryManager, nameof(resourceEntryManager));
+                ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
+
+                ResourceEntryManager = resourceEntryManager;
+                Blacklist = blacklist;
+            }
+
+            public ResourceEntryManager ResourceEntryManager { get; }
+
+            public IEnumerable<BlockState> Blacklist { get; }
         }
     }
 }
