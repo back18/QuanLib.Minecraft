@@ -9,14 +9,13 @@ namespace QuanLib.Minecraft.ResourcePack
 {
     public static class ResourcePackReader
     {
-        public static ResourceEntryManager Load(params string[] packs)
+        public static ResourceEntryManager Load(params ZipPack[] zipPacks)
         {
-            ArgumentNullException.ThrowIfNull(packs, nameof(packs));
+            ArgumentNullException.ThrowIfNull(zipPacks, nameof(zipPacks));
 
             ResourceEntryManager result = new();
-            foreach (string pack in packs)
+            foreach (var zipPack in zipPacks)
             {
-                ZipPack zipPack = new(pack);
                 result.ZipPacks.Add(zipPack);
                 foreach (string directory in zipPack.GetDirectoryPaths("assets"))
                 {
@@ -63,6 +62,20 @@ namespace QuanLib.Minecraft.ResourcePack
             }
 
             return result;
+        }
+
+        public static ResourceEntryManager Load(params string[] zipPackPaths)
+        {
+            ArgumentNullException.ThrowIfNull(zipPackPaths, nameof(zipPackPaths));
+
+            List<ZipPack> zipPacks = [];
+            foreach (var zipPackPath in zipPackPaths)
+            {
+                ZipPack zipPack = new(zipPackPath);
+                zipPacks.Add(zipPack);
+            }
+
+            return Load(zipPackPaths.ToArray());
         }
     }
 }

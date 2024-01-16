@@ -15,7 +15,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
     {
         public const string DEFAULT_LANGUAGE = "en_us";
 
-        public static LanguageManager Load(ResourceEntryManager resources, string language, string? minecraftLanguageFilePath = null)
+        public static LanguageManager Load(ResourceEntryManager resources, string language)
         {
             ArgumentNullException.ThrowIfNull(resources, nameof(resources));
             ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
@@ -31,16 +31,6 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                 Dictionary<string, string>? defaultDictionary = TryParseJson(defaultItem);
                 if (defaultDictionary is null)
                     continue;
-
-                if (resource.ModId == "minecraft" && !string.IsNullOrEmpty(minecraftLanguageFilePath))
-                {
-                    Dictionary<string, string>? vanillaLanguageDictionary = TryParseJson(minecraftLanguageFilePath);
-                    if (vanillaLanguageDictionary is not null)
-                    {
-                        foreach (var item in vanillaLanguageDictionary)
-                            defaultDictionary[item.Key] = item.Value;
-                    }
-                }
 
                 if (language != DEFAULT_LANGUAGE && resource.Languages.TryGetValue(language + ".json", out var languageItem))
                 {

@@ -53,7 +53,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         public string Language { get; }
 
-        public static LanguageManager LoadInstance(ResourceEntryManager resources, string language, string? minecraftLanguageFilePath = null)
+        public static LanguageManager LoadInstance(ResourceEntryManager resources, string language)
         {
             ArgumentNullException.ThrowIfNull(resources, nameof(resources));
             ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
@@ -63,7 +63,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                _Instance = LanguageReader.Load(resources, language, minecraftLanguageFilePath);
+                _Instance = LanguageReader.Load(resources, language);
                 IsLoaded = true;
                 return _Instance;
             }
