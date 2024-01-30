@@ -1,7 +1,7 @@
 ﻿using Nett;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
-using QuanLib.IO;
+using QuanLib.IO.Zip;
 using QuanLib.Minecraft.Mod.Forge.JarMetadata;
 using System;
 using System.Collections.Generic;
@@ -46,10 +46,10 @@ namespace QuanLib.Minecraft.Mod.Forge
         {
             ArgumentNullException.ThrowIfNull(zipPack, nameof(zipPack));
 
-            if (!zipPack.TryGetValue("META-INF/mods.toml", out var entry))
+            if (!zipPack.ExistsFile("META-INF/mods.toml"))
                 return null;
 
-            using Stream stream = entry.Open();
+            using Stream stream = zipPack.GetFile("META-INF/mods.toml").OpenStream();
             TomlTable tomlTable = Toml.ReadStream(stream);
             ForgeModFileInfo.DataModel fileInfoModel = tomlTable.Get<ForgeModFileInfo.DataModel>();
 
@@ -68,10 +68,10 @@ namespace QuanLib.Minecraft.Mod.Forge
         {
             ArgumentNullException.ThrowIfNull(zipPack, nameof(zipPack));
 
-            if (!zipPack.TryGetValue("META-INF/jarjar/metadata.json", out var entry))
+            if (!zipPack.ExistsFile("META-INF/jarjar/metadata.json"))
                 return [];
 
-            using Stream stream = entry.Open();
+            using Stream stream = zipPack.GetFile("META-INF/jarjar/metadata.json").OpenStream();
             string text = stream.ToUtf8Text();
             JObject jObject1 = JObject.Parse(text);
             if (!jObject1.TryGetValue("jars", out var jars) || jars is not JArray jArray)
@@ -94,9 +94,9 @@ namespace QuanLib.Minecraft.Mod.Forge
 
         protected static void ReadVersion(ZipPack zipPack, ForgeModInfo.DataModel modInfoModel)
         {
-            if (modInfoModel.version == "${file.jarVersion}" && zipPack.TryGetValue("META-INF/MANIFEST.MF", out var manifestEntry))
+            if (modInfoModel.version == "${file.jarVersion}" && zipPack.ExistsFile("META-INF/MANIFEST.MF"))
             {
-                using Stream stream = manifestEntry.Open();
+                using Stream stream = zipPack.GetFile("META-INF/MANIFEST.MF").OpenStream();
                 string text = stream.ToUtf8Text();
                 Dictionary<string, string> imanifest = ManifestParser.Parse(text);
                 if (imanifest.TryGetValue("Implementation-Version", out var version))

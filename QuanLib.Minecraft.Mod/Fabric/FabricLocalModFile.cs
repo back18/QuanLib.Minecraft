@@ -1,4 +1,4 @@
-﻿using QuanLib.IO;
+﻿using QuanLib.IO.Zip;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -1,4 +1,4 @@
-﻿using QuanLib.IO;
+﻿using QuanLib.IO.Zip;
 using QuanLib.Minecraft.Mod.Forge.JarMetadata;
 using System;
 using System.Collections.Generic;
@@ -43,8 +43,8 @@ namespace QuanLib.Minecraft.Mod.Forge
 
         private static ZipPack ReadJarInJarModFile(ZipPack ownerZip, MetadataInfo metadataInfo)
         {
-            ZipArchiveEntry entry = ownerZip[metadataInfo.Path];
-            Stream stream = entry.Open();
+            ZipItem zipItem = ownerZip.GetFile(metadataInfo.Path);
+            Stream stream = zipItem.OpenStream();
             ZipPack zipPack = new(stream);
             return zipPack;
         }

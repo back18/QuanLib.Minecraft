@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core.Extensions;
-using QuanLib.IO;
+using QuanLib.IO.Zip;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -45,8 +45,8 @@ namespace QuanLib.Minecraft.Mod.Fabric
         {
             ArgumentNullException.ThrowIfNull(zipPack, nameof(zipPack));
 
-            ZipArchiveEntry entry = zipPack["fabric.mod.json"];
-            using Stream stream = entry.Open();
+            ZipItem zipItem = zipPack.GetFile("fabric.mod.json");
+            using Stream stream = zipItem.OpenStream();
             string text = stream.ToUtf8Text();
             text = JsonFormatter.Format(text);
 
