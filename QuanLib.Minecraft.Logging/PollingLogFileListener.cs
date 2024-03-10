@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft.Logging
 {
     public class PollingLogFileListener : PollingTextFileListener, ILogListener
     {
-        public PollingLogFileListener(string path, ILogbuilder? logbuilder = null) : base(path, GetEncoding(), logbuilder)
+        public PollingLogFileListener(string path, ILoggerGetter? loggerGetter = null) : base(path, GetEncoding(), loggerGetter)
         {
             _temp = new();
             _count = 0;

@@ -11,10 +11,10 @@ namespace QuanLib.Minecraft.Instance
 {
     public class ConsoleMinecraftServer : MinecraftServer, IConsoleInstance
     {
-        public ConsoleMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, ILogbuilder? logbuilder = null) : base(serverPath, serverAddress, logbuilder)
+        public ConsoleMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, loggerGetter)
         {
-            ServerProcess = new(ServerDirectory.FullPath, launchArguments, logbuilder);
-            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, logbuilder);
+            ServerProcess = new(ServerDirectory.FullPath, launchArguments, loggerGetter);
+            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, loggerGetter);
             ConsoleCommandSender = new(ServerConsole);
             CommandSender = new(ConsoleCommandSender, ConsoleCommandSender);
         }

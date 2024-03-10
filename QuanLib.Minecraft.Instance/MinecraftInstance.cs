@@ -12,13 +12,13 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftInstance : UnmanagedRunnable
     {
-        protected MinecraftInstance(string minecraftPath, ILogbuilder? logbuilder = null) : base(logbuilder)
+        protected MinecraftInstance(string minecraftPath, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
             ArgumentException.ThrowIfNullOrEmpty(minecraftPath, nameof(minecraftPath));
 
             MinecraftPath = minecraftPath;
             MinecraftDirectory = new(MinecraftPath);
-            LogFileListener = new(MinecraftDirectory.LogsDir.LatestFile, logbuilder);
+            LogFileListener = new(MinecraftDirectory.LogsDir.LatestFile, loggerGetter);
             LogParser = new(LogFileListener);
         }
 

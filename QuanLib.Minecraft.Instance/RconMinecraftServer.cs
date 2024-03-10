@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public class RconMinecraftServer : MinecraftServer, IRconInstance
     {
-        public RconMinecraftServer(string serverPath, string serverAddress, ILogbuilder? logbuilder = null) : base(serverPath, serverAddress, logbuilder)
+        public RconMinecraftServer(string serverPath, string serverAddress, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, loggerGetter)
         {
             if (!ServerProperties.EnableRcon)
                 throw new InvalidOperationException($"需要在 server.properties 中将 {ServerProperties.ENABLE_RCON} 设置为 true");
@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.Instance
             RconPassword = ServerProperties.RconPassword;
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
-            OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, logbuilder: logbuilder);
+            OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, loggerGetter: loggerGetter);
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);
         }
 

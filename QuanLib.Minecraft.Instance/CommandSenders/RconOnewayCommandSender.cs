@@ -19,13 +19,13 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
 {
     public class RconOnewayCommandSender : UnmanagedRunnable, IOnewayCommandSender
     {
-        public RconOnewayCommandSender(IPAddress address, ushort port, string password, int clientCount = 6, ILogbuilder? logbuilder = null) : base(logbuilder)
+        public RconOnewayCommandSender(IPAddress address, ushort port, string password, int clientCount = 6, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
             ArgumentNullException.ThrowIfNull(address, nameof(address));
             ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
             ThrowHelper.ArgumentOutOfMin(0, clientCount, nameof(clientCount));
 
-            _logbuilder = logbuilder;
+            _loggerGetter = loggerGetter;
             _address = address;
             _port = port;
             _password = password;
@@ -38,7 +38,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             IsConnected = false;
         }
 
-        private readonly ILogbuilder? _logbuilder;
+        private readonly ILoggerGetter? _loggerGetter;
 
         private readonly IPAddress _address;
 
@@ -63,7 +63,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             Task[] tasks = new Task[_clientCount];
             for (int i = 0; i < _clientCount; i++)
             {
-                RconClient client = new(_address, _port, _password, _logbuilder);
+                RconClient client = new(_address, _port, _password, _loggerGetter);
                 client.Start("RconClient Thread #" + i);
                 _clients.Add(client);
                 tasks[i] = client.WaitForStopAsync();
@@ -207,7 +207,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
 
         private class RconClient : UnmanagedRunnable
         {
-            public RconClient(IPAddress address, ushort port, string password, ILogbuilder? logbuilder = null) : base(logbuilder)
+            public RconClient(IPAddress address, ushort port, string password, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
             {
                 ArgumentNullException.ThrowIfNull(address, nameof(address));
                 ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));

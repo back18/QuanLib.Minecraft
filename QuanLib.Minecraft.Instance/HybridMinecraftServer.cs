@@ -13,7 +13,7 @@ namespace QuanLib.Minecraft.Instance
     public class HybridMinecraftServer : MinecraftServer, IHybridInstance
     {
 
-        public HybridMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, ILogbuilder? logbuilder = null) : base(serverPath, serverAddress, logbuilder)
+        public HybridMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, loggerGetter)
         {
             if (!ServerProperties.EnableRcon)
                 throw new InvalidOperationException($"需要在 server.properties 中将 {ServerProperties.ENABLE_RCON} 设置为 true");
@@ -27,8 +27,8 @@ namespace QuanLib.Minecraft.Instance
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
 
-            ServerProcess = new(ServerDirectory.FullPath, launchArguments, logbuilder);
-            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, logbuilder);
+            ServerProcess = new(ServerDirectory.FullPath, launchArguments, loggerGetter);
+            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, loggerGetter);
             OnewayCommandSender = new(ServerConsole);
 
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);

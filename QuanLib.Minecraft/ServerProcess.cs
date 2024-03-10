@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft
 {
     public class ServerProcess : UnmanagedRunnable
     {
-        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, ILogbuilder? logbuilder = null) : base(logbuilder)
+        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverPath, nameof(serverPath));
             ArgumentNullException.ThrowIfNull(launchArguments, nameof(launchArguments));

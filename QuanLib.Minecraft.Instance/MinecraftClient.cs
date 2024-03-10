@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftClient : MinecraftInstance
     {
-        protected MinecraftClient(string clientPath, ILogbuilder? logbuilder = null) : base(clientPath, logbuilder)
+        protected MinecraftClient(string clientPath, ILoggerGetter? loggerGetter = null) : base(clientPath, loggerGetter)
         {
             ClientDirectory = new(clientPath);
         }

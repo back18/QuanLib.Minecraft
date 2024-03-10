@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftServer : MinecraftInstance
     {
-        protected MinecraftServer(string serverPath, string serverAddress, ILogbuilder? logbuilder = null) : base(serverPath, logbuilder)
+        protected MinecraftServer(string serverPath, string serverAddress, ILoggerGetter? loggerGetter = null) : base(serverPath, loggerGetter)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverAddress, nameof(serverAddress));
 

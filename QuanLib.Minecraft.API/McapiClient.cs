@@ -17,7 +17,7 @@ namespace QuanLib.Minecraft.API
 {
     public class McapiClient : UnmanagedRunnable
     {
-        public McapiClient(IPAddress address, ushort port, ILogbuilder? logbuilder = null) : base(logbuilder)
+        public McapiClient(IPAddress address, ushort port, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
             ArgumentNullException.ThrowIfNull(address, nameof(address));
 

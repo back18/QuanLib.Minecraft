@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft
     {
         private const string SEPARATOR = ": ";
 
-        public ServerConsole(StreamReader reader, StreamWriter writer, ILogbuilder? logbuilder = null) : base(logbuilder)
+        public ServerConsole(StreamReader reader, StreamWriter writer, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
             ArgumentNullException.ThrowIfNull(reader, nameof(reader));
             ArgumentNullException.ThrowIfNull(writer, nameof(writer));
