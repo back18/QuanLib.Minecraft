@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft.Logging
 {
     public class PlayerLoginInfo
     {
-        public PlayerLoginInfo(string name, IPAddress ip, ushort port, int id, EntityPos position)
+        public PlayerLoginInfo(string name, IPAddress ip, ushort port, int id, Vector3<double> position)
         {
             ArgumentNullException.ThrowIfNull(name, nameof(name));
             ArgumentNullException.ThrowIfNull(ip, nameof(ip));
@@ -32,7 +32,7 @@ namespace QuanLib.Minecraft.Logging
 
         public int ID { get; }
 
-        public EntityPos Position { get; }
+        public Vector3<double> Position { get; }
 
         public static bool TryParse(string s, [MaybeNullWhen(false)] out PlayerLoginInfo result)
         {

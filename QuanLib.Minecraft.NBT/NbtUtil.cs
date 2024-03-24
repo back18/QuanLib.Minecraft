@@ -1,7 +1,8 @@
-﻿using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace QuanLib.Minecraft.NBT
 {
     public static class NbtUtil
     {
-        public static bool TryParseEntityPosSbnt(string s, out EntityPos result)
+        public static bool TryParseEntityPosSbnt(string s, out Vector3<double> result)
         {
             if (string.IsNullOrEmpty(s))
                 goto err;
@@ -115,7 +116,7 @@ namespace QuanLib.Minecraft.NBT
             return value != 0;
         }
 
-        public static Vector3<T> ToVector3<T>(T[] value) where T : struct
+        public static Vector3<T> ToVector3<T>(T[] value) where T : INumber<T>, IConvertible
         {
             ArgumentNullException.ThrowIfNull(value, nameof(value));
             if (value.Length != 3)
@@ -124,7 +125,7 @@ namespace QuanLib.Minecraft.NBT
             return new(value[0], value[1], value[2]);
         }
 
-        public static Vector2<T> ToVector2<T>(T[] value) where T : struct
+        public static Vector2<T> ToVector2<T>(T[] value) where T : INumber<T>, IConvertible
         {
             ArgumentNullException.ThrowIfNull(value, nameof(value));
             if (value.Length != 2)

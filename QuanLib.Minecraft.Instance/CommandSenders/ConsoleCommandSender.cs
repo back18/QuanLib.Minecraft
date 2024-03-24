@@ -137,7 +137,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
         {
             StringBuilder sb = new(blocks.Count() * 32);
             foreach (var block in blocks)
-                sb.AppendFormat("setblock {0} {1} {2} {3}\n", block.Position.X, block.Position.Y, block.Position.Z, block.BlockID);
+                sb.AppendFormat("setblock {0} {1} {2} {3}\n", block.Position.X, block.Position.Y, block.Position.Z, block.BlockId);
             sb.Length--;
             return sb.ToString();
         }

@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Vector;
+using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,7 +43,7 @@ namespace QuanLib.Minecraft.NBT.Models
 
         public short HurtTime { get; }
 
-        public BlockPos Sleeping { get; }
+        public Vector3<int> Sleeping { get; }
 
         public new class Model : Entity.Model
         {

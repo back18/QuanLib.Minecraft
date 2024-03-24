@@ -1,5 +1,4 @@
-﻿using QuanLib.Minecraft.Command;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,9 +15,9 @@ namespace QuanLib.Minecraft.Command.Selectors
 
         public Target Target { get; }
 
-        public TargetVector3Argument<double>? StartPosition { get; set; }
+        public Vector3TargetArgument<double>? StartPosition { get; set; }
 
-        public TargetVector3Argument<double>? EndPositionOffset { get; set; }
+        public Vector3TargetArgument<double>? EndPositionOffset { get; set; }
 
         public TargetArgument<double>? Distance { get; set; }
 
@@ -49,10 +48,10 @@ namespace QuanLib.Minecraft.Command.Selectors
             List<string> items = new();
 
             if (StartPosition is not null)
-                items.Add(StartPosition.ToString(new("x", "y", "z")));
+                items.Add(StartPosition.ToString("x", "y", "z"));
 
             if (EndPositionOffset is not null)
-                items.Add(EndPositionOffset.ToString(new("dx", "dy", "dz")));
+                items.Add(EndPositionOffset.ToString("dx", "dy", "dz"));
 
             if (Distance is not null)
                 items.Add(Distance.ToString("distance"));

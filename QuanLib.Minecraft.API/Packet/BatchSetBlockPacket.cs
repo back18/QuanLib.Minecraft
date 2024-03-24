@@ -50,10 +50,10 @@ namespace QuanLib.Minecraft.API.Packet
                 List<int> data = new(blocks.Count() * 4);
                 foreach (WorldBlock argument in blocks)
                 {
-                    int index = palette.IndexOf(argument.BlockID);
+                    int index = palette.IndexOf(argument.BlockId);
                     if (index == -1)
                     {
-                        palette.Add(argument.BlockID);
+                        palette.Add(argument.BlockId);
                         index = palette.Count - 1;
                     }
                     data.Add(argument.Position.X);

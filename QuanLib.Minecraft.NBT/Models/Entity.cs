@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Vector;
+using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

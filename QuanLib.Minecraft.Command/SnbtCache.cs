@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
+using QuanLib.Game;
 using QuanLib.Minecraft.NBT.Models;
-using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.Command
             DualWieldItem = new(expirationTime);
         }
 
-        public CacheDictionary<string, EntityPos> Position { get; }
+        public CacheDictionary<string, Vector3<double>> Position { get; }
 
         public CacheDictionary<string, Rotation> Rotation { get; }
 

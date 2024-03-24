@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Vector;
+using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -93,7 +93,7 @@ namespace QuanLib.Minecraft.NBT.Models
 
         public bool? SpawnForced { get; }
 
-        public BlockPos? Spawn { get; }
+        public Vector3<int>? Spawn { get; }
 
         public object WardenSpawnTracker { get; }
 

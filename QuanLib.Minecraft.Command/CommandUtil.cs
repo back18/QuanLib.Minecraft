@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Command
     {
         public static string ToSetBlockCommand(this WorldBlock blocks)
         {
-            return $"setblock {blocks.Position.X} {blocks.Position.Y} {blocks.Position.Z} {blocks.BlockID}";
+            return $"setblock {blocks.Position.X} {blocks.Position.Y} {blocks.Position.Z} {blocks.BlockId}";
         }
 
         public static string ToCommandArgument(this Gamemode gamemode)

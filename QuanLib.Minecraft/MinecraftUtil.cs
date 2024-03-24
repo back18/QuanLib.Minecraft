@@ -1,10 +1,9 @@
-﻿using QuanLib.Minecraft.Vector;
+﻿using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft
@@ -45,43 +44,14 @@ namespace QuanLib.Minecraft
             };
         }
 
-        public static BlockPos OffsetPosition(this BlockPos position, Facing facing, int offset)
-        {
-            switch (facing)
-            {
-                case Facing.Xp:
-                    position.X += offset;
-                    break;
-                case Facing.Xm:
-                    position.X -= offset;
-                    break;
-                case Facing.Yp:
-                    position.Y += offset;
-                    break;
-                case Facing.Ym:
-                    position.Y -= offset;
-                    break;
-                case Facing.Zp:
-                    position.Z += offset;
-                    break;
-                case Facing.Zm:
-                    position.Z -= offset;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            return position;
-        }
-
-        public static ChunkPos BlockPos2ChunkPos(IVector3<int> blockPos)
+        public static ChunkPos BlockPos2ChunkPos(Vector3<int> blockPos)
         {
             return new ChunkPos
                     ((int)Math.Round(blockPos.X / 16.0, MidpointRounding.ToNegativeInfinity),
                     (int)Math.Round(blockPos.Z / 16.0, MidpointRounding.ToNegativeInfinity));
         }
 
-        public static BlockPos ChunkPos2BlockPos(ChunkPos chunkPos)
+        public static Vector3<int> ChunkPos2BlockPos(ChunkPos chunkPos)
         {
             return new(chunkPos.X * 16, 0, chunkPos.Z * 16);
         }

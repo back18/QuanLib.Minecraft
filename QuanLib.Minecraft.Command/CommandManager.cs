@@ -8,8 +8,8 @@ using QuanLib.Minecraft.Command.Models;
 using QuanLib.Minecraft.NBT.Models;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.NBT;
-using QuanLib.Minecraft.Vector;
 using QuanLib.Minecraft.ResourcePack.Language;
+using QuanLib.Game;
 
 namespace QuanLib.Minecraft.Command
 {
@@ -178,7 +178,7 @@ namespace QuanLib.Minecraft.Command
             return DataGetEntityHavePathCommand.TrySendCommand(sender, target, path, out result);
         }
 
-        public static bool TryGetEntityPosition(this CommandSender sender, string target, out EntityPos result)
+        public static bool TryGetEntityPosition(this CommandSender sender, string target, out Vector3<double> result)
         {
             ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
@@ -382,11 +382,11 @@ namespace QuanLib.Minecraft.Command
 
         #region GetAllSnbt
 
-        public static Dictionary<string, EntityPos> GetAllEntityPosition(this CommandSender sender, IEnumerable<string> targets)
+        public static Dictionary<string, Vector3<double>> GetAllEntityPosition(this CommandSender sender, IEnumerable<string> targets)
         {
             ArgumentNullException.ThrowIfNull(targets, nameof(targets));
 
-            Dictionary<string, EntityPos> result = new();
+            Dictionary<string, Vector3<double>> result = new();
             foreach (var target in targets)
             {
                 if (TryGetEntityPosition(sender, target, out var entityPos))
@@ -466,7 +466,7 @@ namespace QuanLib.Minecraft.Command
             return result;
         }
 
-        public static Dictionary<string, EntityPos> GetAllPlayerPosition(this CommandSender sender)
+        public static Dictionary<string, Vector3<double>> GetAllPlayerPosition(this CommandSender sender)
         {
             PlayerList playerList = GetPlayerList(sender);
             return GetAllEntityPosition(sender, playerList.List);
