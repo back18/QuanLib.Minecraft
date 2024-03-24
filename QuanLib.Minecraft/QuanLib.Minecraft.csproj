@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\QuanLib\QuanLib.Game\QuanLib.Game.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.IO\QuanLib.IO.csproj" />
   </ItemGroup>
 

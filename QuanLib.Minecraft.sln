@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Logging",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.NBT", "QuanLib.Minecraft.NBT\QuanLib.Minecraft.NBT.csproj", "{C9E81EC1-EC3C-4909-BA72-E23677B03784}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Game", "..\QuanLib\QuanLib.Game\QuanLib.Game.csproj", "{B5A06B86-B627-4E99-9DA2-02A8CEBDFB03}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{C9E81EC1-EC3C-4909-BA72-E23677B03784}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9E81EC1-EC3C-4909-BA72-E23677B03784}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9E81EC1-EC3C-4909-BA72-E23677B03784}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5A06B86-B627-4E99-9DA2-02A8CEBDFB03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5A06B86-B627-4E99-9DA2-02A8CEBDFB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5A06B86-B627-4E99-9DA2-02A8CEBDFB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5A06B86-B627-4E99-9DA2-02A8CEBDFB03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
