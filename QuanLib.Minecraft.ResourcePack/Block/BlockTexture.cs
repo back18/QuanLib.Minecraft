@@ -13,17 +13,17 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 {
     public class BlockTexture
     {
-        public BlockTexture(string blockID, BlockType blockType, IDictionary<Facing, Image<Rgba32>> images)
+        public BlockTexture(string blockId, BlockType blockType, IDictionary<Facing, Image<Rgba32>> images)
         {
-            ArgumentException.ThrowIfNullOrEmpty(blockID, nameof(blockID));
+            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
             ArgumentNullException.ThrowIfNull(images, nameof(images));
 
-            BlockID = blockID;
+            BlockId = blockId;
             BlockType = blockType;
             Textures = new(images.ToDictionary(item => item.Key, item => new Texture(item.Value)));
         }
 
-        public string BlockID { get; }
+        public string BlockId { get; }
 
         public BlockType BlockType { get; }
 
@@ -31,7 +31,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         public override string ToString()
         {
-            return BlockID;
+            return BlockId;
         }
     }
 }
