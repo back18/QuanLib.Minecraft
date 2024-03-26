@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -10,15 +11,15 @@ namespace QuanLib.Minecraft
 {
     public class BlockState
     {
-        public BlockState(string blockID, IReadOnlyDictionary<string, string> states)
+        public BlockState(string blockId, IDictionary<string, string> states)
         {
-            BlockID = blockID;
-            States = states;
+            BlockId = blockId;
+            States = states.AsReadOnly();
         }
 
-        public string BlockID { get; }
+        public string BlockId { get; }
 
-        public IReadOnlyDictionary<string, string> States { get; }
+        public ReadOnlyDictionary<string, string> States { get; }
 
         public static bool TryParse(string s, [MaybeNullWhen(false)] out BlockState result)
         {
@@ -36,34 +37,38 @@ namespace QuanLib.Minecraft
                     result = null;
                     return false;
                 }
-                string blockID = s[..s.IndexOf('[')];
+                string blockId = s[..s.IndexOf('[')];
 
-                result = new(blockID, states);
+                result = new(blockId, states);
                 return true;
             }
             else
             {
                 Dictionary<string, string> states = new();
-                string blockID = s;
+                string blockId = s;
 
-                result = new(blockID, states);
+                result = new(blockId, states);
                 return true;
             }
         }
 
         public override string ToString()
         {
-            string s = BlockID;
+            StringBuilder stringBuilder = new(BlockId);
+
             if (States.Count > 0)
             {
-                s += "[";
+                stringBuilder.Append('[');
                 foreach (var state in States)
                 {
-                    s += $"{state.Key}={state.Value}";
+                    stringBuilder.Append(state.Key);
+                    stringBuilder.Append('=');
+                    stringBuilder.Append(state.Value);
                 }
-                s += "]";
+                stringBuilder.Append(']');
             }
-            return s;
+
+            return stringBuilder.ToString();
         }
     }
 }
