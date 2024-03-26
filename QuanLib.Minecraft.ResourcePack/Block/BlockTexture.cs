@@ -1,4 +1,5 @@
-﻿using QuanLib.Game;
+﻿using QuanLib.Core;
+using QuanLib.Game;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -11,7 +12,7 @@ using System.Xml.Linq;
 
 namespace QuanLib.Minecraft.ResourcePack.Block
 {
-    public class BlockTexture
+    public class BlockTexture : UnmanagedBase
     {
         public BlockTexture(string blockId, BlockType blockType, IDictionary<Facing, Image<Rgba32>> images)
         {
@@ -32,6 +33,12 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         public override string ToString()
         {
             return BlockId;
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            foreach (Texture texture in Textures.Values)
+                texture.Dispose();
         }
     }
 }

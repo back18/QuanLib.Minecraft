@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.ResourcePack.Block
 {
-    public class BlockTextureManager : IReadOnlyDictionary<string, BlockTexture>, ISingleton<BlockTextureManager, BlockTextureManager.InstantiateArgs>
+    public class BlockTextureManager : UnmanagedBase, IReadOnlyDictionary<string, BlockTexture>, ISingleton<BlockTextureManager, BlockTextureManager.InstantiateArgs>
     {
         internal BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
@@ -44,7 +44,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                _Instance = BlockTextureReader.Load(instantiateArgs.ResourceEntryManager, instantiateArgs.Blacklist);
+                _Instance = BlockTextureReader.Load(instantiateArgs.ResourceEntryManager);
                 return _Instance;
             }
         }
@@ -71,6 +71,13 @@ namespace QuanLib.Minecraft.ResourcePack.Block
             return false;
         }
 
+        protected override void DisposeUnmanaged()
+        {
+            foreach (BlockTexture blockTexture in _items.Values)
+                blockTexture.Dispose();
+            _items.Clear();
+        }
+
         public IEnumerator<KeyValuePair<string, BlockTexture>> GetEnumerator()
         {
             return _items.GetEnumerator();
@@ -83,18 +90,14 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         public class InstantiateArgs : Core.InstantiateArgs
         {
-            public InstantiateArgs(ResourceEntryManager resourceEntryManager, IEnumerable<BlockState> blacklist)
+            public InstantiateArgs(ResourceEntryManager resourceEntryManager)
             {
                 ArgumentNullException.ThrowIfNull(resourceEntryManager, nameof(resourceEntryManager));
-                ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
 
                 ResourceEntryManager = resourceEntryManager;
-                Blacklist = blacklist;
             }
 
             public ResourceEntryManager ResourceEntryManager { get; }
-
-            public IEnumerable<BlockState> Blacklist { get; }
         }
     }
 }

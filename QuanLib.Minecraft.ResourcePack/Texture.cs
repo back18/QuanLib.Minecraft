@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Core;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.ResourcePack
 {
-    public class Texture
+    public class Texture : UnmanagedBase
     {
         public Texture(Image<Rgba32> image)
         {
@@ -25,6 +26,11 @@ namespace QuanLib.Minecraft.ResourcePack
         public Image<Rgba32> GetImage()
         {
             return _image.Clone();
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            _image.Dispose();
         }
 
         private static Rgba32 GetAverageColor(Image<Rgba32> image)

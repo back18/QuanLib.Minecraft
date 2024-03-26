@@ -16,10 +16,9 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 {
     public static class BlockTextureReader
     {
-        public static BlockTextureManager Load(ResourceEntryManager resources, IEnumerable<BlockState> blacklist)
+        public static BlockTextureManager Load(ResourceEntryManager resources)
         {
             ArgumentNullException.ThrowIfNull(resources, nameof(resources));
-            ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
 
             Dictionary<string, BlockTexture> result = new();
             ConcurrentDictionary<string, JObject> blockStates = GetBlockStates(resources);
@@ -41,34 +40,11 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         textures is not JObject textures_jobj)
                         continue;
 
-                    string blockID = blockState.Key;
+                    string blockId = blockState.Key;
                     string state = variant_jpro.Name;
-                    Dictionary<string, string>? states = new();
-                    string key = blockID;
+                    string blockIdState = blockId;
                     if (!string.IsNullOrEmpty(state))
-                    {
-                        if (!MinecraftUtil.TryParseBlockState(state, out states))
-                            states = new();
-                        key += $"[{state}]";
-                    }
-
-                    bool disable = false;
-                    foreach (var black in blacklist)
-                    {
-                        if (blockID != black.BlockID)
-                            continue;
-
-                        foreach (var item in black.States)
-                        {
-                            if (!states.TryGetValue(item.Key, out var value) || value != item.Value)
-                                continue;
-                        }
-
-                        disable = true;
-                        break;
-                    }
-                    if (disable)
-                        continue;
+                        blockIdState += $"[{state}]";
 
                     if (!TextureMap.TryGetTextureMap(parent.Value<string>(), state, out var textureMap) ||
                         !textureMap.TryParseJObject(textures_jobj, out var textureInfo))
@@ -94,7 +70,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         { Facing.Zm, zmTexture }
                     };
 
-                    result.Add(key, new(key, blockType, textureResult));
+                    result.Add(blockIdState, new(blockIdState, blockType, textureResult));
                 }
             }
 
