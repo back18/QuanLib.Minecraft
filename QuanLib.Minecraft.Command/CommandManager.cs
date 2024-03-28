@@ -92,34 +92,34 @@ namespace QuanLib.Minecraft.Command
             return TimeQueryGametimeCommand.TrySendCommand(sender, out var result) ? result : 0;
         }
 
-        public static bool SetBlock(this CommandSender sender, int x, int y, int z, string blockID)
+        public static bool SetBlock(this CommandSender sender, int x, int y, int z, string blockId)
         {
-            return SetBlockCommand.TrySendCommand(sender, x, y, z, blockID);
+            return SetBlockCommand.TrySendCommand(sender, x, y, z, blockId);
         }
 
-        public static bool SetBlock<T>(this CommandSender sender, T position, string blockID) where T : IVector3<int>
+        public static bool SetBlock<T>(this CommandSender sender, T position, string blockId) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
-            return SetBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockID);
+            return SetBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockId);
         }
 
-        public static bool SummonEntity(this CommandSender sender, double x, double y, double z, string entityID, string? nbt = null)
+        public static bool SummonEntity(this CommandSender sender, double x, double y, double z, string entityId, string? nbt = null)
         {
             if (string.IsNullOrEmpty(nbt))
-                return SummonCommand.TrySendCommand(sender, x, y, z, entityID);
+                return SummonCommand.TrySendCommand(sender, x, y, z, entityId);
             else
-                return SummonHaveNbtCommand.TrySendCommand(sender, x, y, z, entityID, nbt);
+                return SummonHaveNbtCommand.TrySendCommand(sender, x, y, z, entityId, nbt);
         }
 
-        public static bool SummonEntity<T>(this CommandSender sender, T position, string entityID, string? nbt = null) where T : IVector3<double>
+        public static bool SummonEntity<T>(this CommandSender sender, T position, string entityId, string? nbt = null) where T : IVector3<double>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             if (string.IsNullOrEmpty(nbt))
-                return SummonCommand.TrySendCommand(sender, position.X, position.Y, position.Z, entityID);
+                return SummonCommand.TrySendCommand(sender, position.X, position.Y, position.Z, entityId);
             else
-                return SummonHaveNbtCommand.TrySendCommand(sender, position.X, position.Y, position.Z, entityID, nbt);
+                return SummonHaveNbtCommand.TrySendCommand(sender, position.X, position.Y, position.Z, entityId, nbt);
         }
 
         public static int KillEntity(this CommandSender sender, string target)
@@ -144,16 +144,16 @@ namespace QuanLib.Minecraft.Command
             return TelePortLocationCommand.TrySendCommand(sender, source, position.X, position.Y, position.Z, out var result) ? result : 0;
         }
 
-        public static bool ConditionalBlock(this CommandSender sender, int x, int y, int z, string blockID)
+        public static bool ConditionalBlock(this CommandSender sender, int x, int y, int z, string blockId)
         {
-            return ConditionalBlockCommand.TrySendCommand(sender, x, y, z, blockID);
+            return ConditionalBlockCommand.TrySendCommand(sender, x, y, z, blockId);
         }
 
-        public static bool ConditionalBlock<T>(this CommandSender sender, T position, string blockID) where T : IVector3<int>
+        public static bool ConditionalBlock<T>(this CommandSender sender, T position, string blockId) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
-            return ConditionalBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockID);
+            return ConditionalBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockId);
         }
 
         public static bool ConditionalEntity(this CommandSender sender, string target)

@@ -96,7 +96,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         return;
                     }
 
-                    string blockID = $"{resource.ModId}:{blockState.Name[..^extension.Length]}";
+                    string blockId = $"{resource.ModId}:{blockState.Name[..^extension.Length]}";
                     try
                     {
                         string text;
@@ -104,11 +104,11 @@ namespace QuanLib.Minecraft.ResourcePack.Block
                         {
                             text = blockState.ReadAllText();
                         }
-                        result.TryAdd(blockID, JObject.Parse(text));
+                        result.TryAdd(blockId, JObject.Parse(text));
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"无法解析方块状态json文件“{blockID}”\n{ex.GetType().Name}: {ex.Message}");
+                        Console.WriteLine($"无法解析方块状态json文件“{blockId}”\n{ex.GetType().Name}: {ex.Message}");
                     }
 
                     Interlocked.Increment(ref count);

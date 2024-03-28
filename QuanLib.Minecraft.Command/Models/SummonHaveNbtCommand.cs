@@ -17,12 +17,12 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Input { get; }
 
-        public bool TrySendCommand(CommandSender sender, double x, double y, double z, string entityID, string nbt)
+        public bool TrySendCommand(CommandSender sender, double x, double y, double z, string entityId, string nbt)
         {
-            ArgumentException.ThrowIfNullOrEmpty(entityID, nameof(entityID));
+            ArgumentException.ThrowIfNullOrEmpty(entityId, nameof(entityId));
             ArgumentException.ThrowIfNullOrEmpty(nbt, nameof(nbt));
 
-            return base.TrySendCommand(sender, new object[] { entityID, x, y, z, nbt }, out _);
+            return base.TrySendCommand(sender, new object[] { entityId, x, y, z, nbt }, out _);
         }
     }
 }

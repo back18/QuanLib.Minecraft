@@ -22,11 +22,11 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public bool TrySendCommand(CommandSender sender, int x, int y, int z, string blockID)
+        public bool TrySendCommand(CommandSender sender, int x, int y, int z, string blockId)
         {
-            ArgumentNullException.ThrowIfNull(blockID, nameof(blockID));
+            ArgumentNullException.ThrowIfNull(blockId, nameof(blockId));
 
-            return base.TrySendCommand(sender, new object[] { x, y, z, blockID }, out _);
+            return base.TrySendCommand(sender, new object[] { x, y, z, blockId }, out _);
         }
     }
 }
