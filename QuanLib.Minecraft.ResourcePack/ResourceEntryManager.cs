@@ -123,7 +123,7 @@ namespace QuanLib.Minecraft.ResourcePack
             try
             {
                 using Stream stream = item.OpenStream();
-                result = JObject.Parse(stream.ToUtf8Text());
+                result = JObject.Parse(stream.ReadAllText());
                 _models.Add(modelID, result);
                 return true;
             }

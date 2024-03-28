@@ -72,7 +72,7 @@ namespace QuanLib.Minecraft
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".SystemResource.server.properties") ?? throw new InvalidOperationException();
-            string text = stream.ToUtf8Text();
+            string text = stream.ReadAllText();
             Dictionary<string, string> dictionary = Parse(text);
             DefaultProperties = new(dictionary, false);
         }
