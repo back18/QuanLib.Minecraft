@@ -47,7 +47,7 @@ namespace QuanLib.Minecraft.Mod.Fabric
 
             ZipItem zipItem = zipPack.GetFile("fabric.mod.json");
             using Stream stream = zipItem.OpenStream();
-            string text = stream.ToUtf8Text();
+            string text = stream.ReadAllText();
             text = JsonFormatter.Format(text);
 
             FabricModInfo.DataModel modInfoModel = JsonConvert.DeserializeObject<FabricModInfo.DataModel>(text) ?? throw new FormatException();

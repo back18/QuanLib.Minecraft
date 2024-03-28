@@ -72,7 +72,7 @@ namespace QuanLib.Minecraft.Mod.Forge
                 return [];
 
             using Stream stream = zipPack.GetFile("META-INF/jarjar/metadata.json").OpenStream();
-            string text = stream.ToUtf8Text();
+            string text = stream.ReadAllText();
             JObject jObject1 = JObject.Parse(text);
             if (!jObject1.TryGetValue("jars", out var jars) || jars is not JArray jArray)
                 return [];
@@ -97,7 +97,7 @@ namespace QuanLib.Minecraft.Mod.Forge
             if (modInfoModel.version == "${file.jarVersion}" && zipPack.ExistsFile("META-INF/MANIFEST.MF"))
             {
                 using Stream stream = zipPack.GetFile("META-INF/MANIFEST.MF").OpenStream();
-                string text = stream.ToUtf8Text();
+                string text = stream.ReadAllText();
                 Dictionary<string, string> imanifest = ManifestParser.Parse(text);
                 if (imanifest.TryGetValue("Implementation-Version", out var version))
                     modInfoModel.version = version;
