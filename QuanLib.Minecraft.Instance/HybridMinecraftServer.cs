@@ -13,17 +13,12 @@ namespace QuanLib.Minecraft.Instance
     public class HybridMinecraftServer : MinecraftServer, IHybridInstance
     {
 
-        public HybridMinecraftServer(string serverPath, string serverAddress, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, loggerGetter)
+        public HybridMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ushort rconPort, string rconPassword, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, serverPort, loggerGetter)
         {
-            if (!ServerProperties.EnableRcon)
-                throw new InvalidOperationException($"需要在 server.properties 中将 {ServerProperties.ENABLE_RCON} 设置为 true");
-            if (ServerProperties.RconPort < ushort.MinValue || ServerProperties.RconPort > ushort.MaxValue)
-                throw new InvalidOperationException($"需要在 server.properties 中为 {ServerProperties.RCON_PORT} 设置一个 {ushort.MinValue} 到 {ushort.MaxValue} 之间的有效端口");
-            if (string.IsNullOrEmpty(ServerProperties.RconPassword))
-                throw new InvalidOperationException($"需要在 server.properties 中为 {ServerProperties.RCON_PASSWORD} 设置一个非空密码");
+            ArgumentException.ThrowIfNullOrEmpty(rconPassword, nameof(rconPassword));
 
-            RconPort = (ushort)ServerProperties.RconPort;
-            RconPassword = ServerProperties.RconPassword;
+            RconPort = rconPort;
+            RconPassword = rconPassword;
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
 

@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public class McapiMinecraftServer : MinecraftServer, IMcapiInstance
     {
-        public McapiMinecraftServer(string serverPath, string serverAddress, ushort mcapiPort, string mcapiPassword, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, loggerGetter)
+        public McapiMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ushort mcapiPort, string mcapiPassword, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, serverPort, loggerGetter)
         {
             ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
 

@@ -13,20 +13,20 @@ namespace QuanLib.Minecraft.Instance
 {
     public class McapiMinecraftClient : MinecraftClient, IMcapiInstance
     {
-        public McapiMinecraftClient(string clientPath, string serverAddress, ushort mcapiPort, string mcapiPassword, ILoggerGetter? loggerGetter = null) : base(clientPath, loggerGetter)
+        public McapiMinecraftClient(string clientPath, string mcapiAddress, ushort mcapiPort, string mcapiPassword, ILoggerGetter? loggerGetter = null) : base(clientPath, loggerGetter)
         {
-            ArgumentException.ThrowIfNullOrEmpty(serverAddress, nameof(serverAddress));
+            ArgumentException.ThrowIfNullOrEmpty(mcapiAddress, nameof(mcapiAddress));
             ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
 
-            ServerAddress = IPAddress.Parse(serverAddress);
+            McapiAddress = IPAddress.TryParse(mcapiAddress, out var address) ? address : Dns.GetHostAddresses(mcapiAddress)[0];
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;
-            McapiClient = new(ServerAddress, McapiPort, loggerGetter);
+            McapiClient = new(McapiAddress, McapiPort, loggerGetter);
             McapiCommandSender = new(McapiClient);
             CommandSender = new(McapiCommandSender, McapiCommandSender);
         }
 
-        public IPAddress ServerAddress { get; }
+        public IPAddress McapiAddress { get; }
 
         public ushort McapiPort { get; }
 
@@ -57,12 +57,12 @@ namespace QuanLib.Minecraft.Instance
 
         public override bool TestConnectivity()
         {
-            return NetworkUtil.TestTcpConnectivity(ServerAddress, McapiPort);
+            return NetworkUtil.TestTcpConnectivity(McapiAddress, McapiPort);
         }
 
         public override async Task<bool> TestConnectivityAsync()
         {
-            return await NetworkUtil.TestTcpConnectivityAsync(ServerAddress, McapiPort);
+            return await NetworkUtil.TestTcpConnectivityAsync(McapiAddress, McapiPort);
         }
     }
 }
