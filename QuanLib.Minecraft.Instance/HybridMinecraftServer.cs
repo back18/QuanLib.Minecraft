@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.Instance
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
 
-            ServerProcess = new(ServerDirectory.FullPath, launchArguments, loggerGetter);
+            ServerProcess = new(ServerPathManager.Minecraft.FullName, launchArguments, loggerGetter);
             ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, loggerGetter);
             OnewayCommandSender = new(ServerConsole);
 

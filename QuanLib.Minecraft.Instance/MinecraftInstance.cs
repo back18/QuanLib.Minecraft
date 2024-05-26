@@ -1,7 +1,7 @@
 ﻿using QuanLib.Core;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.Logging;
+using QuanLib.Minecraft.PathManagers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +17,8 @@ namespace QuanLib.Minecraft.Instance
             ArgumentException.ThrowIfNullOrEmpty(minecraftPath, nameof(minecraftPath));
 
             MinecraftPath = minecraftPath;
-            MinecraftDirectory = new(MinecraftPath);
-            LogFileListener = new(MinecraftDirectory.LogsDir.LatestFile, loggerGetter);
+            MinecraftPathManager = new(minecraftPath);
+            LogFileListener = new(MinecraftPathManager.Minecraft_Logs_LatestLog.FullName, loggerGetter);
             LogParser = new(LogFileListener);
         }
 
@@ -28,7 +28,7 @@ namespace QuanLib.Minecraft.Instance
 
         public abstract InstanceType InstanceType { get; }
 
-        public virtual MinecraftDirectory MinecraftDirectory { get; }
+        public virtual MinecraftPathManager MinecraftPathManager { get; }
 
         public virtual MinecraftLogParser LogParser { get; }
 

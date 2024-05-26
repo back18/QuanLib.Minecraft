@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Directorys;
+using QuanLib.Minecraft.PathManagers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +12,13 @@ namespace QuanLib.Minecraft.Instance
     {
         protected MinecraftClient(string clientPath, ILoggerGetter? loggerGetter = null) : base(clientPath, loggerGetter)
         {
-            ClientDirectory = new(clientPath);
+            ClientPathManager = new(clientPath);
         }
 
         public override InstanceType InstanceType => InstanceType.Client;
 
-        public override MinecraftDirectory MinecraftDirectory => ClientDirectory is null ? base.MinecraftDirectory : ClientDirectory;
+        public override MinecraftPathManager MinecraftPathManager => ClientPathManager is null ? base.MinecraftPathManager : ClientPathManager;
 
-        public virtual MinecraftClientDirectory ClientDirectory { get; }
+        public virtual ClientPathManager ClientPathManager { get; }
     }
 }

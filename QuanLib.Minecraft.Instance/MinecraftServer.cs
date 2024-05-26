@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft.Directorys;
+using QuanLib.Minecraft.PathManagers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,21 +17,20 @@ namespace QuanLib.Minecraft.Instance
 
             ServerAddress = IPAddress.TryParse(serverAddress, out var address) ? address : Dns.GetHostAddresses(serverAddress)[0];
             ServerPort = serverPort;
-            ServerDirectory = new(serverPath);
+            ServerPathManager = new(serverPath);
 
-            if (!File.Exists(ServerDirectory.ServerPropertiesFile))
-                throw new FileNotFoundException("服务器配置文件不存在", ServerDirectory.ServerPropertiesFile);
+            ThrowHelper.FileNotFound(ServerPathManager.Minecraft_ServerProperties.FullName);
 
-            string text = File.ReadAllText(ServerDirectory.ServerPropertiesFile);
+            string text = File.ReadAllText(ServerPathManager.Minecraft_ServerProperties.FullName);
             Dictionary<string, string> dictionary = ServerProperties.Parse(text);
             ServerProperties = new(dictionary);
         }
 
         public override InstanceType InstanceType => InstanceType.Server;
 
-        public override MinecraftDirectory MinecraftDirectory => ServerDirectory is null ? base.MinecraftDirectory : ServerDirectory;
+        public override MinecraftPathManager MinecraftPathManager => ServerPathManager is null ? base.MinecraftPathManager : ServerPathManager;
 
-        public virtual MinecraftServerDirectory ServerDirectory { get; }
+        public virtual ServerPathManager ServerPathManager { get; }
 
         public IPAddress ServerAddress { get; }
 

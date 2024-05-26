@@ -13,7 +13,7 @@ namespace QuanLib.Minecraft.Instance
     {
         public ConsoleMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, serverPort, loggerGetter)
         {
-            ServerProcess = new(ServerDirectory.FullPath, launchArguments, loggerGetter);
+            ServerProcess = new(ServerPathManager.Minecraft.FullName, launchArguments, loggerGetter);
             ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, loggerGetter);
             ConsoleCommandSender = new(ServerConsole);
             CommandSender = new(ConsoleCommandSender, ConsoleCommandSender);
