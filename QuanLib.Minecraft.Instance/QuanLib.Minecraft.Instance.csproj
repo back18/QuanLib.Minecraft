@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CoreRCON" Version="5.2.1" />
+    <PackageReference Include="CoreRCON" Version="5.4.1" />
   </ItemGroup>
 
   <ItemGroup>
