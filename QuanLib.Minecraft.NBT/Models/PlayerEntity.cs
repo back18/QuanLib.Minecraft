@@ -107,54 +107,52 @@ namespace QuanLib.Minecraft.NBT.Models
 
         public new class Model : MobEntity.Model
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
             [Nullable]
             public object? abilities { get; set; }
 
-            public int DataVersion { get; set; }
+            public required int DataVersion { get; set; }
 
-            public string Dimension { get; set; }
+            public required string Dimension { get; set; }
 
-            public object[] EnderItems { get; set; }
+            public required object[] EnderItems { get; set; }
 
             [Nullable]
             public object? EnteredNetherPosition { get; set; }
 
-            public float foodExhaustionLevel { get; set; }
+            public required float foodExhaustionLevel { get; set; }
 
-            public int foodLevel { get; set; }
+            public required int foodLevel { get; set; }
 
-            public float foodSaturationLevel { get; set; }
+            public required float foodSaturationLevel { get; set; }
 
-            public int foodTickTimer { get; set; }
+            public required int foodTickTimer { get; set; }
 
-            public object[] Inventory { get; set; }
+            public required object[] Inventory { get; set; }
 
-            public object LastDeathLocation { get; set; }
+            public required object LastDeathLocation { get; set; }
 
-            public int playerGameType { get; set; }
+            public required int playerGameType { get; set; }
 
-            public int previousPlayerGameType { get; set; }
+            public required int previousPlayerGameType { get; set; }
 
-            public object recipeBook { get; set; }
+            public required object recipeBook { get; set; }
 
             [Nullable]
             public object? RootVehicle { get; set; }
 
-            public int Score { get; set; }
+            public required int Score { get; set; }
 
-            public bool seenCredits { get; set; }
+            public required bool seenCredits { get; set; }
 
-            public int SelectedItemSlot { get; set; }
+            public required int SelectedItemSlot { get; set; }
 
-            public short SleepTimer { get; set; }
+            public required short SleepTimer { get; set; }
 
-            public Entity ShoulderEntityLeft { get; set; }
+            public required Entity ShoulderEntityLeft { get; set; }
 
-            public Entity ShoulderEntityRight { get; set; }
+            public required Entity ShoulderEntityRight { get; set; }
 
-            public float SpawnAngle { get; set; }
+            public required float SpawnAngle { get; set; }
 
             [Nullable]
             public string? SpawnDimension { get; set; }
@@ -162,22 +160,21 @@ namespace QuanLib.Minecraft.NBT.Models
             [Nullable]
             public bool? SpawnForced { get; set; }
 
-            public int SpawnX { get; set; }
+            public required int SpawnX { get; set; }
 
-            public int SpawnY { get; set; }
+            public required int SpawnY { get; set; }
 
-            public int SpawnZ { get; set; }
+            public required int SpawnZ { get; set; }
 
-            public object warden_spawn_tracker { get; set; }
+            public required object warden_spawn_tracker { get; set; }
 
-            public int XpLevel { get; set; }
+            public required int XpLevel { get; set; }
 
-            public float XpP { get; set; }
+            public required float XpP { get; set; }
 
-            public int XpSeed { get; set; }
+            public required int XpSeed { get; set; }
 
-            public int XpTotal { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required int XpTotal { get; set; }
         }
     }
 }

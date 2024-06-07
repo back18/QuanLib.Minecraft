@@ -23,7 +23,7 @@ namespace QuanLib.Minecraft.API.Packet
         public RequestPacket(RequestModel model) : base(model)
         {
             Key = model.Key;
-            NeedResponse = model.NeedResponse!.Value;
+            NeedResponse = model.NeedResponse;
         }
 
         public string Key { get; }
@@ -52,11 +52,11 @@ namespace QuanLib.Minecraft.API.Packet
             if (!TryDeserialize<RequestModel>(bytes, out var model))
                 goto err;
 
-            List<ValidationResult> results = new();
+            List<ValidationResult> results = [];
             if (!Validator.TryValidateObject(model, new(model), results, true))
                 goto err;
 
-            result = new(model.Key!, model.Type, model.Data, model.ID!.Value, model.NeedResponse!.Value);
+            result = new(model.Key!, model.Type, model.Data, model.ID, model.NeedResponse);
             return true;
 
             err:
@@ -67,10 +67,10 @@ namespace QuanLib.Minecraft.API.Packet
         public class RequestModel : ModelBase
         {
             [Required(ErrorMessage = "Key参数缺失")]
-            public string? Key { get; set; }
+            public required string Key { get; set; }
 
             [Required(ErrorMessage = "NeedResponse参数缺失")]
-            public bool? NeedResponse { get; set; }
+            public required bool NeedResponse { get; set; }
         }
     }
 }

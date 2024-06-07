@@ -17,7 +17,7 @@ namespace QuanLib.Minecraft.API.Packet
 
         public ResponsePacket(ResponseModel model) : base(model)
         {
-            StatusCode = (StatusCode)model.StatusCode!.Value;
+            StatusCode = (StatusCode)model.StatusCode;
         }
 
         public StatusCode StatusCode { get; }
@@ -26,7 +26,7 @@ namespace QuanLib.Minecraft.API.Packet
         {
             return new()
             {
-                StatusCode = (int?)StatusCode,
+                StatusCode = (int)StatusCode,
                 Type = Type,
                 Data = Data,
                 ID = ID,
@@ -58,11 +58,11 @@ namespace QuanLib.Minecraft.API.Packet
             if (!TryDeserialize<ResponseModel>(bytes, out var model))
                 goto err;
 
-            List<ValidationResult> results = new();
+            List<ValidationResult> results = [];
             if (!Validator.TryValidateObject(model, new(model), results, true))
                 goto err;
 
-            result = new((StatusCode)model.StatusCode!.Value, model.Type, model.Data, model.ID!.Value);
+            result = new((StatusCode)model.StatusCode, model.Type, model.Data, model.ID);
             return true;
 
             err:
@@ -73,7 +73,7 @@ namespace QuanLib.Minecraft.API.Packet
         public class ResponseModel : ModelBase
         {
             [Required(ErrorMessage = "StatusCode参数缺失")]
-            public int? StatusCode { get; set; }
+            public required int StatusCode { get; set; }
         }
 
         public class ErrorResponseData

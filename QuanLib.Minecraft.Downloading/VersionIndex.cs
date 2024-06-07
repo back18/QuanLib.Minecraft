@@ -32,17 +32,15 @@ namespace QuanLib.Minecraft.Downloading
 
         public class Model
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-            public string id { get; set; }
+            public required string id { get; set; }
 
-            public string type { get; set; }
+            public required string type { get; set; }
 
-            public string url { get; set; }
+            public required string url { get; set; }
 
-            public string time { get; set; }
+            public required string time { get; set; }
 
-            public string releaseTime { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required string releaseTime { get; set; }
         }
     }
 }

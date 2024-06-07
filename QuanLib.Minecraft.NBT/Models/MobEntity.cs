@@ -47,34 +47,30 @@ namespace QuanLib.Minecraft.NBT.Models
 
         public new class Model : Entity.Model
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-
-            public float AbsorptionAmount { get; set; }
+            public required float AbsorptionAmount { get; set; }
 
             [Nullable]
             public object[]? ActiveEffects { get; set; }
 
-            public object[] Attributes { get; set; }
+            public required object[] Attributes { get; set; }
 
-            public object Brain { get; set; }
+            public required object Brain { get; set; }
 
-            public short DeathTime { get; set; }
+            public required short DeathTime { get; set; }
 
-            public bool FallFlying { get; set; }
+            public required bool FallFlying { get; set; }
 
-            public float Health { get; set; }
+            public required float Health { get; set; }
 
-            public int HurtByTimestamp { get; set; }
+            public required int HurtByTimestamp { get; set; }
 
-            public short HurtTime { get; set; }
+            public required short HurtTime { get; set; }
 
-            public int SleepingX { get; set; }
+            public required int SleepingX { get; set; }
 
-            public int SleepingY { get; set; }
+            public required int SleepingY { get; set; }
 
-            public int SleepingZ { get; set; }
-
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required int SleepingZ { get; set; }
         }
     }
 }
