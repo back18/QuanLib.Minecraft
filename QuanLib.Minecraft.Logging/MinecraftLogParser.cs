@@ -1,6 +1,5 @@
 ﻿using QuanLib.Core;
 using QuanLib.Core.Events;
-using QuanLib.Minecraft.Logging.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +37,7 @@ namespace QuanLib.Minecraft.Logging
 
         public bool IsBound { get; protected set; }
 
-        public event EventHandler<MinecraftLogParser, TextEventArgs> Starting;
+        public event EventHandler<MinecraftLogParser, EventArgs<string>> Starting;
 
         public event EventHandler<MinecraftLogParser, EventArgs> Started;
 
@@ -46,23 +45,23 @@ namespace QuanLib.Minecraft.Logging
 
         public event EventHandler<MinecraftLogParser, EventArgs> Stopped;
 
-        public event EventHandler<MinecraftLogParser, TextEventArgs> FailToStart;
+        public event EventHandler<MinecraftLogParser, EventArgs<string>> FailToStart;
 
-        public event EventHandler<MinecraftLogParser, GuidEventArgs> Crashed;
+        public event EventHandler<MinecraftLogParser, EventArgs<Guid>> Crashed;
 
-        public event EventHandler<MinecraftLogParser, IPEndPointEventArgs> RconRunning;
+        public event EventHandler<MinecraftLogParser, EventArgs<IPEndPoint>> RconRunning;
 
         public event EventHandler<MinecraftLogParser, EventArgs> RconStopped;
 
-        public event EventHandler<MinecraftLogParser, TextEventArgs> PreparingLevel;
+        public event EventHandler<MinecraftLogParser, EventArgs<string>> PreparingLevel;
 
-        public event EventHandler<MinecraftLogParser, PlayerLoginInfoEventArgs> PlayerJoined;
+        public event EventHandler<MinecraftLogParser, EventArgs<PlayerLoginInfo>> PlayerJoined;
 
-        public event EventHandler<MinecraftLogParser, PlayerLeftInfoEventArgs> PlayerLeft;
+        public event EventHandler<MinecraftLogParser, EventArgs<PlayerLeftInfo>> PlayerLeft;
 
-        public event EventHandler<MinecraftLogParser, ChatMessageEventArgs> PlayerSendChatMessage;
+        public event EventHandler<MinecraftLogParser, EventArgs<ChatMessage>> PlayerSendChatMessage;
 
-        protected virtual void OnStarting(MinecraftLogParser sender, TextEventArgs e) { }
+        protected virtual void OnStarting(MinecraftLogParser sender, EventArgs<string> e) { }
 
         protected virtual void OnStarted(MinecraftLogParser sender, EventArgs e) { }
 
@@ -70,25 +69,25 @@ namespace QuanLib.Minecraft.Logging
 
         protected virtual void OnStopped(MinecraftLogParser sender, EventArgs e) { }
 
-        protected virtual void OnFailToStart(MinecraftLogParser sender, TextEventArgs e) { }
+        protected virtual void OnFailToStart(MinecraftLogParser sender, EventArgs<string> e) { }
 
-        protected virtual void OnCrashed(MinecraftLogParser sender, GuidEventArgs e) { }
+        protected virtual void OnCrashed(MinecraftLogParser sender, EventArgs<Guid> e) { }
 
-        protected virtual void OnRconRunning(MinecraftLogParser sender, IPEndPointEventArgs e) { }
+        protected virtual void OnRconRunning(MinecraftLogParser sender, EventArgs<IPEndPoint> e) { }
 
         protected virtual void OnRconStopped(MinecraftLogParser sender, EventArgs e) { }
 
-        protected virtual void OnPreparingLevel(MinecraftLogParser sender, TextEventArgs e) { }
+        protected virtual void OnPreparingLevel(MinecraftLogParser sender, EventArgs<string> e) { }
 
-        protected virtual void OnPlayerJoined(MinecraftLogParser sender, PlayerLoginInfoEventArgs e) { }
+        protected virtual void OnPlayerJoined(MinecraftLogParser sender, EventArgs<PlayerLoginInfo> e) { }
 
-        protected virtual void OnPlayerLeft(MinecraftLogParser sender, PlayerLeftInfoEventArgs e) { }
+        protected virtual void OnPlayerLeft(MinecraftLogParser sender, EventArgs<PlayerLeftInfo> e) { }
 
-        protected virtual void OnPlayerSendChatMessage(MinecraftLogParser sender, ChatMessageEventArgs e) { }
+        protected virtual void OnPlayerSendChatMessage(MinecraftLogParser sender, EventArgs<ChatMessage> e) { }
 
-        protected virtual void LogListener_WriteLog(ILogListener sender, MinecraftLogEventArgs e)
+        protected virtual void LogListener_WriteLog(ILogListener sender, EventArgs<MinecraftLog> e)
         {
-            string message = e.MinecraftLog.Message;
+            string message = e.Argument.Message;
 
             if (string.IsNullOrEmpty(message))
                 return;

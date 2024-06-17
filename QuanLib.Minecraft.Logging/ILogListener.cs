@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.IO;
-using QuanLib.Minecraft.Logging.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,6 @@ namespace QuanLib.Minecraft.Logging
 {
     public interface ILogListener : ITextListener
     {
-        public event EventHandler<ILogListener, MinecraftLogEventArgs> WriteLog;
+        public event EventHandler<ILogListener, EventArgs<MinecraftLog>> WriteLog;
     }
 }

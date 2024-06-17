@@ -1,15 +1,12 @@
-﻿using MongoDB.Bson.Serialization;
-using QuanLib.Core;
-using QuanLib.Minecraft.API.Events;
+﻿using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.API.Packet;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,16 +41,16 @@ namespace QuanLib.Minecraft.API
 
         private readonly Synchronized _synchronized;
 
-        public event EventHandler<McapiClient, ResponsePacketEventArgs> ReceivedPacket;
+        public event EventHandler<McapiClient, EventArgs<ResponsePacket>> ReceivedPacket;
 
         public event EventHandler<McapiClient, EventArgs> Connected;
 
-        protected virtual void OnReceivedPacket(McapiClient sender, ResponsePacketEventArgs e)
+        protected virtual void OnReceivedPacket(McapiClient sender, EventArgs<ResponsePacket> e)
         {
-            if (_tasks.TryGetValue(e.ResponsePacket.ID, out var task))
+            if (_tasks.TryGetValue(e.Argument.ID, out var task))
             {
-                task.Receive(e.ResponsePacket);
-                _tasks.TryRemove(e.ResponsePacket.ID, out _);
+                task.Receive(e.Argument);
+                _tasks.TryRemove(e.Argument.ID, out _);
             }
             else
             {

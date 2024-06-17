@@ -1,13 +1,10 @@
 ﻿using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.IO;
-using QuanLib.Minecraft.Logging.Events;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Logging
@@ -25,9 +22,9 @@ namespace QuanLib.Minecraft.Logging
 
         private int _count;
 
-        public event EventHandler<ILogListener, MinecraftLogEventArgs> WriteLog;
+        public event EventHandler<ILogListener, EventArgs<MinecraftLog>> WriteLog;
 
-        protected override void OnPolling(PollingFileListener sender, FileInfoChangedEventArge e)
+        protected override void OnPolling(PollingFileListener sender, ValueChangedEventArgs<FileInfo> e)
         {
             base.OnPolling(sender, e);
 
@@ -43,21 +40,21 @@ namespace QuanLib.Minecraft.Logging
             }
         }
 
-        protected override void OnWriteLineText(ITextListener sender, TextEventArgs e)
+        protected override void OnWriteLineText(ITextListener sender, EventArgs<string> e)
         {
             base.OnWriteLineText(sender, e);
 
-            if (e.Text.StartsWith('[') && _temp.Length > 0)
+            if (e.Argument.StartsWith('[') && _temp.Length > 0)
             {
                 WriteLog.Invoke(this, new(new(_temp.ToString())));
                 _temp.Clear();
                 _count = 0;
             }
 
-            _temp.AppendLine(e.Text);
+            _temp.AppendLine(e.Argument);
         }
 
-        protected virtual void OnWriteLog(ILogListener sender, MinecraftLogEventArgs e) { }
+        protected virtual void OnWriteLog(ILogListener sender, EventArgs<MinecraftLog> e) { }
 
         private static Encoding GetEncoding()
         {

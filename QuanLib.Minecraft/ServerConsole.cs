@@ -31,18 +31,18 @@ namespace QuanLib.Minecraft
 
         private ConsoleTask? _task;
 
-        public event EventHandler<ServerConsole, TextEventArgs> ReadLine;
+        public event EventHandler<ServerConsole, EventArgs<string>> ReadLine;
 
-        protected virtual void OnReadLine(ServerConsole sender, TextEventArgs e)
+        protected virtual void OnReadLine(ServerConsole sender, EventArgs<string> e)
         {
             if (_task is not null)
             {
                 string message;
-                int index = e.Text.IndexOf(SEPARATOR);
+                int index = e.Argument.IndexOf(SEPARATOR);
                 if (index == -1)
-                    message = e.Text;
+                    message = e.Argument;
                 else
-                    message = e.Text[(index + SEPARATOR.Length)..];
+                    message = e.Argument[(index + SEPARATOR.Length)..];
 
                 _task.Complete(message);
             }
