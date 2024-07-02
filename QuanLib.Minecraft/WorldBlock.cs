@@ -9,8 +9,8 @@ namespace QuanLib.Minecraft
 {
     public readonly struct WorldBlock(Vector3<int> position, string blockId)
     {
-        public Vector3<int> Position { get; } = position;
+        public readonly Vector3<int> Position = position;
 
-        public string BlockId { get; } = blockId;
+        public readonly string BlockId = blockId;
     }
 }
