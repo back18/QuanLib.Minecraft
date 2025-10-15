@@ -618,5 +618,11 @@ namespace QuanLib.Minecraft.Command
         {
             return ForceloadRemoveCommand.TrySendCommand(sender, blockPos.X, blockPos.Z);
         }
+
+        public static ConditionalCommand Conditional(this Building.ExecuteCommandSyntax source)
+        {
+            string command = source.Build();
+            return new ConditionalCommand(TextTemplate.Parse(command), _languageManager);
+        }
     }
 }
