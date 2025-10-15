@@ -30,6 +30,8 @@ namespace QuanLib.Minecraft.Command
             TelePortEntityCommand = new(_languageManager);
             TelePortLocationCommand = new(_languageManager);
             ConditionalBlockCommand = new(_languageManager);
+            ConditionalDimensionBlockCommand = new(_languageManager);
+            ConditionalRangeBlockCommand = new(_languageManager);
             ConditionalEntityCommand = new(_languageManager);
             DataGetEntityCommand = new(_languageManager);
             DataGetEntityHavePathCommand = new(_languageManager);
@@ -58,6 +60,8 @@ namespace QuanLib.Minecraft.Command
         public static readonly TelePortEntityCommand TelePortEntityCommand;
         public static readonly TelePortLocationCommand TelePortLocationCommand;
         public static readonly ConditionalBlockCommand ConditionalBlockCommand;
+        public static readonly ConditionalDimensionBlockCommand ConditionalDimensionBlockCommand;
+        public static readonly ConditionalRangeBlockCommand ConditionalRangeBlockCommand;
         public static readonly ConditionalEntityCommand ConditionalEntityCommand;
         public static readonly DataGetEntityCommand DataGetEntityCommand;
         public static readonly DataGetEntityHavePathCommand DataGetEntityHavePathCommand;
@@ -153,14 +157,39 @@ namespace QuanLib.Minecraft.Command
 
         public static bool ConditionalBlock(this CommandSender sender, int x, int y, int z, string blockId)
         {
-            return ConditionalBlockCommand.TrySendCommand(sender, x, y, z, blockId);
+            return ConditionalBlockCommand.TrySendCommand(sender, x, y, z, blockId, out var result) ? result : false;
         }
 
         public static bool ConditionalBlock<T>(this CommandSender sender, T position, string blockId) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
-            return ConditionalBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockId);
+            return ConditionalBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockId, out var result) ? result : false;
+        }
+
+        public static bool ConditionalBlock(this CommandSender sender, string dimension, int x, int y, int z, string blockId)
+        {
+            return ConditionalDimensionBlockCommand.TrySendCommand(sender, dimension, x, y, z, blockId, out var result) ? result : false;
+        }
+
+        public static bool ConditionalBlock<T>(this CommandSender sender, string dimension, T position, string blockId) where T : IVector3<int>
+        {
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
+
+            return ConditionalDimensionBlockCommand.TrySendCommand(sender, dimension, position.X, position.Y, position.Z, blockId, out var result) ? result : false;
+        }
+
+        public static int ConditionalRangeBlock(this CommandSender sender, int startX, int startY, int startZ, int endX, int endY, int endZ)
+        {
+            return ConditionalRangeBlockCommand.TrySendCommand(sender, startX, startY, startZ, endX, endY, endZ, out var result) ? result : 0;
+        }
+
+        public static int ConditionalRangeBlock<T>(this CommandSender sender, T startPos, T endPos) where T : IVector3<int>
+        {
+            ArgumentNullException.ThrowIfNull(startPos, nameof(startPos));
+            ArgumentNullException.ThrowIfNull(endPos, nameof(endPos));
+
+            return ConditionalRangeBlockCommand.TrySendCommand(sender, startPos.X, startPos.Y, startPos.Z, endPos.X, endPos.Y, endPos.Z, out var result) ? result : 0;
         }
 
         public static bool ConditionalEntity(this CommandSender sender, string target)
@@ -209,7 +238,8 @@ namespace QuanLib.Minecraft.Command
                 {
                     return false;
                 }
-            }        }
+            }
+        }
 
         public static bool TryGetEntityRotation(this CommandSender sender, string target, out Rotation result)
         {

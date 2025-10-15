@@ -19,7 +19,7 @@ namespace QuanLib.Minecraft.Command.Models
 
         public override TextTemplate Output { get; }
 
-        public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out string result)
+        protected override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out string result)
         {
             if (outargs is not null && outargs.Length == 2)
             {

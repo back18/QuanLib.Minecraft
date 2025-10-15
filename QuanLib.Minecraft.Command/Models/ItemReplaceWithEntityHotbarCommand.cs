@@ -35,7 +35,7 @@ namespace QuanLib.Minecraft.Command.Models
             return base.TrySendCommand(sender, [target, hotbar, itemId], out result);
         }
 
-        public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
+        protected override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
         {
             return base.TryParseResult(outargs, 2, 0, out result);
         }

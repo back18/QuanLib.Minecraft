@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Command.Models
 {
     public abstract class CommandBase<TResult> : CommandBase
     {
-        public virtual bool TrySendCommand(CommandSender sender, object[] inargs, [MaybeNullWhen(false)] out TResult result)
+        protected virtual bool TrySendCommand(CommandSender sender, object[] inargs, [MaybeNullWhen(false)] out TResult result)
         {
             if (!base.TrySendCommand(sender, inargs, out var outargs))
                 goto fail;
@@ -25,6 +25,6 @@ namespace QuanLib.Minecraft.Command.Models
             return false;
         }
 
-        public abstract bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out TResult result);
+        protected abstract bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out TResult result);
     }
 }

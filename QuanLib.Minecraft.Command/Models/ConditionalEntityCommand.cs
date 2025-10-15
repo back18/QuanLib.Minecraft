@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ConditionalEntityCommand : ConditionalCountCommandBase, ICreatible<ConditionalEntityCommand>
+    public class ConditionalEntityCommand(LanguageManager languageManager) :
+        ConditionalCommand(TextTemplate.Parse("execute if entity %s"), languageManager),
+        ICreatible<ConditionalEntityCommand>
     {
-        public ConditionalEntityCommand(LanguageManager languageManager) : base(languageManager)
-        {
-            Input = TextTemplate.Parse("execute if entity %s");
-        }
-
-        public override TextTemplate Input { get; }
-
         public bool TrySendCommand(CommandSender sender, string target, out int result)
         {
-            return base.TrySendCommand(sender, [target], out result);
+            if (base.TrySendCommand(sender, [target], out var conditionalResult))
+            {
+                result = conditionalResult.Count;
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
         }
 
         public static ConditionalEntityCommand Create(LanguageManager languageManager)

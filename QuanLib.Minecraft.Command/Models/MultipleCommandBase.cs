@@ -13,20 +13,9 @@ namespace QuanLib.Minecraft.Command.Models
     {
         public abstract TextTemplate MultipleOutput { get; }
 
-        public override bool TrySendCommand(CommandSender sender, object[] inargs, [MaybeNullWhen(false)] out string[] outargs)
+        protected override bool TryMatchOutput(string output, [MaybeNullWhen(false)] out string[] outargs)
         {
-            ArgumentNullException.ThrowIfNull(sender, nameof(sender));
-
-            if (!Input.TryFormat(inargs, out var input))
-                goto fail;
-
-            string output = sender.SendCommand(input);
-            if (!Output.TryMatch(output, out outargs) && !MultipleOutput.TryMatch(output, out outargs))
-                goto fail;
-
-            fail:
-            outargs = null;
-            return false;
+            return Output.TryMatch(output, out outargs) || MultipleOutput.TryMatch(output, out outargs);
         }
 
         protected virtual bool TryParseResult(string[] outargs, int length, int index, [MaybeNullWhen(false)] out int result)

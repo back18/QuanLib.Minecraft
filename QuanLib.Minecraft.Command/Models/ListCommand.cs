@@ -28,7 +28,7 @@ namespace QuanLib.Minecraft.Command.Models
             return base.TrySendCommand(sender, Array.Empty<object>(), out result);
         }
 
-        public override bool TryParseResult(string[] args, [MaybeNullWhen(false)] out PlayerList result)
+        protected override bool TryParseResult(string[] args, [MaybeNullWhen(false)] out PlayerList result)
         {
             if (args is null || args.Length != 3)
                 goto fail;

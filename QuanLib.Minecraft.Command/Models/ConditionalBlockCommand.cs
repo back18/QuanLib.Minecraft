@@ -8,20 +8,24 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ConditionalBlockCommand : ConditionalCommandBase, ICreatible<ConditionalBlockCommand>
+    public class ConditionalBlockCommand(LanguageManager languageManager) :
+        ConditionalCommand(TextTemplate.Parse("execute if block %s %s %s %s"),
+        languageManager), ICreatible<ConditionalBlockCommand>
     {
-        public ConditionalBlockCommand(LanguageManager languageManager) : base(languageManager)
-        {
-            Input = TextTemplate.Parse("execute if block %s %s %s %s");
-        }
-
-        public override TextTemplate Input { get; }
-
-        public bool TrySendCommand(CommandSender sender, int x, int y, int z, string blockId)
+        public bool TrySendCommand(CommandSender sender, int x, int y, int z, string blockId, out bool result)
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
-            return base.TrySendCommand(sender, [x, y, z, blockId], out _);
+            if (base.TrySendCommand(sender, [x, y, z, blockId], out var conditionalResult))
+            {
+                result = conditionalResult.IsSuccess;
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
         }
 
         public static ConditionalBlockCommand Create(LanguageManager languageManager)
