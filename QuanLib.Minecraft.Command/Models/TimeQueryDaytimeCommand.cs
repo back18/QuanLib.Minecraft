@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TimeQueryDaytimeCommand : TimeQueryCommandBase
+    public class TimeQueryDaytimeCommand : TimeQueryCommandBase, ICreatible<TimeQueryDaytimeCommand>
     {
         public TimeQueryDaytimeCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -15,5 +15,10 @@ namespace QuanLib.Minecraft.Command.Models
         }
 
         public override TextTemplate Input { get; }
+
+        public static TimeQueryDaytimeCommand Create(LanguageManager languageManager)
+        {
+            return new TimeQueryDaytimeCommand(languageManager);
+        }
     }
 }

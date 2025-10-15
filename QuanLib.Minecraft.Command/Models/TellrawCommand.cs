@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TellrawCommand : CommandBase
+    public class TellrawCommand : CommandBase, ICreatible<TellrawCommand>
     {
         public TellrawCommand()
         {
@@ -25,7 +25,12 @@ namespace QuanLib.Minecraft.Command.Models
             ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
             ArgumentException.ThrowIfNullOrEmpty(message, nameof(message));
 
-            return base.TrySendCommand(sender, new object[] { target, message }, out _);
+            return base.TrySendCommand(sender, [target, message], out _);
+        }
+
+        public static TellrawCommand Create(LanguageManager languageManager)
+        {
+            throw new NotImplementedException();
         }
     }
 }

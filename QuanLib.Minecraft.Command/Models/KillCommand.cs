@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class KillCommand : MultipleCommandBase
+    public class KillCommand : MultipleCommandBase, ICreatible<KillCommand>
     {
         public KillCommand(LanguageManager languageManager)
         {
@@ -30,12 +30,17 @@ namespace QuanLib.Minecraft.Command.Models
         {
             ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
 
-            return base.TrySendCommand(sender, new object[] { target }, out result);
+            return base.TrySendCommand(sender, [target], out result);
         }
 
         public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
         {
             return base.TryParseResult(outargs, 1, 0, out result);
+        }
+
+        public static KillCommand Create(LanguageManager languageManager)
+        {
+            return new KillCommand(languageManager);
         }
     }
 }

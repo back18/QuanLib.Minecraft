@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ForceloadAddCommand : CommandBase
+    public class ForceloadAddCommand : CommandBase, ICreatible<ForceloadAddCommand>
     {
         public ForceloadAddCommand(LanguageManager languageManager)
         {
@@ -24,7 +24,12 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, int x, int z)
         {
-            return base.TrySendCommand(sender, new object[] { x, z }, out _);
+            return base.TrySendCommand(sender, [x, z], out _);
+        }
+
+        public static ForceloadAddCommand Create(LanguageManager languageManager)
+        {
+            return new ForceloadAddCommand(languageManager);
         }
     }
 }

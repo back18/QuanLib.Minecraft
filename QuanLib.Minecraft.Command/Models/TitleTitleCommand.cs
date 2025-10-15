@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TitleTitleCommand : MultipleCommandBase
+    public class TitleTitleCommand : MultipleCommandBase, ICreatible<TitleTitleCommand>
     {
         public TitleTitleCommand(LanguageManager languageManager)
         {
@@ -31,12 +31,17 @@ namespace QuanLib.Minecraft.Command.Models
             ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
             ArgumentException.ThrowIfNullOrEmpty(message, nameof(message));
 
-            return base.TrySendCommand(sender, new object[] { target, message }, out result);
+            return base.TrySendCommand(sender, [target, message], out result);
         }
 
         public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
         {
             return base.TryParseResult(outargs, 1, 0, out result);
+        }
+
+        public static TitleTitleCommand Create(LanguageManager languageManager)
+        {
+            return new TitleTitleCommand(languageManager);
         }
     }
 }

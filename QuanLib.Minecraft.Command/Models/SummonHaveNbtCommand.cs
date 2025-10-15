@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class SummonHaveNbtCommand : SummonCommandBase
+    public class SummonHaveNbtCommand : SummonCommandBase, ICreatible<SummonHaveNbtCommand>
     {
         public SummonHaveNbtCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -22,7 +22,12 @@ namespace QuanLib.Minecraft.Command.Models
             ArgumentException.ThrowIfNullOrEmpty(entityId, nameof(entityId));
             ArgumentException.ThrowIfNullOrEmpty(nbt, nameof(nbt));
 
-            return base.TrySendCommand(sender, new object[] { entityId, x, y, z, nbt }, out _);
+            return base.TrySendCommand(sender, [entityId, x, y, z, nbt], out _);
+        }
+
+        public static SummonHaveNbtCommand Create(LanguageManager languageManager)
+        {
+            return new SummonHaveNbtCommand(languageManager);
         }
     }
 }

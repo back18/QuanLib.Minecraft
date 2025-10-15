@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ConditionalEntityCommand : ConditionalCountCommandBase
+    public class ConditionalEntityCommand : ConditionalCountCommandBase, ICreatible<ConditionalEntityCommand>
     {
         public ConditionalEntityCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -20,7 +20,12 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, string target, out int result)
         {
-            return base.TrySendCommand(sender, new object[] { target }, out result);
+            return base.TrySendCommand(sender, [target], out result);
+        }
+
+        public static ConditionalEntityCommand Create(LanguageManager languageManager)
+        {
+            return new ConditionalEntityCommand(languageManager);
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class SummonCommand : SummonCommandBase
+    public class SummonCommand : SummonCommandBase, ICreatible<SummonCommand>
     {
         public SummonCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -21,7 +21,12 @@ namespace QuanLib.Minecraft.Command.Models
         {
             ArgumentException.ThrowIfNullOrEmpty(entityId, nameof(entityId));
 
-            return base.TrySendCommand(sender, new object[] { entityId, x, y, z }, out _);
+            return base.TrySendCommand(sender, [entityId, x, y, z], out _);
+        }
+
+        public static SummonCommand Create(LanguageManager languageManager)
+        {
+            return new SummonCommand(languageManager);
         }
     }
 }

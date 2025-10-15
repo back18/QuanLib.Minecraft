@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ForceloadRemoveCommand : CommandBase
+    public class ForceloadRemoveCommand : CommandBase, ICreatible<ForceloadRemoveCommand>
     {
         public ForceloadRemoveCommand(LanguageManager languageManager)
         {
@@ -24,7 +24,12 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, int x, int z)
         {
-            return base.TrySendCommand(sender, new object[] { x, z }, out _);
+            return base.TrySendCommand(sender, [x, z], out _);
+        }
+
+        public static ForceloadRemoveCommand Create(LanguageManager languageManager)
+        {
+            return new ForceloadRemoveCommand(languageManager);
         }
     }
 }

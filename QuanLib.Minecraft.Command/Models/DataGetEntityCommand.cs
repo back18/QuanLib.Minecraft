@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class DataGetEntityCommand : DataGetEntityCommandBase
+    public class DataGetEntityCommand : DataGetEntityCommandBase, ICreatible<DataGetEntityCommand>
     {
         public DataGetEntityCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -18,9 +18,14 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, string target, [MaybeNullWhen(false)] out string result)
         {
-            return base.TrySendCommand(sender, new object[] { target }, out result);
+            return base.TrySendCommand(sender, [target], out result);
         }
 
         public override TextTemplate Input { get; }
+
+        public static DataGetEntityCommand Create(LanguageManager languageManager)
+        {
+            return new DataGetEntityCommand(languageManager);
+        }
     }
 }

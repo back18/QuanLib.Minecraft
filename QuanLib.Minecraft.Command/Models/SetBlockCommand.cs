@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class SetBlockCommand : CommandBase
+    public class SetBlockCommand : CommandBase, ICreatible<SetBlockCommand>
     {
         public SetBlockCommand(LanguageManager languageManager)
         {
@@ -26,7 +26,12 @@ namespace QuanLib.Minecraft.Command.Models
         {
             ArgumentNullException.ThrowIfNull(blockId, nameof(blockId));
 
-            return base.TrySendCommand(sender, new object[] { x, y, z, blockId }, out _);
+            return base.TrySendCommand(sender, [x, y, z, blockId], out _);
+        }
+
+        public static SetBlockCommand Create(LanguageManager languageManager)
+        {
+            return new SetBlockCommand(languageManager);
         }
     }
 }

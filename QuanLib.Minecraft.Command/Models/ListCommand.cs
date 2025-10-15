@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ListCommand : CommandBase<PlayerList>
+    public class ListCommand : CommandBase<PlayerList>, ICreatible<ListCommand>
     {
         public ListCommand(LanguageManager languageManager)
         {
@@ -45,6 +45,11 @@ namespace QuanLib.Minecraft.Command.Models
             fail:
             result = null;
             return false;
+        }
+
+        public static ListCommand Create(LanguageManager languageManager)
+        {
+            return new ListCommand(languageManager);
         }
     }
 }

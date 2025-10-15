@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ScoreboardPlayersSetCommand : MultipleCommandBase
+    public class ScoreboardPlayersSetCommand : MultipleCommandBase, ICreatible<ScoreboardPlayersSetCommand>
     {
         public ScoreboardPlayersSetCommand(LanguageManager languageManager)
         {
@@ -31,12 +31,17 @@ namespace QuanLib.Minecraft.Command.Models
             ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
             ArgumentException.ThrowIfNullOrEmpty(objective, nameof(objective));
 
-            return base.TrySendCommand(sender, new object[] { target, objective, score }, out result);
+            return base.TrySendCommand(sender, [target, objective, score], out result);
         }
 
         public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
         {
             return base.TryParseResult(outargs, 3, 1, out result);
+        }
+
+        public static ScoreboardPlayersSetCommand Create(LanguageManager languageManager)
+        {
+            return new ScoreboardPlayersSetCommand(languageManager);
         }
     }
 }

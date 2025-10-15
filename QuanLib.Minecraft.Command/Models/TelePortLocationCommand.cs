@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class TelePortLocationCommand : MultipleCommandBase
+    public class TelePortLocationCommand : MultipleCommandBase, ICreatible<TelePortLocationCommand>
     {
         public TelePortLocationCommand(LanguageManager languageManager)
         {
@@ -30,12 +30,17 @@ namespace QuanLib.Minecraft.Command.Models
         {
             ArgumentException.ThrowIfNullOrEmpty(source, nameof(source));
 
-            return base.TrySendCommand(sender, new object[] { source, x, y, z }, out result);
+            return base.TrySendCommand(sender, [source, x, y, z], out result);
         }
 
         public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
         {
             return base.TryParseResult(outargs, 4, 0, out result);
+        }
+
+        public static TelePortLocationCommand Create(LanguageManager languageManager)
+        {
+            return new TelePortLocationCommand(languageManager);
         }
     }
 }

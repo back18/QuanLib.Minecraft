@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class DataGetEntityHavePathCommand : DataGetEntityCommandBase
+    public class DataGetEntityHavePathCommand : DataGetEntityCommandBase, ICreatible<DataGetEntityHavePathCommand>
     {
         public DataGetEntityHavePathCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -20,7 +20,12 @@ namespace QuanLib.Minecraft.Command.Models
 
         public bool TrySendCommand(CommandSender sender, string target, string path, [MaybeNullWhen(false)] out string result)
         {
-            return base.TrySendCommand(sender, new object[] { target, path }, out result);
+            return base.TrySendCommand(sender, [target, path], out result);
+        }
+
+        public static DataGetEntityHavePathCommand Create(LanguageManager languageManager)
+        {
+            return new DataGetEntityHavePathCommand(languageManager);
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ConditionalBlockCommand : ConditionalCommandBase
+    public class ConditionalBlockCommand : ConditionalCommandBase, ICreatible<ConditionalBlockCommand>
     {
         public ConditionalBlockCommand(LanguageManager languageManager) : base(languageManager)
         {
@@ -21,7 +21,12 @@ namespace QuanLib.Minecraft.Command.Models
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
-            return base.TrySendCommand(sender, new object[] { x, y, z, blockId }, out _);
+            return base.TrySendCommand(sender, [x, y, z, blockId], out _);
+        }
+
+        public static ConditionalBlockCommand Create(LanguageManager languageManager)
+        {
+            return new ConditionalBlockCommand(languageManager);
         }
     }
 }

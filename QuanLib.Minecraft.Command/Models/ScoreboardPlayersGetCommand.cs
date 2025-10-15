@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Models
 {
-    public class ScoreboardPlayersGetCommand : CommandBase<int>
+    public class ScoreboardPlayersGetCommand : CommandBase<int>, ICreatible<ScoreboardPlayersGetCommand>
     {
         public ScoreboardPlayersGetCommand(LanguageManager languageManager)
         {
@@ -28,7 +28,7 @@ namespace QuanLib.Minecraft.Command.Models
             ArgumentException.ThrowIfNullOrEmpty(target, nameof(target));
             ArgumentException.ThrowIfNullOrEmpty(objective, nameof(objective));
 
-            return base.TrySendCommand(sender, new object[] { target, objective }, out result);
+            return base.TrySendCommand(sender, [target, objective], out result);
         }
 
         public override bool TryParseResult(string[] outargs, [MaybeNullWhen(false)] out int result)
@@ -42,6 +42,11 @@ namespace QuanLib.Minecraft.Command.Models
                 result = default;
                 return false;
             }
+        }
+
+        public static ScoreboardPlayersGetCommand Create(LanguageManager languageManager)
+        {
+            return new ScoreboardPlayersGetCommand(languageManager);
         }
     }
 }

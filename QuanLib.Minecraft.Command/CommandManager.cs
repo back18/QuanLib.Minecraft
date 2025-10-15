@@ -17,33 +17,35 @@ namespace QuanLib.Minecraft.Command
     {
         static CommandManager()
         {
-            LanguageManager languageManager = LanguageManager.Instance;
+            _languageManager = LanguageManager.Instance;
 
-            ListCommand = new(languageManager);
-            TimeQueryDayCommand = new(languageManager);
-            TimeQueryDaytimeCommand = new(languageManager);
-            TimeQueryGametimeCommand = new(languageManager);
-            SetBlockCommand = new(languageManager);
-            SummonCommand = new(languageManager);
-            SummonHaveNbtCommand = new(languageManager);
-            KillCommand = new(languageManager);
-            TelePortEntityCommand = new(languageManager);
-            TelePortLocationCommand = new(languageManager);
-            ConditionalBlockCommand = new(languageManager);
-            ConditionalEntityCommand = new(languageManager);
-            DataGetEntityCommand = new(languageManager);
-            DataGetEntityHavePathCommand = new(languageManager);
-            ItemReplaceWithEntityHotbarCommand = new(languageManager);
+            ListCommand = new(_languageManager);
+            TimeQueryDayCommand = new(_languageManager);
+            TimeQueryDaytimeCommand = new(_languageManager);
+            TimeQueryGametimeCommand = new(_languageManager);
+            SetBlockCommand = new(_languageManager);
+            SummonCommand = new(_languageManager);
+            SummonHaveNbtCommand = new(_languageManager);
+            KillCommand = new(_languageManager);
+            TelePortEntityCommand = new(_languageManager);
+            TelePortLocationCommand = new(_languageManager);
+            ConditionalBlockCommand = new(_languageManager);
+            ConditionalEntityCommand = new(_languageManager);
+            DataGetEntityCommand = new(_languageManager);
+            DataGetEntityHavePathCommand = new(_languageManager);
+            ItemReplaceWithEntityHotbarCommand = new(_languageManager);
             TellrawCommand = new();
-            TitleTitleCommand = new(languageManager);
-            TitleSubTitleCommand = new(languageManager);
-            TitleActionbarCommand = new(languageManager);
-            TitleTimesCommand = new(languageManager);
-            ScoreboardPlayersGetCommand = new(languageManager);
-            ScoreboardPlayersSetCommand = new(languageManager);
-            ForceloadAddCommand = new(languageManager);
-            ForceloadRemoveCommand = new(languageManager);
+            TitleTitleCommand = new(_languageManager);
+            TitleSubTitleCommand = new(_languageManager);
+            TitleActionbarCommand = new(_languageManager);
+            TitleTimesCommand = new(_languageManager);
+            ScoreboardPlayersGetCommand = new(_languageManager);
+            ScoreboardPlayersSetCommand = new(_languageManager);
+            ForceloadAddCommand = new(_languageManager);
+            ForceloadRemoveCommand = new(_languageManager);
         }
+
+        private static readonly LanguageManager _languageManager;
 
         public static readonly ListCommand ListCommand;
         public static readonly TimeQueryDayCommand TimeQueryDayCommand;
@@ -71,6 +73,11 @@ namespace QuanLib.Minecraft.Command
         public static readonly ForceloadRemoveCommand ForceloadRemoveCommand;
 
         public static SnbtCache SnbtCache { get; } = new(TimeSpan.FromMilliseconds(50));
+
+        public static T CreateCommand<T>() where T : ICreatible<T>
+        {
+            return T.Create(_languageManager);
+        }
 
         public static PlayerList GetPlayerList(this CommandSender sender)
         {
@@ -504,9 +511,9 @@ namespace QuanLib.Minecraft.Command
 
         #endregion
 
-        public static int SetPlayerHotbarItem(this CommandSender sender, string target, int hotbar, string itemID)
+        public static int SetPlayerHotbarItem(this CommandSender sender, string target, int hotbar, string itemId)
         {
-            return ItemReplaceWithEntityHotbarCommand.TrySendCommand(sender, target, hotbar, itemID, out var result) ? result : 0;
+            return ItemReplaceWithEntityHotbarCommand.TrySendCommand(sender, target, hotbar, itemId, out var result) ? result : 0;
         }
 
         public static bool SendChatMessage(this CommandSender sender, string target, string message, TextColor color = TextColor.White, bool bold = false)
