@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <None Remove="SystemResource\server.properties" />
+    <None Remove="SystemResource\version_list.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="SystemResource\server.properties" />
+    <EmbeddedResource Include="SystemResource\version_list.json" />
   </ItemGroup>
 
   <ItemGroup>
