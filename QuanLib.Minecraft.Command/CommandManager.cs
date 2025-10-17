@@ -122,53 +122,17 @@ namespace QuanLib.Minecraft.Command
             if (!split)
                 return Execute(x1, y1, z1, x2, y2, z2);
 
-            int startX = Math.Min(x1, x2);
-            int startY = Math.Min(y1, y2);
-            int startZ = Math.Min(z1, z2);
-            int endX = Math.Max(x1, x2);
-            int endY = Math.Max(y1, y2);
-            int endZ = Math.Max(z1, z2);
-            int xLength = endX - startX + 1;
-            int yLength = endY - startY + 1;
-            int zLength = endZ - startZ + 1;
-            int totalBlocks = xLength * yLength * zLength;
-
-            if (totalBlocks <= maxBlocks)
-                return Execute(x1, y1, z1, x2, y2, z2);
-
-            int maxLength = new int[] { xLength, yLength, zLength }.Max();
-            int area = totalBlocks / maxLength;
-
-            if (area > maxBlocks)
-                throw new InvalidOperationException("区域过大，无法使用 fill 指令填充");
-
-            int step = maxBlocks / area;
             int successCount = 0;
+            CubeRange[] cubeRanges = SplitRange(x1, y1, z1, x2, y2, z2, maxBlocks);
 
-            if (maxLength == xLength)
-            {
-                for (int sx = startX; sx <= endX; sx += step)
-                {
-                    int ex = Math.Min(sx + step - 1, endX);
-                    successCount += Execute(sx, startY, startZ, ex, endY, endZ);
-                }
-            }
-            else if (maxLength == yLength)
-            {
-                for (int sy = startY; sy <= endY; sy += step)
-                {
-                    int ey = Math.Min(sy + step - 1, endY);
-                    successCount += Execute(startX, sy, startZ, endX, ey, endZ);
-                }
-            }
-            else
-            {
-                for (int sz = startZ; sz <= endZ; sz += step)
-                {
-                    int ez = Math.Min(sz + step - 1, endZ);
-                    successCount += Execute(startX, startY, sz, endX, endY, ez);
-                }
-            }
+            foreach (CubeRange cubeRange in cubeRanges)
+                successCount += Execute(
+                    cubeRange.StartPosition.X,
+                    cubeRange.StartPosition.Y,
+                    cubeRange.StartPosition.Z,
+                    cubeRange.EndPosition.X,
+                    cubeRange.EndPosition.Y,
+                    cubeRange.EndPosition.Z);
 
             return successCount;
 
@@ -247,17 +211,37 @@ namespace QuanLib.Minecraft.Command
             return ConditionalDimensionBlockCommand.TrySendCommand(sender, dimension, position.X, position.Y, position.Z, blockId, out var result) ? result : false;
         }
 
-        public static int ConditionalRangeBlock(this CommandSender sender, int startX, int startY, int startZ, int endX, int endY, int endZ)
+        public static int ConditionalRangeBlock(this CommandSender sender, int startX, int startY, int startZ, int endX, int endY, int endZ, bool split = false, int maxBlocks = 32768)
         {
-            return ConditionalRangeBlockCommand.TrySendCommand(sender, startX, startY, startZ, endX, endY, endZ, out var result) ? result : 0;
+            if (!split)
+                return Execute(startX, startY, startZ, endX, endY, endZ);
+
+            int successCount = 0;
+            CubeRange[] cubeRanges = SplitRange(startX, startY, startZ, endX, endY, endZ, maxBlocks);
+
+            foreach (CubeRange cubeRange in cubeRanges)
+                successCount += Execute(
+                    cubeRange.StartPosition.X,
+                    cubeRange.StartPosition.Y,
+                    cubeRange.StartPosition.Z,
+                    cubeRange.EndPosition.X,
+                    cubeRange.EndPosition.Y,
+                    cubeRange.EndPosition.Z);
+
+            return successCount;
+
+            int Execute(int x1, int y1, int z1, int x2, int y2, int z2)
+            {
+                return ConditionalRangeBlockCommand.TrySendCommand(sender, x1, y1, z1, x2, y2, z2, out var result) ? result : 0;
+            }
         }
 
-        public static int ConditionalRangeBlock<T>(this CommandSender sender, T startPos, T endPos) where T : IVector3<int>
+        public static int ConditionalRangeBlock<T>(this CommandSender sender, T startPos, T endPos, bool split = false, int maxBlocks = 32768) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(startPos, nameof(startPos));
             ArgumentNullException.ThrowIfNull(endPos, nameof(endPos));
 
-            return ConditionalRangeBlockCommand.TrySendCommand(sender, startPos.X, startPos.Y, startPos.Z, endPos.X, endPos.Y, endPos.Z, out var result) ? result : 0;
+            return ConditionalRangeBlock(sender, startPos.X, startPos.Y, startPos.Z, endPos.X, endPos.Y, endPos.Z, split, maxBlocks);
         }
 
         public static bool ConditionalEntity(this CommandSender sender, string target)
@@ -685,6 +669,59 @@ namespace QuanLib.Minecraft.Command
         public static bool RemoveForceloadChunk<T>(this CommandSender sender, T blockPos) where T : IVector3<int>
         {
             return ForceloadRemoveCommand.TrySendCommand(sender, blockPos.X, blockPos.Z);
+        }
+
+        private static CubeRange[] SplitRange(int x1, int y1, int z1, int x2, int y2, int z2, int maxBlocks)
+        {
+            int startX = Math.Min(x1, x2);
+            int startY = Math.Min(y1, y2);
+            int startZ = Math.Min(z1, z2);
+            int endX = Math.Max(x1, x2);
+            int endY = Math.Max(y1, y2);
+            int endZ = Math.Max(z1, z2);
+            int xLength = endX - startX + 1;
+            int yLength = endY - startY + 1;
+            int zLength = endZ - startZ + 1;
+            int totalBlocks = xLength * yLength * zLength;
+
+            if (totalBlocks <= maxBlocks)
+                return [new CubeRange(x1, y1, z1, x2, y2, z2)];
+
+            int maxLength = new int[] { xLength, yLength, zLength }.Max();
+            int area = totalBlocks / maxLength;
+
+            if (area > maxBlocks)
+                throw new InvalidOperationException("区域过大，无法拆分");
+
+            int step = maxBlocks / area;
+            List<CubeRange> cubeRanges = [];
+
+            if (maxLength == xLength)
+            {
+                for (int sx = startX; sx <= endX; sx += step)
+                {
+                    int ex = Math.Min(sx + step - 1, endX);
+                    cubeRanges.Add(new CubeRange(sx, startY, startZ, ex, endY, endZ));
+                }
+            }
+            else if (maxLength == yLength)
+            {
+                for (int sy = startY; sy <= endY; sy += step)
+                {
+                    int ey = Math.Min(sy + step - 1, endY);
+                    cubeRanges.Add(new CubeRange(startX, sy, startZ, endX, ey, endZ));
+                }
+            }
+            else
+            {
+                for (int sz = startZ; sz <= endZ; sz += step)
+                {
+                    int ez = Math.Min(sz + step - 1, endZ);
+                    cubeRanges.Add(new CubeRange(startX, startY, sz, endX, endY, ez));
+                }
+            }
+
+            return cubeRanges.ToArray();
         }
 
         public static ConditionalCommand Conditional(this Building.ExecuteCommandSyntax source)
