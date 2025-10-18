@@ -56,10 +56,10 @@ namespace QuanLib.Minecraft.Command.Building
             return new IfScoreMatchesSyntax(this);
         }
 
-        public IfBlcokDataSyntax BlockData()
+        public IfBlockDataSyntax BlockData()
         {
             SetSyntax("data block");
-            return new IfBlcokDataSyntax(this);
+            return new IfBlockDataSyntax(this);
         }
 
         public IfEntityDataSyntax EntityData()

@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command.Building
 {
-    public class IfBlcokDataSyntax(ICommandSyntax? previous) : CommandSyntax(previous)
+    public class IfBlockDataSyntax(ICommandSyntax? previous) : CommandSyntax(previous)
     {
         private IVector3<int>? _position;
         private string? _nbtPath;
 
-        public IfBlcokDataSyntax SetPosition<T>(T position) where T : IVector3<int>
+        public IfBlockDataSyntax SetPosition<T>(T position) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
@@ -20,13 +20,13 @@ namespace QuanLib.Minecraft.Command.Building
             return this;
         }
 
-        public IfBlcokDataSyntax SetPosition(int x, int y, int z)
+        public IfBlockDataSyntax SetPosition(int x, int y, int z)
         {
             _position = new Vector3<int>(x, y, z);
             return this;
         }
 
-        public IfBlcokDataSyntax SetNbtPath(string nbtPath)
+        public IfBlockDataSyntax SetNbtPath(string nbtPath)
         {
             ArgumentNullException.ThrowIfNull(nbtPath, nameof(nbtPath));
 

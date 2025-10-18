@@ -10,11 +10,14 @@ using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.NBT;
 using QuanLib.Minecraft.ResourcePack.Language;
 using QuanLib.Game;
+using System.ComponentModel;
 
 namespace QuanLib.Minecraft.Command
 {
     public static class CommandManager
     {
+        private const string AIR_BLOCK = "minecraft:air";
+
         static CommandManager()
         {
             _languageManager = LanguageManager.Instance;
@@ -33,6 +36,7 @@ namespace QuanLib.Minecraft.Command
             ConditionalBlockCommand = new(_languageManager);
             ConditionalDimensionBlockCommand = new(_languageManager);
             ConditionalRangeBlockCommand = new(_languageManager);
+            ConditionalRangeCompareCommand = new(_languageManager);
             ConditionalEntityCommand = new(_languageManager);
             DataGetEntityCommand = new(_languageManager);
             DataGetEntityHavePathCommand = new(_languageManager);
@@ -64,6 +68,7 @@ namespace QuanLib.Minecraft.Command
         public static readonly ConditionalBlockCommand ConditionalBlockCommand;
         public static readonly ConditionalDimensionBlockCommand ConditionalDimensionBlockCommand;
         public static readonly ConditionalRangeBlockCommand ConditionalRangeBlockCommand;
+        public static readonly ConditionalRangeCompareCommand ConditionalRangeCompareCommand;
         public static readonly ConditionalEntityCommand ConditionalEntityCommand;
         public static readonly DataGetEntityCommand DataGetEntityCommand;
         public static readonly DataGetEntityHavePathCommand DataGetEntityHavePathCommand;
@@ -187,31 +192,224 @@ namespace QuanLib.Minecraft.Command
             return TelePortLocationCommand.TrySendCommand(sender, source, position.X, position.Y, position.Z, out var result) ? result : 0;
         }
 
-        public static bool ConditionalBlock(this CommandSender sender, int x, int y, int z, string blockId)
+        public static bool CheckBlock(this CommandSender sender, int x, int y, int z, string blockId)
         {
             return ConditionalBlockCommand.TrySendCommand(sender, x, y, z, blockId, out var result) ? result : false;
         }
 
-        public static bool ConditionalBlock<T>(this CommandSender sender, T position, string blockId) where T : IVector3<int>
+        public static bool CheckBlock<T>(this CommandSender sender, T position, string blockId) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             return ConditionalBlockCommand.TrySendCommand(sender, position.X, position.Y, position.Z, blockId, out var result) ? result : false;
         }
 
-        public static bool ConditionalBlock(this CommandSender sender, string dimension, int x, int y, int z, string blockId)
+        public static bool CheckBlock(this CommandSender sender, string dimension, int x, int y, int z, string blockId)
         {
             return ConditionalDimensionBlockCommand.TrySendCommand(sender, dimension, x, y, z, blockId, out var result) ? result : false;
         }
 
-        public static bool ConditionalBlock<T>(this CommandSender sender, string dimension, T position, string blockId) where T : IVector3<int>
+        public static bool CheckBlock<T>(this CommandSender sender, string dimension, T position, string blockId) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             return ConditionalDimensionBlockCommand.TrySendCommand(sender, dimension, position.X, position.Y, position.Z, blockId, out var result) ? result : false;
         }
 
-        public static int ConditionalRangeBlock(this CommandSender sender, int startX, int startY, int startZ, int endX, int endY, int endZ, bool split = false, int maxBlocks = 32768)
+        public static bool CheckRangeBlock(this CommandSender sender, int x1, int y1, int z1, int x2, int y2, int z2, string blockId, int maxBlocks = 32768)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
+
+            if (blockId == AIR_BLOCK)
+                return GetBlockCount(sender, x1, y1, z1, x2, y2, z2, true) == 0;
+
+            int startX = Math.Min(x1, x2);
+            int startY = Math.Min(y1, y2);
+            int startZ = Math.Min(z1, z2);
+            int endX = Math.Max(x1, x2);
+            int endY = Math.Max(y1, y2);
+            int endZ = Math.Max(z1, z2);
+            int xLength = endX - startX + 1;
+            int yLength = endY - startY + 1;
+            int zLength = endZ - startZ + 1;
+            int totalBlocks = xLength * yLength * zLength;
+            int minLength = new int[] { xLength, yLength, zLength }.Min();
+
+            if (xLength == minLength)
+            {
+                for (int i = 0; i < xLength; i++)
+                {
+                    if (!CheckBlock(sender, i, startY, startZ, blockId))
+                        return false;
+                }
+
+                CubeRange sourceRange = new(startX, startY, startZ, endX, startY, startZ);
+                if (yLength < zLength)
+                {
+                    if (!CheckY(sourceRange))
+                        return false;
+                    sourceRange = new(startX, startY, startZ, endX, endY, startZ);
+                    return CheckZ(sourceRange);
+                }
+                else
+                {
+                    if (!CheckZ(sourceRange))
+                        return false;
+                    sourceRange = new(startX, startY, startZ, endX, startY, endZ);
+                    return CheckY(sourceRange);
+                }
+            }
+            else if (yLength == minLength)
+            {
+                for (int i = 0; i < yLength; i++)
+                {
+                    if (!CheckBlock(sender, startX, i, startZ, blockId))
+                        return false;
+                }
+
+                CubeRange sourceRange = new(startX, startY, startZ, startX, endY, startZ);
+                if (xLength < zLength)
+                {
+                    if (!CheckX(sourceRange))
+                        return false;
+                    sourceRange = new(startX, startY, startZ, endX, endY, startZ);
+                    return CheckZ(sourceRange);
+                }
+                else
+                {
+                    if (!CheckZ(sourceRange))
+                        return false;
+                    sourceRange = new(startX, startY, startZ, startX, endY, endZ);
+                    return CheckX(sourceRange);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < zLength; i++)
+                {
+                    if (!CheckBlock(sender, startX, startY, i, blockId))
+                        return false;
+                }
+
+                CubeRange sourceRange = new(startX, startY, startZ, startX, startY, endZ);
+                if (xLength < yLength)
+                {
+                    if (!CheckX(sourceRange))
+                        return false;
+                    sourceRange = new(startX, startY, startZ, endX, startY, endZ);
+                    return CheckY(sourceRange);
+                }
+                else
+                {
+                    if (!CheckY(sourceRange))
+                        return false;
+                    sourceRange = new(startX, startY, startZ, startX, endY, endZ);
+                    return CheckX(sourceRange);
+                }
+            }
+
+            bool CheckX(CubeRange sourceRange)
+            {
+                while (true)
+                {
+                    CubeRange destRange = CloneRange(sourceRange, Facing.Xp);
+                    if (!Execute(sourceRange.StartPosition, sourceRange.EndPosition, destRange.StartPosition))
+                        return false;
+
+                    if (destRange.EndPosition.X >= endX)
+                        return true;
+
+                    sourceRange = new(sourceRange.StartPosition, destRange.EndPosition);
+
+                    if (sourceRange.Volume > maxBlocks)
+                    {
+                        int area = totalBlocks / xLength ;
+                        if (area > maxBlocks)
+                            throw new InvalidOperationException("区域过大，无法拆分");
+
+                        int step = maxBlocks / area;
+                        int offset = sourceRange.Range.X - step;
+                        sourceRange.StartPosition = sourceRange.StartPosition.Offset(Facing.Xp, offset);
+                    }
+
+                    int overflowLength = sourceRange.Range.X * 2 - xLength;
+                    if (overflowLength > 0)
+                        sourceRange.StartPosition = sourceRange.StartPosition.Offset(Facing.Xp, overflowLength);
+                }
+            }
+
+            bool CheckY(CubeRange sourceRange)
+            {
+                while (true)
+                {
+                    CubeRange destRange = CloneRange(sourceRange, Facing.Yp);
+                    if (!Execute(sourceRange.StartPosition, sourceRange.EndPosition, destRange.StartPosition))
+                        return false;
+
+                    if (destRange.EndPosition.Y >= endY)
+                        return true;
+
+                    sourceRange = new(sourceRange.StartPosition, destRange.EndPosition);
+
+                    if (sourceRange.Volume > maxBlocks)
+                    {
+                        int area = totalBlocks / yLength;
+                        if (area > maxBlocks)
+                            throw new InvalidOperationException("区域过大，无法拆分");
+
+                        int step = maxBlocks / area;
+                        int offset = sourceRange.Range.Y - step;
+                        sourceRange.StartPosition = sourceRange.StartPosition.Offset(Facing.Yp, offset);
+                    }
+
+                    int overflowLength = sourceRange.Range.Y * 2 - yLength;
+                    if (overflowLength > 0)
+                        sourceRange.StartPosition = sourceRange.StartPosition.Offset(Facing.Yp, overflowLength);
+                }
+            }
+
+            bool CheckZ(CubeRange sourceRange)
+            {
+                while (true)
+                {
+                    CubeRange destRange = CloneRange(sourceRange, Facing.Zp);
+                    if (!Execute(sourceRange.StartPosition, sourceRange.EndPosition, destRange.StartPosition))
+                        return false;
+
+                    if (destRange.EndPosition.Z >= endZ)
+                        return true;
+
+                    sourceRange = new(sourceRange.StartPosition, destRange.EndPosition);
+
+                    if (sourceRange.Volume > maxBlocks)
+                    {
+                        int area = totalBlocks / zLength;
+                        if (area > maxBlocks)
+                            throw new InvalidOperationException("区域过大，无法拆分");
+
+                        int step = maxBlocks / area;
+                        int offset = sourceRange.Range.Z - step;
+                        sourceRange.StartPosition = sourceRange.StartPosition.Offset(Facing.Zp, offset);
+                    }
+
+                    int overflowLength = sourceRange.Range.Z * 2 - zLength;
+                    if (overflowLength > 0)
+                        sourceRange.StartPosition = sourceRange.StartPosition.Offset(Facing.Zp, overflowLength);
+                }
+            }
+
+            bool Execute(Vector3<int> startPos, Vector3<int> endPos, Vector3<int> destPos)
+            {
+                return ConditionalRangeCompareCommand.TrySendCommand(sender, startPos, endPos, destPos, "all", out var result) ? result > 0 : false;
+            }
+        }
+
+        public static bool CheckRangeBlock<T>(this CommandSender sender, T startPos, T endPos, string blockId, int maxBlocks = 32768) where T : IVector3<int>
+        {
+            return CheckRangeBlock(sender, startPos.X, startPos.Y, startPos.Z, endPos.X, endPos.Y, endPos.Z, blockId, maxBlocks);
+        }
+
+        public static int GetBlockCount(this CommandSender sender, int startX, int startY, int startZ, int endX, int endY, int endZ, bool split = false, int maxBlocks = 32768)
         {
             if (!split)
                 return Execute(startX, startY, startZ, endX, endY, endZ);
@@ -236,20 +434,20 @@ namespace QuanLib.Minecraft.Command
             }
         }
 
-        public static int ConditionalRangeBlock<T>(this CommandSender sender, T startPos, T endPos, bool split = false, int maxBlocks = 32768) where T : IVector3<int>
+        public static int GetBlockCount<T>(this CommandSender sender, T startPos, T endPos, bool split = false, int maxBlocks = 32768) where T : IVector3<int>
         {
             ArgumentNullException.ThrowIfNull(startPos, nameof(startPos));
             ArgumentNullException.ThrowIfNull(endPos, nameof(endPos));
 
-            return ConditionalRangeBlock(sender, startPos.X, startPos.Y, startPos.Z, endPos.X, endPos.Y, endPos.Z, split, maxBlocks);
+            return GetBlockCount(sender, startPos.X, startPos.Y, startPos.Z, endPos.X, endPos.Y, endPos.Z, split, maxBlocks);
         }
 
-        public static bool ConditionalEntity(this CommandSender sender, string target)
+        public static bool CheckEntity(this CommandSender sender, string target)
         {
-            return ConditionalEntityCount(sender, target) > 0;
+            return GetEntityCount(sender, target) > 0;
         }
 
-        public static int ConditionalEntityCount(this CommandSender sender, string target)
+        public static int GetEntityCount(this CommandSender sender, string target)
         {
             return ConditionalEntityCommand.TrySendCommand(sender, target, out var result) ? result : 0;
         }
@@ -722,6 +920,55 @@ namespace QuanLib.Minecraft.Command
             }
 
             return cubeRanges.ToArray();
+        }
+
+        private static CubeRange CloneRange(CubeRange cubeRange, Facing facing)
+        {
+            int x1 = cubeRange.StartPosition.X;
+            int y1 = cubeRange.StartPosition.Y;
+            int z1 = cubeRange.StartPosition.Z;
+            int x2 = cubeRange.EndPosition.X;
+            int y2 = cubeRange.EndPosition.Y;
+            int z2 = cubeRange.EndPosition.Z;
+            int length;
+
+            switch (facing)
+            {
+                case Facing.Xp:
+                    length = Math.Abs(x2 - x1) + 1;
+                    x1 += length;
+                    x2 += length;
+                    break;
+                case Facing.Xm:
+                    length = Math.Abs(x2 - x1) + 1;
+                    x1 -= length;
+                    x2 -= length;
+                    break;
+                case Facing.Yp:
+                    length = Math.Abs(y2 - y1) + 1;
+                    y1 += length;
+                    y2 += length;
+                    break;
+                case Facing.Ym:
+                    length = Math.Abs(y2 - y1) + 1;
+                    y1 -= length;
+                    y2 -= length;
+                    break;
+                case Facing.Zp:
+                    length = Math.Abs(z2 - z1) + 1;
+                    z1 += length;
+                    z2 += length;
+                    break;
+                case Facing.Zm:
+                    length = Math.Abs(z2 - z1) + 1;
+                    z1 -= length;
+                    z2 -= length;
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(nameof(facing), (int)facing, typeof(Facing));
+            }
+
+            return new(x1, y1, z1, x2, y2, z2);
         }
 
         public static ConditionalCommand Conditional(this Building.ExecuteCommandSyntax source)
