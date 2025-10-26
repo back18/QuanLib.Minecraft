@@ -97,17 +97,17 @@ namespace QuanLib.Minecraft.Command
 
         public static int GetGameDays(this CommandSender sender)
         {
-            return TimeQueryDayCommand.TrySendCommand(sender, out var result) ? result : 0;
+            return TimeQueryDayCommand.TrySendCommand(sender, out var result) ? result : -1;
         }
 
         public static int GetDayTime(this CommandSender sender)
         {
-            return TimeQueryDaytimeCommand.TrySendCommand(sender, out var result) ? result : 0;
+            return TimeQueryDaytimeCommand.TrySendCommand(sender, out var result) ? result : -1;
         }
 
         public static int GetGameTime(this CommandSender sender)
         {
-            return TimeQueryGametimeCommand.TrySendCommand(sender, out var result) ? result : 0;
+            return TimeQueryGametimeCommand.TrySendCommand(sender, out var result) ? result : -1;
         }
 
         public static bool SetBlock(this CommandSender sender, int x, int y, int z, string blockId)
@@ -128,10 +128,12 @@ namespace QuanLib.Minecraft.Command
                 return Execute(x1, y1, z1, x2, y2, z2);
 
             int successCount = 0;
+            int failureCount = 0;
             CubeRange[] cubeRanges = SplitRange(x1, y1, z1, x2, y2, z2, maxBlocks);
 
             foreach (CubeRange cubeRange in cubeRanges)
-                successCount += Execute(
+            {
+                int result = Execute(
                     cubeRange.StartPosition.X,
                     cubeRange.StartPosition.Y,
                     cubeRange.StartPosition.Z,
@@ -139,11 +141,20 @@ namespace QuanLib.Minecraft.Command
                     cubeRange.EndPosition.Y,
                     cubeRange.EndPosition.Z);
 
-            return successCount;
+                if (result >= 0)
+                    successCount += result;
+                else
+                    failureCount++;
+            }
+
+            if (failureCount == cubeRanges.Length)
+                return -1;
+            else
+                return successCount;
 
             int Execute(int x1, int y1, int z1, int x2, int y2, int z2)
             {
-                return FillCommand.TrySendCommand(sender, x1, y1, z1, x2, y2, z2, blockId, out var result) ? result : 0;
+                return FillCommand.TrySendCommand(sender, x1, y1, z1, x2, y2, z2, blockId, out var result) ? result : -1;
             }
         }
 
@@ -172,24 +183,24 @@ namespace QuanLib.Minecraft.Command
 
         public static int KillEntity(this CommandSender sender, string target)
         {
-            return KillCommand.TrySendCommand(sender, target, out var result) ? result : 0;
+            return KillCommand.TrySendCommand(sender, target, out var result) ? result : -1;
         }
 
         public static int TelePort(this CommandSender sender, string source, string target)
         {
-            return TelePortEntityCommand.TrySendCommand(sender, source, target, out var result) ? result : 0;
+            return TelePortEntityCommand.TrySendCommand(sender, source, target, out var result) ? result : -1;
         }
 
         public static int TelePort(this CommandSender sender, string source, double x, double y, double z)
         {
-            return TelePortLocationCommand.TrySendCommand(sender, source, x, y, z, out var result) ? result : 0;
+            return TelePortLocationCommand.TrySendCommand(sender, source, x, y, z, out var result) ? result : -1;
         }
 
         public static int TelePort<T>(this CommandSender sender, string source, T position) where T : IVector3<double>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
-            return TelePortLocationCommand.TrySendCommand(sender, source, position.X, position.Y, position.Z, out var result) ? result : 0;
+            return TelePortLocationCommand.TrySendCommand(sender, source, position.X, position.Y, position.Z, out var result) ? result : -1;
         }
 
         public static bool CheckBlock(this CommandSender sender, int x, int y, int z, string blockId)
@@ -323,7 +334,7 @@ namespace QuanLib.Minecraft.Command
 
                     if (sourceRange.Volume > maxBlocks)
                     {
-                        int area = totalBlocks / xLength ;
+                        int area = totalBlocks / xLength;
                         if (area > maxBlocks)
                             throw new InvalidOperationException("区域过大，无法拆分");
 
@@ -415,10 +426,12 @@ namespace QuanLib.Minecraft.Command
                 return Execute(startX, startY, startZ, endX, endY, endZ);
 
             int successCount = 0;
+            int failureCount = 0;
             CubeRange[] cubeRanges = SplitRange(startX, startY, startZ, endX, endY, endZ, maxBlocks);
 
             foreach (CubeRange cubeRange in cubeRanges)
-                successCount += Execute(
+            {
+                int result = Execute(
                     cubeRange.StartPosition.X,
                     cubeRange.StartPosition.Y,
                     cubeRange.StartPosition.Z,
@@ -426,11 +439,20 @@ namespace QuanLib.Minecraft.Command
                     cubeRange.EndPosition.Y,
                     cubeRange.EndPosition.Z);
 
-            return successCount;
+                if (result >= 0)
+                    successCount += result;
+                else
+                    failureCount++;
+            }
+
+            if (failureCount == cubeRanges.Length)
+                return -1;
+            else
+                return successCount;
 
             int Execute(int x1, int y1, int z1, int x2, int y2, int z2)
             {
-                return ConditionalRangeBlockCommand.TrySendCommand(sender, x1, y1, z1, x2, y2, z2, out var result) ? result : 0;
+                return ConditionalRangeBlockCommand.TrySendCommand(sender, x1, y1, z1, x2, y2, z2, out var result) ? result : -1;
             }
         }
 
@@ -449,7 +471,7 @@ namespace QuanLib.Minecraft.Command
 
         public static int GetEntityCount(this CommandSender sender, string target)
         {
-            return ConditionalEntityCommand.TrySendCommand(sender, target, out var result) ? result : 0;
+            return ConditionalEntityCommand.TrySendCommand(sender, target, out var result) ? result : -1;
         }
 
         #region GetSnbt
@@ -793,7 +815,7 @@ namespace QuanLib.Minecraft.Command
 
         public static int SetPlayerHotbarItem(this CommandSender sender, string target, int hotbar, string itemId)
         {
-            return ItemReplaceWithEntityHotbarCommand.TrySendCommand(sender, target, hotbar, itemId, out var result) ? result : 0;
+            return ItemReplaceWithEntityHotbarCommand.TrySendCommand(sender, target, hotbar, itemId, out var result) ? result : -1;
         }
 
         public static bool SendChatMessage(this CommandSender sender, string target, string message, TextColor color = TextColor.White, bool bold = false)
@@ -803,22 +825,22 @@ namespace QuanLib.Minecraft.Command
 
         public static int SetTitleShowTime(this CommandSender sender, string target, int fadeIn, int stay, int fadeOut)
         {
-            return TitleTimesCommand.TrySendCommand(sender, target, fadeIn, stay, fadeOut, out var result) ? result : 0;
+            return TitleTimesCommand.TrySendCommand(sender, target, fadeIn, stay, fadeOut, out var result) ? result : -1;
         }
 
         public static int ShowTitle(this CommandSender sender, string target, string message, TextColor color = TextColor.White, bool bold = false)
         {
-            return TitleTitleCommand.TrySendCommand(sender, target, CommandUtil.ToJson(message, color, bold), out var result) ? result : 0;
+            return TitleTitleCommand.TrySendCommand(sender, target, CommandUtil.ToJson(message, color, bold), out var result) ? result : -1;
         }
 
         public static int ShowSubTitle(this CommandSender sender, string target, string message, TextColor color = TextColor.White, bool bold = false)
         {
-            return TitleSubTitleCommand.TrySendCommand(sender, target, CommandUtil.ToJson(message, color, bold), out var result) ? result : 0;
+            return TitleSubTitleCommand.TrySendCommand(sender, target, CommandUtil.ToJson(message, color, bold), out var result) ? result : -1;
         }
 
         public static int ShowActionbarTitle(this CommandSender sender, string target, string message, TextColor color = TextColor.White, bool bold = false)
         {
-            return TitleActionbarCommand.TrySendCommand(sender, target, CommandUtil.ToJson(message, color, bold), out var result) ? result : 0;
+            return TitleActionbarCommand.TrySendCommand(sender, target, CommandUtil.ToJson(message, color, bold), out var result) ? result : -1;
         }
 
         public static int ShowTitle(this CommandSender sender, string target, int fadeIn, int stay, int fadeOut, string message, TextColor color = TextColor.White, bool bold = false)
@@ -841,12 +863,12 @@ namespace QuanLib.Minecraft.Command
 
         public static int GetPlayerScoreboard(this CommandSender sender, string target, string objective)
         {
-            return ScoreboardPlayersGetCommand.TrySendCommand(sender, target, objective, out var result) ? result : 0;
+            return ScoreboardPlayersGetCommand.TrySendCommand(sender, target, objective, out var result) ? result : -1;
         }
 
         public static int SetPlayerScoreboard(this CommandSender sender, string target, string objective, int score)
         {
-            return ScoreboardPlayersSetCommand.TrySendCommand(sender, target, objective, score, out var result) ? result : 0;
+            return ScoreboardPlayersSetCommand.TrySendCommand(sender, target, objective, score, out var result) ? result : -1;
         }
 
         public static bool AddForceloadChunk(this CommandSender sender, int x, int z)
