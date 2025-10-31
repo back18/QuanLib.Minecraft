@@ -7,22 +7,20 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Command
 {
-    public class CommandInfo
+    public readonly struct CommandInfo(string input, string output, long startTimeStamp, long endTimeStamp)
     {
-        public CommandInfo(DateTime sendingTime, DateTime receivingTime, string input, string output)
-        {
-            SendingTime = sendingTime;
-            ReceivingTime = receivingTime;
-            Input = input;
-            Output = output;
-        }
+        private readonly static long s_systemStartTick = DateTime.Now.Ticks - Environment.TickCount64 * TimeSpan.TicksPerMillisecond;
 
-        public DateTime SendingTime { get; }
+        public readonly string Input = input;
 
-        public DateTime ReceivingTime { get; }
+        public readonly string Output = output;
 
-        public string Input { get; }
+        public readonly long StartTimeStamp = startTimeStamp;
 
-        public string Output { get; }
+        public readonly long EndTimeStamp = endTimeStamp;
+
+        public DateTime StartTime => new(s_systemStartTick + StartTimeStamp);
+
+        public DateTime EndTime => new(s_systemStartTick + EndTimeStamp);
     }
 }
