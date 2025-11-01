@@ -2,18 +2,15 @@
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace QuanLib.Minecraft.Instance.CommandSenders
 {
@@ -95,7 +92,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             await _synchronized.InvokeAsync(() => _clients[GetNextIndex()].SendPacketAsync(packet));
         }
 
-        public void SendOnewayBatchCommand(IEnumerable<string> commands)
+        public void SendOnewayBatchCommand(IList<string> commands)
         {
             ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
@@ -103,38 +100,66 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
         }
 
-        public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
+        public async Task SendOnewayBatchCommandAsync(IList<string> commands)
         {
             ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            ConcurrentBag<byte[]> packets = ToPacketBag(commands);
+            ConcurrentBag<byte[]> packets = await Task.Run(() => ToPacketBag(commands)).ConfigureAwait(false);
             await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
         }
 
-        public void SendOnewayBatchSetBlock(IEnumerable<WorldBlock> blocks)
+        public async Task SendOnewayDelayBatchCommandAsync(IList<string> commands, Task? delay)
         {
-            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            ConcurrentBag<byte[]> packets = ToPacketBag(blocks);
+            ConcurrentBag<byte[]> packets = await Task.Run(() => ToPacketBag(commands)).ConfigureAwait(false);
+
+            if (delay is not null)
+                await delay.ConfigureAwait(false);
+
+            await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
+        }
+
+        public void SendOnewayBatchSetBlock(IList<WorldBlock> arguments)
+        {
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+
+            ConcurrentBag<byte[]> packets = ToPacketBag(arguments);
             _synchronized.Invoke(() => Task.WaitAll(HandleAllCommand(packets)));
         }
 
-        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<WorldBlock> blocks)
+        public async Task SendOnewayBatchSetBlockAsync(IList<WorldBlock> arguments)
         {
-            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
-            ConcurrentBag<byte[]> packets = ToPacketBag(blocks);
+            ConcurrentBag<byte[]> packets = await Task.Run(() => ToPacketBag(arguments)).ConfigureAwait(false);
             await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
         }
 
-        public void WaitForResponse()
+        public async Task SendOnewayDelayBatchSetBlockAsync(IList<WorldBlock> arguments, Task? delay)
         {
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+
+            ConcurrentBag<byte[]> packets = await Task.Run(() => ToPacketBag(arguments)).ConfigureAwait(false);
+
+            if (delay is not null)
+                await delay.ConfigureAwait(false);
+
+            await _synchronized.InvokeAsync(() => Task.WhenAll(HandleAllCommand(packets)));
+        }
+
+        public TimeSpan Ping()
+        {
+            long start = Stopwatch.GetTimestamp();
             _clients[GetNextIndex()].SendPacket(ToPacket(GetNextID(), 2, "time query gametime"));
+            return Stopwatch.GetElapsedTime(start);
         }
 
-        public async Task WaitForResponseAsync()
+        public async Task<TimeSpan> PingAsync()
         {
+            long start = Stopwatch.GetTimestamp();
             await _clients[GetNextIndex()].SendPacketAsync(ToPacket(GetNextID(), 2, "time query gametime"));
+            return Stopwatch.GetElapsedTime(start);
         }
 
         private int GetNextID()
@@ -165,7 +190,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             return packet.ToArray();
         }
 
-        private ConcurrentBag<byte[]> ToPacketBag(IEnumerable<string> commands)
+        private ConcurrentBag<byte[]> ToPacketBag(IList<string> commands)
         {
             ConcurrentBag<byte[]> result = new();
             ParallelLoopResult parallelLoopResult = Parallel.ForEach(commands, command =>
@@ -173,22 +198,16 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
                 result.Add(ToPacket(GetNextID(), 2, command));
             });
 
-            while (!parallelLoopResult.IsCompleted)
-                Thread.Yield();
-
             return result;
         }
 
-        private ConcurrentBag<byte[]> ToPacketBag(IEnumerable<WorldBlock> blocks)
+        private ConcurrentBag<byte[]> ToPacketBag(IList<WorldBlock> blocks)
         {
             ConcurrentBag<byte[]> result = new();
             ParallelLoopResult parallelLoopResult = Parallel.ForEach(blocks, block =>
             {
                 result.Add(ToPacket(GetNextID(), 2, block.ToSetBlockCommand()));
             });
-
-            while (!parallelLoopResult.IsCompleted)
-                Thread.Yield();
 
             return result;
         }

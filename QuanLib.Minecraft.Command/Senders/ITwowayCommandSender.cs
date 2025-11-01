@@ -12,8 +12,10 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public Task<string> SendCommandAsync(string command);
 
-        public string[] SendBatchCommand(IEnumerable<string> commands);
+        public string[] SendBatchCommand(IList<string> commands);
 
-        public Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands);
+        public Task<string[]> SendBatchCommandAsync(IList<string> commands);
+
+        public Task<string[]> SendDelayBatchCommandAsync(IList<string> commands, Task? delay);
     }
 }

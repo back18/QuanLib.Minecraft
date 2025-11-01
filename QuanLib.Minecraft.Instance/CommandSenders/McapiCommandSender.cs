@@ -1,10 +1,9 @@
-﻿using QuanLib.Core;
-using QuanLib.Minecraft.API;
+﻿using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Command.Senders;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,18 +35,25 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             return await McapiClient.SendCommandAsync(command);
         }
 
-        public string[] SendBatchCommand(IEnumerable<string> commands)
+        public string[] SendBatchCommand(IList<string> commands)
         {
             ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            return McapiClient.SendBatchCommandAsync(commands.ToArray()).Result;
+            return McapiClient.SendBatchCommandAsync(commands).Result;
         }
 
-        public async Task<string[]> SendBatchCommandAsync(IEnumerable<string> commands)
+        public async Task<string[]> SendBatchCommandAsync(IList<string> commands)
         {
             ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            return await McapiClient.SendBatchCommandAsync(commands.ToArray());
+            return await McapiClient.SendBatchCommandAsync(commands);
+        }
+
+        public async Task<string[]> SendDelayBatchCommandAsync(IList<string> commands, Task? delay)
+        {
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
+
+            return await McapiClient.SendDelayBatchCommandAsync(commands, delay);
         }
 
         public void SendOnewayCommand(string command)
@@ -64,42 +70,60 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             await McapiClient.SendOnewayCommandAsync(command);
         }
 
-        public void SendOnewayBatchCommand(IEnumerable<string> commands)
+        public void SendOnewayBatchCommand(IList<string> commands)
         {
             ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            McapiClient.SendOnewayBatchCommandAsync(commands.ToArray()).Wait();
+            McapiClient.SendOnewayBatchCommandAsync(commands).Wait();
         }
 
-        public async Task SendOnewayBatchCommandAsync(IEnumerable<string> commands)
+        public async Task SendOnewayBatchCommandAsync(IList<string> commands)
         {
             ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            await McapiClient.SendOnewayBatchCommandAsync(commands.ToArray());
+            await McapiClient.SendOnewayBatchCommandAsync(commands);
         }
 
-        public void SendOnewayBatchSetBlock(IEnumerable<WorldBlock> blocks)
+        public async Task SendOnewayDelayBatchCommandAsync(IList<string> commands, Task? delay)
         {
-            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
+            ArgumentNullException.ThrowIfNull(commands, nameof(commands));
 
-            McapiClient.SendOnewayBatchSetBlockAsync(blocks).Wait();
+            await McapiClient.SendOnewayDelayBatchCommandAsync(commands, delay);
         }
 
-        public async Task SendOnewayBatchSetBlockAsync(IEnumerable<WorldBlock> blocks)
+        public void SendOnewayBatchSetBlock(IList<WorldBlock> arguments)
         {
-            ArgumentNullException.ThrowIfNull(blocks, nameof(blocks));
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
 
-            await McapiClient.SendOnewayBatchSetBlockAsync(blocks);
+            McapiClient.SendOnewayBatchSetBlockAsync(arguments).Wait();
         }
 
-        public void WaitForResponse()
+        public async Task SendOnewayBatchSetBlockAsync(IList<WorldBlock> arguments)
         {
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+
+            await McapiClient.SendOnewayBatchSetBlockAsync(arguments);
+        }
+
+        public async Task SendOnewayDelayBatchSetBlockAsync(IList<WorldBlock> arguments, Task? delay)
+        {
+            ArgumentNullException.ThrowIfNull(arguments, nameof(arguments));
+
+            await McapiClient.SendOnewayDelayBatchSetBlockAsync(arguments, delay);
+        }
+
+        public TimeSpan Ping()
+        {
+            long start = Stopwatch.GetTimestamp();
             McapiClient.SendCommandAsync("time query gametime").Wait();
+            return Stopwatch.GetElapsedTime(start);
         }
 
-        public async Task WaitForResponseAsync()
+        public async Task<TimeSpan> PingAsync()
         {
+            long start = Stopwatch.GetTimestamp();
             await McapiClient.SendCommandAsync("time query gametime");
+            return Stopwatch.GetElapsedTime(start);
         }
     }
 }

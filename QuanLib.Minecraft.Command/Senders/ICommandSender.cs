@@ -1,5 +1,4 @@
-﻿using QuanLib.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +8,8 @@ namespace QuanLib.Minecraft.Command.Senders
 {
     public interface ICommandSender
     {
-        public void WaitForResponse();
+        public TimeSpan Ping();
 
-        public Task WaitForResponseAsync();
+        public Task<TimeSpan> PingAsync();
     }
 }

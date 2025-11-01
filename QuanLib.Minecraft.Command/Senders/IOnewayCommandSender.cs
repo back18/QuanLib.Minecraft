@@ -12,12 +12,16 @@ namespace QuanLib.Minecraft.Command.Senders
 
         public Task SendOnewayCommandAsync(string command);
 
-        public void SendOnewayBatchCommand(IEnumerable<string> commands);
+        public void SendOnewayBatchCommand(IList<string> commands);
 
-        public Task SendOnewayBatchCommandAsync(IEnumerable<string> commands);
+        public Task SendOnewayBatchCommandAsync(IList<string> commands);
 
-        public void SendOnewayBatchSetBlock(IEnumerable<WorldBlock> arguments);
+        public Task SendOnewayDelayBatchCommandAsync(IList<string> commands, Task? delay);
 
-        public Task SendOnewayBatchSetBlockAsync(IEnumerable<WorldBlock> arguments);
+        public void SendOnewayBatchSetBlock(IList<WorldBlock> arguments);
+
+        public Task SendOnewayBatchSetBlockAsync(IList<WorldBlock> arguments);
+
+        public Task SendOnewayDelayBatchSetBlockAsync(IList<WorldBlock> arguments, Task? delay);
     }
 }

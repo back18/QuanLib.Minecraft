@@ -22,18 +22,42 @@ namespace QuanLib.Minecraft.API.Packet
             return responsePacket.Data.DeserializeBson<ResponseData>();
         }
 
-        public static async Task<string[]> SendBatchCommandAsync(this McapiClient client, string[] commands)
+        public static async Task<string[]> SendBatchCommandAsync(this McapiClient client, IList<string> commands)
         {
-            RequestPacket request = CreateRequestPacket(commands, client.GetNextID(), true);
-            ResponsePacket response = await client.SendRequestPacketAsync(request);
+            RequestPacket request = await Task.Run(() => CreateRequestPacket(commands.ToArray(), client.GetNextID(), true)).ConfigureAwait(false);
+            ResponsePacket response = await client.SendRequestPacketAsync(request).ConfigureAwait(false);
             response.ValidateStatusCode();
-            return ParseResponsePacket(response).Results ?? Array.Empty<string>();
+            string[] results = await Task.Run(() => ParseResponsePacket(response).Results ?? Array.Empty<string>()).ConfigureAwait(false);
+            return results;
         }
 
-        public static async Task SendOnewayBatchCommandAsync(this McapiClient client, string[] commands)
+        public static async Task<string[]> SendDelayBatchCommandAsync(this McapiClient client, IList<string> commands, Task? delay)
         {
-            RequestPacket request = CreateRequestPacket(commands, client.GetNextID(), false);
-            await client.SendRequestPacketAsync(request);
+            RequestPacket request = await Task.Run(() => CreateRequestPacket(commands.ToArray(), client.GetNextID(), true)).ConfigureAwait(false);
+
+            if (delay is not null)
+                await delay.ConfigureAwait(false);
+
+            ResponsePacket response = await client.SendRequestPacketAsync(request).ConfigureAwait(false);
+            response.ValidateStatusCode();
+            string[] results = await Task.Run(() => ParseResponsePacket(response).Results ?? Array.Empty<string>()).ConfigureAwait(false);
+            return results;
+        }
+
+        public static async Task SendOnewayBatchCommandAsync(this McapiClient client, IList<string> commands)
+        {
+            RequestPacket request = await Task.Run(() => CreateRequestPacket(commands.ToArray(), client.GetNextID(), false)).ConfigureAwait(false);
+            await client.SendRequestPacketAsync(request).ConfigureAwait(false);
+        }
+
+        public static async Task SendOnewayDelayBatchCommandAsync(this McapiClient client, IList<string> commands, Task? delay)
+        {
+            RequestPacket request = await Task.Run(() => CreateRequestPacket(commands.ToArray(), client.GetNextID(), false)).ConfigureAwait(false);
+
+            if (delay is not null)
+                await delay.ConfigureAwait(false);
+
+            await client.SendRequestPacketAsync(request).ConfigureAwait(false);
         }
 
         public class RequestData : ISerializable
