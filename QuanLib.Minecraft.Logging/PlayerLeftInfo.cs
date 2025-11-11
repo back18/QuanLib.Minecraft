@@ -20,5 +20,10 @@ namespace QuanLib.Minecraft.Logging
         public string Name { get; }
 
         public string Reason { get; }
+
+        public override string ToString()
+        {
+            return $"{Name} lost connection: {Reason}";
+        }
     }
 }

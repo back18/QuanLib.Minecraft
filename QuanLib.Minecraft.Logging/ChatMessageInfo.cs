@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Logging
 {
-    public class ChatMessage
+    public class ChatMessageInfo
     {
-        public ChatMessage(string sender, string message)
+        public ChatMessageInfo(string sender, string message)
         {
             ArgumentNullException.ThrowIfNull(sender, nameof(sender));
             ArgumentNullException.ThrowIfNull(message, nameof(message));
