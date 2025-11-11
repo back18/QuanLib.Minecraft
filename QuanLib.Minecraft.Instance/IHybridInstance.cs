@@ -9,19 +9,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Instance
 {
-    public interface IHybridInstance
+    public interface IHybridInstance : IRconCapable, IConsoleCapable
     {
         public const string IDENTIFIER = "HYBRID";
-
-        public ushort RconPort { get; }
-
-        public string RconPassword { get; }
-
-        public RCON RCON { get; }
-
-        public ServerProcess ServerProcess { get; }
-
-        public ServerConsole ServerConsole { get; }
 
         public RconTwowayCommandSender TwowayCommandSender { get; }
 

@@ -1,5 +1,4 @@
-﻿using CoreRCON;
-using QuanLib.Minecraft.Instance.CommandSenders;
+﻿using QuanLib.Minecraft.Instance.CommandSenders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +8,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Instance
 {
-    public interface IRconInstance
+    public interface IRconInstance : IRconCapable
     {
         public const string IDENTIFIER = "RCON";
-
-        public ushort RconPort { get; }
-
-        public string RconPassword { get; }
-
-        public RCON RCON { get; }
 
         public RconTwowayCommandSender TwowayCommandSender { get; }
 

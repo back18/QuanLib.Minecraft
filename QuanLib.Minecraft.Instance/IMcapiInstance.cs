@@ -1,5 +1,4 @@
-﻿using QuanLib.Minecraft.API;
-using QuanLib.Minecraft.Instance.CommandSenders;
+﻿using QuanLib.Minecraft.Instance.CommandSenders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +8,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Instance
 {
-    public interface IMcapiInstance
+    public interface IMcapiInstance : IMcapiCapable
     {
         public const string IDENTIFIER = "MCAPI";
-
-        public ushort McapiPort { get; }
-
-        public string McapiPassword { get; }
-
-        public McapiClient McapiClient { get; }
 
         public McapiCommandSender McapiCommandSender { get; }
     }
