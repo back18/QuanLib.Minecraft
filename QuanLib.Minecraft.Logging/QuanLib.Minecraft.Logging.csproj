@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SystemResource\log4j2.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SystemResource\log4j2.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\QuanLib.Minecraft\QuanLib.Minecraft.csproj" />
   </ItemGroup>
 
