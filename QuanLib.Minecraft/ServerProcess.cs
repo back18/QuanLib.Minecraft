@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft
 {
     public class ServerProcess : UnmanagedRunnable
     {
-        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
+        public ServerProcess(string serverPath, ServerLaunchArguments launchArguments, string? extraArguments = null, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverPath, nameof(serverPath));
             ArgumentNullException.ThrowIfNull(launchArguments, nameof(launchArguments));
@@ -22,9 +22,13 @@ namespace QuanLib.Minecraft
             StartCount = 0;
             MaxStartCount = 100;
 
+            string arguments = launchArguments.GetArguments();
+            if (!string.IsNullOrEmpty(extraArguments))
+                arguments = string.Join(' ', extraArguments, launchArguments.GetArguments());
+
             Process = new()
             {
-                StartInfo = new(launchArguments.JavaPath, launchArguments.GetArguments())
+                StartInfo = new(launchArguments.JavaPath, arguments)
                 {
                     RedirectStandardOutput = true,
                     RedirectStandardInput = true,
@@ -94,6 +98,16 @@ namespace QuanLib.Minecraft
 
         protected override void DisposeUnmanaged()
         {
+            try
+            {
+                DateTime startTime = Process.StartTime;     //成功获取到启动时间代表进程已启动，非则抛出 InvalidOperationException
+            }
+            catch (InvalidOperationException)
+            {
+                Process.Dispose();                          //如果进程从未启动，直接 Dispose 即可
+                return;
+            }
+
             AutoRestart = false;
             if (!Process.HasExited)
                 Process.Kill();
