@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public interface IMcapiInstance
     {
-        public const string INSTANCE_KEY = "MCAPI";
+        public const string IDENTIFIER = "MCAPI";
 
         public ushort McapiPort { get; }
 

@@ -8,17 +8,12 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Instance
 {
-    public abstract class MinecraftClient : MinecraftInstance
+    public abstract class MinecraftClient(string clientPath, ILoggerGetter? loggerGetter = null) : MinecraftInstance(clientPath, loggerGetter)
     {
-        protected MinecraftClient(string clientPath, ILoggerGetter? loggerGetter = null) : base(clientPath, loggerGetter)
-        {
-            ClientPathManager = new(clientPath);
-        }
+        public override bool IsClient => true;
 
-        public override InstanceType InstanceType => InstanceType.Client;
+        public override MinecraftPathManager MinecraftPathManager => ClientPathManager;
 
-        public override MinecraftPathManager MinecraftPathManager => ClientPathManager is null ? base.MinecraftPathManager : ClientPathManager;
-
-        public virtual ClientPathManager ClientPathManager { get; }
+        public virtual ClientPathManager ClientPathManager { get; } = new(clientPath);
     }
 }

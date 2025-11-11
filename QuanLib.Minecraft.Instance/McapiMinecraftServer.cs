@@ -2,6 +2,7 @@
 using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
+using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,23 @@ namespace QuanLib.Minecraft.Instance
             McapiClient = new(ServerAddress, McapiPort, loggerGetter);
             McapiCommandSender = new(McapiClient);
             CommandSender = new(McapiCommandSender, McapiCommandSender);
+
+            if (IsLocalServer)
+            {
+                FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
+                _logFileListener = new(file.FullName);
+                _logAnalyzer = new(_logFileListener);
+            }
+            else
+            {
+                _logFileListener = null;
+                _logAnalyzer = null;
+            }
         }
+
+        private readonly PollingLogFileListener? _logFileListener;
+
+        private readonly LogAnalyzer? _logAnalyzer;
 
         public ushort McapiPort { get; }
 
@@ -31,9 +48,17 @@ namespace QuanLib.Minecraft.Instance
 
         public McapiCommandSender McapiCommandSender { get; }
 
+        public override string Identifier => IMcapiInstance.IDENTIFIER;
+
+        public override bool IsSubprocess => false;
+
         public override CommandSender CommandSender { get; }
 
-        public override string InstanceKey => IMcapiInstance.INSTANCE_KEY;
+        public override ILogListener LogListener => LogFileListener;
+
+        public virtual PollingLogFileListener LogFileListener => _logFileListener ?? throw new NotSupportedException(MESSAGE_REMOTE_SERVER_NOT_SUPPORTED);
+
+        public override LogAnalyzer LogAnalyzer => _logAnalyzer ?? throw new NotSupportedException(MESSAGE_REMOTE_SERVER_NOT_SUPPORTED);
 
         protected override void Run()
         {

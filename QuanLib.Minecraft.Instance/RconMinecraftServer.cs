@@ -2,6 +2,7 @@
 using QuanLib.Core;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
+using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,23 @@ namespace QuanLib.Minecraft.Instance
             TwowayCommandSender = new(RCON);
             OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, loggerGetter: loggerGetter);
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);
+
+            if (IsLocalServer)
+            {
+                FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
+                _logFileListener = new(file.FullName);
+                _logAnalyzer = new(_logFileListener);
+            }
+            else
+            {
+                _logFileListener = null;
+                _logAnalyzer = null;
+            }
         }
+
+        private readonly PollingLogFileListener? _logFileListener;
+
+        private readonly LogAnalyzer? _logAnalyzer;
 
         public ushort RconPort { get; }
 
@@ -34,13 +51,21 @@ namespace QuanLib.Minecraft.Instance
 
         public RconOnewayCommandSender OnewayCommandSender { get; }
 
+        public override string Identifier => IRconInstance.IDENTIFIER;
+
+        public override bool IsSubprocess => false;
+
         public override CommandSender CommandSender { get; }
 
-        public override string InstanceKey => IRconInstance.INSTANCE_KEY;
+        public override ILogListener LogListener => LogFileListener;
+
+        public virtual PollingLogFileListener LogFileListener => _logFileListener ?? throw new NotSupportedException(MESSAGE_REMOTE_SERVER_NOT_SUPPORTED);
+
+        public override LogAnalyzer LogAnalyzer => _logAnalyzer ?? throw new NotSupportedException(MESSAGE_REMOTE_SERVER_NOT_SUPPORTED);
 
         protected override void Run()
         {
-            LogFileListener.Start("LogFileListener Thread");
+            _logFileListener?.Start("LogFileListener Thread");
             OnewayCommandSender.Start("RconOnewayCommandSender Thread");
             RCON.ConnectAsync().Wait();
 

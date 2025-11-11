@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public interface IRconInstance
     {
-        public const string INSTANCE_KEY = "RCON";
+        public const string IDENTIFIER = "RCON";
 
         public ushort RconPort { get; }
 

@@ -1,6 +1,7 @@
 ﻿using QuanLib.Core;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
+using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,41 @@ namespace QuanLib.Minecraft.Instance
 {
     public class ConsoleMinecraftServer : MinecraftServer, IConsoleInstance
     {
-        public ConsoleMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ServerLaunchArguments launchArguments, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, serverPort, loggerGetter)
+        private const string LOG4J2_CONFIG = "log4j2-custom.xml";
+
+        public ConsoleMinecraftServer(
+            string serverPath,
+            string serverAddress,
+            ushort serverPort,
+            ServerLaunchArguments launchArguments,
+            IList<string>? mclogRegexFilter = null,
+            ILoggerGetter? loggerGetter = null)
+            : base(serverPath, serverAddress, serverPort, loggerGetter)
         {
-            ServerProcess = new(ServerPathManager.Minecraft.FullName, launchArguments, loggerGetter);
-            ServerConsole = new(ServerProcess.Process.StandardOutput, ServerProcess.Process.StandardInput, loggerGetter);
+            if (!IsLocalServer)
+                throw new NotSupportedException($"“{IConsoleInstance.IDENTIFIER}”实例仅支持本地服务端");
+
+            string? extraArguments;
+            if (mclogRegexFilter is null || mclogRegexFilter.Count == 0)
+            {
+                extraArguments = null;
+                _mclogRegexFilter = Array.Empty<string>();
+            }
+            else
+            {
+                extraArguments = "-Dlog4j.configurationFile=" + LOG4J2_CONFIG;
+                _mclogRegexFilter = mclogRegexFilter.ToArray();
+            }
+
+            ServerProcess = new(serverPath, launchArguments, extraArguments, loggerGetter);
+            ServerConsole = new(ServerProcess.Process, loggerGetter);
             ConsoleCommandSender = new(ServerConsole);
             CommandSender = new(ConsoleCommandSender, ConsoleCommandSender);
+            ConsoleLogListener = new(ServerConsole);
+            LogAnalyzer = new(ConsoleLogListener);
         }
+
+        private readonly string[] _mclogRegexFilter;
 
         public ServerProcess ServerProcess { get; }
 
@@ -25,34 +54,40 @@ namespace QuanLib.Minecraft.Instance
 
         public ConsoleCommandSender ConsoleCommandSender { get; }
 
+        public override string Identifier => IConsoleInstance.IDENTIFIER;
+
+        public override bool IsSubprocess => true;
+
         public override CommandSender CommandSender { get; }
 
-        public override string InstanceKey => IConsoleInstance.INSTANCE_KEY;
+        public override ILogListener LogListener => ConsoleLogListener;
+
+        public virtual ServerConsoleLogListener ConsoleLogListener { get; }
+
+        public override LogAnalyzer LogAnalyzer { get; }
 
         protected override void Run()
         {
-            LogFileListener.Start("LogFileListener Thread");
+            if (_mclogRegexFilter.Length > 0)
+            {
+                Log4j2Configuration configuration = Log4j2Configuration.Load();
+
+                foreach (string regex in _mclogRegexFilter)
+                    configuration.AddRegexFilter(regex, MatchBehavior.DENY, MatchBehavior.NEUTRAL);
+
+                configuration.Save(Path.Combine(MinecraftPath, LOG4J2_CONFIG));
+            }
+
             ServerProcess.Start("ServerProcess Thread");
             ServerConsole.Start("ServerConsole Thread");
 
-            Task.WaitAll(LogFileListener.WaitForStopAsync(), ServerProcess.WaitForStopAsync());
+            Task.WaitAll(ServerProcess.WaitForStopAsync(), ServerConsole.WaitForStopAsync());
         }
 
         protected override void DisposeUnmanaged()
         {
-            LogFileListener.Stop();
             ServerProcess.Stop();
             ServerConsole.Stop();
-        }
-
-        public override bool TestConnectivity()
-        {
-            return NetworkUtil.TestTcpConnectivity(ServerAddress, ServerPort);
-        }
-
-        public override async Task<bool> TestConnectivityAsync()
-        {
-            return await NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
         }
     }
 }

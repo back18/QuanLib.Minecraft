@@ -17,24 +17,23 @@ namespace QuanLib.Minecraft.Instance
             ArgumentException.ThrowIfNullOrEmpty(minecraftPath, nameof(minecraftPath));
 
             MinecraftPath = minecraftPath;
-            MinecraftPathManager = new(minecraftPath);
-            LogFileListener = new(MinecraftPathManager.Minecraft_Logs_LatestLog.FullName, loggerGetter);
-            LogParser = new(LogFileListener);
         }
 
         public string MinecraftPath { get; }
 
-        public abstract string InstanceKey { get; }
+        public abstract string Identifier { get; }
 
-        public abstract InstanceType InstanceType { get; }
+        public abstract bool IsClient { get; }
 
-        public virtual MinecraftPathManager MinecraftPathManager { get; }
+        public abstract bool IsSubprocess { get; }
 
-        public virtual MinecraftLogParser LogParser { get; }
-
-        public virtual PollingLogFileListener LogFileListener { get; }
+        public abstract MinecraftPathManager MinecraftPathManager { get; }
 
         public abstract CommandSender CommandSender { get; }
+
+        public abstract ILogListener LogListener { get; }
+
+        public abstract LogAnalyzer LogAnalyzer { get; }
 
         public abstract bool TestConnectivity();
 

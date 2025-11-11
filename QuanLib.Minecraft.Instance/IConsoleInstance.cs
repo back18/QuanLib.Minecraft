@@ -10,7 +10,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public interface IConsoleInstance
     {
-        public const string INSTANCE_KEY = "CONSOLE";
+        public const string IDENTIFIER = "CONSOLE";
 
         public ServerProcess ServerProcess { get; }
 

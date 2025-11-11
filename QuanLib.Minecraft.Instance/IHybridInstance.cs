@@ -11,7 +11,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public interface IHybridInstance
     {
-        public const string INSTANCE_KEY = "HYBRID";
+        public const string IDENTIFIER = "HYBRID";
 
         public ushort RconPort { get; }
 
