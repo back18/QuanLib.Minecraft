@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Logging
 {
-    public interface ILogListener : ITextListener
+    public interface ILogListener
     {
-        public event EventHandler<ILogListener, EventArgs<MinecraftLog>> WriteLog;
+        public event ValueEventHandler<ILogListener, ValueEventArgs<MinecraftLog>> WriteLog;
     }
 }

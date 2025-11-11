@@ -11,62 +11,60 @@ namespace QuanLib.Minecraft.Logging
 {
     public class PollingLogFileListener : PollingTextFileListener, ILogListener
     {
-        public PollingLogFileListener(string path, ILoggerGetter? loggerGetter = null) : base(path, GetEncoding(), loggerGetter)
+        public PollingLogFileListener(string path, Encoding? encoding = null, int delayMilliseconds = 500, ILoggerGetter? loggerGetter = null)
+            : base(path, encoding ?? Encoding.UTF8, delayMilliseconds, loggerGetter)
         {
-            _temp = new();
-            _count = 0;
+            _logCache = new();
+            _pollingCount = 0;
             WriteLog += OnWriteLog;
         }
 
-        private readonly StringBuilder _temp;
+        private readonly StringBuilder _logCache;
 
-        private int _count;
+        private int _pollingCount;
 
-        public event EventHandler<ILogListener, EventArgs<MinecraftLog>> WriteLog;
+        public event ValueEventHandler<ILogListener, ValueEventArgs<MinecraftLog>> WriteLog;
 
         protected override void OnPolling(PollingFileListener sender, ValueChangedEventArgs<FileInfo> e)
         {
             base.OnPolling(sender, e);
 
-            if (_temp.Length > 0)
+            if (_logCache.Length == 0)
+                return;
+
+            _pollingCount++;
+            if (_pollingCount >= 2)
             {
-                _count++;
-                if (_count >= 2)
-                {
-                    WriteLog.Invoke(this, new(new(_temp.ToString())));
-                    _temp.Clear();
-                    _count = 0;
-                }
+                string log = _logCache.ToString();
+                HandleWriteLog(log);
+                _logCache.Clear();
+                _pollingCount = 0;
             }
         }
 
-        protected override void OnWriteLineText(ITextListener sender, EventArgs<string> e)
+        protected override void OnWriteLineText(ITextListener sender, ValueEventArgs<string> e)
         {
             base.OnWriteLineText(sender, e);
 
-            if (e.Argument.StartsWith('[') && _temp.Length > 0)
+            if (e.Argument.StartsWith('[') && _logCache.Length > 0)
             {
-                WriteLog.Invoke(this, new(new(_temp.ToString())));
-                _temp.Clear();
-                _count = 0;
+                string log = _logCache.ToString();
+                HandleWriteLog(log);
+                _logCache.Clear();
+                _pollingCount = 0;
             }
 
-            _temp.AppendLine(e.Argument);
+            if (_logCache.Length > 0)
+                _logCache.AppendLine();
+            _logCache.Append(e.Argument);
         }
 
-        protected virtual void OnWriteLog(ILogListener sender, EventArgs<MinecraftLog> e) { }
+        protected virtual void OnWriteLog(ILogListener sender, ValueEventArgs<MinecraftLog> e) { }
 
-        private static Encoding GetEncoding()
+        private void HandleWriteLog(string log)
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                return Encoding.GetEncoding("GBK");
-            }
-            else
-            {
-                return Encoding.UTF8;
-            }
+            if (MinecraftLog.TryParse(log, out var result))
+                WriteLog.Invoke(this, new(result));
         }
     }
 }
