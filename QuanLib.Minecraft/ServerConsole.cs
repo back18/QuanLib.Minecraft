@@ -14,35 +14,45 @@ namespace QuanLib.Minecraft
     {
         private const string SEPARATOR = ": ";
 
-        public ServerConsole(StreamReader reader, StreamWriter writer, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
+        public ServerConsole(Process process, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
-            ArgumentNullException.ThrowIfNull(reader, nameof(reader));
-            ArgumentNullException.ThrowIfNull(writer, nameof(writer));
+            ArgumentNullException.ThrowIfNull(process, nameof(process));
 
-            _reader = reader;
-            _writer = writer;
+            _process = process;
+            _reader = StreamReader.Null;
+            _writer = StreamWriter.Null;
 
             ReadLine += OnReadLine;
         }
 
-        private readonly StreamReader _reader;
+        private readonly Process _process;
 
-        private readonly StreamWriter _writer;
+        private StreamReader _reader;
+
+        private StreamWriter _writer;
 
         private ConsoleTask? _task;
 
-        public event EventHandler<ServerConsole, EventArgs<string>> ReadLine;
+        public bool ReadAvailable => _reader.Peek() > -1;
 
-        protected virtual void OnReadLine(ServerConsole sender, EventArgs<string> e)
+        public event ValueEventHandler<ServerConsole, ValueEventArgs<string>> ReadLine;
+
+        protected virtual void OnReadLine(ServerConsole sender, ValueEventArgs<string> e)
         {
-            if (_task is not null)
+            string line = e.Argument;
+
+            if (!line.StartsWith('['))
+                return;
+
+            if (_task is not null && _task.State == ConsoleTaskState.Receiving)
             {
                 string message;
-                int index = e.Argument.IndexOf(SEPARATOR);
+                int index = line.IndexOf(SEPARATOR);
+
                 if (index == -1)
-                    message = e.Argument;
+                    message = line;
                 else
-                    message = e.Argument[(index + SEPARATOR.Length)..];
+                    message = line[(index + SEPARATOR.Length)..];
 
                 _task.Complete(message);
             }
@@ -50,6 +60,31 @@ namespace QuanLib.Minecraft
 
         protected override void Run()
         {
+            int secondsTimeout = 0;
+            while (true)
+            {
+                if (!IsRunning)
+                    return;
+
+                try
+                {
+                    DateTime startTime = _process.StartTime;    //成功获取到启动时间代表进程已启动，非则抛出 InvalidOperationException
+                    break;
+                }
+                catch (InvalidOperationException invalidOperationException)
+                {
+                    Thread.Sleep(1000);
+                    if (++secondsTimeout >= 5)
+                        throw new TimeoutException($"在等待进程启动{secondsTimeout}秒后已超时", invalidOperationException);
+                }
+            }
+
+            if (_process.HasExited)
+                return;
+
+            _reader = _process.StandardOutput;
+            _writer = _process.StandardInput;
+
             while (IsRunning && !_reader.EndOfStream)
             {
                 string? line = _reader.ReadLine();
@@ -80,24 +115,29 @@ namespace QuanLib.Minecraft
             _writer.WriteLine(value?.ToString());
         }
 
-        public async Task WriteLineAsync()
+        public Task WriteLineAsync()
         {
-            await _writer.WriteLineAsync();
+            return _writer.WriteLineAsync();
         }
 
-        public async Task WriteLineAsync(char value)
+        public Task WriteLineAsync(char value)
         {
-            await _writer.WriteLineAsync(value);
+            return _writer.WriteLineAsync(value);
         }
 
-        public async Task WriteLineAsync(string? value)
+        public Task WriteLineAsync(string? value)
         {
-            await _writer.WriteLineAsync(value);
+            return _writer.WriteLineAsync(value);
         }
 
-        public async Task WriteLineAsync<T>(T? value)
+        public Task WriteLineAsync(StringBuilder? value)
         {
-            await _writer.WriteLineAsync(value?.ToString());
+            return _writer.WriteLineAsync(value);
+        }
+
+        public Task WriteLineAsync<T>(T? value)
+        {
+            return _writer.WriteLineAsync(value?.ToString());
         }
 
         public void Write(char value)
@@ -115,19 +155,29 @@ namespace QuanLib.Minecraft
             _writer.Write(value?.ToString());
         }
 
-        public async Task WriteAsync(char value)
+        public Task WriteAsync(char value)
         {
-            await _writer.WriteAsync(value);
+            return _writer.WriteAsync(value);
         }
 
-        public async Task WriteAsync(string? value)
+        public Task WriteAsync(string? value)
         {
-            await _writer.WriteAsync(value);
+            return _writer.WriteAsync(value);
         }
 
-        public async Task WriteAsync<T>(T? value)
+        public Task WriteAsync(StringBuilder? value)
         {
-            await _writer.WriteAsync(value?.ToString());
+            return _writer.WriteAsync(value);
+        }
+
+        public Task WriteAsync<T>(T? value)
+        {
+            return _writer.WriteAsync(value?.ToString());
+        }
+
+        public Task FlushAsync()
+        {
+            return _writer.FlushAsync();
         }
 
         public async Task<string> SendCommandAsync(string command)
@@ -135,35 +185,31 @@ namespace QuanLib.Minecraft
             ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
             if (_task is not null)
-                await _task.WaitForCompleteAsync();
+                await _task.WaitForCompleteAsync().ConfigureAwait(false);
 
-            Task send = _writer.WriteLineAsync(command);
-            _task = new(command, send);
-            string output = await _task.WaitForCompleteAsync() ?? string.Empty;
+            _task = new(_writer, command);
+            string output = await _task.Start().ConfigureAwait(false) ?? string.Empty;
             _task = null;
             return output;
         }
 
         private class ConsoleTask
         {
-            public ConsoleTask(string input, Task send)
+            public ConsoleTask(StreamWriter writer, string input)
             {
-                ArgumentNullException.ThrowIfNull(input, nameof(input));
-                ArgumentNullException.ThrowIfNull(send, nameof(send));
+                ArgumentNullException.ThrowIfNull(writer, nameof(writer));
+                ArgumentException.ThrowIfNullOrEmpty(input, nameof(input));
 
-                _semaphore = new(0);
                 State = ConsoleTaskState.Sending;
 
+                _semaphore = new();
+                _writer = writer;
                 _input = input;
-                _send = send;
-                _receive = WaitForReceiveAsync();
             }
 
-            private readonly SemaphoreSlim _semaphore;
+            private readonly TaskSemaphore _semaphore;
 
-            private readonly Task _send;
-
-            private readonly Task _receive;
+            private readonly StreamWriter _writer;
 
             private readonly string _input;
 
@@ -182,29 +228,25 @@ namespace QuanLib.Minecraft
 
                 _output = output;
                 _semaphore.Release();
-                _receive.ContinueWith((task) =>
-                {
-                    State = ConsoleTaskState.Completed;
-                });
             }
 
-            public async Task<string?> WaitForCompleteAsync()
+            public async Task<string?> Start()
             {
-                await _send;
-                await _receive;
+                await _writer.WriteLineAsync(_input).ConfigureAwait(false);
+
+                State = ConsoleTaskState.Receiving;
+
+                if (await _semaphore.WaitAsync(5000).ConfigureAwait(false))
+                    State = ConsoleTaskState.Completed;
+                else
+                    State = ConsoleTaskState.Timeout;
+
                 return _output;
             }
 
-            private async Task WaitForReceiveAsync()
+            public Task WaitForCompleteAsync()
             {
-                await _send;
-                State = ConsoleTaskState.Receiving;
-                int millisecondsTimeout = 30 * 1000;
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                await _semaphore.WaitAsync(millisecondsTimeout);
-                stopwatch.Stop();
-                if (stopwatch.ElapsedMilliseconds >= millisecondsTimeout)
-                    State = ConsoleTaskState.Timeout;
+                return _semaphore.WaitAsync();
             }
         }
 
