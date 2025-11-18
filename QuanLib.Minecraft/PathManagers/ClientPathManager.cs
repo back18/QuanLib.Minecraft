@@ -1,6 +1,7 @@
 ﻿using QuanLib.IO.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace QuanLib.Minecraft.PathManagers
 
         public FileInfo Minecraft_Options => _clientPaths.Minecraft_Options.CreateFileInfo();
 
+        [DebuggerStepThrough]
         public override DirectoryInfo[] GetActiveWorlds()
         {
             List<DirectoryInfo> result = [];
