@@ -6,6 +6,8 @@ using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,15 +46,26 @@ namespace QuanLib.Minecraft.Instance
             RconPort = rconPort;
             RconPassword = rconPassword;
             RCON = new(ServerAddress, RconPort, RconPassword);
-            TwowayCommandSender = new(RCON);
 
             ServerProcess = new(serverPath, launchArguments, extraArguments, loggerGetter);
-            ServerConsole = new(ServerProcess.Process, loggerGetter);
-            OnewayCommandSender = new(ServerConsole);
+            ServerProcess.SetDefaultThreadName("ServerProcess Thread");
+            AddSubtask(ServerProcess);
 
+            ServerConsole = new(ServerProcess.Process, loggerGetter);
+            ServerConsole.SetDefaultThreadName("ServerConsole Thread");
+            AddSubtask(ServerConsole);
+
+            ServerProcess.Started += ServerProcess_Started;
+
+            TwowayCommandSender = new(RCON);
+            OnewayCommandSender = new(ServerConsole);
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);
+
             ConsoleLogListener = new(ServerConsole);
-            LogAnalyzer = new(ConsoleLogListener);
+            LogAnalyzer = new(ConsoleLogListener)
+            {
+                Enable = true
+            };
         }
 
         private readonly string[] _mclogRegexFilter;
@@ -85,6 +98,38 @@ namespace QuanLib.Minecraft.Instance
 
         protected override void Run()
         {
+            TaskSemaphore semaphore = new();
+            LogAnalyzer.RconRunning += (sender, e) => semaphore.Release();
+            semaphore.Wait();
+
+            RCON.ConnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            WaitAllSubtask();
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            RCON.Dispose();
+        }
+
+        public override bool TestConnectivity()
+        {
+            return TestLocalConnectivity();
+        }
+
+        public override Task<bool> TestConnectivityAsync()
+        {
+            return Task.Run(() => TestLocalConnectivity());
+        }
+
+        private bool TestLocalConnectivity()
+        {
+            IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] listeners = properties.GetActiveTcpListeners();
+            return listeners.Any(s => s.Port == ServerPort) && listeners.Any(s => s.Port == RconPort);
+        }
+
+        private void ServerProcess_Started(IRunnable sender, EventArgs e)
+        {
             if (_mclogRegexFilter.Length > 0)
             {
                 Log4j2Configuration configuration = Log4j2Configuration.Load();
@@ -94,39 +139,6 @@ namespace QuanLib.Minecraft.Instance
 
                 configuration.Save(Path.Combine(MinecraftPath, LOG4J2_CONFIG));
             }
-
-            ServerProcess.Start("ServerProcess Thread");
-            ServerConsole.Start("ServerConsole Thread");
-
-            TaskSemaphore semaphore = new();
-            LogAnalyzer.RconRunning += (sender, e) => semaphore.Release();
-            semaphore.Wait();
-
-            RCON.ConnectAsync().Wait();
-
-            Task.WaitAll(ServerProcess.WaitForStopAsync(), ServerConsole.WaitForStopAsync());
-        }
-
-        protected override void DisposeUnmanaged()
-        {
-            ServerProcess.Stop();
-            ServerConsole.Stop();
-            RCON.Dispose();
-        }
-
-        public override bool TestConnectivity()
-        {
-            Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
-            Task<bool> rcon = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, RconPort);
-            Task.WaitAll(server, rcon);
-            return server.Result && rcon.Result;
-        }
-
-        public override async Task<bool> TestConnectivityAsync()
-        {
-            Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
-            Task<bool> rcon = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, RconPort);
-            return await server && await rcon;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
@@ -21,14 +22,24 @@ namespace QuanLib.Minecraft.Instance
             ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
 
             McapiAddress = ParseIPAddress(mcapiAddress);
+            if (!McapiAddress.Equals(IPAddress.Loopback))
+                throw new NotSupportedException($"“{IMcapiInstance.IDENTIFIER}”客户端实例仅支持本地地址");
+
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;
             McapiClient = new(McapiAddress, McapiPort, loggerGetter);
+            McapiClient.SetDefaultThreadName("McapiClient Thread");
+            AddSubtask(McapiClient);
+
             McapiCommandSender = new(McapiClient);
             CommandSender = new(McapiCommandSender, McapiCommandSender);
 
             FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
-            LogFileListener = new(file.FullName);
+
+            LogFileListener = new(file.FullName, loggerGetter: loggerGetter);
+            LogFileListener.SetDefaultThreadName("LogFileListener Thread");
+            AddSubtask(LogFileListener);
+
             LogAnalyzer = new(LogFileListener);
         }
 
@@ -54,29 +65,37 @@ namespace QuanLib.Minecraft.Instance
 
         public override LogAnalyzer LogAnalyzer { get; }
 
-        protected override void Run()
+        protected override void OnSubtaskStopped(MultitaskRunnable sender, EventArgs<IRunnable> e)
         {
-            LogFileListener.Start("LogFileListener Thread");
-            McapiClient.Start("McapiClient Thread");
-            McapiClient.LoginAsync(McapiPassword).Wait();
+            base.OnSubtaskStopped(sender, e);
 
-            Task.WaitAll(LogFileListener.WaitForStopAsync(), McapiClient.WaitForStopAsync());
+            if (!IsRunning)
+                return;
+
+            if (e.Argument == McapiClient)
+            {
+                Logger?.Error("MCAPI意外断开连接，Minecraft实例即将终止");
+                IsRunning = false;
+            }
         }
 
-        protected override void DisposeUnmanaged()
+        protected override void Run()
         {
-            LogFileListener.Stop();
-            McapiClient.Stop();
+            (bool IsSuccessful, string Message) = McapiClient.LoginAsync(McapiPassword).ConfigureAwait(false).GetAwaiter().GetResult();
+            if (!IsSuccessful)
+                throw new InvalidOperationException("MCAPI登录失败：" + (string.IsNullOrEmpty(Message) ? "未知原因" : Message));
+
+            WaitAllSubtask();
         }
 
         public override bool TestConnectivity()
         {
-            return NetworkUtil.TestTcpConnectivity(McapiAddress, McapiPort);
+            return NetworkUtil.TcpListenerIsActive(McapiPort);
         }
 
-        public override async Task<bool> TestConnectivityAsync()
+        public override Task<bool> TestConnectivityAsync()
         {
-            return await NetworkUtil.TestTcpConnectivityAsync(McapiAddress, McapiPort);
+            return Task.Run(() => NetworkUtil.TcpListenerIsActive(McapiPort));
         }
 
         private static IPAddress ParseIPAddress(string address)

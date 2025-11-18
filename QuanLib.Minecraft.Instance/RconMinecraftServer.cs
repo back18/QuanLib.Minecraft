@@ -1,11 +1,14 @@
 ﻿using CoreRCON;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
 using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,12 +25,19 @@ namespace QuanLib.Minecraft.Instance
             RCON = new(ServerAddress, RconPort, RconPassword);
             TwowayCommandSender = new(RCON);
             OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, loggerGetter: loggerGetter);
+            OnewayCommandSender.SetDefaultThreadName("RconOnewayCommandSender Thread");
+            AddSubtask(OnewayCommandSender);
+
             CommandSender = new(TwowayCommandSender, OnewayCommandSender);
 
             if (IsLocalServer)
             {
                 FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
-                _logFileListener = new(file.FullName);
+
+                _logFileListener = new(file.FullName, loggerGetter: loggerGetter);
+                _logFileListener.SetDefaultThreadName("LogFileListener Thread");
+                AddSubtask(_logFileListener);
+
                 _logAnalyzer = new(_logFileListener);
             }
             else
@@ -63,35 +73,56 @@ namespace QuanLib.Minecraft.Instance
 
         public override LogAnalyzer LogAnalyzer => _logAnalyzer ?? throw new NotSupportedException(MESSAGE_REMOTE_SERVER_NOT_SUPPORTED);
 
+        protected override void OnSubtaskStopped(MultitaskRunnable sender, EventArgs<IRunnable> e)
+        {
+            base.OnSubtaskStopped(sender, e);
+
+            if (e.Argument == OnewayCommandSender)
+            {
+                Logger?.Error("RCON意外断开连接，Minecraft实例即将终止");
+                IsRunning = false;
+            }
+        }
+
         protected override void Run()
         {
-            _logFileListener?.Start("LogFileListener Thread");
-            OnewayCommandSender.Start("RconOnewayCommandSender Thread");
-            RCON.ConnectAsync().Wait();
+            RCON.ConnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            Task.WaitAll(LogFileListener.WaitForStopAsync(), OnewayCommandSender.WaitForStopAsync());
+            WaitAllSubtask();
         }
 
         protected override void DisposeUnmanaged()
         {
-            LogFileListener.Stop();
-            OnewayCommandSender.Stop();
+            base.DisposeUnmanaged();
             RCON.Dispose();
         }
 
         public override bool TestConnectivity()
         {
+            if (IsLocalServer)
+                return TestLocalConnectivity();
+
             Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
             Task<bool> rcon = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, RconPort);
-            Task.WaitAll(server, rcon);
-            return server.Result && rcon.Result;
+
+            return server.ConfigureAwait(false).GetAwaiter().GetResult() && rcon.ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public override async Task<bool> TestConnectivityAsync()
         {
+            if (IsLocalServer)
+                return TestLocalConnectivity();
+
             Task<bool> server = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, ServerPort);
             Task<bool> rcon = NetworkUtil.TestTcpConnectivityAsync(ServerAddress, RconPort);
-            return await server && await rcon;
+            return await server.ConfigureAwait(false) && await rcon.ConfigureAwait(false);
+        }
+
+        private bool TestLocalConnectivity()
+        {
+            IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] listeners = properties.GetActiveTcpListeners();
+            return listeners.Any(s => s.Port == ServerPort) && listeners.Any(s => s.Port == RconPort);
         }
     }
 }

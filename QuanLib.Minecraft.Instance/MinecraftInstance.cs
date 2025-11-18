@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Instance
 {
-    public abstract class MinecraftInstance : UnmanagedRunnable
+    public abstract class MinecraftInstance : MultitaskRunnable
     {
         protected MinecraftInstance(string minecraftPath, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
         {
@@ -18,7 +18,7 @@ namespace QuanLib.Minecraft.Instance
 
             MinecraftPath = minecraftPath;
         }
-
+        
         public string MinecraftPath { get; }
 
         public abstract string Identifier { get; }

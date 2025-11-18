@@ -39,7 +39,15 @@ namespace QuanLib.Minecraft.Instance
             }
 
             ServerProcess = new(serverPath, launchArguments, extraArguments, loggerGetter);
+            ServerProcess.SetDefaultThreadName("ServerProcess Thread");
+            AddSubtask(ServerProcess);
+
             ServerConsole = new(ServerProcess.Process, loggerGetter);
+            ServerConsole.SetDefaultThreadName("ServerConsole Thread");
+            AddSubtask(ServerConsole);
+
+            ServerProcess.Started += ServerProcess_Started;
+
             ConsoleCommandSender = new(ServerConsole);
             CommandSender = new(ConsoleCommandSender, ConsoleCommandSender);
             ConsoleLogListener = new(ServerConsole);
@@ -68,6 +76,11 @@ namespace QuanLib.Minecraft.Instance
 
         protected override void Run()
         {
+            WaitAllSubtask();
+        }
+
+        private void ServerProcess_Started(IRunnable sender, EventArgs e)
+        {
             if (_mclogRegexFilter.Length > 0)
             {
                 Log4j2Configuration configuration = Log4j2Configuration.Load();
@@ -77,17 +90,6 @@ namespace QuanLib.Minecraft.Instance
 
                 configuration.Save(Path.Combine(MinecraftPath, LOG4J2_CONFIG));
             }
-
-            ServerProcess.Start("ServerProcess Thread");
-            ServerConsole.Start("ServerConsole Thread");
-
-            Task.WaitAll(ServerProcess.WaitForStopAsync(), ServerConsole.WaitForStopAsync());
-        }
-
-        protected override void DisposeUnmanaged()
-        {
-            ServerProcess.Stop();
-            ServerConsole.Stop();
         }
     }
 }
