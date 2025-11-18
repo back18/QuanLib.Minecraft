@@ -25,7 +25,7 @@ namespace QuanLib.Minecraft.API.Packet
         public static async Task<string> SendCommandAsync(this McapiClient client, string command)
         {
             RequestPacket request = CreateRequestPacket(command, client.GetNextID(), true);
-            ResponsePacket response = await client.SendRequestPacketAsync(request);
+            ResponsePacket response = await client.SendRequestPacketAsync(request).ConfigureAwait(false);
             response.ValidateStatusCode();
             return ParseResponsePacket(response);
         }
