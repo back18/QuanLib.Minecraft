@@ -28,14 +28,14 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
         {
             ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
-            return _synchronized.Invoke(() => RCON.SendCommandAsync(command).Result);
+            return _synchronized.Invoke(() => RCON.SendCommandAsync(command).ConfigureAwait(false).GetAwaiter().GetResult());
         }
 
-        public async Task<string> SendCommandAsync(string command)
+        public Task<string> SendCommandAsync(string command)
         {
             ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
-            return await _synchronized.Invoke(() => RCON.SendCommandAsync(command));
+            return _synchronized.Invoke(() => RCON.SendCommandAsync(command));
         }
 
         public string[] SendBatchCommand(IList<string> commands)
@@ -46,7 +46,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             {
                 List<string> result = new();
                 foreach (string command in commands)
-                    result.Add(RCON.SendCommandAsync(command).Result);
+                    result.Add(RCON.SendCommandAsync(command).ConfigureAwait(false).GetAwaiter().GetResult());
                 return result.ToArray();
             });
         }
@@ -66,22 +66,22 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             }
         }
 
-        public async Task<string[]> SendDelayBatchCommandAsync(IList<string> commands, Task? delay)
+        public Task<string[]> SendDelayBatchCommandAsync(IList<string> commands, Task? delay)
         {
-            return await SendBatchCommandAsync(commands).ConfigureAwait(false);
+            return SendBatchCommandAsync(commands);
         }
 
         public TimeSpan Ping()
         {
             long start = Stopwatch.GetTimestamp();
-            RCON.SendCommandAsync("time query gametime").Wait();
+            RCON.SendCommandAsync("time query gametime").ConfigureAwait(false).GetAwaiter().GetResult();
             return Stopwatch.GetElapsedTime(start);
         }
 
         public async Task<TimeSpan> PingAsync()
         {
             long start = Stopwatch.GetTimestamp();
-            await RCON.SendCommandAsync("time query gametime");
+            await RCON.SendCommandAsync("time query gametime").ConfigureAwait(false);
             return Stopwatch.GetElapsedTime(start);
         }
     }

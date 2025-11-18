@@ -27,7 +27,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
         {
             ArgumentException.ThrowIfNullOrEmpty(command, nameof(command));
 
-            return _synchronized.Invoke(() => ServerConsole.SendCommandAsync(command).Result);
+            return _synchronized.Invoke(() => ServerConsole.SendCommandAsync(command).ConfigureAwait(false).GetAwaiter().GetResult());
         }
 
         public async Task<string> SendCommandAsync(string command)
@@ -45,7 +45,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             {
                 List<string> result = new();
                 foreach (string command in commands)
-                    result.Add(ServerConsole.SendCommandAsync(command).Result);
+                    result.Add(ServerConsole.SendCommandAsync(command).ConfigureAwait(false).GetAwaiter().GetResult());
                 return result.ToArray();
             });
         }
@@ -143,14 +143,14 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
         public TimeSpan Ping()
         {
             long start = Stopwatch.GetTimestamp();
-            ServerConsole.SendCommandAsync("time query gametime").Wait();
+            ServerConsole.SendCommandAsync("time query gametime").ConfigureAwait(false).GetAwaiter().GetResult();
             return Stopwatch.GetElapsedTime(start);
         }
 
         public async Task<TimeSpan> PingAsync()
         {
             long start = Stopwatch.GetTimestamp();
-            await ServerConsole.SendCommandAsync("time query gametime");
+            await ServerConsole.SendCommandAsync("time query gametime").ConfigureAwait(false);
             return Stopwatch.GetElapsedTime(start);
         }
 

@@ -69,10 +69,17 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             Task.WaitAll(tasks);
         }
 
-        protected override void DisposeUnmanaged()
+        public override void Stop()
         {
             foreach (var client in _clients)
                 client.Stop();
+            base.Stop();
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            foreach (var client in _clients)
+                client.Dispose();
             _clients.Clear();
         }
 
@@ -185,7 +192,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             packet.Write(BitConverter.GetBytes(id), 0, 4);
             packet.Write(BitConverter.GetBytes(type), 0, 4);
             packet.Write(bytes, 0, bodyLength);
-            packet.Write(new byte[] { 0 }, 0, 1);
+            packet.Write([0], 0, 1);
 
             return packet.ToArray();
         }
@@ -257,20 +264,36 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             {
                 while (IsRunning)
                 {
-                    _send.Wait();
+                    if (!_send.Wait(100))
+                        continue;
 
-                    while (_commands.Count > 0)
+                    try
                     {
-                        SendPacket(_commands.Dequeue());
+                        while (_commands.Count > 0)
+                            SendPacket(_commands.Dequeue());
+                    }
+                    catch (IOException ioIOException) when (ioIOException.InnerException is SocketException socketException)
+                    {
+                        if (IsRunning)
+                            Logger?.Error($"RCON因为网络错误导致连接中断（{(int)socketException.SocketErrorCode}）：{socketException.Message}");
+                        break;
                     }
 
                     _done.Release();
                 }
             }
 
+            public override void Stop()
+            {
+                _client.Close();
+                base.Stop();
+            }
+
             protected override void DisposeUnmanaged()
             {
                 _client.Dispose();
+                _send.Dispose();
+                _done.Dispose();
             }
 
             public void EnqueuePacket(byte[] command)
