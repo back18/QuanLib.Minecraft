@@ -96,6 +96,20 @@ namespace QuanLib.Minecraft
             }
         }
 
+        public override void Stop()
+        {
+            try
+            {
+                Process.StandardInput.WriteLine("stop");
+            }
+            catch (InvalidOperationException)
+            {
+
+            }
+
+            base.Stop();
+        }
+
         protected override void DisposeUnmanaged()
         {
             try
