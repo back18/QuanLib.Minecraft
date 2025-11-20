@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Instance
 {
-    public abstract class MinecraftClient(string clientPath, ILoggerGetter? loggerGetter = null) : MinecraftInstance(clientPath, loggerGetter)
+    public abstract class MinecraftClient(string clientPath, ILoggerProvider? loggerProvider = null) : MinecraftInstance(clientPath, loggerProvider)
     {
         public override bool IsClient => true;
 

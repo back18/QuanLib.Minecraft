@@ -17,13 +17,13 @@ namespace QuanLib.Minecraft.Instance
 {
     public class McapiMinecraftServer : MinecraftServer, IMcapiInstance
     {
-        public McapiMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ushort mcapiPort, string mcapiPassword, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, serverPort, loggerGetter)
+        public McapiMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ushort mcapiPort, string mcapiPassword, ILoggerProvider? loggerProvider = null) : base(serverPath, serverAddress, serverPort, loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
 
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;
-            McapiClient = new(ServerAddress, McapiPort, loggerGetter);
+            McapiClient = new(ServerAddress, McapiPort, loggerProvider);
             McapiClient.SetDefaultThreadName("McapiClient Thread");
             AddSubtask(McapiClient);
 
@@ -34,7 +34,7 @@ namespace QuanLib.Minecraft.Instance
             {
                 FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
 
-                _logFileListener = new(file.FullName, loggerGetter: loggerGetter);
+                _logFileListener = new(file.FullName, loggerProvider: loggerProvider);
                 _logFileListener.SetDefaultThreadName("LogFileListener Thread");
                 AddSubtask(_logFileListener);
 

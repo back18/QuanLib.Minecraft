@@ -16,13 +16,13 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
 {
     public class RconOnewayCommandSender : UnmanagedRunnable, IOnewayCommandSender
     {
-        public RconOnewayCommandSender(IPAddress address, ushort port, string password, int clientCount = 6, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
+        public RconOnewayCommandSender(IPAddress address, ushort port, string password, int clientCount = 6, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
         {
             ArgumentNullException.ThrowIfNull(address, nameof(address));
             ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
             ThrowHelper.ArgumentOutOfMin(0, clientCount, nameof(clientCount));
 
-            _loggerGetter = loggerGetter;
+            _loggerProvider = loggerProvider;
             _address = address;
             _port = port;
             _password = password;
@@ -35,7 +35,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             IsConnected = false;
         }
 
-        private readonly ILoggerGetter? _loggerGetter;
+        private readonly ILoggerProvider? _loggerProvider;
 
         private readonly IPAddress _address;
 
@@ -60,7 +60,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             Task[] tasks = new Task[_clientCount];
             for (int i = 0; i < _clientCount; i++)
             {
-                RconClient client = new(_address, _port, _password, _loggerGetter);
+                RconClient client = new(_address, _port, _password, _loggerProvider);
                 client.Start("RconClient Thread #" + i);
                 _clients.Add(client);
                 tasks[i] = client.WaitForStopAsync();
@@ -233,7 +233,7 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
 
         private class RconClient : UnmanagedRunnable
         {
-            public RconClient(IPAddress address, ushort port, string password, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
+            public RconClient(IPAddress address, ushort port, string password, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
             {
                 ArgumentNullException.ThrowIfNull(address, nameof(address));
                 ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));

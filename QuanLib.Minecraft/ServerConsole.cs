@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft
     {
         private const string SEPARATOR = ": ";
 
-        public ServerConsole(Process process, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
+        public ServerConsole(Process process, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
         {
             ArgumentNullException.ThrowIfNull(process, nameof(process));
 

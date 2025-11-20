@@ -3,6 +3,7 @@ using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
+using QuanLib.Minecraft.Instance.Extensions;
 using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,16 @@ namespace QuanLib.Minecraft.Instance
 {
     public class RconMinecraftServer : MinecraftServer, IRconInstance
     {
-        public RconMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ushort rconPort, string rconPassword, ILoggerGetter? loggerGetter = null) : base(serverPath, serverAddress, serverPort, loggerGetter)
+        public RconMinecraftServer(string serverPath, string serverAddress, ushort serverPort, ushort rconPort, string rconPassword, ILoggerProvider? loggerProvider = null) : base(serverPath, serverAddress, serverPort, loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(rconPassword, nameof(rconPassword));
 
+            Microsoft.Extensions.Logging.ILogger? logger = loggerProvider?.GetLogger(typeof(RCON)).AsMicrosoftLogger();
             RconPort = rconPort;
             RconPassword = rconPassword;
-            RCON = new(ServerAddress, RconPort, RconPassword);
+            RCON = new(ServerAddress, RconPort, RconPassword, logger: logger);
             TwowayCommandSender = new(RCON);
-            OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, loggerGetter: loggerGetter);
+            OnewayCommandSender = new(ServerAddress, RconPort, ServerProperties.RconPassword, loggerProvider: loggerProvider);
             OnewayCommandSender.SetDefaultThreadName("RconOnewayCommandSender Thread");
             AddSubtask(OnewayCommandSender);
 
@@ -34,7 +36,7 @@ namespace QuanLib.Minecraft.Instance
             {
                 FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
 
-                _logFileListener = new(file.FullName, loggerGetter: loggerGetter);
+                _logFileListener = new(file.FullName, loggerProvider: loggerProvider);
                 _logFileListener.SetDefaultThreadName("LogFileListener Thread");
                 AddSubtask(_logFileListener);
 

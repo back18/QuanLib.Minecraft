@@ -16,7 +16,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public class McapiMinecraftClient : MinecraftClient, IMcapiInstance
     {
-        public McapiMinecraftClient(string clientPath, string mcapiAddress, ushort mcapiPort, string mcapiPassword, ILoggerGetter? loggerGetter = null) : base(clientPath, loggerGetter)
+        public McapiMinecraftClient(string clientPath, string mcapiAddress, ushort mcapiPort, string mcapiPassword, ILoggerProvider? loggerProvider = null) : base(clientPath, loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(mcapiAddress, nameof(mcapiAddress));
             ArgumentException.ThrowIfNullOrEmpty(mcapiPassword, nameof(mcapiPassword));
@@ -27,7 +27,7 @@ namespace QuanLib.Minecraft.Instance
 
             McapiPort = mcapiPort;
             McapiPassword = mcapiPassword;
-            McapiClient = new(McapiAddress, McapiPort, loggerGetter);
+            McapiClient = new(McapiAddress, McapiPort, loggerProvider);
             McapiClient.SetDefaultThreadName("McapiClient Thread");
             AddSubtask(McapiClient);
 
@@ -36,7 +36,7 @@ namespace QuanLib.Minecraft.Instance
 
             FileInfo file = MinecraftPathManager.Minecraft_Logs_LatestLog;
 
-            LogFileListener = new(file.FullName, loggerGetter: loggerGetter);
+            LogFileListener = new(file.FullName, loggerProvider: loggerProvider);
             LogFileListener.SetDefaultThreadName("LogFileListener Thread");
             AddSubtask(LogFileListener);
 

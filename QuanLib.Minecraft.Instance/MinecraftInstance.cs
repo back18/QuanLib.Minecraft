@@ -12,7 +12,7 @@ namespace QuanLib.Minecraft.Instance
 {
     public abstract class MinecraftInstance : MultitaskRunnable
     {
-        protected MinecraftInstance(string minecraftPath, ILoggerGetter? loggerGetter = null) : base(loggerGetter)
+        protected MinecraftInstance(string minecraftPath, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(minecraftPath, nameof(minecraftPath));
 

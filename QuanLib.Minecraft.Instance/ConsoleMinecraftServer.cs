@@ -20,8 +20,8 @@ namespace QuanLib.Minecraft.Instance
             ushort serverPort,
             ServerLaunchArguments launchArguments,
             IList<string>? mclogRegexFilter = null,
-            ILoggerGetter? loggerGetter = null)
-            : base(serverPath, serverAddress, serverPort, loggerGetter)
+            ILoggerProvider? loggerProvider = null)
+            : base(serverPath, serverAddress, serverPort, loggerProvider)
         {
             if (!IsLocalServer)
                 throw new NotSupportedException($"“{IConsoleInstance.IDENTIFIER}”实例仅支持本地服务端");
@@ -38,11 +38,11 @@ namespace QuanLib.Minecraft.Instance
                 _mclogRegexFilter = mclogRegexFilter.ToArray();
             }
 
-            ServerProcess = new(serverPath, launchArguments, extraArguments, loggerGetter);
+            ServerProcess = new(serverPath, launchArguments, extraArguments, loggerProvider);
             ServerProcess.SetDefaultThreadName("ServerProcess Thread");
             AddSubtask(ServerProcess);
 
-            ServerConsole = new(ServerProcess.Process, loggerGetter);
+            ServerConsole = new(ServerProcess.Process, loggerProvider);
             ServerConsole.SetDefaultThreadName("ServerConsole Thread");
             AddSubtask(ServerConsole);
 

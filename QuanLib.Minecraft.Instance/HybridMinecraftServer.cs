@@ -2,6 +2,7 @@
 using QuanLib.Core;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance.CommandSenders;
+using QuanLib.Minecraft.Instance.Extensions;
 using QuanLib.Minecraft.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,8 @@ namespace QuanLib.Minecraft.Instance
             string rconPassword,
             ServerLaunchArguments launchArguments,
             IList<string>? mclogRegexFilter = null,
-            ILoggerGetter? loggerGetter = null)
-            : base(serverPath, serverAddress, serverPort, loggerGetter)
+            ILoggerProvider? loggerProvider = null)
+            : base(serverPath, serverAddress, serverPort, loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(rconPassword, nameof(rconPassword));
             if (!IsLocalServer)
@@ -43,15 +44,16 @@ namespace QuanLib.Minecraft.Instance
                 _mclogRegexFilter = mclogRegexFilter.ToArray();
             }
 
+            Microsoft.Extensions.Logging.ILogger? logger = loggerProvider?.GetLogger(typeof(RCON)).AsMicrosoftLogger();
             RconPort = rconPort;
             RconPassword = rconPassword;
-            RCON = new(ServerAddress, RconPort, RconPassword);
+            RCON = new(ServerAddress, RconPort, RconPassword, logger: logger);
 
-            ServerProcess = new(serverPath, launchArguments, extraArguments, loggerGetter);
+            ServerProcess = new(serverPath, launchArguments, extraArguments, loggerProvider);
             ServerProcess.SetDefaultThreadName("ServerProcess Thread");
             AddSubtask(ServerProcess);
 
-            ServerConsole = new(ServerProcess.Process, loggerGetter);
+            ServerConsole = new(ServerProcess.Process, loggerProvider);
             ServerConsole.SetDefaultThreadName("ServerConsole Thread");
             AddSubtask(ServerConsole);
 

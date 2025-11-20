@@ -14,7 +14,7 @@ namespace QuanLib.Minecraft.Instance
     {
         protected const string MESSAGE_REMOTE_SERVER_NOT_SUPPORTED = "远程服务器不支持访问此属性";
 
-        protected MinecraftServer(string serverPath, string serverAddress, ushort serverPort, ILoggerGetter? loggerGetter = null) : base(serverPath, loggerGetter)
+        protected MinecraftServer(string serverPath, string serverAddress, ushort serverPort, ILoggerProvider? loggerProvider = null) : base(serverPath, loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(serverAddress, nameof(serverAddress));
 
