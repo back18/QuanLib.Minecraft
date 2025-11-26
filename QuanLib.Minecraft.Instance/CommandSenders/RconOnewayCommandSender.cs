@@ -304,13 +304,13 @@ namespace QuanLib.Minecraft.Instance.CommandSenders
             public void SendPacket(byte[] command)
             {
                 _stream.Write(command);
-                _stream.Read(_buffer);
+                _ = _stream.Read(_buffer);
             }
 
             public async Task SendPacketAsync(byte[] packet)
             {
-                await _stream.WriteAsync(packet);
-                await _stream.ReadAsync(_buffer);
+                await _stream.WriteAsync(packet).ConfigureAwait(false);
+                _ = await _stream.ReadAsync(_buffer).ConfigureAwait(false);
             }
 
             public async Task SendQueuePacketAsync()
