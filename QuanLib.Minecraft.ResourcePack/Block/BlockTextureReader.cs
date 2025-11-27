@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Core.Extensions;
 using QuanLib.Game;
 using QuanLib.Minecraft.ResourcePack.Block.BlockTextureMaps;
 using SixLabors.ImageSharp;
@@ -7,7 +6,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,42 +79,35 @@ namespace QuanLib.Minecraft.ResourcePack.Block
         {
             ArgumentNullException.ThrowIfNull(resources, nameof(resources));
 
+            const string JSON_EXTENSION = ".json";
             ConcurrentDictionary<string, JObject> result = new();
-            int total = 0;
-            int count = 0;
+            List<Exception> exceptions = [];
+
+            Lock lockObject = new();
             foreach (var resource in resources.Values)
             {
-                total += resource.BlockStates.Count;
                 Parallel.ForEach(resource.BlockStates.Values, blockState =>
                 {
-                    string extension = ".json";
-                    if (!blockState.Name.EndsWith(extension))
-                    {
-                        Interlocked.Increment(ref count);
+                    if (!blockState.Name.EndsWith(JSON_EXTENSION))
                         return;
-                    }
 
-                    string blockId = $"{resource.ModId}:{blockState.Name[..^extension.Length]}";
+                    string blockId = $"{resource.ModId}:{blockState.Name[..^JSON_EXTENSION.Length]}";
                     try
                     {
                         string text;
-                        lock (resource.BlockStates)
-                        {
+                        lock (lockObject)
                             text = blockState.ReadAllText();
-                        }
                         result.TryAdd(blockId, JObject.Parse(text));
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"无法解析方块状态json文件“{blockId}”\n{ex.GetType().Name}: {ex.Message}");
+                        exceptions.Add(new FormatException($"无法解析方块状态json文件“{blockId}”", ex));
                     }
-
-                    Interlocked.Increment(ref count);
                 });
             }
 
-            while (count < total)
-                Thread.Sleep(10);
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
 
             return result;
         }

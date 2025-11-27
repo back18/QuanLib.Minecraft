@@ -108,7 +108,7 @@ namespace QuanLib.Minecraft.Versions
             AllVersions = allVersions.OrderBy(version => version.ReleaseTime).ToArray().AsReadOnly();
         }
 
-        private static readonly object _slock = new();
+        private static readonly Lock _slock = new();
 
         public static bool IsInstanceLoaded => _Instance is not null;
 
