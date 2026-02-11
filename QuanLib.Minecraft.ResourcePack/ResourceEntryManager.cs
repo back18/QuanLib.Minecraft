@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using QuanLib.Core.Extensions;
+using QuanLib.IO.Extensions;
 using QuanLib.IO.Zip;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
