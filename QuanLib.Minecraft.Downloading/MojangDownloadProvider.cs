@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Downloading
 {
-    public class MojangDownloadProvider : DownloadProvider
+    public class MojangDownloadProvider : IMinecraftDownloadProvider
     {
         public const string RESOURCES_URL = "https://resources.download.minecraft.net/";
 
@@ -16,14 +17,23 @@ namespace QuanLib.Minecraft.Downloading
 
         public const string PISTON_META_URL = "https://piston-meta.mojang.com/";
 
-        public MojangDownloadProvider()
+        public static readonly MojangDownloadProvider Default = new();
+
+        public string VersionManifestUrl { get; } = PISTON_META_URL + "mc/game/version_manifest.json";
+
+        public string AssetBaseUrl { get; } = RESOURCES_URL;
+
+        public string GetAssetUrl(string hash)
         {
-            VersionListUrl = PISTON_META_URL + "mc/game/version_manifest.json";
-            AssetBaseUrl = RESOURCES_URL;
+            ArgumentException.ThrowIfNullOrEmpty(hash, nameof(hash));
+            ThrowHelper.StringLengthOutOfMin(2, hash, nameof(hash));
+
+            return $"{AssetBaseUrl}{hash[..2]}/{hash}";
         }
 
-        public override string VersionListUrl { get; }
-
-        public override string AssetBaseUrl { get; }
+        public string RedirectUrl(string url)
+        {
+            return url;
+        }
     }
 }

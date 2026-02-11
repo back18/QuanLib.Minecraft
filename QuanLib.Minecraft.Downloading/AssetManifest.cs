@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Downloading
 {
-    public class AssetList : IReadOnlyDictionary<string, AssetIndex>
+    public class AssetManifest : IReadOnlyDictionary<string, AssetIndex>
     {
-        public AssetList(Model model)
+        public AssetManifest(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Downloading
 {
-    public class VersionList : IReadOnlyDictionary<string, VersionIndex>
+    public class VersionManifest : IReadOnlyDictionary<string, VersionIndex>
     {
-        public VersionList(Model model)
+        public VersionManifest(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 

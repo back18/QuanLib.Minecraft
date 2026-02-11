@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace QuanLib.Minecraft.Downloading
             Url = model.url;
         }
 
-        public NetworkAssetIndex(string hash, int size, string url) : base(hash, size)
+        public NetworkAssetIndex(HashType hashType, string hash, int size, string url) : base(hashType, hash, size)
         {
             ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 

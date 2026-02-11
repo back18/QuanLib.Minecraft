@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Downloading
 {
-    public class BmclApiDownloadProvider : DownloadProvider
+    public class BmclApiDownloadProvider : IMinecraftDownloadProvider
     {
         public const string ROOT_URL = "https://bmclapi2.bangbang93.com/";
 
@@ -14,17 +15,21 @@ namespace QuanLib.Minecraft.Downloading
 
         public const string LIBRARIES_URL = ROOT_URL + "libraries/";
 
-        public BmclApiDownloadProvider()
+        public static readonly BmclApiDownloadProvider Default = new();
+
+        public string VersionManifestUrl { get; } = ROOT_URL + "mc/game/version_manifest.json";
+
+        public string AssetBaseUrl { get; } = RESOURCES_URL;
+
+        public string GetAssetUrl(string hash)
         {
-            VersionListUrl = ROOT_URL + "mc/game/version_manifest.json";
-            AssetBaseUrl = RESOURCES_URL;
+            ArgumentException.ThrowIfNullOrEmpty(hash, nameof(hash));
+            ThrowHelper.StringLengthOutOfMin(2, hash, nameof(hash));
+
+            return $"{AssetBaseUrl}{hash[..2]}/{hash}";
         }
 
-        public override string VersionListUrl { get; }
-
-        public override string AssetBaseUrl { get; }
-
-        public override string RedirectUrl(string url)
+        public string RedirectUrl(string url)
         {
             if (string.IsNullOrEmpty(url))
             {

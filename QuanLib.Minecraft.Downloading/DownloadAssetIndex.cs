@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Downloading
 {
-    public class DownloadAssetIndex : NetworkAssetIndex
+    public class DownloadAssetIndex : NetworkAssetIndex, IDownloadAssetIndex
     {
         public DownloadAssetIndex(Model model) : base(model)
         {
             Path = model.path;
         }
 
-        public DownloadAssetIndex(string hash, int size, string url, string path) : base(hash, size, url)
+        public DownloadAssetIndex(HashType hashType, string hash, int size, string url, string path) : base(hashType, hash, size, url)
         {
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 

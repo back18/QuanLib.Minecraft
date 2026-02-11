@@ -13,14 +13,14 @@ namespace QuanLib.Minecraft.Downloading
         {
             NullValidator.ValidateObject(model, nameof(model));
 
-            ID = model.id;
+            Id = model.id;
             Type = model.type;
             Url = model.url;
             Time = model.time;
             ReleaseTime = model.releaseTime;
         }
 
-        public string ID { get; }
+        public string Id { get; }
 
         public string Type { get; }
 
