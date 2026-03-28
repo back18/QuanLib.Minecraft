@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Versions
 {
-    public class VersionList : ISingleton<VersionList, InstantiateArgs>
+    public class VersionList : ISingleton<VersionList>, ISingletonFactory<VersionList>
     {
         private VersionList(IList<MinecraftVersion.Model> models)
         {
@@ -110,7 +110,7 @@ namespace QuanLib.Minecraft.Versions
 
         private static readonly Lock _slock = new();
 
-        public static bool IsInstanceLoaded => _Instance is not null;
+        public static bool IsLoaded => _Instance is not null;
 
         public static VersionList Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static VersionList? _Instance;
@@ -165,7 +165,7 @@ namespace QuanLib.Minecraft.Versions
             }
         }
 
-        public static VersionList LoadInstance(InstantiateArgs args)
+        public static VersionList LoadInstance()
         {
             lock (_slock)
             {
@@ -173,7 +173,7 @@ namespace QuanLib.Minecraft.Versions
                     throw new InvalidOperationException("试图重复加载单例实例");
 
                 Assembly assembly = Assembly.GetExecutingAssembly();
-                Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".SystemResource.version_list.json") ?? throw new InvalidOperationException();
+                using Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".SystemResource.version_list.json") ?? throw new InvalidOperationException();
                 string text = stream.ReadAllText();
 
                 List<MinecraftVersion.Model> models = JsonSerializer.Deserialize<List<MinecraftVersion.Model>>(text) ?? throw new FormatException();

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.ResourcePack.Language
 {
-    public class LanguageManager : IReadOnlyDictionary<string, TextTemplate>, ISingleton<LanguageManager, LanguageManager.InstantiateArgs>
+    public class LanguageManager : IReadOnlyDictionary<string, TextTemplate>, ISingleton<LanguageManager>, ISingletonFactory<LanguageManager, LanguageManager.InstantiateArgs>
     {
         internal LanguageManager(Dictionary<string, TextTemplate> item, string language)
         {
@@ -22,7 +22,7 @@ namespace QuanLib.Minecraft.ResourcePack.Language
 
         private static readonly Lock _slock = new();
 
-        public static bool IsInstanceLoaded => _Instance is not null;
+        public static bool IsLoaded => _Instance is not null;
 
         public static LanguageManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static LanguageManager? _Instance;

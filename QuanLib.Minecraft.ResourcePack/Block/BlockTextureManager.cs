@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.ResourcePack.Block
 {
-    public class BlockTextureManager : UnmanagedBase, IReadOnlyDictionary<string, BlockTexture>, ISingleton<BlockTextureManager, BlockTextureManager.InstantiateArgs>
+    public class BlockTextureManager : UnmanagedBase, IReadOnlyDictionary<string, BlockTexture>, ISingleton<BlockTextureManager>, ISingletonFactory<BlockTextureManager, BlockTextureManager.InstantiateArgs>
     {
         internal BlockTextureManager(Dictionary<string, BlockTexture> items)
         {
@@ -20,7 +20,7 @@ namespace QuanLib.Minecraft.ResourcePack.Block
 
         private static readonly Lock _slock = new();
 
-        public static bool IsInstanceLoaded => _Instance is not null;
+        public static bool IsLoaded => _Instance is not null;
 
         public static BlockTextureManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static BlockTextureManager? _Instance;
