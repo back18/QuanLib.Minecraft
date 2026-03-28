@@ -1,13 +1,14 @@
 ﻿using QuanLib.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Mod.Forge
 {
-    public class ForgeModVersion : IDataModelOwner<ForgeModVersion, ForgeModVersion.DataModel>
+    public class ForgeModVersion : IDataViewModel<ForgeModVersion>
     {
         public ForgeModVersion(DataModel model)
         {
@@ -38,9 +39,9 @@ namespace QuanLib.Minecraft.Mod.Forge
             return $"{ModId}-{VersionRange}";
         }
 
-        public DataModel ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new DataModel()
             {
                 modId = ModId,
                 mandatory = Mandatory,
@@ -51,9 +52,9 @@ namespace QuanLib.Minecraft.Mod.Forge
             };
         }
 
-        public static ForgeModVersion FromDataModel(DataModel model)
+        public static ForgeModVersion FromDataModel(object model)
         {
-            return new(model);
+            return new ForgeModVersion((DataModel)model);
         }
 
         public class DataModel : IDataModel<DataModel>
@@ -82,13 +83,17 @@ namespace QuanLib.Minecraft.Mod.Forge
 
             public static DataModel CreateDefault()
             {
-                return new();
+                return new DataModel();
             }
 
-            public static void Validate(DataModel model, string name)
+            public IValidatableObject GetValidator()
             {
-                ArgumentNullException.ThrowIfNull(model, nameof(model));
-                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Enumerable.Empty<IValidatable>();
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Nett;
 using Newtonsoft.Json.Linq;
-using QuanLib.Core.Extensions;
+using QuanLib.IO.Extensions;
 using QuanLib.IO.Zip;
 using QuanLib.Minecraft.Mod.Forge.JarMetadata;
 using System;

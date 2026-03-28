@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Mod.Forge
 {
-    public class ForgeModFileInfo : IDataModelOwner<ForgeModFileInfo, ForgeModFileInfo.DataModel>
+    public class ForgeModFileInfo : IDataViewModel<ForgeModFileInfo>
     {
         public ForgeModFileInfo(DataModel model)
         {
@@ -46,9 +47,9 @@ namespace QuanLib.Minecraft.Mod.Forge
 
         public ReadOnlyCollection<ForgeModInfo> ModInfos { get; }
 
-        public DataModel ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new DataModel()
             {
                 modLoader = ModLoader,
                 loaderVersion = LoaderVersion,
@@ -59,13 +60,13 @@ namespace QuanLib.Minecraft.Mod.Forge
                 clientSideOnly = ClientSideOnly,
                 services = Services.ToArray(),
                 properties = Properties.ToDictionary(),
-                mods = ModInfos.Select(s => s.ToDataModel()).ToArray()
+                mods = ModInfos.Select(s => (ForgeModInfo.DataModel)s.ToDataModel()).ToArray()
             };
         }
 
-        public static ForgeModFileInfo FromDataModel(DataModel model)
+        public static ForgeModFileInfo FromDataModel(object model)
         {
-            return new(model);
+            return new ForgeModFileInfo((DataModel)model);
         }
 
         public class DataModel : IDataModel<DataModel>
@@ -106,13 +107,17 @@ namespace QuanLib.Minecraft.Mod.Forge
 
             public static DataModel CreateDefault()
             {
-                return new();
+                return new DataModel();
             }
 
-            public static void Validate(DataModel model, string name)
+            public IValidatableObject GetValidator()
             {
-                ArgumentNullException.ThrowIfNull(model, nameof(model));
-                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Enumerable.Empty<IValidatable>();
             }
         }
     }

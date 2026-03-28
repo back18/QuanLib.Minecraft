@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Mod.Fabric
 {
-    public class PersonInfo : IDataModelOwner<PersonInfo, PersonInfo.DataModel>
+    public class PersonInfo : IDataViewModel<PersonInfo>
     {
         public PersonInfo(DataModel model)
         {
@@ -27,18 +28,18 @@ namespace QuanLib.Minecraft.Mod.Fabric
             return Name;
         }
 
-        public DataModel ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new DataModel()
             {
                 name = Name,
                 contact = Contact.ToDictionary()
             };
         }
 
-        public static PersonInfo FromDataModel(DataModel model)
+        public static PersonInfo FromDataModel(object model)
         {
-            return new(model);
+            return new PersonInfo((DataModel)model);
         }
 
         public class DataModel : IDataModel<DataModel>
@@ -55,13 +56,17 @@ namespace QuanLib.Minecraft.Mod.Fabric
 
             public static DataModel CreateDefault()
             {
-                return new();
+                return new DataModel();
             }
 
-            public static void Validate(DataModel model, string name)
+            public IValidatableObject GetValidator()
             {
-                ArgumentNullException.ThrowIfNull(model, nameof(model));
-                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Enumerable.Empty<IValidatable>();
             }
         }
     }

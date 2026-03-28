@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using QuanLib.Core.Extensions;
+using QuanLib.IO.Extensions;
 using QuanLib.IO.Zip;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

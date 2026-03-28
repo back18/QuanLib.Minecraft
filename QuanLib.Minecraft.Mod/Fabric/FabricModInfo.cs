@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Mod.Fabric
 {
-    public class FabricModInfo : ModInfo, IDataModelOwner<FabricModInfo, FabricModInfo.DataModel>
+    public class FabricModInfo : ModInfo, IDataViewModel<FabricModInfo>
     {
         public FabricModInfo(DataModel model)
         {
@@ -79,7 +80,7 @@ namespace QuanLib.Minecraft.Mod.Fabric
 
         public ReadOnlyDictionary<string, string> LanguageAdapters { get; }
 
-        public DataModel ToDataModel()
+        public object ToDataModel()
         {
             Dictionary<string, List<string>> depends = [];
             Dictionary<string, List<string>> recommends = [];
@@ -101,7 +102,7 @@ namespace QuanLib.Minecraft.Mod.Fabric
                 dictionary.Add(dependency.ModId, dependency.VersionRanges.ToList());
             }
 
-            return new()
+            return new DataModel()
             {
                 schemaVersion = SchemaVersion,
                 id = ModId,
@@ -110,8 +111,8 @@ namespace QuanLib.Minecraft.Mod.Fabric
                 version = Version,
                 icon = LogoFile,
                 license = License,
-                authors = Authors.Select(s => s.ToDataModel()).ToList(),
-                contributors = Contributors.Select(s => s.ToDataModel()).ToList(),
+                authors = Authors.Select(s => (PersonInfo.DataModel)s.ToDataModel()).ToList(),
+                contributors = Contributors.Select(s => (PersonInfo.DataModel)s.ToDataModel()).ToList(),
                 contact = Contact.ToDictionary(),
                 environment = Environment,
                 depends = depends,
@@ -128,9 +129,9 @@ namespace QuanLib.Minecraft.Mod.Fabric
             };
         }
 
-        public static FabricModInfo FromDataModel(DataModel model)
+        public static FabricModInfo FromDataModel(object model)
         {
-            return new(model);
+            return new FabricModInfo((DataModel)model);
         }
 
         public class DataModel : IDataModel<DataModel>
@@ -207,13 +208,17 @@ namespace QuanLib.Minecraft.Mod.Fabric
 
             public static DataModel CreateDefault()
             {
-                return new();
+                return new DataModel();
             }
 
-            public static void Validate(DataModel model, string name)
+            public IValidatableObject GetValidator()
             {
-                ArgumentNullException.ThrowIfNull(model, nameof(model));
-                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Enumerable.Empty<IValidatable>();
             }
         }
     }
