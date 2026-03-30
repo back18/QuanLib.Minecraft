@@ -2,4226 +2,4381 @@
   {
     "Version": "rd-132211",
     "Type": "PreClassic",
-    "ReleaseTime": 633778710600000000
+    "ReleaseTime": 633778422600000000
   },
   {
     "Version": "rd-132328",
     "Type": "PreClassic",
-    "ReleaseTime": 633778756800000000
+    "ReleaseTime": 633778468800000000
   },
   {
     "Version": "rd-20090515",
     "Type": "PreClassic",
-    "ReleaseTime": 633779640000000000
+    "ReleaseTime": 633779352000000000
   },
   {
     "Version": "rd-160052",
     "Type": "PreClassic",
-    "ReleaseTime": 633780535200000000
+    "ReleaseTime": 633780247200000000
   },
   {
     "Version": "rd-161348",
     "Type": "PreClassic",
-    "ReleaseTime": 633781000800000000
+    "ReleaseTime": 633780712800000000
   },
   {
     "Version": "c0.0.11a",
     "Type": "Classic",
-    "ReleaseTime": 633781368000000000
+    "ReleaseTime": 633781080000000000
   },
   {
     "Version": "c0.0.13a_03",
     "Type": "Classic",
-    "ReleaseTime": 633785688000000000
+    "ReleaseTime": 633785400000000000
   },
   {
     "Version": "c0.0.13a",
     "Type": "Classic",
-    "ReleaseTime": 633793464000000000
+    "ReleaseTime": 633793176000000000
   },
   {
     "Version": "c0.30_01c",
     "Type": "Classic",
-    "ReleaseTime": 633970584000000000
+    "ReleaseTime": 633970296000000000
   },
   {
     "Version": "inf-20100618",
     "Type": "Infdev",
-    "ReleaseTime": 634122648000000000
+    "ReleaseTime": 634122360000000000
   },
   {
     "Version": "a1.0.4",
     "Type": "OldAlpha",
-    "ReleaseTime": 634142520000000000
+    "ReleaseTime": 634142232000000000
   },
   {
     "Version": "a1.0.5_01",
     "Type": "OldAlpha",
-    "ReleaseTime": 634145976000000000
+    "ReleaseTime": 634145688000000000
   },
   {
     "Version": "a1.0.11",
     "Type": "OldAlpha",
-    "ReleaseTime": 634154616000000000
+    "ReleaseTime": 634154328000000000
   },
   {
     "Version": "a1.0.14",
     "Type": "OldAlpha",
-    "ReleaseTime": 634160664000000000
+    "ReleaseTime": 634160376000000000
   },
   {
     "Version": "a1.0.15",
     "Type": "OldAlpha",
-    "ReleaseTime": 634164984000000000
+    "ReleaseTime": 634164696000000000
   },
   {
     "Version": "a1.0.16",
     "Type": "OldAlpha",
-    "ReleaseTime": 634171896000000000
+    "ReleaseTime": 634171608000000000
   },
   {
     "Version": "a1.0.17_02",
     "Type": "OldAlpha",
-    "ReleaseTime": 634178808000000000
+    "ReleaseTime": 634178520000000000
   },
   {
     "Version": "a1.0.17_04",
     "Type": "OldAlpha",
-    "ReleaseTime": 634181400000000000
+    "ReleaseTime": 634181112000000000
   },
   {
     "Version": "a1.1.0",
     "Type": "OldAlpha",
-    "ReleaseTime": 634199544000000000
+    "ReleaseTime": 634199256000000000
   },
   {
     "Version": "a1.1.2",
     "Type": "OldAlpha",
-    "ReleaseTime": 634205592000000000
+    "ReleaseTime": 634205304000000000
   },
   {
     "Version": "a1.1.2_01",
     "Type": "OldAlpha",
-    "ReleaseTime": 634208184000000000
+    "ReleaseTime": 634207896000000000
   },
   {
     "Version": "a1.2.0",
     "Type": "OldAlpha",
-    "ReleaseTime": 634240152000000000
+    "ReleaseTime": 634239864000000000
   },
   {
     "Version": "a1.2.0_01",
     "Type": "OldAlpha",
-    "ReleaseTime": 634241016000000000
+    "ReleaseTime": 634240728000000000
   },
   {
     "Version": "a1.2.0_02",
     "Type": "OldAlpha",
-    "ReleaseTime": 634244472000000000
+    "ReleaseTime": 634244184000000000
   },
   {
     "Version": "a1.2.1",
     "Type": "OldAlpha",
-    "ReleaseTime": 634245336000000000
+    "ReleaseTime": 634245048000000000
   },
   {
     "Version": "a1.2.1_01",
     "Type": "OldAlpha",
-    "ReleaseTime": 634245336010000000
+    "ReleaseTime": 634245048010000000
   },
   {
     "Version": "a1.2.2a",
     "Type": "OldAlpha",
-    "ReleaseTime": 634249656000000000
+    "ReleaseTime": 634249368000000000
   },
   {
     "Version": "a1.2.2b",
     "Type": "OldAlpha",
-    "ReleaseTime": 634249656010000000
+    "ReleaseTime": 634249368010000000
   },
   {
     "Version": "a1.2.3",
     "Type": "OldAlpha",
-    "ReleaseTime": 634261752000000000
+    "ReleaseTime": 634261464000000000
   },
   {
     "Version": "a1.2.3_01",
     "Type": "OldAlpha",
-    "ReleaseTime": 634261752010000000
+    "ReleaseTime": 634261464010000000
   },
   {
     "Version": "a1.2.3_02",
     "Type": "OldAlpha",
-    "ReleaseTime": 634262616000000000
+    "ReleaseTime": 634262328000000000
   },
   {
     "Version": "a1.2.3_04",
     "Type": "OldAlpha",
-    "ReleaseTime": 634263480000000000
+    "ReleaseTime": 634263192000000000
   },
   {
     "Version": "a1.2.4_01",
     "Type": "OldAlpha",
-    "ReleaseTime": 634266936000000000
+    "ReleaseTime": 634266648000000000
   },
   {
     "Version": "a1.2.5",
     "Type": "OldAlpha",
-    "ReleaseTime": 634267800000000000
+    "ReleaseTime": 634267512000000000
   },
   {
     "Version": "a1.2.6",
     "Type": "OldAlpha",
-    "ReleaseTime": 634269528000000000
+    "ReleaseTime": 634269240000000000
   },
   {
     "Version": "b1.0",
     "Type": "OldBeta",
-    "ReleaseTime": 634284216000000000
+    "ReleaseTime": 634283928000000000
   },
   {
     "Version": "b1.0_01",
     "Type": "OldBeta",
-    "ReleaseTime": 634284216010000000
+    "ReleaseTime": 634283928010000000
   },
   {
     "Version": "b1.0.2",
     "Type": "OldBeta",
-    "ReleaseTime": 634285080000000000
+    "ReleaseTime": 634284792000000000
   },
   {
     "Version": "b1.1_01",
     "Type": "OldBeta",
-    "ReleaseTime": 634285944000000000
+    "ReleaseTime": 634285656000000000
   },
   {
     "Version": "b1.1_02",
     "Type": "OldBeta",
-    "ReleaseTime": 634285944010000000
+    "ReleaseTime": 634285656010000000
   },
   {
     "Version": "b1.2",
     "Type": "OldBeta",
-    "ReleaseTime": 634304952000000000
+    "ReleaseTime": 634304664000000000
   },
   {
     "Version": "b1.2_01",
     "Type": "OldBeta",
-    "ReleaseTime": 634305816000000000
+    "ReleaseTime": 634305528000000000
   },
   {
     "Version": "b1.2_02",
     "Type": "OldBeta",
-    "ReleaseTime": 634311864000000000
+    "ReleaseTime": 634311576000000000
   },
   {
     "Version": "b1.3b",
     "Type": "OldBeta",
-    "ReleaseTime": 634339512000000000
+    "ReleaseTime": 634339224000000000
   },
   {
     "Version": "b1.3_01",
     "Type": "OldBeta",
-    "ReleaseTime": 634340376000000000
+    "ReleaseTime": 634340088000000000
   },
   {
     "Version": "b1.4",
     "Type": "OldBeta",
-    "ReleaseTime": 634371480000000000
+    "ReleaseTime": 634371192000000000
   },
   {
     "Version": "b1.4_01",
     "Type": "OldBeta",
-    "ReleaseTime": 634375800000000000
+    "ReleaseTime": 634375512000000000
   },
   {
     "Version": "b1.5",
     "Type": "OldBeta",
-    "ReleaseTime": 634387896000000000
+    "ReleaseTime": 634387608000000000
   },
   {
     "Version": "b1.5_01",
     "Type": "OldBeta",
-    "ReleaseTime": 634388760000000000
+    "ReleaseTime": 634388472000000000
   },
   {
     "Version": "b1.6",
     "Type": "OldBeta",
-    "ReleaseTime": 634419864000000000
+    "ReleaseTime": 634419576000000000
   },
   {
     "Version": "b1.6.1",
     "Type": "OldBeta",
-    "ReleaseTime": 634419864010000000
+    "ReleaseTime": 634419576010000000
   },
   {
     "Version": "b1.6.2",
     "Type": "OldBeta",
-    "ReleaseTime": 634419864020000000
+    "ReleaseTime": 634419576020000000
   },
   {
     "Version": "b1.6.3",
     "Type": "OldBeta",
-    "ReleaseTime": 634419864030000000
+    "ReleaseTime": 634419576030000000
   },
   {
     "Version": "b1.6.4",
     "Type": "OldBeta",
-    "ReleaseTime": 634419864040000000
+    "ReleaseTime": 634419576040000000
   },
   {
     "Version": "b1.6.5",
     "Type": "OldBeta",
-    "ReleaseTime": 634421592000000000
+    "ReleaseTime": 634421304000000000
   },
   {
     "Version": "b1.6.6",
     "Type": "OldBeta",
-    "ReleaseTime": 634424184000000000
+    "ReleaseTime": 634423896000000000
   },
   {
     "Version": "b1.7",
     "Type": "OldBeta",
-    "ReleaseTime": 634450104000000000
+    "ReleaseTime": 634449816000000000
   },
   {
     "Version": "b1.7.2",
     "Type": "OldBeta",
-    "ReleaseTime": 634450968000000000
+    "ReleaseTime": 634450680000000000
   },
   {
     "Version": "b1.7.3",
     "Type": "OldBeta",
-    "ReleaseTime": 634457016000000000
+    "ReleaseTime": 634456728000000000
   },
   {
     "Version": "b1.8",
     "Type": "OldBeta",
-    "ReleaseTime": 634516632000000000
+    "ReleaseTime": 634516344000000000
   },
   {
     "Version": "b1.8.1",
     "Type": "OldBeta",
-    "ReleaseTime": 634520088000000000
+    "ReleaseTime": 634519800000000000
   },
   {
     "Version": "1.0",
     "Type": "Release",
-    "ReleaseTime": 634571928000000000
+    "ReleaseTime": 634571640000000000
   },
   {
     "Version": "1.1",
     "Type": "Release",
-    "ReleaseTime": 634619448000000000
+    "ReleaseTime": 634619160000000000
   },
   {
     "Version": "1.2.1",
     "Type": "Release",
-    "ReleaseTime": 634661784000000000
+    "ReleaseTime": 634661496000000000
   },
   {
     "Version": "1.2.2",
     "Type": "Release",
-    "ReleaseTime": 634661784010000000
+    "ReleaseTime": 634661496010000000
   },
   {
     "Version": "1.2.3",
     "Type": "Release",
-    "ReleaseTime": 634662648000000000
+    "ReleaseTime": 634662360000000000
   },
   {
     "Version": "1.2.4",
     "Type": "Release",
-    "ReleaseTime": 634679928000000000
+    "ReleaseTime": 634679640000000000
   },
   {
     "Version": "1.2.5",
     "Type": "Release",
-    "ReleaseTime": 634686840000000000
+    "ReleaseTime": 634686552000000000
   },
   {
     "Version": "1.3",
     "Type": "OldPreRelease",
-    "ReleaseTime": 634788792000000000
+    "ReleaseTime": 634788504000000000
   },
   {
     "Version": "1.3.1",
     "Type": "Release",
-    "ReleaseTime": 634793976000000000
+    "ReleaseTime": 634793688000000000
   },
   {
     "Version": "1.3.2",
     "Type": "Release",
-    "ReleaseTime": 634806936000000000
+    "ReleaseTime": 634806648000000000
   },
   {
     "Version": "1.4",
     "Type": "OldPreRelease",
-    "ReleaseTime": 634889016000000000
+    "ReleaseTime": 634888728000000000
   },
   {
     "Version": "1.4.1",
     "Type": "OldPreRelease",
-    "ReleaseTime": 634892472000000000
+    "ReleaseTime": 634892184000000000
   },
   {
     "Version": "1.4.2",
     "Type": "Release",
-    "ReleaseTime": 634894200000000000
+    "ReleaseTime": 634893912000000000
   },
   {
     "Version": "1.4.3",
     "Type": "OldPreRelease",
-    "ReleaseTime": 634899384000000000
+    "ReleaseTime": 634899096000000000
   },
   {
     "Version": "1.4.4",
     "Type": "Release",
-    "ReleaseTime": 634910616000000000
+    "ReleaseTime": 634910328000000000
   },
   {
     "Version": "1.4.6",
     "Type": "Release",
-    "ReleaseTime": 634915800000000000
+    "ReleaseTime": 634915512000000000
   },
   {
     "Version": "1.4.5",
     "Type": "Release",
-    "ReleaseTime": 634915800000000000
+    "ReleaseTime": 634915512000000000
   },
   {
     "Version": "1.4.7",
     "Type": "Release",
-    "ReleaseTime": 634922712000000000
+    "ReleaseTime": 634922424000000000
   },
   {
     "Version": "1.5",
     "Type": "OldPreRelease",
-    "ReleaseTime": 634982328000000000
+    "ReleaseTime": 634982040000000000
   },
   {
     "Version": "1.5.1",
     "Type": "Release",
-    "ReleaseTime": 634993992000000000
+    "ReleaseTime": 634993704000000000
   },
   {
     "Version": "13w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 635021741700000000
+    "ReleaseTime": 635021453700000000
   },
   {
     "Version": "13w16b",
     "Type": "Snapshot",
-    "ReleaseTime": 635023794820000000
+    "ReleaseTime": 635023506820000000
   },
   {
     "Version": "1.5.2",
     "Type": "Release",
-    "ReleaseTime": 635025303000000000
+    "ReleaseTime": 635025015000000000
   },
   {
     "Version": "13w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 635025306000000000
+    "ReleaseTime": 635025018000000000
   },
   {
     "Version": "13w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 635031351590000000
+    "ReleaseTime": 635031063590000000
   },
   {
     "Version": "13w18b",
     "Type": "Snapshot",
-    "ReleaseTime": 635031403450000000
+    "ReleaseTime": 635031115450000000
   },
   {
     "Version": "13w18c",
     "Type": "Snapshot",
-    "ReleaseTime": 635031983750000000
+    "ReleaseTime": 635031695750000000
   },
   {
     "Version": "13w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 635038228820000000
+    "ReleaseTime": 635037940820000000
   },
   {
     "Version": "13w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 635049491080000000
+    "ReleaseTime": 635049203080000000
   },
   {
     "Version": "13w21b",
     "Type": "Snapshot",
-    "ReleaseTime": 635052702420000000
+    "ReleaseTime": 635052414420000000
   },
   {
     "Version": "13w22a",
     "Type": "Snapshot",
-    "ReleaseTime": 635055503200000000
+    "ReleaseTime": 635055215200000000
   },
   {
     "Version": "13w23a",
     "Type": "Snapshot",
-    "ReleaseTime": 635062466600000000
+    "ReleaseTime": 635062178600000000
   },
   {
     "Version": "13w23b",
     "Type": "Snapshot",
-    "ReleaseTime": 635062771210000000
+    "ReleaseTime": 635062483210000000
   },
   {
     "Version": "13w24a",
     "Type": "Snapshot",
-    "ReleaseTime": 635067631430000000
+    "ReleaseTime": 635067343430000000
   },
   {
     "Version": "13w24b",
     "Type": "Snapshot",
-    "ReleaseTime": 635068379530000000
+    "ReleaseTime": 635068091530000000
   },
   {
     "Version": "13w25a",
     "Type": "Snapshot",
-    "ReleaseTime": 635071036860000000
+    "ReleaseTime": 635070748860000000
   },
   {
     "Version": "13w25b",
     "Type": "Snapshot",
-    "ReleaseTime": 635071940070000000
+    "ReleaseTime": 635071652070000000
   },
   {
     "Version": "13w25c",
     "Type": "Snapshot",
-    "ReleaseTime": 635073674170000000
+    "ReleaseTime": 635073386170000000
   },
   {
     "Version": "13w26a",
     "Type": "Snapshot",
-    "ReleaseTime": 635077155660000000
+    "ReleaseTime": 635076867660000000
   },
   {
     "Version": "1.6",
     "Type": "OldPreRelease",
-    "ReleaseTime": 635077913360000000
+    "ReleaseTime": 635077625360000000
   },
   {
     "Version": "1.6.1",
     "Type": "Release",
-    "ReleaseTime": 635080565210000000
+    "ReleaseTime": 635080277210000000
   },
   {
     "Version": "1.6.2",
     "Type": "Release",
-    "ReleaseTime": 635086553420000000
+    "ReleaseTime": 635086265420000000
   },
   {
     "Version": "13w36a",
     "Type": "Snapshot",
-    "ReleaseTime": 635140119400000000
+    "ReleaseTime": 635139831400000000
   },
   {
     "Version": "13w36b",
     "Type": "Snapshot",
-    "ReleaseTime": 635140963180000000
+    "ReleaseTime": 635140675180000000
   },
   {
     "Version": "13w37a",
     "Type": "Snapshot",
-    "ReleaseTime": 635146213940000000
+    "ReleaseTime": 635145925940000000
   },
   {
     "Version": "1.6.3",
     "Type": "OldPreRelease",
-    "ReleaseTime": 635146952810000000
+    "ReleaseTime": 635146664810000000
   },
   {
     "Version": "13w37b",
     "Type": "Snapshot",
-    "ReleaseTime": 635146952810000000
+    "ReleaseTime": 635146664810000000
   },
   {
     "Version": "1.6.4",
     "Type": "Release",
-    "ReleaseTime": 635152315570000000
+    "ReleaseTime": 635152027570000000
   },
   {
     "Version": "13w38a",
     "Type": "Snapshot",
-    "ReleaseTime": 635152340610000000
+    "ReleaseTime": 635152052610000000
   },
   {
     "Version": "13w38b",
     "Type": "Snapshot",
-    "ReleaseTime": 635153103400000000
+    "ReleaseTime": 635152815400000000
   },
   {
     "Version": "13w38c",
     "Type": "Snapshot",
-    "ReleaseTime": 635153154940000000
+    "ReleaseTime": 635152866940000000
   },
   {
     "Version": "13w39a",
     "Type": "Snapshot",
-    "ReleaseTime": 635158338790000000
+    "ReleaseTime": 635158050790000000
   },
   {
     "Version": "13w39b",
     "Type": "Snapshot",
-    "ReleaseTime": 635159097580000000
+    "ReleaseTime": 635158809580000000
   },
   {
     "Version": "13w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 635170405030000000
+    "ReleaseTime": 635170117030000000
   },
   {
     "Version": "13w41b",
     "Type": "Snapshot",
-    "ReleaseTime": 635171297570000000
+    "ReleaseTime": 635171009570000000
   },
   {
     "Version": "13w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 635176603850000000
+    "ReleaseTime": 635176315850000000
   },
   {
     "Version": "13w42b",
     "Type": "Snapshot",
-    "ReleaseTime": 635177396480000000
+    "ReleaseTime": 635177108480000000
   },
   {
     "Version": "13w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 635179988870000000
+    "ReleaseTime": 635179700870000000
   },
   {
     "Version": "1.7",
     "Type": "OldPreRelease",
-    "ReleaseTime": 635180798450000000
+    "ReleaseTime": 635180510450000000
   },
   {
     "Version": "1.7.1",
     "Type": "OldPreRelease",
-    "ReleaseTime": 635181552670000000
+    "ReleaseTime": 635181264670000000
   },
   {
     "Version": "1.7.2",
     "Type": "Release",
-    "ReleaseTime": 635183316000000000
+    "ReleaseTime": 635183028000000000
   },
   {
     "Version": "13w47a",
     "Type": "Snapshot",
-    "ReleaseTime": 635206751980000000
+    "ReleaseTime": 635206463980000000
   },
   {
     "Version": "13w47b",
     "Type": "Snapshot",
-    "ReleaseTime": 635206786610000000
+    "ReleaseTime": 635206498610000000
   },
   {
     "Version": "13w47c",
     "Type": "Snapshot",
-    "ReleaseTime": 635206794330000000
+    "ReleaseTime": 635206506330000000
   },
   {
     "Version": "13w47d",
     "Type": "Snapshot",
-    "ReleaseTime": 635207538750000000
+    "ReleaseTime": 635207250750000000
   },
   {
     "Version": "13w47e",
     "Type": "Snapshot",
-    "ReleaseTime": 635207589980000000
+    "ReleaseTime": 635207301980000000
   },
   {
     "Version": "13w48a",
     "Type": "Snapshot",
-    "ReleaseTime": 635210240190000000
+    "ReleaseTime": 635209952190000000
   },
   {
     "Version": "13w48b",
     "Type": "Snapshot",
-    "ReleaseTime": 635211165680000000
+    "ReleaseTime": 635210877680000000
   },
   {
     "Version": "13w49a",
     "Type": "Snapshot",
-    "ReleaseTime": 635218796810000000
+    "ReleaseTime": 635218508810000000
   },
   {
     "Version": "1.7.3",
     "Type": "Release",
-    "ReleaseTime": 635219637340000000
+    "ReleaseTime": 635219349340000000
   },
   {
     "Version": "1.7.4",
     "Type": "Release",
-    "ReleaseTime": 635222176900000000
+    "ReleaseTime": 635221888900000000
   },
   {
     "Version": "14w02a",
     "Type": "Snapshot",
-    "ReleaseTime": 635249042810000000
+    "ReleaseTime": 635248754810000000
   },
   {
     "Version": "14w02b",
     "Type": "Snapshot",
-    "ReleaseTime": 635249079550000000
+    "ReleaseTime": 635248791550000000
   },
   {
     "Version": "14w02c",
     "Type": "Snapshot",
-    "ReleaseTime": 635249941560000000
+    "ReleaseTime": 635249653560000000
   },
   {
     "Version": "14w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 635255091130000000
+    "ReleaseTime": 635254803130000000
   },
   {
     "Version": "14w03b",
     "Type": "Snapshot",
-    "ReleaseTime": 635255157790000000
+    "ReleaseTime": 635254869790000000
   },
   {
     "Version": "14w04a",
     "Type": "Snapshot",
-    "ReleaseTime": 635261163730000000
+    "ReleaseTime": 635260875730000000
   },
   {
     "Version": "14w04b",
     "Type": "Snapshot",
-    "ReleaseTime": 635262041260000000
+    "ReleaseTime": 635261753260000000
   },
   {
     "Version": "14w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 635267215610000000
+    "ReleaseTime": 635266927610000000
   },
   {
     "Version": "14w05b",
     "Type": "Snapshot",
-    "ReleaseTime": 635268027500000000
+    "ReleaseTime": 635267739500000000
   },
   {
     "Version": "14w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 635273226170000000
+    "ReleaseTime": 635272938170000000
   },
   {
     "Version": "14w06b",
     "Type": "Snapshot",
-    "ReleaseTime": 635273334420000000
+    "ReleaseTime": 635273046420000000
   },
   {
     "Version": "14w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 635280015070000000
+    "ReleaseTime": 635279727070000000
   },
   {
     "Version": "1.7.5",
     "Type": "Release",
-    "ReleaseTime": 635290321370000000
+    "ReleaseTime": 635290033370000000
   },
   {
     "Version": "14w08a",
     "Type": "Snapshot",
-    "ReleaseTime": 635290596000000000
+    "ReleaseTime": 635290308000000000
   },
   {
     "Version": "14w10a",
     "Type": "Snapshot",
-    "ReleaseTime": 635297413840000000
+    "ReleaseTime": 635297125840000000
   },
   {
     "Version": "14w10b",
     "Type": "Snapshot",
-    "ReleaseTime": 635297487390000000
+    "ReleaseTime": 635297199390000000
   },
   {
     "Version": "14w10c",
     "Type": "Snapshot",
-    "ReleaseTime": 635298257950000000
+    "ReleaseTime": 635297969950000000
   },
   {
     "Version": "1.7.6-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635299020000000000
+    "ReleaseTime": 635298732000000000
   },
   {
     "Version": "1.7.6-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635299020010000000
+    "ReleaseTime": 635298732010000000
   },
   {
     "Version": "14w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 635303449700000000
+    "ReleaseTime": 635303161700000000
   },
   {
     "Version": "1.7.6",
     "Type": "Release",
-    "ReleaseTime": 635326555260000000
+    "ReleaseTime": 635326267260000000
   },
   {
     "Version": "1.7.7",
     "Type": "Release",
-    "ReleaseTime": 635326555360000000
+    "ReleaseTime": 635326267360000000
   },
   {
     "Version": "1.7.8",
     "Type": "Release",
-    "ReleaseTime": 635326558960000000
+    "ReleaseTime": 635326270960000000
   },
   {
     "Version": "1.7.9",
     "Type": "Release",
-    "ReleaseTime": 635331077630000000
+    "ReleaseTime": 635330789630000000
   },
   {
     "Version": "14w11b",
     "Type": "Snapshot",
-    "ReleaseTime": 635331117790000000
+    "ReleaseTime": 635330829790000000
   },
   {
     "Version": "14w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 635339798890000000
+    "ReleaseTime": 635339510890000000
   },
   {
     "Version": "14w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 635344791350000000
+    "ReleaseTime": 635344503350000000
   },
   {
     "Version": "14w18b",
     "Type": "Snapshot",
-    "ReleaseTime": 635346562970000000
+    "ReleaseTime": 635346274970000000
   },
   {
     "Version": "14w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 635351846590000000
+    "ReleaseTime": 635351558590000000
   },
   {
     "Version": "1.7.10-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635356997630000000
+    "ReleaseTime": 635356709630000000
   },
   {
     "Version": "1.7.10-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635357033630000000
+    "ReleaseTime": 635356745630000000
   },
   {
     "Version": "1.7.10-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635357069630000000
+    "ReleaseTime": 635356781630000000
   },
   {
     "Version": "1.7.10-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 635357105630000000
+    "ReleaseTime": 635356817630000000
   },
   {
     "Version": "1.7.10",
     "Type": "Release",
-    "ReleaseTime": 635357141630000000
+    "ReleaseTime": 635356853630000000
   },
   {
     "Version": "14w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 635357880800000000
+    "ReleaseTime": 635357592800000000
   },
   {
     "Version": "14w20b",
     "Type": "Snapshot",
-    "ReleaseTime": 635357980410000000
+    "ReleaseTime": 635357692410000000
   },
   {
     "Version": "14w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 635363954730000000
+    "ReleaseTime": 635363666730000000
   },
   {
     "Version": "14w21b",
     "Type": "Snapshot",
-    "ReleaseTime": 635363974750000000
+    "ReleaseTime": 635363686750000000
   },
   {
     "Version": "14w25a",
     "Type": "Snapshot",
-    "ReleaseTime": 635387323480000000
+    "ReleaseTime": 635387035480000000
   },
   {
     "Version": "14w25b",
     "Type": "Snapshot",
-    "ReleaseTime": 635388065880000000
+    "ReleaseTime": 635387777880000000
   },
   {
     "Version": "14w26a",
     "Type": "Snapshot",
-    "ReleaseTime": 635393303670000000
+    "ReleaseTime": 635393015670000000
   },
   {
     "Version": "14w26b",
     "Type": "Snapshot",
-    "ReleaseTime": 635393345190000000
+    "ReleaseTime": 635393057190000000
   },
   {
     "Version": "14w26c",
     "Type": "Snapshot",
-    "ReleaseTime": 635394207030000000
+    "ReleaseTime": 635393919030000000
   },
   {
     "Version": "14w27a",
     "Type": "Snapshot",
-    "ReleaseTime": 635399428400000000
+    "ReleaseTime": 635399140400000000
   },
   {
     "Version": "14w27b",
     "Type": "Snapshot",
-    "ReleaseTime": 635399516960000000
+    "ReleaseTime": 635399228960000000
   },
   {
     "Version": "14w28a",
     "Type": "Snapshot",
-    "ReleaseTime": 635405461560000000
+    "ReleaseTime": 635405173560000000
   },
   {
     "Version": "14w28b",
     "Type": "Snapshot",
-    "ReleaseTime": 635406281280000000
+    "ReleaseTime": 635405993280000000
   },
   {
     "Version": "14w29a",
     "Type": "Snapshot",
-    "ReleaseTime": 635411494970000000
+    "ReleaseTime": 635411206970000000
   },
   {
     "Version": "14w29b",
     "Type": "Snapshot",
-    "ReleaseTime": 635411572600000000
+    "ReleaseTime": 635411284600000000
   },
   {
     "Version": "14w30a",
     "Type": "Snapshot",
-    "ReleaseTime": 635417469420000000
+    "ReleaseTime": 635417181420000000
   },
   {
     "Version": "14w30b",
     "Type": "Snapshot",
-    "ReleaseTime": 635417533830000000
+    "ReleaseTime": 635417245830000000
   },
   {
     "Version": "14w30c",
     "Type": "Snapshot",
-    "ReleaseTime": 635418383490000000
+    "ReleaseTime": 635418095490000000
   },
   {
     "Version": "14w31a",
     "Type": "Snapshot",
-    "ReleaseTime": 635423602850000000
+    "ReleaseTime": 635423314850000000
   },
   {
     "Version": "14w32a",
     "Type": "Snapshot",
-    "ReleaseTime": 635429592760000000
+    "ReleaseTime": 635429304760000000
   },
   {
     "Version": "14w32b",
     "Type": "Snapshot",
-    "ReleaseTime": 635430483170000000
+    "ReleaseTime": 635430195170000000
   },
   {
     "Version": "14w32c",
     "Type": "Snapshot",
-    "ReleaseTime": 635431326800000000
+    "ReleaseTime": 635431038800000000
   },
   {
     "Version": "14w32d",
     "Type": "Snapshot",
-    "ReleaseTime": 635431364210000000
+    "ReleaseTime": 635431076210000000
   },
   {
     "Version": "14w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 635435680940000000
+    "ReleaseTime": 635435392940000000
   },
   {
     "Version": "14w33b",
     "Type": "Snapshot",
-    "ReleaseTime": 635437454310000000
+    "ReleaseTime": 635437166310000000
   },
   {
     "Version": "14w33c",
     "Type": "Snapshot",
-    "ReleaseTime": 635437512260000000
+    "ReleaseTime": 635437224260000000
   },
   {
     "Version": "14w34a",
     "Type": "Snapshot",
-    "ReleaseTime": 635439968510000000
+    "ReleaseTime": 635439680510000000
   },
   {
     "Version": "14w34b",
     "Type": "Snapshot",
-    "ReleaseTime": 635440004680000000
+    "ReleaseTime": 635439716680000000
   },
   {
     "Version": "14w34c",
     "Type": "Snapshot",
-    "ReleaseTime": 635440878840000000
+    "ReleaseTime": 635440590840000000
   },
   {
     "Version": "14w34d",
     "Type": "Snapshot",
-    "ReleaseTime": 635441644190000000
+    "ReleaseTime": 635441356190000000
   },
   {
     "Version": "1.8-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635442549860000000
+    "ReleaseTime": 635442261860000000
   },
   {
     "Version": "1.8-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635446039380000000
+    "ReleaseTime": 635445751380000000
   },
   {
     "Version": "1.8-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635448444540000000
+    "ReleaseTime": 635448156540000000
   },
   {
     "Version": "1.8",
     "Type": "Release",
-    "ReleaseTime": 635452718750000000
+    "ReleaseTime": 635452430750000000
   },
   {
     "Version": "1.8.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635490051110000000
+    "ReleaseTime": 635489763110000000
   },
   {
     "Version": "1.8.1-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635490947670000000
+    "ReleaseTime": 635490659670000000
   },
   {
     "Version": "1.8.1-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635496947820000000
+    "ReleaseTime": 635496659820000000
   },
   {
     "Version": "1.8.1-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 635509086500000000
+    "ReleaseTime": 635508798500000000
   },
   {
     "Version": "1.8.1-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 635520330480000000
+    "ReleaseTime": 635520042480000000
   },
   {
     "Version": "1.8.1",
     "Type": "Release",
-    "ReleaseTime": 635524640110000000
+    "ReleaseTime": 635524352110000000
   },
   {
     "Version": "1.8.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635545277810000000
+    "ReleaseTime": 635544989810000000
   },
   {
     "Version": "1.8.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635569600510000000
+    "ReleaseTime": 635569312510000000
   },
   {
     "Version": "1.8.2-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635569658730000000
+    "ReleaseTime": 635569370730000000
   },
   {
     "Version": "1.8.2-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 635570435990000000
+    "ReleaseTime": 635570147990000000
   },
   {
     "Version": "1.8.2-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 635579102040000000
+    "ReleaseTime": 635578814040000000
   },
   {
     "Version": "1.8.2-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 635582447040000000
+    "ReleaseTime": 635582159040000000
   },
   {
     "Version": "1.8.2-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 635597172950000000
+    "ReleaseTime": 635596884950000000
   },
   {
     "Version": "1.8.2",
     "Type": "Release",
-    "ReleaseTime": 635599864490000000
+    "ReleaseTime": 635599576490000000
   },
   {
     "Version": "1.8.3",
     "Type": "Release",
-    "ReleaseTime": 635600664090000000
+    "ReleaseTime": 635600376090000000
   },
   {
     "Version": "15w14a",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 635634976800000000
+    "ReleaseTime": 635634688800000000
   },
   {
     "Version": "1.8.4",
     "Type": "Release",
-    "ReleaseTime": 635648962700000000
+    "ReleaseTime": 635648674700000000
   },
   {
     "Version": "1.8.5",
     "Type": "Release",
-    "ReleaseTime": 635679189280000000
+    "ReleaseTime": 635678901280000000
   },
   {
     "Version": "1.8.6",
     "Type": "Release",
-    "ReleaseTime": 635681754790000000
+    "ReleaseTime": 635681466790000000
   },
   {
     "Version": "1.8.7",
     "Type": "Release",
-    "ReleaseTime": 635691246440000000
+    "ReleaseTime": 635690958440000000
   },
   {
     "Version": "1.8.8",
     "Type": "Release",
-    "ReleaseTime": 635736186880000000
+    "ReleaseTime": 635735898880000000
   },
   {
     "Version": "15w31a",
     "Type": "Snapshot",
-    "ReleaseTime": 635738018730000000
+    "ReleaseTime": 635737730730000000
   },
   {
     "Version": "15w31b",
     "Type": "Snapshot",
-    "ReleaseTime": 635738891120000000
+    "ReleaseTime": 635738603120000000
   },
   {
     "Version": "15w31c",
     "Type": "Snapshot",
-    "ReleaseTime": 635739759080000000
+    "ReleaseTime": 635739471080000000
   },
   {
     "Version": "15w32a",
     "Type": "Snapshot",
-    "ReleaseTime": 635744029620000000
+    "ReleaseTime": 635743741620000000
   },
   {
     "Version": "15w32b",
     "Type": "Snapshot",
-    "ReleaseTime": 635744947070000000
+    "ReleaseTime": 635744659070000000
   },
   {
     "Version": "15w32c",
     "Type": "Snapshot",
-    "ReleaseTime": 635745820970000000
+    "ReleaseTime": 635745532970000000
   },
   {
     "Version": "15w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 635750139070000000
+    "ReleaseTime": 635749851070000000
   },
   {
     "Version": "15w33b",
     "Type": "Snapshot",
-    "ReleaseTime": 635750189510000000
+    "ReleaseTime": 635749901510000000
   },
   {
     "Version": "15w33c",
     "Type": "Snapshot",
-    "ReleaseTime": 635751834460000000
+    "ReleaseTime": 635751546460000000
   },
   {
     "Version": "15w34a",
     "Type": "Snapshot",
-    "ReleaseTime": 635756145610000000
+    "ReleaseTime": 635755857610000000
   },
   {
     "Version": "15w34b",
     "Type": "Snapshot",
-    "ReleaseTime": 635757048030000000
+    "ReleaseTime": 635756760030000000
   },
   {
     "Version": "15w34c",
     "Type": "Snapshot",
-    "ReleaseTime": 635757867200000000
+    "ReleaseTime": 635757579200000000
   },
   {
     "Version": "15w34d",
     "Type": "Snapshot",
-    "ReleaseTime": 635757964750000000
+    "ReleaseTime": 635757676750000000
   },
   {
     "Version": "15w35a",
     "Type": "Snapshot",
-    "ReleaseTime": 635760515710000000
+    "ReleaseTime": 635760227710000000
   },
   {
     "Version": "15w35b",
     "Type": "Snapshot",
-    "ReleaseTime": 635760563580000000
+    "ReleaseTime": 635760275580000000
   },
   {
     "Version": "15w35c",
     "Type": "Snapshot",
-    "ReleaseTime": 635763864600000000
+    "ReleaseTime": 635763576600000000
   },
   {
     "Version": "15w35d",
     "Type": "Snapshot",
-    "ReleaseTime": 635764047350000000
+    "ReleaseTime": 635763759350000000
   },
   {
     "Version": "15w35e",
     "Type": "Snapshot",
-    "ReleaseTime": 635764112420000000
+    "ReleaseTime": 635763824420000000
   },
   {
     "Version": "15w36a",
     "Type": "Snapshot",
-    "ReleaseTime": 635768308000000000
+    "ReleaseTime": 635768020000000000
   },
   {
     "Version": "15w36b",
     "Type": "Snapshot",
-    "ReleaseTime": 635768337850000000
+    "ReleaseTime": 635768049850000000
   },
   {
     "Version": "15w36c",
     "Type": "Snapshot",
-    "ReleaseTime": 635768356420000000
+    "ReleaseTime": 635768068420000000
   },
   {
     "Version": "15w36d",
     "Type": "Snapshot",
-    "ReleaseTime": 635770021510000000
+    "ReleaseTime": 635769733510000000
   },
   {
     "Version": "15w37a",
     "Type": "Snapshot",
-    "ReleaseTime": 635775205510000000
+    "ReleaseTime": 635774917510000000
   },
   {
     "Version": "15w38a",
     "Type": "Snapshot",
-    "ReleaseTime": 635780389510000000
+    "ReleaseTime": 635780101510000000
   },
   {
     "Version": "15w38b",
     "Type": "Snapshot",
-    "ReleaseTime": 635781253510000000
+    "ReleaseTime": 635780965510000000
   },
   {
     "Version": "15w39a",
     "Type": "Snapshot",
-    "ReleaseTime": 635784669920000000
+    "ReleaseTime": 635784381920000000
   },
   {
     "Version": "15w39b",
     "Type": "Snapshot",
-    "ReleaseTime": 635784737920000000
+    "ReleaseTime": 635784449920000000
   },
   {
     "Version": "15w39c",
     "Type": "Snapshot",
-    "ReleaseTime": 635786396340000000
+    "ReleaseTime": 635786108340000000
   },
   {
     "Version": "15w40a",
     "Type": "Snapshot",
-    "ReleaseTime": 635792444340000000
+    "ReleaseTime": 635792156340000000
   },
   {
     "Version": "15w40b",
     "Type": "Snapshot",
-    "ReleaseTime": 635792480340000000
+    "ReleaseTime": 635792192340000000
   },
   {
     "Version": "15w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 635798495930000000
+    "ReleaseTime": 635798207930000000
   },
   {
     "Version": "15w41b",
     "Type": "Snapshot",
-    "ReleaseTime": 635798524460000000
+    "ReleaseTime": 635798236460000000
   },
   {
     "Version": "15w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 635804547140000000
+    "ReleaseTime": 635804259140000000
   },
   {
     "Version": "15w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 635810669320000000
+    "ReleaseTime": 635810381320000000
   },
   {
     "Version": "15w43b",
     "Type": "Snapshot",
-    "ReleaseTime": 635811487180000000
+    "ReleaseTime": 635811199180000000
   },
   {
     "Version": "15w43c",
     "Type": "Snapshot",
-    "ReleaseTime": 635812401550000000
+    "ReleaseTime": 635812113550000000
   },
   {
     "Version": "15w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 635816705760000000
+    "ReleaseTime": 635816417760000000
   },
   {
     "Version": "15w44b",
     "Type": "Snapshot",
-    "ReleaseTime": 635818297970000000
+    "ReleaseTime": 635818009970000000
   },
   {
     "Version": "15w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 635823542470000000
+    "ReleaseTime": 635823254470000000
   },
   {
     "Version": "15w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 635829559070000000
+    "ReleaseTime": 635829271070000000
   },
   {
     "Version": "15w47a",
     "Type": "Snapshot",
-    "ReleaseTime": 635834876210000000
+    "ReleaseTime": 635834588210000000
   },
   {
     "Version": "15w47b",
     "Type": "Snapshot",
-    "ReleaseTime": 635835700830000000
+    "ReleaseTime": 635835412830000000
   },
   {
     "Version": "15w47c",
     "Type": "Snapshot",
-    "ReleaseTime": 635836492160000000
+    "ReleaseTime": 635836204160000000
   },
   {
     "Version": "15w49a",
     "Type": "Snapshot",
-    "ReleaseTime": 635846945770000000
+    "ReleaseTime": 635846657770000000
   },
   {
     "Version": "1.8.9",
     "Type": "Release",
-    "ReleaseTime": 635847602790000000
+    "ReleaseTime": 635847314790000000
   },
   {
     "Version": "15w49b",
     "Type": "Snapshot",
-    "ReleaseTime": 635847818020000000
+    "ReleaseTime": 635847530020000000
   },
   {
     "Version": "15w50a",
     "Type": "Snapshot",
-    "ReleaseTime": 635853009570000000
+    "ReleaseTime": 635852721570000000
   },
   {
     "Version": "15w51a",
     "Type": "Snapshot",
-    "ReleaseTime": 635859865570000000
+    "ReleaseTime": 635859577570000000
   },
   {
     "Version": "15w51b",
     "Type": "Snapshot",
-    "ReleaseTime": 635859918410000000
+    "ReleaseTime": 635859630410000000
   },
   {
     "Version": "16w02a",
     "Type": "Snapshot",
-    "ReleaseTime": 635883237160000000
+    "ReleaseTime": 635882949160000000
   },
   {
     "Version": "16w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 635889257640000000
+    "ReleaseTime": 635888969640000000
   },
   {
     "Version": "16w04a",
     "Type": "Snapshot",
-    "ReleaseTime": 635896210440000000
+    "ReleaseTime": 635895922440000000
   },
   {
     "Version": "16w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 635901401180000000
+    "ReleaseTime": 635901113180000000
   },
   {
     "Version": "16w05b",
     "Type": "Snapshot",
-    "ReleaseTime": 635902252820000000
+    "ReleaseTime": 635901964820000000
   },
   {
     "Version": "16w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 635907424010000000
+    "ReleaseTime": 635907136010000000
   },
   {
     "Version": "16w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 635911769260000000
+    "ReleaseTime": 635911481260000000
   },
   {
     "Version": "16w07b",
     "Type": "Snapshot",
-    "ReleaseTime": 635912617590000000
+    "ReleaseTime": 635912329590000000
   },
   {
     "Version": "1.9-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635913481990000000
+    "ReleaseTime": 635913193990000000
   },
   {
     "Version": "1.9-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635914428600000000
+    "ReleaseTime": 635914140600000000
   },
   {
     "Version": "1.9-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635919547560000000
+    "ReleaseTime": 635919259560000000
   },
   {
     "Version": "1.9-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 635921256710000000
+    "ReleaseTime": 635920968710000000
   },
   {
     "Version": "1.9",
     "Type": "Release",
-    "ReleaseTime": 635923793940000000
+    "ReleaseTime": 635923505940000000
   },
   {
     "Version": "1.9.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635931664490000000
+    "ReleaseTime": 635931376490000000
   },
   {
     "Version": "1.9.1-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635932479630000000
+    "ReleaseTime": 635932191630000000
   },
   {
     "Version": "1.9.1-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635933136360000000
+    "ReleaseTime": 635932848360000000
   },
   {
     "Version": "1.9.1",
     "Type": "Release",
-    "ReleaseTime": 635949709870000000
+    "ReleaseTime": 635949421870000000
   },
   {
     "Version": "1.9.2",
     "Type": "Release",
-    "ReleaseTime": 635949770350000000
+    "ReleaseTime": 635949482350000000
   },
   {
     "Version": "1.RV-Pre1",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 635950667330000000
+    "ReleaseTime": 635950379330000000
   },
   {
     "Version": "16w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 635956588710000000
+    "ReleaseTime": 635956300710000000
   },
   {
     "Version": "16w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 635960111080000000
+    "ReleaseTime": 635959823080000000
   },
   {
     "Version": "16w15b",
     "Type": "Snapshot",
-    "ReleaseTime": 635961814010000000
+    "ReleaseTime": 635961526010000000
   },
   {
     "Version": "1.9.3-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 635968681020000000
+    "ReleaseTime": 635968393020000000
   },
   {
     "Version": "1.9.3-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 635973896000000000
+    "ReleaseTime": 635973608000000000
   },
   {
     "Version": "1.9.3-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 635978932910000000
+    "ReleaseTime": 635978644910000000
   },
   {
     "Version": "1.9.3",
     "Type": "Release",
-    "ReleaseTime": 635984948150000000
+    "ReleaseTime": 635984660150000000
   },
   {
     "Version": "1.9.4",
     "Type": "Release",
-    "ReleaseTime": 635985010360000000
+    "ReleaseTime": 635984722360000000
   },
   {
     "Version": "16w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 635992011140000000
+    "ReleaseTime": 635991723140000000
   },
   {
     "Version": "16w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 635998075290000000
+    "ReleaseTime": 635997787290000000
   },
   {
     "Version": "16w21b",
     "Type": "Snapshot",
-    "ReleaseTime": 635998924420000000
+    "ReleaseTime": 635998636420000000
   },
   {
     "Version": "1.10-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636005043160000000
+    "ReleaseTime": 636004755160000000
   },
   {
     "Version": "1.10-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636009369940000000
+    "ReleaseTime": 636009081940000000
   },
   {
     "Version": "1.10",
     "Type": "Release",
-    "ReleaseTime": 636010167780000000
+    "ReleaseTime": 636009879780000000
   },
   {
     "Version": "1.10.1",
     "Type": "Release",
-    "ReleaseTime": 636022160020000000
+    "ReleaseTime": 636021872020000000
   },
   {
     "Version": "1.10.2",
     "Type": "Release",
-    "ReleaseTime": 636022990520000000
+    "ReleaseTime": 636022702520000000
   },
   {
     "Version": "16w32a",
     "Type": "Snapshot",
-    "ReleaseTime": 636064578100000000
+    "ReleaseTime": 636064290100000000
   },
   {
     "Version": "16w32b",
     "Type": "Snapshot",
-    "ReleaseTime": 636065516690000000
+    "ReleaseTime": 636065228690000000
   },
   {
     "Version": "16w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 636070637370000000
+    "ReleaseTime": 636070349370000000
   },
   {
     "Version": "16w35a",
     "Type": "Snapshot",
-    "ReleaseTime": 636083612180000000
+    "ReleaseTime": 636083324180000000
   },
   {
     "Version": "16w36a",
     "Type": "Snapshot",
-    "ReleaseTime": 636089721100000000
+    "ReleaseTime": 636089433100000000
   },
   {
     "Version": "16w38a",
     "Type": "Snapshot",
-    "ReleaseTime": 636100008490000000
+    "ReleaseTime": 636099720490000000
   },
   {
     "Version": "16w39a",
     "Type": "Snapshot",
-    "ReleaseTime": 636106951260000000
+    "ReleaseTime": 636106663260000000
   },
   {
     "Version": "16w39b",
     "Type": "Snapshot",
-    "ReleaseTime": 636107855790000000
+    "ReleaseTime": 636107567790000000
   },
   {
     "Version": "16w39c",
     "Type": "Snapshot",
-    "ReleaseTime": 636108703080000000
+    "ReleaseTime": 636108415080000000
   },
   {
     "Version": "16w40a",
     "Type": "Snapshot",
-    "ReleaseTime": 636113878790000000
+    "ReleaseTime": 636113590790000000
   },
   {
     "Version": "16w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 636119945150000000
+    "ReleaseTime": 636119657150000000
   },
   {
     "Version": "16w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 636125014670000000
+    "ReleaseTime": 636124726670000000
   },
   {
     "Version": "16w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 636131844510000000
+    "ReleaseTime": 636131556510000000
   },
   {
     "Version": "16w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 636138082310000000
+    "ReleaseTime": 636137794310000000
   },
   {
     "Version": "1.11-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636142381700000000
+    "ReleaseTime": 636142093700000000
   },
   {
     "Version": "1.11",
     "Type": "Release",
-    "ReleaseTime": 636147596800000000
+    "ReleaseTime": 636147308800000000
   },
   {
     "Version": "16w50a",
     "Type": "Snapshot",
-    "ReleaseTime": 636174383320000000
+    "ReleaseTime": 636174095320000000
   },
   {
     "Version": "1.11.1",
     "Type": "Release",
-    "ReleaseTime": 636178683340000000
+    "ReleaseTime": 636178395340000000
   },
   {
     "Version": "1.11.2",
     "Type": "Release",
-    "ReleaseTime": 636179381520000000
+    "ReleaseTime": 636179093520000000
   },
   {
     "Version": "17w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 636221853890000000
+    "ReleaseTime": 636221565890000000
   },
   {
     "Version": "17w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 636264919390000000
+    "ReleaseTime": 636264631390000000
   },
   {
     "Version": "17w13b",
     "Type": "Snapshot",
-    "ReleaseTime": 636265839950000000
+    "ReleaseTime": 636265551950000000
   },
   {
     "Version": "17w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 636270262810000000
+    "ReleaseTime": 636269974810000000
   },
   {
     "Version": "17w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 636276150500000000
+    "ReleaseTime": 636275862500000000
   },
   {
     "Version": "17w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 636283223150000000
+    "ReleaseTime": 636282935150000000
   },
   {
     "Version": "17w16b",
     "Type": "Snapshot",
-    "ReleaseTime": 636284017790000000
+    "ReleaseTime": 636283729790000000
   },
   {
     "Version": "17w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 636288401030000000
+    "ReleaseTime": 636288113030000000
   },
   {
     "Version": "17w17b",
     "Type": "Snapshot",
-    "ReleaseTime": 636289250630000000
+    "ReleaseTime": 636288962630000000
   },
   {
     "Version": "17w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 636294486230000000
+    "ReleaseTime": 636294198230000000
   },
   {
     "Version": "17w18b",
     "Type": "Snapshot",
-    "ReleaseTime": 636295308220000000
+    "ReleaseTime": 636295020220000000
   },
   {
     "Version": "1.12-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636300418370000000
+    "ReleaseTime": 636300130370000000
   },
   {
     "Version": "1.12-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636301302720000000
+    "ReleaseTime": 636301014720000000
   },
   {
     "Version": "1.12-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 636306557580000000
+    "ReleaseTime": 636306269580000000
   },
   {
     "Version": "1.12-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 636307360960000000
+    "ReleaseTime": 636307072960000000
   },
   {
     "Version": "1.12-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 636308054080000000
+    "ReleaseTime": 636307766080000000
   },
   {
     "Version": "1.12-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 636316839120000000
+    "ReleaseTime": 636316551120000000
   },
   {
     "Version": "1.12-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 636318538010000000
+    "ReleaseTime": 636318250010000000
   },
   {
     "Version": "1.12",
     "Type": "Release",
-    "ReleaseTime": 636320370270000000
+    "ReleaseTime": 636320082270000000
   },
   {
     "Version": "17w31a",
     "Type": "Snapshot",
-    "ReleaseTime": 636372060830000000
+    "ReleaseTime": 636371772830000000
   },
   {
     "Version": "1.12.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636372968350000000
+    "ReleaseTime": 636372680350000000
   },
   {
     "Version": "1.12.1",
     "Type": "Release",
-    "ReleaseTime": 636373896390000000
+    "ReleaseTime": 636373608390000000
   },
   {
     "Version": "1.12.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636409352110000000
+    "ReleaseTime": 636409064110000000
   },
   {
     "Version": "1.12.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636410892770000000
+    "ReleaseTime": 636410604770000000
   },
   {
     "Version": "1.12.2",
     "Type": "Release",
-    "ReleaseTime": 636413495860000000
+    "ReleaseTime": 636413207860000000
   },
   {
     "Version": "17w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 636445682300000000
+    "ReleaseTime": 636445394300000000
   },
   {
     "Version": "17w43b",
     "Type": "Snapshot",
-    "ReleaseTime": 636446505820000000
+    "ReleaseTime": 636446217820000000
   },
   {
     "Version": "17w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 636457816800000000
+    "ReleaseTime": 636457528800000000
   },
   {
     "Version": "17w45b",
     "Type": "Snapshot",
-    "ReleaseTime": 636459340220000000
+    "ReleaseTime": 636459052220000000
   },
   {
     "Version": "17w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 636463849150000000
+    "ReleaseTime": 636463561150000000
   },
   {
     "Version": "17w47a",
     "Type": "Snapshot",
-    "ReleaseTime": 636469800050000000
+    "ReleaseTime": 636469512050000000
   },
   {
     "Version": "17w47b",
     "Type": "Snapshot",
-    "ReleaseTime": 636470766120000000
+    "ReleaseTime": 636470478120000000
   },
   {
     "Version": "17w48a",
     "Type": "Snapshot",
-    "ReleaseTime": 636474225930000000
+    "ReleaseTime": 636473937930000000
   },
   {
     "Version": "17w49a",
     "Type": "Snapshot",
-    "ReleaseTime": 636481958700000000
+    "ReleaseTime": 636481670700000000
   },
   {
     "Version": "17w49b",
     "Type": "Snapshot",
-    "ReleaseTime": 636482861940000000
+    "ReleaseTime": 636482573940000000
   },
   {
     "Version": "17w50a",
     "Type": "Snapshot",
-    "ReleaseTime": 636486316880000000
+    "ReleaseTime": 636486028880000000
   },
   {
     "Version": "18w01a",
     "Type": "Snapshot",
-    "ReleaseTime": 636506117700000000
+    "ReleaseTime": 636505829700000000
   },
   {
     "Version": "18w02a",
     "Type": "Snapshot",
-    "ReleaseTime": 636512108950000000
+    "ReleaseTime": 636511820950000000
   },
   {
     "Version": "18w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 636518247240000000
+    "ReleaseTime": 636517959240000000
   },
   {
     "Version": "18w03b",
     "Type": "Snapshot",
-    "ReleaseTime": 636518273540000000
+    "ReleaseTime": 636517985540000000
   },
   {
     "Version": "18w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 636530311290000000
+    "ReleaseTime": 636530023290000000
   },
   {
     "Version": "18w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 636538037950000000
+    "ReleaseTime": 636537749950000000
   },
   {
     "Version": "18w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 636542552530000000
+    "ReleaseTime": 636542264530000000
   },
   {
     "Version": "18w07b",
     "Type": "Snapshot",
-    "ReleaseTime": 636543305220000000
+    "ReleaseTime": 636543017220000000
   },
   {
     "Version": "18w07c",
     "Type": "Snapshot",
-    "ReleaseTime": 636544130120000000
+    "ReleaseTime": 636543842120000000
   },
   {
     "Version": "18w08a",
     "Type": "Snapshot",
-    "ReleaseTime": 636548507400000000
+    "ReleaseTime": 636548219400000000
   },
   {
     "Version": "18w08b",
     "Type": "Snapshot",
-    "ReleaseTime": 636549398890000000
+    "ReleaseTime": 636549110890000000
   },
   {
     "Version": "18w09a",
     "Type": "Snapshot",
-    "ReleaseTime": 636555393100000000
+    "ReleaseTime": 636555105100000000
   },
   {
     "Version": "18w10a",
     "Type": "Snapshot",
-    "ReleaseTime": 636559772640000000
+    "ReleaseTime": 636559484640000000
   },
   {
     "Version": "18w10b",
     "Type": "Snapshot",
-    "ReleaseTime": 636560637610000000
+    "ReleaseTime": 636560349610000000
   },
   {
     "Version": "18w10c",
     "Type": "Snapshot",
-    "ReleaseTime": 636561485630000000
+    "ReleaseTime": 636561197630000000
   },
   {
     "Version": "18w10d",
     "Type": "Snapshot",
-    "ReleaseTime": 636562343520000000
+    "ReleaseTime": 636562055520000000
   },
   {
     "Version": "18w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 636565794590000000
+    "ReleaseTime": 636565506590000000
   },
   {
     "Version": "18w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 636584781740000000
+    "ReleaseTime": 636584493740000000
   },
   {
     "Version": "18w14b",
     "Type": "Snapshot",
-    "ReleaseTime": 636585650420000000
+    "ReleaseTime": 636585362420000000
   },
   {
     "Version": "18w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 636590840620000000
+    "ReleaseTime": 636590552620000000
   },
   {
     "Version": "18w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 636597747950000000
+    "ReleaseTime": 636597459950000000
   },
   {
     "Version": "18w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 636614103190000000
+    "ReleaseTime": 636613815190000000
   },
   {
     "Version": "18w19b",
     "Type": "Snapshot",
-    "ReleaseTime": 636614856510000000
+    "ReleaseTime": 636614568510000000
   },
   {
     "Version": "18w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 636620185450000000
+    "ReleaseTime": 636619897450000000
   },
   {
     "Version": "18w20b",
     "Type": "Snapshot",
-    "ReleaseTime": 636621069350000000
+    "ReleaseTime": 636620781350000000
   },
   {
     "Version": "18w20c",
     "Type": "Snapshot",
-    "ReleaseTime": 636621916160000000
+    "ReleaseTime": 636621628160000000
   },
   {
     "Version": "18w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 636627067090000000
+    "ReleaseTime": 636626779090000000
   },
   {
     "Version": "18w21b",
     "Type": "Snapshot",
-    "ReleaseTime": 636628685490000000
+    "ReleaseTime": 636628397490000000
   },
   {
     "Version": "18w22a",
     "Type": "Snapshot",
-    "ReleaseTime": 636632258350000000
+    "ReleaseTime": 636631970350000000
   },
   {
     "Version": "18w22b",
     "Type": "Snapshot",
-    "ReleaseTime": 636633137380000000
+    "ReleaseTime": 636632849380000000
   },
   {
     "Version": "18w22c",
     "Type": "Snapshot",
-    "ReleaseTime": 636634003950000000
+    "ReleaseTime": 636633715950000000
   },
   {
     "Version": "1.13-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636637510540000000
+    "ReleaseTime": 636637222540000000
   },
   {
     "Version": "1.13-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636646800000000000
+    "ReleaseTime": 636646512000000000
   },
   {
     "Version": "1.13-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 636652114310000000
+    "ReleaseTime": 636651826310000000
   },
   {
     "Version": "1.13-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 636656436550000000
+    "ReleaseTime": 636656148550000000
   },
   {
     "Version": "1.13-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 636658199330000000
+    "ReleaseTime": 636657911330000000
   },
   {
     "Version": "1.13-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 636663333600000000
+    "ReleaseTime": 636663045600000000
   },
   {
     "Version": "1.13-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 636668581020000000
+    "ReleaseTime": 636668293020000000
   },
   {
     "Version": "1.13-pre8",
     "Type": "PreRelease",
-    "ReleaseTime": 636671079000000000
+    "ReleaseTime": 636670791000000000
   },
   {
     "Version": "1.13-pre9",
     "Type": "PreRelease",
-    "ReleaseTime": 636673762620000000
+    "ReleaseTime": 636673474620000000
   },
   {
     "Version": "1.13-pre10",
     "Type": "PreRelease",
-    "ReleaseTime": 636674644860000000
+    "ReleaseTime": 636674356860000000
   },
   {
     "Version": "1.13",
     "Type": "Release",
-    "ReleaseTime": 636675523060000000
+    "ReleaseTime": 636675235060000000
   },
   {
     "Version": "18w30a",
     "Type": "Snapshot",
-    "ReleaseTime": 636681545710000000
+    "ReleaseTime": 636681257710000000
   },
   {
     "Version": "18w30b",
     "Type": "Snapshot",
-    "ReleaseTime": 636682468170000000
+    "ReleaseTime": 636682180170000000
   },
   {
     "Version": "18w31a",
     "Type": "Snapshot",
-    "ReleaseTime": 636687536840000000
+    "ReleaseTime": 636687248840000000
   },
   {
     "Version": "18w32a",
     "Type": "Snapshot",
-    "ReleaseTime": 636693598170000000
+    "ReleaseTime": 636693310170000000
   },
   {
     "Version": "18w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 636699689360000000
+    "ReleaseTime": 636699401360000000
   },
   {
     "Version": "1.13.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636700505240000000
+    "ReleaseTime": 636700217240000000
   },
   {
     "Version": "1.13.1-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636703987290000000
+    "ReleaseTime": 636703699290000000
   },
   {
     "Version": "1.13.1",
     "Type": "Release",
-    "ReleaseTime": 636705722220000000
+    "ReleaseTime": 636705434220000000
   },
   {
     "Version": "1.13.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636753228580000000
+    "ReleaseTime": 636752940580000000
   },
   {
     "Version": "1.13.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636754995720000000
+    "ReleaseTime": 636754707720000000
   },
   {
     "Version": "1.13.2",
     "Type": "Release",
-    "ReleaseTime": 636758340670000000
+    "ReleaseTime": 636758052670000000
   },
   {
     "Version": "18w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 636760039360000000
+    "ReleaseTime": 636759751360000000
   },
   {
     "Version": "18w43b",
     "Type": "Snapshot",
-    "ReleaseTime": 636760189500000000
+    "ReleaseTime": 636759901500000000
   },
   {
     "Version": "18w43c",
     "Type": "Snapshot",
-    "ReleaseTime": 636761688460000000
+    "ReleaseTime": 636761400460000000
   },
   {
     "Version": "18w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 636766253560000000
+    "ReleaseTime": 636765965560000000
   },
   {
     "Version": "18w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 636772272060000000
+    "ReleaseTime": 636771984060000000
   },
   {
     "Version": "18w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 636779149940000000
+    "ReleaseTime": 636778861940000000
   },
   {
     "Version": "18w47a",
     "Type": "Snapshot",
-    "ReleaseTime": 636784407220000000
+    "ReleaseTime": 636784119220000000
   },
   {
     "Version": "18w47b",
     "Type": "Snapshot",
-    "ReleaseTime": 636785956010000000
+    "ReleaseTime": 636785668010000000
   },
   {
     "Version": "18w48a",
     "Type": "Snapshot",
-    "ReleaseTime": 636791226980000000
+    "ReleaseTime": 636790938980000000
   },
   {
     "Version": "18w48b",
     "Type": "Snapshot",
-    "ReleaseTime": 636791998510000000
+    "ReleaseTime": 636791710510000000
   },
   {
     "Version": "18w49a",
     "Type": "Snapshot",
-    "ReleaseTime": 636796382700000000
+    "ReleaseTime": 636796094700000000
   },
   {
     "Version": "18w50a",
     "Type": "Snapshot",
-    "ReleaseTime": 636802522930000000
+    "ReleaseTime": 636802234930000000
   },
   {
     "Version": "19w02a",
     "Type": "Snapshot",
-    "ReleaseTime": 636826747270000000
+    "ReleaseTime": 636826459270000000
   },
   {
     "Version": "19w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 636832827020000000
+    "ReleaseTime": 636832539020000000
   },
   {
     "Version": "19w03b",
     "Type": "Snapshot",
-    "ReleaseTime": 636833690070000000
+    "ReleaseTime": 636833402070000000
   },
   {
     "Version": "19w03c",
     "Type": "Snapshot",
-    "ReleaseTime": 636834364330000000
+    "ReleaseTime": 636834076330000000
   },
   {
     "Version": "19w04a",
     "Type": "Snapshot",
-    "ReleaseTime": 636839695120000000
+    "ReleaseTime": 636839407120000000
   },
   {
     "Version": "19w04b",
     "Type": "Snapshot",
-    "ReleaseTime": 636840444150000000
+    "ReleaseTime": 636840156150000000
   },
   {
     "Version": "19w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 636844870090000000
+    "ReleaseTime": 636844582090000000
   },
   {
     "Version": "19w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 636850958530000000
+    "ReleaseTime": 636850670530000000
   },
   {
     "Version": "19w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 636856999280000000
+    "ReleaseTime": 636856711280000000
   },
   {
     "Version": "19w08a",
     "Type": "Snapshot",
-    "ReleaseTime": 636863002180000000
+    "ReleaseTime": 636862714180000000
   },
   {
     "Version": "19w08b",
     "Type": "Snapshot",
-    "ReleaseTime": 636863818890000000
+    "ReleaseTime": 636863530890000000
   },
   {
     "Version": "19w09a",
     "Type": "Snapshot",
-    "ReleaseTime": 636869042700000000
+    "ReleaseTime": 636868754700000000
   },
   {
     "Version": "19w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 636881111690000000
+    "ReleaseTime": 636880823690000000
   },
   {
     "Version": "19w11b",
     "Type": "Snapshot",
-    "ReleaseTime": 636881991830000000
+    "ReleaseTime": 636881703830000000
   },
   {
     "Version": "19w12a",
     "Type": "Snapshot",
-    "ReleaseTime": 636887260540000000
+    "ReleaseTime": 636886972540000000
   },
   {
     "Version": "19w12b",
     "Type": "Snapshot",
-    "ReleaseTime": 636888072010000000
+    "ReleaseTime": 636887784010000000
   },
   {
     "Version": "19w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 636893253310000000
+    "ReleaseTime": 636892965310000000
   },
   {
     "Version": "19w13b",
     "Type": "Snapshot",
-    "ReleaseTime": 636895040020000000
+    "ReleaseTime": 636894752020000000
   },
   {
     "Version": "3D Shareware v1.34",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 636897430880000000
+    "ReleaseTime": 636897142880000000
   },
   {
     "Version": "19w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 636899247000000000
+    "ReleaseTime": 636898959000000000
   },
   {
     "Version": "19w14b",
     "Type": "Snapshot",
-    "ReleaseTime": 636900860380000000
+    "ReleaseTime": 636900572380000000
   },
   {
     "Version": "1.14 Pre-Release 1",
     "Type": "PreRelease",
-    "ReleaseTime": 636905318560000000
+    "ReleaseTime": 636905030560000000
   },
   {
     "Version": "1.14 Pre-Release 2",
     "Type": "PreRelease",
-    "ReleaseTime": 636906947330000000
+    "ReleaseTime": 636906659330000000
   },
   {
     "Version": "1.14 Pre-Release 3",
     "Type": "PreRelease",
-    "ReleaseTime": 636910486300000000
+    "ReleaseTime": 636910198300000000
   },
   {
     "Version": "1.14 Pre-Release 4",
     "Type": "PreRelease",
-    "ReleaseTime": 636911406720000000
+    "ReleaseTime": 636911118720000000
   },
   {
     "Version": "1.14 Pre-Release 5",
     "Type": "PreRelease",
-    "ReleaseTime": 636912111190000000
+    "ReleaseTime": 636911823190000000
   },
   {
     "Version": "1.14",
     "Type": "Release",
-    "ReleaseTime": 636916567640000000
+    "ReleaseTime": 636916279640000000
   },
   {
     "Version": "1.14.1 Pre-Release 1",
     "Type": "PreRelease",
-    "ReleaseTime": 636928658820000000
+    "ReleaseTime": 636928370820000000
   },
   {
     "Version": "1.14.1 Pre-Release 2",
     "Type": "PreRelease",
-    "ReleaseTime": 636930360640000000
+    "ReleaseTime": 636930072640000000
   },
   {
     "Version": "1.14.1",
     "Type": "Release",
-    "ReleaseTime": 636933714120000000
+    "ReleaseTime": 636933426120000000
   },
   {
     "Version": "1.14.2 Pre-Release 1",
     "Type": "PreRelease",
-    "ReleaseTime": 636936468250000000
+    "ReleaseTime": 636936180250000000
   },
   {
     "Version": "1.14.2 Pre-Release 2",
     "Type": "PreRelease",
-    "ReleaseTime": 636937212630000000
+    "ReleaseTime": 636936924630000000
   },
   {
     "Version": "1.14.2 Pre-Release 3",
     "Type": "PreRelease",
-    "ReleaseTime": 636941563710000000
+    "ReleaseTime": 636941275710000000
   },
   {
     "Version": "1.14.2 Pre-Release 4",
     "Type": "PreRelease",
-    "ReleaseTime": 636945672710000000
+    "ReleaseTime": 636945384710000000
   },
   {
     "Version": "1.14.2",
     "Type": "Release",
-    "ReleaseTime": 636945833050000000
+    "ReleaseTime": 636945545050000000
   },
   {
     "Version": "1.14.3-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636951980600000000
+    "ReleaseTime": 636951692600000000
   },
   {
     "Version": "1.14.3-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636955242890000000
+    "ReleaseTime": 636954954890000000
   },
   {
     "Version": "1.14.3-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 636961250130000000
+    "ReleaseTime": 636960962130000000
   },
   {
     "Version": "1.14.3-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 636965702690000000
+    "ReleaseTime": 636965414690000000
   },
   {
     "Version": "1.14.3",
     "Type": "Release",
-    "ReleaseTime": 636970063720000000
+    "ReleaseTime": 636969775720000000
   },
   {
     "Version": "1.14.4-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 636977844610000000
+    "ReleaseTime": 636977556610000000
   },
   {
     "Version": "1.14.4-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 636978768650000000
+    "ReleaseTime": 636978480650000000
   },
   {
     "Version": "1.14.4-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 636982105020000000
+    "ReleaseTime": 636981817020000000
   },
   {
     "Version": "1.14.4-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 636983888090000000
+    "ReleaseTime": 636983600090000000
   },
   {
     "Version": "1.14.4-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 636984679530000000
+    "ReleaseTime": 636984391530000000
   },
   {
     "Version": "1.14.4-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 636988199890000000
+    "ReleaseTime": 636987911890000000
   },
   {
     "Version": "1.14.4-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 636990751560000000
+    "ReleaseTime": 636990463560000000
   },
   {
     "Version": "1.14.4",
     "Type": "Release",
-    "ReleaseTime": 636991539470000000
+    "ReleaseTime": 636991251470000000
   },
   {
     "Version": "19w34a",
     "Type": "Snapshot",
-    "ReleaseTime": 637021011810000000
+    "ReleaseTime": 637020723810000000
   },
   {
     "Version": "19w35a",
     "Type": "Snapshot",
-    "ReleaseTime": 637026301040000000
+    "ReleaseTime": 637026013040000000
   },
   {
     "Version": "19w36a",
     "Type": "Snapshot",
-    "ReleaseTime": 637032215740000000
+    "ReleaseTime": 637031927740000000
   },
   {
     "Version": "19w37a",
     "Type": "Snapshot",
-    "ReleaseTime": 637038280040000000
+    "ReleaseTime": 637037992040000000
   },
   {
     "Version": "19w38a",
     "Type": "Snapshot",
-    "ReleaseTime": 637044266020000000
+    "ReleaseTime": 637043978020000000
   },
   {
     "Version": "19w38b",
     "Type": "Snapshot",
-    "ReleaseTime": 637044443530000000
+    "ReleaseTime": 637044155530000000
   },
   {
     "Version": "19w39a",
     "Type": "Snapshot",
-    "ReleaseTime": 637052048130000000
+    "ReleaseTime": 637051760130000000
   },
   {
     "Version": "19w40a",
     "Type": "Snapshot",
-    "ReleaseTime": 637056492260000000
+    "ReleaseTime": 637056204260000000
   },
   {
     "Version": "19w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 637062600950000000
+    "ReleaseTime": 637062312950000000
   },
   {
     "Version": "19w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 637068654390000000
+    "ReleaseTime": 637068366390000000
   },
   {
     "Version": "19w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 637080751040000000
+    "ReleaseTime": 637080463040000000
   },
   {
     "Version": "19w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 637087691600000000
+    "ReleaseTime": 637087403600000000
   },
   {
     "Version": "19w45b",
     "Type": "Snapshot",
-    "ReleaseTime": 637088425640000000
+    "ReleaseTime": 637088137640000000
   },
   {
     "Version": "19w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 637092886660000000
+    "ReleaseTime": 637092598660000000
   },
   {
     "Version": "19w46b",
     "Type": "Snapshot",
-    "ReleaseTime": 637093637640000000
+    "ReleaseTime": 637093349640000000
   },
   {
     "Version": "1.15-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637099812770000000
+    "ReleaseTime": 637099524770000000
   },
   {
     "Version": "1.15-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637103309780000000
+    "ReleaseTime": 637103021780000000
   },
   {
     "Version": "1.15-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637105870700000000
+    "ReleaseTime": 637105582700000000
   },
   {
     "Version": "1.15-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 637110014640000000
+    "ReleaseTime": 637109726640000000
   },
   {
     "Version": "1.15-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 637111776000000000
+    "ReleaseTime": 637111488000000000
   },
   {
     "Version": "1.15-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 637112594700000000
+    "ReleaseTime": 637112306700000000
   },
   {
     "Version": "1.15-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 637115192510000000
+    "ReleaseTime": 637114904510000000
   },
   {
     "Version": "1.15",
     "Type": "Release",
-    "ReleaseTime": 637115228180000000
+    "ReleaseTime": 637114940180000000
   },
   {
     "Version": "1.15.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637117849500000000
+    "ReleaseTime": 637117561500000000
   },
   {
     "Version": "1.15.1",
     "Type": "Release",
-    "ReleaseTime": 637121177870000000
+    "ReleaseTime": 637120889870000000
   },
   {
     "Version": "1.15.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637146443710000000
+    "ReleaseTime": 637146155710000000
   },
   {
     "Version": "1.15.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637148037570000000
+    "ReleaseTime": 637147749570000000
   },
   {
     "Version": "1.15.2",
     "Type": "Release",
-    "ReleaseTime": 637148810320000000
+    "ReleaseTime": 637148522320000000
   },
   {
     "Version": "20w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 637165443220000000
+    "ReleaseTime": 637165155220000000
   },
   {
     "Version": "20w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 637173120490000000
+    "ReleaseTime": 637172832490000000
   },
   {
     "Version": "20w08a",
     "Type": "Snapshot",
-    "ReleaseTime": 637177446090000000
+    "ReleaseTime": 637177158090000000
   },
   {
     "Version": "20w09a",
     "Type": "Snapshot",
-    "ReleaseTime": 637183609880000000
+    "ReleaseTime": 637183321880000000
   },
   {
     "Version": "20w10a",
     "Type": "Snapshot",
-    "ReleaseTime": 637189645010000000
+    "ReleaseTime": 637189357010000000
   },
   {
     "Version": "20w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 637195697070000000
+    "ReleaseTime": 637195409070000000
   },
   {
     "Version": "20w12a",
     "Type": "Snapshot",
-    "ReleaseTime": 637201753260000000
+    "ReleaseTime": 637201465260000000
   },
   {
     "Version": "20w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 637207815330000000
+    "ReleaseTime": 637207527330000000
   },
   {
     "Version": "20w13b",
     "Type": "Snapshot",
-    "ReleaseTime": 637208532340000000
+    "ReleaseTime": 637208244340000000
   },
   {
     "Version": "20w14infinite",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 637213708280000000
+    "ReleaseTime": 637213420280000000
   },
   {
     "Version": "20w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 637214632860000000
+    "ReleaseTime": 637214344860000000
   },
   {
     "Version": "20w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 637219745640000000
+    "ReleaseTime": 637219457640000000
   },
   {
     "Version": "20w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 637225855810000000
+    "ReleaseTime": 637225567810000000
   },
   {
     "Version": "20w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 637231888700000000
+    "ReleaseTime": 637231600700000000
   },
   {
     "Version": "20w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 637237989940000000
+    "ReleaseTime": 637237701940000000
   },
   {
     "Version": "20w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 637244078040000000
+    "ReleaseTime": 637243790040000000
   },
   {
     "Version": "20w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 637250083030000000
+    "ReleaseTime": 637249795030000000
   },
   {
     "Version": "20w20b",
     "Type": "Snapshot",
-    "ReleaseTime": 637250697860000000
+    "ReleaseTime": 637250409860000000
   },
   {
     "Version": "20w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 637256020380000000
+    "ReleaseTime": 637255732380000000
   },
   {
     "Version": "20w22a",
     "Type": "Snapshot",
-    "ReleaseTime": 637263771020000000
+    "ReleaseTime": 637263483020000000
   },
   {
     "Version": "1.16-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637269202710000000
+    "ReleaseTime": 637268914710000000
   },
   {
     "Version": "1.16-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637269796790000000
+    "ReleaseTime": 637269508790000000
   },
   {
     "Version": "1.16-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637274266630000000
+    "ReleaseTime": 637273978630000000
   },
   {
     "Version": "1.16-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 637275159550000000
+    "ReleaseTime": 637274871550000000
   },
   {
     "Version": "1.16-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 637275980390000000
+    "ReleaseTime": 637275692390000000
   },
   {
     "Version": "1.16-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 637278658770000000
+    "ReleaseTime": 637278370770000000
   },
   {
     "Version": "1.16-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 637279470950000000
+    "ReleaseTime": 637279182950000000
   },
   {
     "Version": "1.16-pre8",
     "Type": "PreRelease",
-    "ReleaseTime": 637280307230000000
+    "ReleaseTime": 637280019230000000
   },
   {
     "Version": "1.16-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637281101680000000
+    "ReleaseTime": 637280813680000000
   },
   {
     "Version": "1.16",
     "Type": "Release",
-    "ReleaseTime": 637285548520000000
+    "ReleaseTime": 637285260520000000
   },
   {
     "Version": "1.16.1",
     "Type": "Release",
-    "ReleaseTime": 637286203000000000
+    "ReleaseTime": 637285915000000000
   },
   {
     "Version": "20w27a",
     "Type": "Snapshot",
-    "ReleaseTime": 637292416550000000
+    "ReleaseTime": 637292128550000000
   },
   {
     "Version": "20w28a",
     "Type": "Snapshot",
-    "ReleaseTime": 637298466400000000
+    "ReleaseTime": 637298178400000000
   },
   {
     "Version": "20w29a",
     "Type": "Snapshot",
-    "ReleaseTime": 637304480270000000
+    "ReleaseTime": 637304192270000000
   },
   {
     "Version": "20w30a",
     "Type": "Snapshot",
-    "ReleaseTime": 637310559150000000
+    "ReleaseTime": 637310271150000000
   },
   {
     "Version": "1.16.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637316543450000000
+    "ReleaseTime": 637316255450000000
   },
   {
     "Version": "1.16.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637322670500000000
+    "ReleaseTime": 637322382500000000
   },
   {
     "Version": "1.16.2-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637323578920000000
+    "ReleaseTime": 637323290920000000
   },
   {
     "Version": "1.16.2-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637324365390000000
+    "ReleaseTime": 637324077390000000
   },
   {
     "Version": "1.16.2-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637326854160000000
+    "ReleaseTime": 637326566160000000
   },
   {
     "Version": "1.16.2",
     "Type": "Release",
-    "ReleaseTime": 637327664260000000
+    "ReleaseTime": 637327376260000000
   },
   {
     "Version": "1.16.3-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637351076460000000
+    "ReleaseTime": 637350788460000000
   },
   {
     "Version": "1.16.3",
     "Type": "Release",
-    "ReleaseTime": 637353709570000000
+    "ReleaseTime": 637353421570000000
   },
   {
     "Version": "1.16.4-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637382253670000000
+    "ReleaseTime": 637381965670000000
   },
   {
     "Version": "1.16.4-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637390063370000000
+    "ReleaseTime": 637389775370000000
   },
   {
     "Version": "1.16.4-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637394418680000000
+    "ReleaseTime": 637394130680000000
   },
   {
     "Version": "1.16.4",
     "Type": "Release",
-    "ReleaseTime": 637396121770000000
+    "ReleaseTime": 637395833770000000
   },
   {
     "Version": "20w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 637401337200000000
+    "ReleaseTime": 637401049200000000
   },
   {
     "Version": "20w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 637407342320000000
+    "ReleaseTime": 637407054320000000
   },
   {
     "Version": "20w48a",
     "Type": "Snapshot",
-    "ReleaseTime": 637419445440000000
+    "ReleaseTime": 637419157440000000
   },
   {
     "Version": "20w49a",
     "Type": "Snapshot",
-    "ReleaseTime": 637425532400000000
+    "ReleaseTime": 637425244400000000
   },
   {
     "Version": "20w51a",
     "Type": "Snapshot",
-    "ReleaseTime": 637437616770000000
+    "ReleaseTime": 637437328770000000
   },
   {
     "Version": "1.16.5-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637461791350000000
+    "ReleaseTime": 637461503350000000
   },
   {
     "Version": "1.16.5",
     "Type": "Release",
-    "ReleaseTime": 637462659320000000
+    "ReleaseTime": 637462371320000000
   },
   {
     "Version": "21w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 637467801890000000
+    "ReleaseTime": 637467513890000000
   },
   {
     "Version": "21w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 637479934140000000
+    "ReleaseTime": 637479646140000000
   },
   {
     "Version": "21w05b",
     "Type": "Snapshot",
-    "ReleaseTime": 637480769690000000
+    "ReleaseTime": 637480481690000000
   },
   {
     "Version": "21w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 637486028340000000
+    "ReleaseTime": 637485740340000000
   },
   {
     "Version": "21w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 637492053400000000
+    "ReleaseTime": 637491765400000000
   },
   {
     "Version": "21w08a",
     "Type": "Snapshot",
-    "ReleaseTime": 637498031310000000
+    "ReleaseTime": 637497743310000000
   },
   {
     "Version": "21w08b",
     "Type": "Snapshot",
-    "ReleaseTime": 637498791940000000
+    "ReleaseTime": 637498503940000000
   },
   {
     "Version": "21w10a",
     "Type": "Snapshot",
-    "ReleaseTime": 637510154780000000
+    "ReleaseTime": 637509866780000000
   },
   {
     "Version": "21w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 637516191500000000
+    "ReleaseTime": 637515903500000000
   },
   {
     "Version": "21w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 637528330660000000
+    "ReleaseTime": 637528042660000000
   },
   {
     "Version": "21w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 637534298490000000
+    "ReleaseTime": 637534010490000000
   },
   {
     "Version": "21w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 637540332940000000
+    "ReleaseTime": 637540044940000000
   },
   {
     "Version": "21w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 637546488740000000
+    "ReleaseTime": 637546200740000000
   },
   {
     "Version": "21w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 637552436450000000
+    "ReleaseTime": 637552148450000000
   },
   {
     "Version": "21w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 637558538750000000
+    "ReleaseTime": 637558250750000000
   },
   {
     "Version": "21w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 637564439550000000
+    "ReleaseTime": 637564151550000000
   },
   {
     "Version": "21w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 637570633220000000
+    "ReleaseTime": 637570345220000000
   },
   {
     "Version": "1.17-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637577339610000000
+    "ReleaseTime": 637577051610000000
   },
   {
     "Version": "1.17-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637581020450000000
+    "ReleaseTime": 637580732450000000
   },
   {
     "Version": "1.17-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637581878260000000
+    "ReleaseTime": 637581590260000000
   },
   {
     "Version": "1.17-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 637582761430000000
+    "ReleaseTime": 637582473430000000
   },
   {
     "Version": "1.17-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 637583652880000000
+    "ReleaseTime": 637583364880000000
   },
   {
     "Version": "1.17-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637584386880000000
+    "ReleaseTime": 637584098880000000
   },
   {
     "Version": "1.17-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637586919880000000
+    "ReleaseTime": 637586631880000000
   },
   {
     "Version": "1.17",
     "Type": "Release",
-    "ReleaseTime": 637587756400000000
+    "ReleaseTime": 637587468400000000
   },
   {
     "Version": "1.17.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637596446800000000
+    "ReleaseTime": 637596158800000000
   },
   {
     "Version": "1.17.1-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637606052520000000
+    "ReleaseTime": 637605764520000000
   },
   {
     "Version": "1.17.1-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637606933960000000
+    "ReleaseTime": 637606645960000000
   },
   {
     "Version": "1.17.1-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637607786170000000
+    "ReleaseTime": 637607498170000000
   },
   {
     "Version": "1.17.1-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637611154810000000
+    "ReleaseTime": 637610866810000000
   },
   {
     "Version": "1.17.1",
     "Type": "Release",
-    "ReleaseTime": 637611984940000000
+    "ReleaseTime": 637611696940000000
   },
   {
     "Version": "21w37a",
     "Type": "Snapshot",
-    "ReleaseTime": 637673474700000000
+    "ReleaseTime": 637673186700000000
   },
   {
     "Version": "21w38a",
     "Type": "Snapshot",
-    "ReleaseTime": 637680333660000000
+    "ReleaseTime": 637680045660000000
   },
   {
     "Version": "21w39a",
     "Type": "Snapshot",
-    "ReleaseTime": 637685584250000000
+    "ReleaseTime": 637685296250000000
   },
   {
     "Version": "21w40a",
     "Type": "Snapshot",
-    "ReleaseTime": 637692310700000000
+    "ReleaseTime": 637692022700000000
   },
   {
     "Version": "21w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 637697642030000000
+    "ReleaseTime": 637697354030000000
   },
   {
     "Version": "21w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 637703592850000000
+    "ReleaseTime": 637703304850000000
   },
   {
     "Version": "21w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 637709711350000000
+    "ReleaseTime": 637709423350000000
   },
   {
     "Version": "21w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 637715816740000000
+    "ReleaseTime": 637715528740000000
   },
   {
     "Version": "1.18-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637722728460000000
+    "ReleaseTime": 637722440460000000
   },
   {
     "Version": "1.18-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637727078880000000
+    "ReleaseTime": 637726790880000000
   },
   {
     "Version": "1.18-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637727906650000000
+    "ReleaseTime": 637727618650000000
   },
   {
     "Version": "1.18-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 637727980760000000
+    "ReleaseTime": 637727692760000000
   },
   {
     "Version": "1.18-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 637729624290000000
+    "ReleaseTime": 637729336290000000
   },
   {
     "Version": "1.18-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 637732265450000000
+    "ReleaseTime": 637731977450000000
   },
   {
     "Version": "1.18-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 637733110610000000
+    "ReleaseTime": 637732822610000000
   },
   {
     "Version": "1.18-pre8",
     "Type": "PreRelease",
-    "ReleaseTime": 637733914520000000
+    "ReleaseTime": 637733626520000000
   },
   {
     "Version": "1.18-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637734761290000000
+    "ReleaseTime": 637734473290000000
   },
   {
     "Version": "1.18-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637735465240000000
+    "ReleaseTime": 637735177240000000
   },
   {
     "Version": "1.18-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637735675160000000
+    "ReleaseTime": 637735387160000000
   },
   {
     "Version": "1.18-rc4",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637738190220000000
+    "ReleaseTime": 637737902220000000
   },
   {
     "Version": "1.18",
     "Type": "Release",
-    "ReleaseTime": 637738893890000000
+    "ReleaseTime": 637738605890000000
   },
   {
     "Version": "1.18.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637741647380000000
+    "ReleaseTime": 637741359380000000
   },
   {
     "Version": "1.18.1-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637745179670000000
+    "ReleaseTime": 637744891670000000
   },
   {
     "Version": "1.18.1-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637745921760000000
+    "ReleaseTime": 637745633760000000
   },
   {
     "Version": "1.18.1-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637747329980000000
+    "ReleaseTime": 637747041980000000
   },
   {
     "Version": "1.18.1",
     "Type": "Release",
-    "ReleaseTime": 637747501800000000
+    "ReleaseTime": 637747213800000000
   },
   {
     "Version": "22w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 637782338990000000
+    "ReleaseTime": 637782050990000000
   },
   {
     "Version": "22w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 637794437190000000
+    "ReleaseTime": 637794149190000000
   },
   {
     "Version": "22w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 637800508680000000
+    "ReleaseTime": 637800220680000000
   },
   {
     "Version": "22w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 637806536380000000
+    "ReleaseTime": 637806248380000000
   },
   {
     "Version": "1.18.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637808256320000000
+    "ReleaseTime": 637807968320000000
   },
   {
     "Version": "1.18.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637810827790000000
+    "ReleaseTime": 637810539790000000
   },
   {
     "Version": "1.18.2-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637812553920000000
+    "ReleaseTime": 637812265920000000
   },
   {
     "Version": "1.18.2-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637814211400000000
+    "ReleaseTime": 637813923400000000
   },
   {
     "Version": "1.18.2",
     "Type": "Release",
-    "ReleaseTime": 637816705650000000
+    "ReleaseTime": 637816417650000000
   },
   {
     "Version": "22w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 637830717380000000
+    "ReleaseTime": 637830429380000000
   },
   {
     "Version": "22w12a",
     "Type": "Snapshot",
-    "ReleaseTime": 637837641020000000
+    "ReleaseTime": 637837353020000000
   },
   {
     "Version": "22w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 637843640050000000
+    "ReleaseTime": 637843352050000000
   },
   {
     "Version": "22w13oneblockatatime",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 637844398180000000
+    "ReleaseTime": 637844110180000000
   },
   {
     "Version": "22w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 637848778320000000
+    "ReleaseTime": 637848490320000000
   },
   {
     "Version": "22w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 637854900770000000
+    "ReleaseTime": 637854612770000000
   },
   {
     "Version": "22w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 637860910270000000
+    "ReleaseTime": 637860622270000000
   },
   {
     "Version": "22w16b",
     "Type": "Snapshot",
-    "ReleaseTime": 637861011320000000
+    "ReleaseTime": 637860723320000000
   },
   {
     "Version": "22w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 637867004550000000
+    "ReleaseTime": 637866716550000000
   },
   {
     "Version": "22w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 637873008950000000
+    "ReleaseTime": 637872720950000000
   },
   {
     "Version": "22w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 637879953710000000
+    "ReleaseTime": 637879665710000000
   },
   {
     "Version": "1.19-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637885075140000000
+    "ReleaseTime": 637884787140000000
   },
   {
     "Version": "1.19-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637889432400000000
+    "ReleaseTime": 637889144400000000
   },
   {
     "Version": "1.19-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637890982070000000
+    "ReleaseTime": 637890694070000000
   },
   {
     "Version": "1.19-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 637895473810000000
+    "ReleaseTime": 637895185810000000
   },
   {
     "Version": "1.19-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 637897065830000000
+    "ReleaseTime": 637896777830000000
   },
   {
     "Version": "1.19-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637897975720000000
+    "ReleaseTime": 637897687720000000
   },
   {
     "Version": "1.19-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637898824450000000
+    "ReleaseTime": 637898536450000000
   },
   {
     "Version": "1.19",
     "Type": "Release",
-    "ReleaseTime": 637902205380000000
+    "ReleaseTime": 637901917380000000
   },
   {
     "Version": "22w24a",
     "Type": "Snapshot",
-    "ReleaseTime": 637909357090000000
+    "ReleaseTime": 637909069090000000
   },
   {
     "Version": "1.19.1-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 637914572390000000
+    "ReleaseTime": 637914284390000000
   },
   {
     "Version": "1.19.1-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637916275610000000
+    "ReleaseTime": 637915987610000000
   },
   {
     "Version": "1.19.1-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 637922302400000000
+    "ReleaseTime": 637922014400000000
   },
   {
     "Version": "1.19.1-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 637927446460000000
+    "ReleaseTime": 637927158460000000
   },
   {
     "Version": "1.19.1-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 637929061190000000
+    "ReleaseTime": 637928773190000000
   },
   {
     "Version": "1.19.1-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 637935115040000000
+    "ReleaseTime": 637934827040000000
   },
   {
     "Version": "1.19.1-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 637939577710000000
+    "ReleaseTime": 637939289710000000
   },
   {
     "Version": "1.19.1-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637940463500000000
+    "ReleaseTime": 637940175500000000
   },
   {
     "Version": "1.19.1-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637944752750000000
+    "ReleaseTime": 637944464750000000
   },
   {
     "Version": "1.19.1",
     "Type": "Release",
-    "ReleaseTime": 637945395330000000
+    "ReleaseTime": 637945107330000000
   },
   {
     "Version": "1.19.2-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637952332460000000
+    "ReleaseTime": 637952044460000000
   },
   {
     "Version": "1.19.2-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 637952519840000000
+    "ReleaseTime": 637952231840000000
   },
   {
     "Version": "1.19.2",
     "Type": "Release",
-    "ReleaseTime": 637953262250000000
+    "ReleaseTime": 637952974250000000
   },
   {
     "Version": "22w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 638017976620000000
+    "ReleaseTime": 638017688620000000
   },
   {
     "Version": "22w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 638024109590000000
+    "ReleaseTime": 638023821590000000
   },
   {
     "Version": "22w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 638030205430000000
+    "ReleaseTime": 638029917430000000
   },
   {
     "Version": "22w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 638036298160000000
+    "ReleaseTime": 638036010160000000
   },
   {
     "Version": "22w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 638042311700000000
+    "ReleaseTime": 638042023700000000
   },
   {
     "Version": "1.19.3-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638047511770000000
+    "ReleaseTime": 638047223770000000
   },
   {
     "Version": "1.19.3-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638048455450000000
+    "ReleaseTime": 638048167450000000
   },
   {
     "Version": "1.19.3-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638053576880000000
+    "ReleaseTime": 638053288880000000
   },
   {
     "Version": "1.19.3-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638055279180000000
+    "ReleaseTime": 638054991180000000
   },
   {
     "Version": "1.19.3-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638058720940000000
+    "ReleaseTime": 638058432940000000
   },
   {
     "Version": "1.19.3-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638059478410000000
+    "ReleaseTime": 638059190410000000
   },
   {
     "Version": "1.19.3",
     "Type": "Release",
-    "ReleaseTime": 638060266380000000
+    "ReleaseTime": 638059978380000000
   },
   {
     "Version": "23w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 638096730310000000
+    "ReleaseTime": 638096442310000000
   },
   {
     "Version": "23w04a",
     "Type": "Snapshot",
-    "ReleaseTime": 638101991460000000
+    "ReleaseTime": 638101703460000000
   },
   {
     "Version": "23w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 638108868330000000
+    "ReleaseTime": 638108580330000000
   },
   {
     "Version": "23w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 638114940040000000
+    "ReleaseTime": 638114652040000000
   },
   {
     "Version": "23w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 638120971490000000
+    "ReleaseTime": 638120683490000000
   },
   {
     "Version": "1.19.4-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638127072340000000
+    "ReleaseTime": 638126784340000000
   },
   {
     "Version": "1.19.4-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638131307330000000
+    "ReleaseTime": 638131019330000000
   },
   {
     "Version": "1.19.4-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638133054650000000
+    "ReleaseTime": 638132766650000000
   },
   {
     "Version": "1.19.4-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638139065020000000
+    "ReleaseTime": 638138777020000000
   },
   {
     "Version": "1.19.4-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638139981500000000
+    "ReleaseTime": 638139693500000000
   },
   {
     "Version": "1.19.4-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638140777740000000
+    "ReleaseTime": 638140489740000000
   },
   {
     "Version": "1.19.4-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638143273910000000
+    "ReleaseTime": 638142985910000000
   },
   {
     "Version": "1.19.4",
     "Type": "Release",
-    "ReleaseTime": 638144241780000000
+    "ReleaseTime": 638143953780000000
   },
   {
     "Version": "23w12a",
     "Type": "Snapshot",
-    "ReleaseTime": 638151173220000000
+    "ReleaseTime": 638150885220000000
   },
   {
     "Version": "23w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 638157236560000000
+    "ReleaseTime": 638156948560000000
   },
   {
     "Version": "23w13a_or_b",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 638159791380000000
+    "ReleaseTime": 638159503380000000
   },
   {
     "Version": "23w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 638163219170000000
+    "ReleaseTime": 638162931170000000
   },
   {
     "Version": "23w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 638176173190000000
+    "ReleaseTime": 638175885190000000
   },
   {
     "Version": "23w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 638181365880000000
+    "ReleaseTime": 638181077880000000
   },
   {
     "Version": "23w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 638187389660000000
+    "ReleaseTime": 638187101660000000
   },
   {
     "Version": "1.20-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638193467740000000
+    "ReleaseTime": 638193179740000000
   },
   {
     "Version": "1.20-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638198624940000000
+    "ReleaseTime": 638198336940000000
   },
   {
     "Version": "1.20-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638201219860000000
+    "ReleaseTime": 638200931860000000
   },
   {
     "Version": "1.20-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638201276250000000
+    "ReleaseTime": 638200988250000000
   },
   {
     "Version": "1.20-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 638204701720000000
+    "ReleaseTime": 638204413720000000
   },
   {
     "Version": "1.20-pre6",
     "Type": "PreRelease",
-    "ReleaseTime": 638206429200000000
+    "ReleaseTime": 638206141200000000
   },
   {
     "Version": "1.20-pre7",
     "Type": "PreRelease",
-    "ReleaseTime": 638209934740000000
+    "ReleaseTime": 638209646740000000
   },
   {
     "Version": "1.20-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638211620130000000
+    "ReleaseTime": 638211332130000000
   },
   {
     "Version": "1.20",
     "Type": "Release",
-    "ReleaseTime": 638213205770000000
+    "ReleaseTime": 638212917770000000
   },
   {
     "Version": "1.20.1-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638219457490000000
+    "ReleaseTime": 638219169490000000
   },
   {
     "Version": "1.20.1",
     "Type": "Release",
-    "ReleaseTime": 638222019510000000
+    "ReleaseTime": 638221731510000000
   },
   {
     "Version": "23w31a",
     "Type": "Snapshot",
-    "ReleaseTime": 638265097930000000
+    "ReleaseTime": 638264809930000000
   },
   {
     "Version": "23w32a",
     "Type": "Snapshot",
-    "ReleaseTime": 638272088650000000
+    "ReleaseTime": 638271800650000000
   },
   {
     "Version": "23w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 638278979480000000
+    "ReleaseTime": 638278691480000000
   },
   {
     "Version": "23w35a",
     "Type": "Snapshot",
-    "ReleaseTime": 638290202750000000
+    "ReleaseTime": 638289914750000000
   },
   {
     "Version": "1.20.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638295411800000000
+    "ReleaseTime": 638295123800000000
   },
   {
     "Version": "1.20.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638297161520000000
+    "ReleaseTime": 638296873520000000
   },
   {
     "Version": "1.20.2-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638301465080000000
+    "ReleaseTime": 638301177080000000
   },
   {
     "Version": "1.20.2-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638302432110000000
+    "ReleaseTime": 638302144110000000
   },
   {
     "Version": "1.20.2-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638304090300000000
+    "ReleaseTime": 638303802300000000
   },
   {
     "Version": "1.20.2-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638306660970000000
+    "ReleaseTime": 638306372970000000
   },
   {
     "Version": "1.20.2",
     "Type": "Release",
-    "ReleaseTime": 638308261770000000
+    "ReleaseTime": 638307973770000000
   },
   {
     "Version": "23w40a",
     "Type": "Snapshot",
-    "ReleaseTime": 638320493330000000
+    "ReleaseTime": 638320205330000000
   },
   {
     "Version": "23w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 638326531660000000
+    "ReleaseTime": 638326243660000000
   },
   {
     "Version": "23w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 638332546480000000
+    "ReleaseTime": 638332258480000000
   },
   {
     "Version": "23w43a",
     "Type": "Snapshot",
-    "ReleaseTime": 638338664770000000
+    "ReleaseTime": 638338376770000000
   },
   {
     "Version": "23w43b",
     "Type": "Snapshot",
-    "ReleaseTime": 638339535760000000
+    "ReleaseTime": 638339247760000000
   },
   {
     "Version": "23w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 638344674520000000
+    "ReleaseTime": 638344386520000000
   },
   {
     "Version": "23w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 638350775980000000
+    "ReleaseTime": 638350487980000000
   },
   {
     "Version": "23w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 638357694930000000
+    "ReleaseTime": 638357406930000000
   },
   {
     "Version": "1.20.3-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638361204140000000
+    "ReleaseTime": 638360916140000000
   },
   {
     "Version": "1.20.3-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638362812860000000
+    "ReleaseTime": 638362524860000000
   },
   {
     "Version": "1.20.3-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638367206760000000
+    "ReleaseTime": 638366918760000000
   },
   {
     "Version": "1.20.3-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638368048520000000
+    "ReleaseTime": 638367760520000000
   },
   {
     "Version": "1.20.3-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638369773050000000
+    "ReleaseTime": 638369485050000000
   },
   {
     "Version": "1.20.3",
     "Type": "Release",
-    "ReleaseTime": 638373174320000000
+    "ReleaseTime": 638372886320000000
   },
   {
     "Version": "1.20.4-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638374990810000000
+    "ReleaseTime": 638374702810000000
   },
   {
     "Version": "1.20.4",
     "Type": "Release",
-    "ReleaseTime": 638375793800000000
+    "ReleaseTime": 638375505800000000
   },
   {
     "Version": "23w51a",
     "Type": "Snapshot",
-    "ReleaseTime": 638385322060000000
+    "ReleaseTime": 638385034060000000
   },
   {
     "Version": "23w51b",
     "Type": "Snapshot",
-    "ReleaseTime": 638385395540000000
+    "ReleaseTime": 638385107540000000
   },
   {
     "Version": "24w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 638411231600000000
+    "ReleaseTime": 638410943600000000
   },
   {
     "Version": "24w03b",
     "Type": "Snapshot",
-    "ReleaseTime": 638412073570000000
+    "ReleaseTime": 638411785570000000
   },
   {
     "Version": "24w04a",
     "Type": "Snapshot",
-    "ReleaseTime": 638417293650000000
+    "ReleaseTime": 638417005650000000
   },
   {
     "Version": "24w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 638423319260000000
+    "ReleaseTime": 638423031260000000
   },
   {
     "Version": "24w05b",
     "Type": "Snapshot",
-    "ReleaseTime": 638424177140000000
+    "ReleaseTime": 638423889140000000
   },
   {
     "Version": "24w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 638429428380000000
+    "ReleaseTime": 638429140380000000
   },
   {
     "Version": "24w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 638435406610000000
+    "ReleaseTime": 638435118610000000
   },
   {
     "Version": "24w09a",
     "Type": "Snapshot",
-    "ReleaseTime": 638447494920000000
+    "ReleaseTime": 638447206920000000
   },
   {
     "Version": "24w10a",
     "Type": "Snapshot",
-    "ReleaseTime": 638453470550000000
+    "ReleaseTime": 638453182550000000
   },
   {
     "Version": "24w11a",
     "Type": "Snapshot",
-    "ReleaseTime": 638460516930000000
+    "ReleaseTime": 638460228930000000
   },
   {
     "Version": "24w12a",
     "Type": "Snapshot",
-    "ReleaseTime": 638465711170000000
+    "ReleaseTime": 638465423170000000
   },
   {
     "Version": "24w13a",
     "Type": "Snapshot",
-    "ReleaseTime": 638471754200000000
+    "ReleaseTime": 638471466200000000
   },
   {
     "Version": "24w14potato",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 638475952390000000
+    "ReleaseTime": 638475664390000000
   },
   {
     "Version": "24w14a",
     "Type": "Snapshot",
-    "ReleaseTime": 638477705790000000
+    "ReleaseTime": 638477417790000000
   },
   {
     "Version": "1.20.5-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638483786650000000
+    "ReleaseTime": 638483498650000000
   },
   {
     "Version": "1.20.5-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638488101650000000
+    "ReleaseTime": 638487813650000000
   },
   {
     "Version": "1.20.5-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638488942500000000
+    "ReleaseTime": 638488654500000000
   },
   {
     "Version": "1.20.5-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638489805620000000
+    "ReleaseTime": 638489517620000000
   },
   {
     "Version": "1.20.5-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638490663400000000
+    "ReleaseTime": 638490375400000000
   },
   {
     "Version": "1.20.5-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638491579950000000
+    "ReleaseTime": 638491291950000000
   },
   {
     "Version": "1.20.5-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638494189540000000
+    "ReleaseTime": 638493901540000000
   },
   {
     "Version": "1.20.5",
     "Type": "Release",
-    "ReleaseTime": 638494988520000000
+    "ReleaseTime": 638494700520000000
   },
   {
     "Version": "1.20.6-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638497519370000000
+    "ReleaseTime": 638497231370000000
   },
   {
     "Version": "1.20.6",
     "Type": "Release",
-    "ReleaseTime": 638500200450000000
+    "ReleaseTime": 638499912450000000
   },
   {
     "Version": "24w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 638503637070000000
+    "ReleaseTime": 638503349070000000
   },
   {
     "Version": "24w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 638509689310000000
+    "ReleaseTime": 638509401310000000
   },
   {
     "Version": "24w19b",
     "Type": "Snapshot",
-    "ReleaseTime": 638509771620000000
+    "ReleaseTime": 638509483620000000
   },
   {
     "Version": "24w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 638514000350000000
+    "ReleaseTime": 638513712350000000
   },
   {
     "Version": "24w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 638520131060000000
+    "ReleaseTime": 638519843060000000
   },
   {
     "Version": "24w21b",
     "Type": "Snapshot",
-    "ReleaseTime": 638520207410000000
+    "ReleaseTime": 638519919410000000
   },
   {
     "Version": "1.21-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638526098830000000
+    "ReleaseTime": 638525810830000000
   },
   {
     "Version": "1.21-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638527850960000000
+    "ReleaseTime": 638527562960000000
   },
   {
     "Version": "1.21-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638532031040000000
+    "ReleaseTime": 638531743040000000
   },
   {
     "Version": "1.21-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638533872150000000
+    "ReleaseTime": 638533584150000000
   },
   {
     "Version": "1.21-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638536478480000000
+    "ReleaseTime": 638536190480000000
   },
   {
     "Version": "1.21",
     "Type": "Release",
-    "ReleaseTime": 638538926430000000
+    "ReleaseTime": 638538638430000000
   },
   {
     "Version": "1.21.1-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638586665580000000
+    "ReleaseTime": 638586377580000000
   },
   {
     "Version": "1.21.1",
     "Type": "Release",
-    "ReleaseTime": 638587454850000000
+    "ReleaseTime": 638587166850000000
   },
   {
     "Version": "24w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 638593511740000000
+    "ReleaseTime": 638593223740000000
   },
   {
     "Version": "24w34a",
     "Type": "Snapshot",
-    "ReleaseTime": 638598752530000000
+    "ReleaseTime": 638598464530000000
   },
   {
     "Version": "24w35a",
     "Type": "Snapshot",
-    "ReleaseTime": 638604735100000000
+    "ReleaseTime": 638604447100000000
   },
   {
     "Version": "24w36a",
     "Type": "Snapshot",
-    "ReleaseTime": 638610794520000000
+    "ReleaseTime": 638610506520000000
   },
   {
     "Version": "24w37a",
     "Type": "Snapshot",
-    "ReleaseTime": 638616852910000000
+    "ReleaseTime": 638616564910000000
   },
   {
     "Version": "24w38a",
     "Type": "Snapshot",
-    "ReleaseTime": 638622883270000000
+    "ReleaseTime": 638622595270000000
   },
   {
     "Version": "24w39a",
     "Type": "Snapshot",
-    "ReleaseTime": 638628953210000000
+    "ReleaseTime": 638628665210000000
   },
   {
     "Version": "24w40a",
     "Type": "Snapshot",
-    "ReleaseTime": 638635005420000000
+    "ReleaseTime": 638634717420000000
   },
   {
     "Version": "1.21.2-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638640193320000000
+    "ReleaseTime": 638639905320000000
   },
   {
     "Version": "1.21.2-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638641907540000000
+    "ReleaseTime": 638641619540000000
   },
   {
     "Version": "1.21.2-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638642755470000000
+    "ReleaseTime": 638642467470000000
   },
   {
     "Version": "1.21.2-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638646191510000000
+    "ReleaseTime": 638645903510000000
   },
   {
     "Version": "1.21.2-pre5",
     "Type": "PreRelease",
-    "ReleaseTime": 638647110350000000
+    "ReleaseTime": 638646822350000000
   },
   {
     "Version": "1.21.2-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638647945980000000
+    "ReleaseTime": 638647657980000000
   },
   {
     "Version": "1.21.2-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638651515850000000
+    "ReleaseTime": 638651227850000000
   },
   {
     "Version": "1.21.2",
     "Type": "Release",
-    "ReleaseTime": 638652167350000000
+    "ReleaseTime": 638651879350000000
   },
   {
     "Version": "1.21.3",
     "Type": "Release",
-    "ReleaseTime": 638653120950000000
+    "ReleaseTime": 638652832950000000
   },
   {
     "Version": "24w44a",
     "Type": "Snapshot",
-    "ReleaseTime": 638659184350000000
+    "ReleaseTime": 638658896350000000
   },
   {
     "Version": "24w45a",
     "Type": "Snapshot",
-    "ReleaseTime": 638665255180000000
+    "ReleaseTime": 638664967180000000
   },
   {
     "Version": "24w46a",
     "Type": "Snapshot",
-    "ReleaseTime": 638671291580000000
+    "ReleaseTime": 638671003580000000
   },
   {
     "Version": "1.21.4-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638677359000000000
+    "ReleaseTime": 638677071000000000
   },
   {
     "Version": "1.21.4-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638681663150000000
+    "ReleaseTime": 638681375150000000
   },
   {
     "Version": "1.21.4-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638682592490000000
+    "ReleaseTime": 638682304490000000
   },
   {
     "Version": "1.21.4-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638684147410000000
+    "ReleaseTime": 638683859410000000
   },
   {
     "Version": "1.21.4-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638685019930000000
+    "ReleaseTime": 638684731930000000
   },
   {
     "Version": "1.21.4-rc3",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638685253730000000
+    "ReleaseTime": 638684965730000000
   },
   {
     "Version": "1.21.4",
     "Type": "Release",
-    "ReleaseTime": 638688463770000000
+    "ReleaseTime": 638688175770000000
   },
   {
     "Version": "25w02a",
     "Type": "Snapshot",
-    "ReleaseTime": 638719693380000000
+    "ReleaseTime": 638719405380000000
   },
   {
     "Version": "25w03a",
     "Type": "Snapshot",
-    "ReleaseTime": 638725768840000000
+    "ReleaseTime": 638725480840000000
   },
   {
     "Version": "25w04a",
     "Type": "Snapshot",
-    "ReleaseTime": 638731772840000000
+    "ReleaseTime": 638731484840000000
   },
   {
     "Version": "25w05a",
     "Type": "Snapshot",
-    "ReleaseTime": 638737850340000000
+    "ReleaseTime": 638737562340000000
   },
   {
     "Version": "25w06a",
     "Type": "Snapshot",
-    "ReleaseTime": 638743848770000000
+    "ReleaseTime": 638743560770000000
   },
   {
     "Version": "25w07a",
     "Type": "Snapshot",
-    "ReleaseTime": 638750769370000000
+    "ReleaseTime": 638750481370000000
   },
   {
     "Version": "25w08a",
     "Type": "Snapshot",
-    "ReleaseTime": 638755981030000000
+    "ReleaseTime": 638755693030000000
   },
   {
     "Version": "25w09a",
     "Type": "Snapshot",
-    "ReleaseTime": 638762085620000000
+    "ReleaseTime": 638761797620000000
   },
   {
     "Version": "25w09b",
     "Type": "Snapshot",
-    "ReleaseTime": 638762800280000000
+    "ReleaseTime": 638762512280000000
   },
   {
     "Version": "25w10a",
     "Type": "Snapshot",
-    "ReleaseTime": 638768058730000000
+    "ReleaseTime": 638767770730000000
   },
   {
     "Version": "1.21.5-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638773229840000000
+    "ReleaseTime": 638772941840000000
   },
   {
     "Version": "1.21.5-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638774085620000000
+    "ReleaseTime": 638773797620000000
   },
   {
     "Version": "1.21.5-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638779319100000000
+    "ReleaseTime": 638779031100000000
   },
   {
     "Version": "1.21.5-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638781039480000000
+    "ReleaseTime": 638780751480000000
   },
   {
     "Version": "1.21.5-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638784472230000000
+    "ReleaseTime": 638784184230000000
   },
   {
     "Version": "1.21.5",
     "Type": "Release",
-    "ReleaseTime": 638785304980000000
+    "ReleaseTime": 638785016980000000
   },
   {
     "Version": "25w14craftmine",
     "Type": "AprilFoolsDay",
-    "ReleaseTime": 638791482090000000
+    "ReleaseTime": 638791194090000000
   },
   {
     "Version": "25w15a",
     "Type": "Snapshot",
-    "ReleaseTime": 638797402190000000
+    "ReleaseTime": 638797114190000000
   },
   {
     "Version": "25w16a",
     "Type": "Snapshot",
-    "ReleaseTime": 638803441180000000
+    "ReleaseTime": 638803153180000000
   },
   {
     "Version": "25w17a",
     "Type": "Snapshot",
-    "ReleaseTime": 638809518900000000
+    "ReleaseTime": 638809230900000000
   },
   {
     "Version": "25w18a",
     "Type": "Snapshot",
-    "ReleaseTime": 638815548610000000
+    "ReleaseTime": 638815260610000000
   },
   {
     "Version": "25w19a",
     "Type": "Snapshot",
-    "ReleaseTime": 638821618770000000
+    "ReleaseTime": 638821330770000000
   },
   {
     "Version": "25w20a",
     "Type": "Snapshot",
-    "ReleaseTime": 638827623880000000
+    "ReleaseTime": 638827335880000000
   },
   {
     "Version": "25w21a",
     "Type": "Snapshot",
-    "ReleaseTime": 638833685490000000
+    "ReleaseTime": 638833397490000000
   },
   {
     "Version": "1.21.6-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638840504440000000
+    "ReleaseTime": 638840216440000000
   },
   {
     "Version": "1.21.6-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638844972470000000
+    "ReleaseTime": 638844684470000000
   },
   {
     "Version": "1.21.6-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638846696050000000
+    "ReleaseTime": 638846408050000000
   },
   {
     "Version": "1.21.6-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638851837560000000
+    "ReleaseTime": 638851549560000000
   },
   {
     "Version": "1.21.6-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638853554770000000
+    "ReleaseTime": 638853266770000000
   },
   {
     "Version": "1.21.6",
     "Type": "Release",
-    "ReleaseTime": 638857842280000000
+    "ReleaseTime": 638857554280000000
   },
   {
     "Version": "1.21.7-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638864809190000000
+    "ReleaseTime": 638864521190000000
   },
   {
     "Version": "1.21.7-rc2",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638865719600000000
+    "ReleaseTime": 638865431600000000
   },
   {
     "Version": "1.21.7",
     "Type": "Release",
-    "ReleaseTime": 638869015360000000
+    "ReleaseTime": 638868727360000000
   },
   {
     "Version": "1.21.8-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638882125700000000
+    "ReleaseTime": 638881837700000000
   },
   {
     "Version": "1.21.8",
     "Type": "Release",
-    "ReleaseTime": 638883794420000000
+    "ReleaseTime": 638883506420000000
   },
   {
     "Version": "25w31a",
     "Type": "Snapshot",
-    "ReleaseTime": 638894141730000000
+    "ReleaseTime": 638893853730000000
   },
   {
     "Version": "25w32a",
     "Type": "Snapshot",
-    "ReleaseTime": 638900221050000000
+    "ReleaseTime": 638899933050000000
   },
   {
     "Version": "25w33a",
     "Type": "Snapshot",
-    "ReleaseTime": 638906247240000000
+    "ReleaseTime": 638905959240000000
   },
   {
     "Version": "25w34a",
     "Type": "Snapshot",
-    "ReleaseTime": 638912309900000000
+    "ReleaseTime": 638912021900000000
   },
   {
     "Version": "25w34b",
     "Type": "Snapshot",
-    "ReleaseTime": 638912413490000000
+    "ReleaseTime": 638912125490000000
   },
   {
     "Version": "25w35a",
     "Type": "Snapshot",
-    "ReleaseTime": 638918346820000000
+    "ReleaseTime": 638918058820000000
   },
   {
     "Version": "25w36a",
     "Type": "Snapshot",
-    "ReleaseTime": 638924393100000000
+    "ReleaseTime": 638924105100000000
   },
   {
     "Version": "25w36b",
     "Type": "Snapshot",
-    "ReleaseTime": 638924536520000000
+    "ReleaseTime": 638924248520000000
   },
   {
     "Version": "25w37a",
     "Type": "Snapshot",
-    "ReleaseTime": 638930498610000000
+    "ReleaseTime": 638930210610000000
   },
   {
     "Version": "1.21.9-pre1",
     "Type": "PreRelease",
-    "ReleaseTime": 638936502120000000
+    "ReleaseTime": 638936214120000000
   },
   {
     "Version": "1.21.9-pre2",
     "Type": "PreRelease",
-    "ReleaseTime": 638939009380000000
+    "ReleaseTime": 638938721380000000
   },
   {
     "Version": "1.21.9-pre3",
     "Type": "PreRelease",
-    "ReleaseTime": 638941714550000000
+    "ReleaseTime": 638941426550000000
   },
   {
     "Version": "1.21.9-pre4",
     "Type": "PreRelease",
-    "ReleaseTime": 638942650880000000
+    "ReleaseTime": 638942362880000000
   },
   {
     "Version": "1.21.9-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638944308880000000
+    "ReleaseTime": 638944020880000000
   },
   {
     "Version": "1.21.9",
     "Type": "Release",
-    "ReleaseTime": 638948591230000000
+    "ReleaseTime": 638948303230000000
   },
   {
     "Version": "1.21.10-rc1",
     "Type": "ReleaseCandidate",
-    "ReleaseTime": 638950325560000000
+    "ReleaseTime": 638950037560000000
   },
   {
     "Version": "1.21.10",
     "Type": "Release",
-    "ReleaseTime": 638954542430000000
+    "ReleaseTime": 638954254430000000
   },
   {
     "Version": "25w41a",
     "Type": "Snapshot",
-    "ReleaseTime": 638956428950000000
+    "ReleaseTime": 638956140950000000
   },
   {
     "Version": "25w42a",
     "Type": "Snapshot",
-    "ReleaseTime": 638960716900000000
+    "ReleaseTime": 638960428900000000
+  },
+  {
+    "Version": "25w43a",
+    "Type": "Snapshot",
+    "ReleaseTime": 638966435310000000
+  },
+  {
+    "Version": "25w44a",
+    "Type": "Snapshot",
+    "ReleaseTime": 638972569480000000
+  },
+  {
+    "Version": "25w45a",
+    "Type": "Snapshot",
+    "ReleaseTime": 638978610640000000
+  },
+  {
+    "Version": "25w46a",
+    "Type": "Snapshot",
+    "ReleaseTime": 638984631000000000
+  },
+  {
+    "Version": "1.21.11-pre1",
+    "Type": "PreRelease",
+    "ReleaseTime": 638991364050000000
+  },
+  {
+    "Version": "1.21.11-pre2",
+    "Type": "PreRelease",
+    "ReleaseTime": 638993222550000000
+  },
+  {
+    "Version": "1.21.11-pre3",
+    "Type": "PreRelease",
+    "ReleaseTime": 638996758100000000
+  },
+  {
+    "Version": "1.21.11-pre4",
+    "Type": "PreRelease",
+    "ReleaseTime": 639001918520000000
+  },
+  {
+    "Version": "1.21.11-pre5",
+    "Type": "PreRelease",
+    "ReleaseTime": 639003644650000000
+  },
+  {
+    "Version": "1.21.11-rc1",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639004584430000000
+  },
+  {
+    "Version": "1.21.11-rc2",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639005300600000000
+  },
+  {
+    "Version": "1.21.11-rc3",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639007966570000000
+  },
+  {
+    "Version": "1.21.11",
+    "Type": "Release",
+    "ReleaseTime": 639008798100000000
+  },
+  {
+    "Version": "26.1-snapshot-1",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639014857490000000
+  },
+  {
+    "Version": "26.1-snapshot-2",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639033862830000000
+  },
+  {
+    "Version": "26.1-snapshot-3",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639039052540000000
+  },
+  {
+    "Version": "26.1-snapshot-4",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639045153370000000
+  },
+  {
+    "Version": "26.1-snapshot-5",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639051156770000000
+  },
+  {
+    "Version": "26.1-snapshot-6",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639057196120000000
+  },
+  {
+    "Version": "26.1-snapshot-7",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639063987360000000
+  },
+  {
+    "Version": "26.1-snapshot-8",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639069289440000000
+  },
+  {
+    "Version": "26.1-snapshot-9",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639070064100000000
+  },
+  {
+    "Version": "26.1-snapshot-10",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639075350180000000
+  },
+  {
+    "Version": "26.1-snapshot-11",
+    "Type": "NewSnapshot",
+    "ReleaseTime": 639081397110000000
+  },
+  {
+    "Version": "26.1-pre-1",
+    "Type": "PreRelease",
+    "ReleaseTime": 639087444380000000
+  },
+  {
+    "Version": "26.1-pre-2",
+    "Type": "PreRelease",
+    "ReleaseTime": 639090033350000000
+  },
+  {
+    "Version": "26.1-pre-3",
+    "Type": "PreRelease",
+    "ReleaseTime": 639093514530000000
+  },
+  {
+    "Version": "26.1-rc-1",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639095285270000000
+  },
+  {
+    "Version": "26.1-rc-2",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639095988730000000
+  },
+  {
+    "Version": "26.1-rc-3",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639098611140000000
+  },
+  {
+    "Version": "26.1",
+    "Type": "Release",
+    "ReleaseTime": 639099510640000000
   }
 ]
