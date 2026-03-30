@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace QuanLib.Minecraft.Versions
 {
-    public class VersionList : ISingleton<VersionList>, ISingletonFactory<VersionList>
+    public class VersionList : ISingleton<VersionList>, ISingletonFactory<VersionList>, ISingletonFactory<VersionList, VersionList.InstantiateArgs>
     {
-        private VersionList(IList<MinecraftVersion.Model> models)
+        private VersionList(IEnumerable<MinecraftVersion.Model> models)
         {
             ArgumentNullException.ThrowIfNull(models, nameof(models));
 
@@ -24,6 +24,7 @@ namespace QuanLib.Minecraft.Versions
             List<PreReleaseVersion> preReleaseVersionsList = [];
             List<OldPreReleaseVersion> oldPreReleaseVersions = [];
             List<SnapshotVersion> snapshotVersionsList = [];
+            List<NewSnapshotVersion> newSnapshotVersionsList = [];
             List<AprilFoolsDayVersion> aprilFoolsDayVersionsList = [];
             List<AncientVersion> oldBetaVersionsList = [];
             List<AncientVersion> oldAlphaVersionsList = [];
@@ -53,6 +54,9 @@ namespace QuanLib.Minecraft.Versions
                     case VersionType.Snapshot:
                         snapshotVersionsList.Add(new SnapshotVersion(model.Version, time));
                         break;
+                    case VersionType.NewSnapshot:
+                        newSnapshotVersionsList.Add(new NewSnapshotVersion(model.Version, time));
+                        break;
                     case VersionType.AprilFoolsDay:
                         aprilFoolsDayVersionsList.Add(new AprilFoolsDayVersion(model.Version, time));
                         break;
@@ -79,11 +83,26 @@ namespace QuanLib.Minecraft.Versions
                 }
             }
 
+            releaseVersionsList.Sort();
+            releaseCandidateVersionsList.Sort();
+            preReleaseVersionsList.Sort();
+            oldPreReleaseVersions.Sort();
+            snapshotVersionsList.Sort();
+            aprilFoolsDayVersionsList.Sort();
+            newSnapshotVersionsList.Sort();
+            oldBetaVersionsList.Sort();
+            oldAlphaVersionsList.Sort();
+            infdevVersionsList.Sort();
+            indevVersionsList.Sort();
+            classicVersionsList.Sort();
+            preClassicVersionsList.Sort();
+
             ReleaseVersions = releaseVersionsList.AsReadOnly();
             ReleaseCandidateVersions = releaseCandidateVersionsList.AsReadOnly();
             PreReleaseVersions = preReleaseVersionsList.AsReadOnly();
             OldPreReleaseVersions = oldPreReleaseVersions.AsReadOnly();
             SnapshotVersions = snapshotVersionsList.AsReadOnly();
+            NewSnapshotVersions = newSnapshotVersionsList.AsReadOnly();
             AprilFoolsDayVersions = aprilFoolsDayVersionsList.AsReadOnly();
             OldBetaVersions = oldBetaVersionsList.AsReadOnly();
             OldAlphaVersions = oldAlphaVersionsList.AsReadOnly();
@@ -98,6 +117,7 @@ namespace QuanLib.Minecraft.Versions
             allVersions.AddRange(preReleaseVersionsList);
             allVersions.AddRange(oldPreReleaseVersions);
             allVersions.AddRange(snapshotVersionsList);
+            allVersions.AddRange(newSnapshotVersionsList);
             allVersions.AddRange(aprilFoolsDayVersionsList);
             allVersions.AddRange(oldBetaVersionsList);
             allVersions.AddRange(oldAlphaVersionsList);
@@ -105,7 +125,9 @@ namespace QuanLib.Minecraft.Versions
             allVersions.AddRange(indevVersionsList);
             allVersions.AddRange(classicVersionsList);
             allVersions.AddRange(preClassicVersionsList);
-            AllVersions = allVersions.OrderBy(version => version.ReleaseTime).ToArray().AsReadOnly();
+            allVersions.Sort();
+
+            AllVersions = allVersions.AsReadOnly();
         }
 
         private static readonly Lock _slock = new();
@@ -124,6 +146,8 @@ namespace QuanLib.Minecraft.Versions
         public ReadOnlyCollection<OldPreReleaseVersion> OldPreReleaseVersions { get; }
 
         public ReadOnlyCollection<SnapshotVersion> SnapshotVersions { get; }
+
+        public ReadOnlyCollection<NewSnapshotVersion> NewSnapshotVersions { get; }
 
         public ReadOnlyCollection<AprilFoolsDayVersion> AprilFoolsDayVersions { get; }
 
@@ -148,7 +172,7 @@ namespace QuanLib.Minecraft.Versions
             return AllVersions.FirstOrDefault(version => version.VersionNumber == versionNumber) ?? throw new ArgumentException($"找不到游戏版本“{versionNumber}”", nameof(versionNumber));
         }
 
-        public bool TryGetVersion(string versionNumber, [MaybeNullWhen(false)]out MinecraftVersion result)
+        public bool TryGetVersion(string versionNumber, [MaybeNullWhen(false)] out MinecraftVersion result)
         {
             ArgumentNullException.ThrowIfNull(versionNumber, nameof(versionNumber));
 
@@ -165,6 +189,12 @@ namespace QuanLib.Minecraft.Versions
             }
         }
 
+        public string BuildJson()
+        {
+            List<MinecraftVersion.Model> models = AllVersions.Select(s => s.ToDataModel()).ToList();
+            return JsonSerializer.Serialize(models, new JsonSerializerOptions { WriteIndented = true });
+        }
+
         public static VersionList LoadInstance()
         {
             lock (_slock)
@@ -174,12 +204,36 @@ namespace QuanLib.Minecraft.Versions
 
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 using Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".SystemResource.version_list.json") ?? throw new InvalidOperationException();
-                string text = stream.ReadAllText();
+                string json = stream.ReadAllText();
+                var models = JsonSerializer.Deserialize<List<MinecraftVersion.Model>>(json) ?? throw new FormatException();
 
-                List<MinecraftVersion.Model> models = JsonSerializer.Deserialize<List<MinecraftVersion.Model>>(text) ?? throw new FormatException();
                 _Instance = new VersionList(models);
                 return _Instance;
             }
+        }
+
+        public static VersionList LoadInstance(InstantiateArgs args)
+        {
+            lock (_slock)
+            {
+                if (_Instance is not null)
+                    throw new InvalidOperationException("试图重复加载单例实例");
+
+                _Instance = new VersionList(args.Models);
+                return _Instance;
+            }
+        }
+
+        public class InstantiateArgs : Core.InstantiateArgs
+        {
+            public InstantiateArgs(IEnumerable<MinecraftVersion.Model> models)
+            {
+                ArgumentNullException.ThrowIfNull(models, nameof(models));
+
+                Models = models;
+            }
+
+            public IEnumerable<MinecraftVersion.Model> Models { get; }
         }
     }
 }

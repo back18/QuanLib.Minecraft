@@ -29,6 +29,16 @@ namespace QuanLib.Minecraft.Versions
 
         public abstract bool IsAncientVersion { get; }
 
+        public Model ToDataModel()
+        {
+            return new Model
+            {
+                Version = VersionNumber,
+                Type = Type.ToString(),
+                ReleaseTime = ReleaseTime.Ticks
+            };
+        }
+
         public override bool Equals(object? obj)
         {
             return Equals(obj as MinecraftVersion);

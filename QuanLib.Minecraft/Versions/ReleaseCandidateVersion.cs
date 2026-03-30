@@ -9,7 +9,7 @@ namespace QuanLib.Minecraft.Versions
 {
     public partial class ReleaseCandidateVersion : MinecraftVersion
     {
-        public const string PATTERN = @"^(\d+)\.(\d+)(?:\.(\d+))?-rc(\d+)$";
+        public const string PATTERN = @"^(\d+)\.(\d+)(?:\.(\d+))?-rc-?(\d+)$";
 
         public ReleaseCandidateVersion(string versionNumber, DateTime releaseTime) : base(versionNumber, VersionType.ReleaseCandidate, releaseTime)
         {

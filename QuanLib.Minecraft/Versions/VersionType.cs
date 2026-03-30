@@ -16,6 +16,8 @@ namespace QuanLib.Minecraft.Versions
 
         OldPreRelease,
 
+        NewSnapshot,
+
         Snapshot,
 
         AprilFoolsDay,

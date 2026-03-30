@@ -7,7 +7,7 @@ using System.Timers;
 
 namespace QuanLib.Minecraft.Versions.Extensions
 {
-    public static class MinecraftVersionExtension
+    public static class MinecraftVersionExtensions
     {
         private static MinecraftVersion? _version_1_18;
         private static MinecraftVersion? _version_1_2_1;
