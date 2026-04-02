@@ -4378,5 +4378,20 @@
     "Version": "26.1",
     "Type": "Release",
     "ReleaseTime": 639099510640000000
+  },
+  {
+    "Version": "26.1.1-rc-1",
+    "Type": "ReleaseCandidate",
+    "ReleaseTime": 639105484410000000
+  },
+  {
+    "Version": "26.1.1",
+    "Type": "Release",
+    "ReleaseTime": 639106311960000000
+  },
+  {
+    "Version": "26w14a",
+    "Type": "AprilFoolsDay",
+    "ReleaseTime": 639106424100000000
   }
 ]

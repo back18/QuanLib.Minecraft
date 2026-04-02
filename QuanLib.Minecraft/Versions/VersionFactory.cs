@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace QuanLib.Minecraft.Versions
 {
-    public static class VersionFactory
+    public static partial class VersionFactory
     {
-        public static VersionType Parse(string versionNumber, string versionType)
+        public const string PATTERN = @"^(\d+)w(\d+)([a-z])$";
+
+        public static VersionType Parse(string versionNumber, string versionType, DateTime releaseTime)
         {
             switch (versionType)
             {
@@ -16,15 +19,17 @@ namespace QuanLib.Minecraft.Versions
                 case "snapshot":
                     if (AprilFoolsDayVersion.IsAprilFoolsDayVersion(versionNumber))
                         return VersionType.AprilFoolsDay;
+                    else if (releaseTime.Month == 4 && releaseTime.Day == 1)
+                        return VersionType.AprilFoolsDay;
+                    else if (SnapshotVersionRegex().IsMatch(versionNumber))
+                        return VersionType.Snapshot;
+                    else if (versionNumber.Contains("snapshot"))
+                        return VersionType.NewSnapshot;
                     else if (versionNumber.Contains("pre") || versionNumber.Contains("Pre-Release"))
                         return VersionType.PreRelease;
                     else if (versionNumber.Contains("rc"))
                         return VersionType.ReleaseCandidate;
-                    else if (versionNumber.Contains("snapshot"))
-                        return VersionType.NewSnapshot;
-                    else if (versionNumber.Contains('w'))
-                        return VersionType.Snapshot;
-                    else if (versionNumber.Contains('.'))
+                    else if (releaseTime.Year < 2014)
                         return VersionType.OldPreRelease;
                     else
                         throw new FormatException($"Unknown snapshot version format: {versionNumber}");
@@ -66,5 +71,8 @@ namespace QuanLib.Minecraft.Versions
                 _ => throw new InvalidEnumArgumentException(nameof(versionType), (int)versionType, typeof(VersionType)),
             };
         }
+
+        [GeneratedRegex(PATTERN)]
+        private static partial Regex SnapshotVersionRegex();
     }
 }

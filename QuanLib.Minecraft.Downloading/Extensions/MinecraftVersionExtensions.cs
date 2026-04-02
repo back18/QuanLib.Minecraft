@@ -11,8 +11,8 @@ namespace QuanLib.Minecraft.Downloading.Extensions
         {
             ArgumentNullException.ThrowIfNull(versionIndex, nameof(versionIndex));
 
-            VersionType versionType = VersionFactory.Parse(versionIndex.Id, versionIndex.Type);
             DateTime releaseTime = DateTimeOffset.Parse(versionIndex.ReleaseTime).UtcDateTime;
+            VersionType versionType = VersionFactory.Parse(versionIndex.Id, versionIndex.Type, releaseTime);
 
             return VersionFactory.Create(versionIndex.Id, versionType, releaseTime);
         }
@@ -24,8 +24,8 @@ namespace QuanLib.Minecraft.Downloading.Extensions
                 throw new ArgumentException($"The version patche with id '{versionPatch.Id}' is not a game version patche.", nameof(versionPatch));
 
             string versionNumber = versionPatch.Version;
-            VersionType versionType = VersionFactory.Parse(versionNumber, versionPatch.Type);
             DateTime releaseTime = DateTimeOffset.Parse(versionPatch.ReleaseTime).UtcDateTime;
+            VersionType versionType = VersionFactory.Parse(versionNumber, versionPatch.Type, releaseTime);
 
             return VersionFactory.Create(versionNumber, versionType, releaseTime);
         }
@@ -39,8 +39,8 @@ namespace QuanLib.Minecraft.Downloading.Extensions
                 List<MinecraftVersion.Model> models = [];
                 foreach (var versionIndex in versionManifest.Values)
                 {
-                    VersionType versionType = VersionFactory.Parse(versionIndex.Id, versionIndex.Type);
                     DateTime releaseTime = DateTimeOffset.Parse(versionIndex.ReleaseTime).UtcDateTime;
+                    VersionType versionType = VersionFactory.Parse(versionIndex.Id, versionIndex.Type, releaseTime);
                     MinecraftVersion.Model model = new()
                     {
                         Version = versionIndex.Id,

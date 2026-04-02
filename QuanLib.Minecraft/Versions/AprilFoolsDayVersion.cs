@@ -19,7 +19,8 @@ namespace QuanLib.Minecraft.Versions
             "22w13oneblockatatime", //2022
             "23w13a_or_b",          //2023
             "24w14potato",          //2024
-            "25w14craftmine"        //2025
+            "25w14craftmine",       //2025
+            "26w14a"                //2026
         ];
 
         private static readonly int[] YEARS = [
@@ -33,16 +34,19 @@ namespace QuanLib.Minecraft.Versions
             2022,
             2023,
             2024,
-            2025
+            2025,
+            2026
         ];
 
         public AprilFoolsDayVersion(string versionNumber, DateTime releaseTime) : base(versionNumber, VersionType.AprilFoolsDay, releaseTime)
         {
             int index = Array.IndexOf(VERSIONS, versionNumber);
-            if (index < 0)
-                throw new ArgumentException("Invalid April Fools' Day version number.", nameof(versionNumber));
-
-            Year = YEARS[index];
+            if (index >= 0)
+                Year = YEARS[index];
+            else if (releaseTime.Month == 4 && releaseTime.Day == 1)
+                Year = releaseTime.Year;
+            else
+                throw new FormatException($"Unknown April Fools' Day version format: {versionNumber}");
         }
 
         public override bool IsReleaseVersion => false;
@@ -58,6 +62,22 @@ namespace QuanLib.Minecraft.Versions
             ArgumentException.ThrowIfNullOrEmpty(versionNumber, nameof(versionNumber));
 
             return VERSIONS.Contains(versionNumber);
+        }
+
+        public static string? AprilFoolsDayVersionOf(int year)
+        {
+            int index = Array.IndexOf(YEARS, year);
+            if (index >= 0)
+                return VERSIONS[index];
+            else
+                return null;
+        }
+
+        public static int AprilFoolsDayYearOf(string versionNumber)
+        {
+            ArgumentNullException.ThrowIfNull(versionNumber, nameof(versionNumber));
+
+            return Array.IndexOf(VERSIONS, versionNumber);
         }
 
         public static string[] GetVersions()
