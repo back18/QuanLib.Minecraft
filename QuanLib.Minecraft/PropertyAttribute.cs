@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace QuanLib.Minecraft
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public class PropertiesAttribute : Attribute
+    public class PropertyAttribute : Attribute
     {
-        public PropertiesAttribute(string name)
+        public PropertyAttribute(string name)
         {
             ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
