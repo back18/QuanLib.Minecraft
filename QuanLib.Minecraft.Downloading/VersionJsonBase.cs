@@ -16,6 +16,8 @@ namespace QuanLib.Minecraft.Downloading
 
         protected readonly JObject JObject;
 
+        public bool Root => JObject["root"]?.Value<bool>() ?? false;
+
         public string Id => JObject["id"]?.Value<string>() ?? string.Empty;
 
         public string Type => JObject["type"]?.Value<string>() ?? string.Empty;
@@ -28,7 +30,7 @@ namespace QuanLib.Minecraft.Downloading
 
         public int MinimumLauncherVersion => JObject["minimumLauncherVersion"]?.Value<int>() ?? 0;
 
-        public bool Root => JObject["root"]?.Value<bool>() ?? false;
+        public string Assets => JObject["assets"]?.Value<string>() ?? string.Empty;
 
         public virtual NetworkAssetIndex? GetIndexFile()
         {
