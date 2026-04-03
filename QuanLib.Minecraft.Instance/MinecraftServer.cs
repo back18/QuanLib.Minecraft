@@ -27,9 +27,9 @@ namespace QuanLib.Minecraft.Instance
                 FileInfo file = _serverPathManager.Minecraft_ServerProperties;
                 ThrowHelper.FileNotFound(file.FullName);
 
-                string text = File.ReadAllText(_serverPathManager.Minecraft_ServerProperties.FullName);
-                Dictionary<string, string> dictionary = ServerProperties.Parse(text);
-                _serverProperties = new(dictionary);
+                string serverProperties = File.ReadAllText(_serverPathManager.Minecraft_ServerProperties.FullName);
+                Dictionary<string, string> properties = ServerProperties.Parse(serverProperties);
+                _serverProperties = ServerProperties.Load(properties, true);
             }
             else
             {
