@@ -1,6 +1,8 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -306,7 +308,7 @@ namespace QuanLib.Minecraft
 
                 if (options.TryGetValue(optionName, out var optionValue))
                 {
-                    object value;
+                    object? value;
                     if (propertyInfo.PropertyType.Equals(typeof(ReadOnlyCollection<string>)))
                     {
                         if (optionValue == "[]")
@@ -322,15 +324,35 @@ namespace QuanLib.Minecraft
                         }
                     }
                     else if (propertyInfo.PropertyType.Equals(typeof(string)))
+                    {
                         value = optionValue;
-                    else if (propertyInfo.PropertyType.Equals(typeof(double)))
-                        value = doubleParser.Invoke(optionValue);
-                    else if (propertyInfo.PropertyType.Equals(typeof(int)))
-                        value = intParser.Invoke(optionValue);
-                    else if (propertyInfo.PropertyType.Equals(typeof(bool)))
-                        value = boolParser.Invoke(optionValue);
+                    }
                     else
-                        continue;
+                    {
+                        try
+                        {
+                            if (propertyInfo.PropertyType.Equals(typeof(double)))
+                                value = doubleParser.Invoke(optionValue);
+                            else if (propertyInfo.PropertyType.Equals(typeof(int)))
+                                value = intParser.Invoke(optionValue);
+                            else if (propertyInfo.PropertyType.Equals(typeof(bool)))
+                                value = boolParser.Invoke(optionValue);
+                            else if (useDefaultValues)
+                                value = DefaultOptions.GetOptionValue(optionName);
+                            else
+                                continue;
+                        }
+                        catch (Exception ex) when (ex is ArgumentException or FormatException)
+                        {
+                            Debug.WriteLine("{0}.{1}: 无法将 \"{2}\" 解析为 \"{3}\" 类型", nameof(ClientOptions), optionName, optionValue, ObjectFormatter.Format(propertyInfo.PropertyType));
+                            Debug.WriteLine(ex);
+
+                            if (useDefaultValues)
+                                value = DefaultOptions.GetOptionValue(optionName);
+                            else
+                                continue;
+                        }
+                    }
 
                     propertyInfo.SetValue(clientOptions, value);
                 }

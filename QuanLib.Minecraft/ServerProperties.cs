@@ -1,5 +1,7 @@
-﻿using System;
+﻿using QuanLib.Core;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
@@ -217,15 +219,35 @@ namespace QuanLib.Minecraft
 
                 if (properties.TryGetValue(propertyName, out var propertyValue))
                 {
-                    object value;
+                    object? value;
                     if (propertyInfo.PropertyType.Equals(typeof(string)))
+                    {
                         value = propertyValue;
-                    else if (propertyInfo.PropertyType.Equals(typeof(int)))
-                        value = intParser.Invoke(propertyValue);
-                    else if (propertyInfo.PropertyType.Equals(typeof(bool)))
-                        value = boolParser.Invoke(propertyValue);
+                    }
                     else
-                        continue;
+                    {
+                        try
+                        {
+                            if (propertyInfo.PropertyType.Equals(typeof(int)))
+                                value = intParser.Invoke(propertyValue);
+                            else if (propertyInfo.PropertyType.Equals(typeof(bool)))
+                                value = boolParser.Invoke(propertyValue);
+                            else if (useDefaultValues)
+                                value = DefaultProperties.GetPropertyValue(propertyName);
+                            else
+                                continue;
+                        }
+                        catch (Exception ex) when (ex is ArgumentException or FormatException)
+                        {
+                            Debug.WriteLine("{0}.{1}: 无法将 \"{2}\" 解析为 \"{3}\" 类型", nameof(ServerProperties), propertyName, propertyValue, ObjectFormatter.Format(propertyInfo.PropertyType));
+                            Debug.WriteLine(ex);
+
+                            if (useDefaultValues)
+                                value = DefaultProperties.GetPropertyValue(propertyName);
+                            else
+                                continue;
+                        }
+                    }
 
                     propertyInfo.SetValue(serverProperties, value);
                 }
