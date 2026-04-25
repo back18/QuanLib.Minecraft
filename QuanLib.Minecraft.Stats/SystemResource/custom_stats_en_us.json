@@ -1,0 +1,310 @@
+﻿{
+  "minecraft:animals_bred": {
+    "name": "Animals Bred",
+    "description": "The number of times the player bred two mobs."
+  },
+  "minecraft:aviate_one_cm": {
+    "name": "Distance by Elytra",
+    "description": "The total distance traveled by elytra."
+  },
+  "minecraft:bell_ring": {
+    "name": "Bells Rung",
+    "description": "The number of times the player has rung a bell."
+  },
+  "minecraft:boat_one_cm": {
+    "name": "Distance by Boat",
+    "description": "The total distance traveled by boats."
+  },
+  "minecraft:clean_armor": {
+    "name": "Armor Pieces Cleaned",
+    "description": "The number of dyed leather armors washed with a cauldron."
+  },
+  "minecraft:clean_banner": {
+    "name": "Banners Cleaned",
+    "description": "The number of banner patterns washed with a cauldron."
+  },
+  "minecraft:clean_shulker_box": {
+    "name": "Shulker Boxes Cleaned",
+    "description": "The number of times the player has washed a shulker box with a cauldron."
+  },
+  "minecraft:climb_one_cm": {
+    "name": "Distance Climbed",
+    "description": "The total distance traveled up ladders or vines."
+  },
+  "minecraft:crouch_one_cm": {
+    "name": "Distance Crouched",
+    "description": "The total distance traveled while sneaking and not in water."
+  },
+  "minecraft:damage_absorbed": {
+    "name": "Damage Absorbed",
+    "description": "The amount of damage the player has absorbed in tenths of 1HP (♥)."
+  },
+  "minecraft:damage_blocked_by_shield": {
+    "name": "Damage Blocked By Shield",
+    "description": "The amount of damage the player has blocked with a shield in tenths of 1HP (♥)."
+  },
+  "minecraft:damage_dealt": {
+    "name": "Damage Dealt",
+    "description": "The amount of damage the player has dealt in tenths of 1HP (♥). Includes only melee attacks."
+  },
+  "minecraft:damage_dealt_absorbed": {
+    "name": "Damage Dealt (Absorbed)",
+    "description": "The amount of damage the player has dealt that was absorbed, in tenths of 1HP (♥)."
+  },
+  "minecraft:damage_dealt_resisted": {
+    "name": "Damage Dealt (Resisted)",
+    "description": "The amount of damage the player has dealt that was resisted, in tenths of 1HP (♥)."
+  },
+  "minecraft:damage_resisted": {
+    "name": "Damage Resisted",
+    "description": "The amount of damage the player has resisted in tenths of 1HP (♥)."
+  },
+  "minecraft:damage_taken": {
+    "name": "Damage Taken",
+    "description": "The amount of damage the player has taken in tenths of 1HP (♥)."
+  },
+  "minecraft:deaths": {
+    "name": "Number of Deaths",
+    "description": "The number of times the player died."
+  },
+  "minecraft:drop": {
+    "name": "Items Dropped",
+    "description": "The number of items dropped. This does not include items dropped upon death. Stacked blocks count as 1."
+  },
+  "minecraft:eat_cake_slice": {
+    "name": "Cake Slices Eaten",
+    "description": "The number of cake slices eaten."
+  },
+  "minecraft:enchant_item": {
+    "name": "Items Enchanted",
+    "description": "The number of items enchanted."
+  },
+  "minecraft:fall_one_cm": {
+    "name": "Distance Fallen",
+    "description": "The total distance fallen, excluding jumping. If the player falls more than one block, the entire jump is counted."
+  },
+  "minecraft:fill_cauldron": {
+    "name": "Cauldrons Filled",
+    "description": "The number of times the player filled cauldrons with water buckets."
+  },
+  "minecraft:fish_caught": {
+    "name": "Fish Caught",
+    "description": "The number of fish caught."
+  },
+  "minecraft:fly_one_cm": {
+    "name": "Distance Flown",
+    "description": "Distance traveled upward and forward at the same time, while more than one block above the ground."
+  },
+  "minecraft:happy_ghast_one_cm": {
+    "name": "Distance by Happy Ghast",
+    "description": "The total distance traveled by happy ghasts."
+  },
+  "minecraft:horse_one_cm": {
+    "name": "Distance by Horse",
+    "description": "The total distance traveled by horses."
+  },
+  "minecraft:inspect_dispenser": {
+    "name": "Dispensers Searched",
+    "description": "The number of times interacted with dispensers."
+  },
+  "minecraft:inspect_dropper": {
+    "name": "Droppers Searched",
+    "description": "The number of times interacted with droppers."
+  },
+  "minecraft:inspect_hopper": {
+    "name": "Hoppers Searched",
+    "description": "The number of times interacted with hoppers."
+  },
+  "minecraft:interact_with_anvil": {
+    "name": "Interactions with Anvil",
+    "description": "The number of times interacted with anvils."
+  },
+  "minecraft:interact_with_beacon": {
+    "name": "Interactions with Beacon",
+    "description": "The number of times interacted with beacons."
+  },
+  "minecraft:interact_with_blast_furnace": {
+    "name": "Interactions with Blast Furnace",
+    "description": "The number of times interacted with blast furnaces."
+  },
+  "minecraft:interact_with_brewingstand": {
+    "name": "Interactions with Brewing Stand",
+    "description": "The number of times interacted with brewing stands."
+  },
+  "minecraft:interact_with_campfire": {
+    "name": "Interactions with Campfire",
+    "description": "The number of times interacted with campfires."
+  },
+  "minecraft:interact_with_cartography_table": {
+    "name": "Interactions with Cartography Table",
+    "description": "The number of times interacted with cartography tables."
+  },
+  "minecraft:interact_with_crafting_table": {
+    "name": "Interactions with Crafting Table",
+    "description": "The number of times interacted with crafting tables."
+  },
+  "minecraft:interact_with_furnace": {
+    "name": "Interactions with Furnace",
+    "description": "The number of times interacted with furnaces."
+  },
+  "minecraft:interact_with_grindstone": {
+    "name": "Interactions with Grindstone",
+    "description": "The number of times interacted with grindstones."
+  },
+  "minecraft:interact_with_lectern": {
+    "name": "Interactions with Lectern",
+    "description": "The number of times interacted with lecterns."
+  },
+  "minecraft:interact_with_loom": {
+    "name": "Interactions with Loom",
+    "description": "The number of times interacted with looms."
+  },
+  "minecraft:interact_with_smithing_table": {
+    "name": "Interactions with Smithing Table",
+    "description": "The number of times interacted with smithing tables."
+  },
+  "minecraft:interact_with_smoker": {
+    "name": "Interactions with Smoker",
+    "description": "The number of times interacted with smokers."
+  },
+  "minecraft:interact_with_stonecutter": {
+    "name": "Interactions with Stonecutter",
+    "description": "The number of times interacted with stonecutters."
+  },
+  "minecraft:jump": {
+    "name": "Jumps",
+    "description": "The total number of jumps performed."
+  },
+  "minecraft:leave_game": {
+    "name": "Games Quit",
+    "description": "The number of times \"Save and quit to title\" has been clicked. Does not count crashes."
+  },
+  "minecraft:minecart_one_cm": {
+    "name": "Distance by Minecart",
+    "description": "The total distance traveled by minecarts."
+  },
+  "minecraft:mob_kills": {
+    "name": "Mob Kills",
+    "description": "The number of mobs the player killed."
+  },
+  "minecraft:nautilus_one_cm": {
+    "name": "Distance by Nautilus",
+    "description": "The total distance traveled by nautiluss."
+  },
+  "minecraft:open_barrel": {
+    "name": "Barrels Opened",
+    "description": "The number of times the player has opened a barrel."
+  },
+  "minecraft:open_chest": {
+    "name": "Chests Opened",
+    "description": "The number of times the player opened chests."
+  },
+  "minecraft:open_enderchest": {
+    "name": "Ender Chests Opened",
+    "description": "The number of times the player opened ender chests."
+  },
+  "minecraft:open_shulker_box": {
+    "name": "Shulker Boxes Opened",
+    "description": "The number of times the player has opened a shulker box."
+  },
+  "minecraft:pig_one_cm": {
+    "name": "Distance by Pig",
+    "description": "The total distance traveled by pigs via saddles."
+  },
+  "minecraft:play_noteblock": {
+    "name": "Note Blocks Played",
+    "description": "The number of note blocks hit."
+  },
+  "minecraft:play_record": {
+    "name": "Music Discs Played",
+    "description": "The number of music discs played on a jukebox."
+  },
+  "minecraft:play_time": {
+    "name": "Time Played",
+    "description": "The total amount of time played (tracked in ticks). If the game is paused, counting does not continue."
+  },
+  "minecraft:player_kills": {
+    "name": "Player Kills",
+    "description": "The number of players the player killed. Indirect kills do not count."
+  },
+  "minecraft:pot_flower": {
+    "name": "Plants Potted",
+    "description": "The number of plants potted onto flower pots."
+  },
+  "minecraft:raid_trigger": {
+    "name": "Raids Triggered",
+    "description": "The number of times the player has triggered a raid."
+  },
+  "minecraft:raid_win": {
+    "name": "Raids Won",
+    "description": "The number of times the player has won a raid."
+  },
+  "minecraft:sleep_in_bed": {
+    "name": "Times Slept in a Bed",
+    "description": "The number of times the player has slept in a bed."
+  },
+  "minecraft:sneak_time": {
+    "name": "Sneak Time",
+    "description": "The time the player has held down the sneak button (tracked in ticks)."
+  },
+  "minecraft:sprint_one_cm": {
+    "name": "Distance Sprinted",
+    "description": "The total distance sprinted."
+  },
+  "minecraft:strider_one_cm": {
+    "name": "Distance by Strider",
+    "description": "The total distance traveled by striders via saddles."
+  },
+  "minecraft:swim_one_cm": {
+    "name": "Distance Swum",
+    "description": "The total distance covered with sprint-swimming."
+  },
+  "minecraft:talked_to_villager": {
+    "name": "Talked to Villagers",
+    "description": "The number of times interacted with villagers (opened the trading GUI)."
+  },
+  "minecraft:target_hit": {
+    "name": "Targets Hit",
+    "description": "The number of times the player has shot a target block."
+  },
+  "minecraft:time_since_death": {
+    "name": "Time Since Last Death",
+    "description": "The time since the player's last death (tracked in ticks)."
+  },
+  "minecraft:time_since_rest": {
+    "name": "Time Since Last Rest",
+    "description": "The time since the player's last rest (tracked in ticks). If this value is greater than 1.00h (3 days ingame), phantoms can spawn."
+  },
+  "minecraft:total_world_time": {
+    "name": "Time with World Open",
+    "description": "The total amount of time the world was opened (tracked in ticks). Unlike Play Time, if the game is paused this number continues to increase, but it does not change visually while the statistics menu is open."
+  },
+  "minecraft:traded_with_villager": {
+    "name": "Traded with Villagers",
+    "description": "The number of times traded with villagers."
+  },
+  "minecraft:trigger_trapped_chest": {
+    "name": "Trapped Chests Triggered",
+    "description": "The number of times the player opened trapped chests."
+  },
+  "minecraft:tune_noteblock": {
+    "name": "Note Blocks Tuned",
+    "description": "The number of times interacted with note blocks."
+  },
+  "minecraft:use_cauldron": {
+    "name": "Water Taken from Cauldron",
+    "description": "The number of times the player took water from cauldrons with glass bottles."
+  },
+  "minecraft:walk_on_water_one_cm": {
+    "name": "Distance Walked on Water",
+    "description": "The total distance covered in any direction while the player's head is not underwater."
+  },
+  "minecraft:walk_one_cm": {
+    "name": "Distance Walked",
+    "description": "The total distance walked."
+  },
+  "minecraft:walk_under_water_one_cm": {
+    "name": "Distance Walked under Water",
+    "description": "The total distance covered in any direction while the player's head is underwater."
+  }
+}
