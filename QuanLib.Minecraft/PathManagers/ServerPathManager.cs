@@ -21,6 +21,12 @@ namespace QuanLib.Minecraft.PathManagers
 
         public FileInfo Minecraft_ServerProperties => _serverPaths.Minecraft_ServerProperties.CreateFileInfo();
 
+        public FileInfo Minecraft_UserNameCache => _serverPaths.Minecraft_UserNameCache.CreateFileInfo();
+
+        public FileInfo Minecraft_UserCache => _serverPaths.Minecraft_UserCache.CreateFileInfo();
+
+        public FileInfo Minecraft_Ops => _serverPaths.Minecraft_Ops.CreateFileInfo();
+
         public FileInfo Minecraft_Whitelist => _serverPaths.Minecraft_Whitelist.CreateFileInfo();
 
         public FileInfo Minecraft_BannedPlayers => _serverPaths.Minecraft_BannedPlayers.CreateFileInfo();
@@ -51,6 +57,9 @@ namespace QuanLib.Minecraft.PathManagers
             {
                 Minecraft_World = Minecraft.PathCombine("world");
                 Minecraft_ServerProperties = Minecraft.PathCombine("server.properties");
+                Minecraft_UserNameCache = Minecraft.PathCombine("usernamecache.json");
+                Minecraft_UserCache = Minecraft.PathCombine("usercache.json");
+                Minecraft_Ops = Minecraft.PathCombine("ops.json");
                 Minecraft_Whitelist = Minecraft.PathCombine("whitelist.json");
                 Minecraft_BannedPlayers = Minecraft.PathCombine("banned-players.json");
                 Minecraft_BannedIps = Minecraft.PathCombine("banned-ips.json");
@@ -60,6 +69,12 @@ namespace QuanLib.Minecraft.PathManagers
             public readonly string Minecraft_World;
 
             public readonly string Minecraft_ServerProperties;
+
+            public readonly string Minecraft_UserNameCache;
+
+            public readonly string Minecraft_UserCache;
+
+            public readonly string Minecraft_Ops;
 
             public readonly string Minecraft_Whitelist;
 
